@@ -26,5 +26,7 @@ for the Windows/WSL workflow.
 - Keep dependency installation scripts disabled. Review the known OpenSpec
   dependency finding in `docs/DEPENDENCY_REVIEW.md` before tool upgrades.
 
-The current setup includes connectivity scripts only. It does not yet implement
-civilization selection, settlements, persistence, matchmaking, or combat.
+The current prototype implements session-only Sparta/Britain selection,
+exclusive claims, eight generated plots, placeholder settlements, and respawns.
+See `docs/PLAYTEST.md` for runtime tests. Persistence, matchmaking, armies,
+upgrades, formations, and combat remain planned.

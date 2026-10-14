@@ -9,6 +9,7 @@
   },
   "packageManager": "npm@12.0.2",
   "scripts": {
+    "build:test-project": "node scripts/create-test-project.mjs",
     "openspec": "openspec",
     "setup:openspec": "openspec init --tools codex --profile core --no-animation",
     "check": "openspec validate --all --strict --no-interactive"
