@@ -1,6 +1,7 @@
 --!strict
 
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
+local ProfileData = require(script.Parent.ProfileData)
 local Economy = {}
 local BURST = 20
 local REFILL = 15
@@ -11,10 +12,16 @@ type Account = {
 	tokens: number, updatedAt: number, purchasedAt: { [string]: number },
 }
 
-function Economy.new(clock: (() -> number)?)
+function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 	local now = clock or os.clock
 	local accounts: { [number]: Account } = {}
+	local revisions: { [number]: number } = {}
 	local economy = {}
+	local function nextRevision(playerId: number): number
+		local value = (revisions[playerId] or -1) + 1
+		revisions[playerId] = value
+		return value
+	end
 
 	function economy:get(playerId: number)
 		local account = accounts[playerId]
@@ -25,13 +32,28 @@ function Economy.new(clock: (() -> number)?)
 		} else nil
 	end
 
-	function economy:open(playerId: number)
+	function economy:open(playerId: number, initialState: any?)
 		if not accounts[playerId] then
+			local state = if initialState == nil then ProfileData.defaultState() else ProfileData.copyState(initialState)
+			if not state then return nil end
 			accounts[playerId] = {
-				coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1, revision = 0,
+				coins = state.coins, level = state.level, weaponLevel = state.weaponLevel,
+				armorLevel = state.armorLevel, barracksLevel = state.barracksLevel, revision = nextRevision(playerId),
 				tokens = BURST, updatedAt = now(), purchasedAt = {},
 			}
 		end
+		return self:get(playerId)
+	end
+
+	-- Switching imports progress without refilling this server session's input budgets.
+	function economy:replace(playerId: number, initialState: any)
+		local account = accounts[playerId]
+		local state = ProfileData.copyState(initialState)
+		if not account or not state or (canMutate and not canMutate(playerId)) then return nil end
+		for _, field in {"coins", "level", "weaponLevel", "armorLevel", "barracksLevel"} do
+			account[field] = state[field]
+		end
+		account.revision = nextRevision(playerId)
 		return self:get(playerId)
 	end
 
@@ -42,6 +64,7 @@ function Economy.new(clock: (() -> number)?)
 	function economy:earn(playerId: number)
 		local account = accounts[playerId]
 		if not account then return rejected(playerId, "not_claimed") end
+		if canMutate and not canMutate(playerId) then return rejected(playerId, "profile_unavailable") end
 		local time = now()
 		account.tokens = math.min(BURST, account.tokens + math.max(0, time - account.updatedAt) * REFILL)
 		account.updatedAt = time
@@ -49,13 +72,14 @@ function Economy.new(clock: (() -> number)?)
 		if account.coins >= MAX_COINS then return rejected(playerId, "coin_limit") end
 		account.tokens -= 1
 		account.coins += 1
-		account.revision += 1
+		account.revision = nextRevision(playerId)
 		return { ok = true, state = self:get(playerId) }
 	end
 
 	function economy:upgrade(playerId: number, expectedLevel: unknown, kind: unknown)
 		local account = accounts[playerId]
 		if not account then return rejected(playerId, "not_claimed") end
+		if canMutate and not canMutate(playerId) then return rejected(playerId, "profile_unavailable") end
 		local trackId = if kind == nil then "settlement" else kind
 		if type(trackId) ~= "string" or not Tracks[trackId] then return rejected(playerId, "invalid") end
 		local progression = Tracks[trackId]
@@ -80,7 +104,7 @@ function Economy.new(clock: (() -> number)?)
 		-- No yielding between checking the price and committing both values.
 		account.coins -= cost
 		account[field] += 1
-		account.revision += 1
+		account.revision = nextRevision(playerId)
 		return { ok = true, state = self:get(playerId) }
 	end
 
@@ -88,9 +112,10 @@ function Economy.new(clock: (() -> number)?)
 	function economy:rewardKill(playerId: number)
 		local account = accounts[playerId]
 		if not account then return rejected(playerId, "not_claimed") end
+		if canMutate and not canMutate(playerId) then return rejected(playerId, "profile_unavailable") end
 		if account.coins > MAX_COINS - 10 then return rejected(playerId, "coin_limit") end
 		account.coins += 10
-		account.revision += 1
+		account.revision = nextRevision(playerId)
 		return {ok=true, amount=10, state=self:get(playerId)}
 	end
 

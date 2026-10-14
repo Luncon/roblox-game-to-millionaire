@@ -70,13 +70,21 @@ separate settlement/weapon/armor progression with equipped themed gear.
 The user then prioritized the first automatic melee warrior: settlement stage 2
 unlocks a barracks with one troop, replaced 15 seconds after death. Owner weapon
 and armor upgrades apply to current and replacement troops. See [army details](ARMY.md).
-Per-civilization persistence remains planned; see [economy details](ECONOMY.md)
-for current session-only limits.
+Per-civilization persistence now saves coins and settlement, weapon, armor and
+barracks levels. Selection waits for a successful profile load; a failed load
+cannot replace earlier progress with a fresh profile. The HUD lets players
+switch to an available civilization on the same plot and later restore the old
+one. See [saved profiles](PROFILES.md) and [economy details](ECONOMY.md).
 
-The next requested milestone softens gear scaling, grants 10 coins to the final-hit
-civilization, adds player melee and settlement-unlocked floor pads, and expands
+The army progression milestone softened gear scaling, added a 10-coin final-hit
+reward, player melee and settlement-unlocked floor pads, and expanded
 barracks through three faster-respawn upgrades to one melee plus one ranged troop.
 See [army details](ARMY.md) and the active OpenSpec implementation checklist.
+
+The proposed sequence above records the original plan. Current saving and army
+features have overtaken some of its steps; formations, battlefield objectives and
+civilization-aware cross-server routing still need implementation. Storage and
+multiplayer verification are recorded separately in [playtest notes](PLAYTEST.md).
 
 ### Settlement cap and building identity
 

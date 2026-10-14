@@ -10,7 +10,7 @@
 
 - [x] 2.1 Add themed stage-two barracks and transformed spawn API; verify stages 1–4, bounds, and existing pad clearance.
 - [x] 2.2 Add one-slot deployment, exact 15-second replacement, live gear refresh, release cleanup, and owner HUD; verify live identity, pending deadlines, resets, and leave/reclaim behavior in Studio.
-- [ ] 2.3 Document barracks controls and timing in the playtest guide; verify HUD and countdown in a running client.
+- [x] 2.3 Document barracks controls and timing in the playtest guide; verify HUD and countdown in a running client.
 
 ## 3. Autonomous combat
 
@@ -29,6 +29,8 @@
 - The user chose to stop further eight-player testing and continue development
   after reporting a successful manual three-player NPC playtest. Task 4.3 remains
   unverified; startup failures are recorded in docs/PLAYTEST.md. The new HUD's
-  device/layout observation in 2.3 also remains outstanding. Existing 69 module,
+  device/layout observation in 2.3 was completed on October 14 during the
+  profiles milestone: desktop/compact IV capacity and independent countdowns
+  were inspected, with actual text bounds and screenshots. Existing 69 module,
   14 army runtime, and 34 economy/multiplayer cases passed. Temporary Studio test
   objects were removed and graphics quality restored to Automatic.

@@ -16,6 +16,15 @@ commands.OnClientEvent:Connect(function(command)
 		return
 	end
 	local ok, result = pcall(function()
+		if command.action == "snapshot" then return request:InvokeServer("snapshot") end
+		if command.action == "retry" then return request:InvokeServer("retry") end
+		if command.action == "civilizationInput" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("CivilizationInput",10))(command.options)
+		end
+		if command.action == "switch" then return request:InvokeServer("switch",command.civilization) end
+		if command.action == "progressHUD" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("ProgressHUD",10))(command.options)
+		end
 		if command.action == "meleeInput" then
 			return require(ReplicatedStorage:WaitForChild("ClientTests", 10):WaitForChild("MeleeInput", 10))(command.options)
 		end
@@ -25,10 +34,13 @@ commands.OnClientEvent:Connect(function(command)
 		if command.action == "inspectHUD" then
 			local hud = player.PlayerGui:WaitForChild("CivilizationSelection", 10):WaitForChild("SettlementHUD", 10)
 			local hasButtons = false
+			local hasSwitch = false
 			for _, item in hud:GetDescendants() do
-				if item:IsA("GuiButton") then hasButtons = true end
+				if item:IsA("GuiButton") then
+					if item.Name == "SwitchCivilization" then hasSwitch=true else hasButtons=true end
+				end
 			end
-			return {visible=hud.Visible, hasButtons=hasButtons,
+			return {visible=hud.Visible, hasButtons=hasButtons,hasSwitch=hasSwitch,
 				coins=hud:WaitForChild("Coins", 10).Text, progression=hud:WaitForChild("Progression", 10).Text}
 		end
 		local first = request:InvokeServer("select", command.civilization)

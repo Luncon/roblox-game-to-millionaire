@@ -130,3 +130,23 @@ the Roblox application, since Studio play mode does not support them.
 
 References: [data stores](https://create.roblox.com/docs/cloud-services/data-stores)
 and [teleports](https://create.roblox.com/docs/projects/teleport).
+
+## Saved civilization profiles
+
+The game saves each player's civilizations separately. In Studio, open **File →
+Experience Settings → Security**, enable **Enable Studio Access to API Services**,
+and click **Save**. The experience must be published for Studio storage access.
+See [Roblox's setup instructions](https://create.roblox.com/docs/cloud-services/data-stores#enable-studio-access).
+
+Studio uses `CivilizationProfilesV1` / `StudioDevelopment`; published servers use
+the `Live` scope. Stop and restart Play after enabling access. The selector waits
+for a safe profile load; an error does not create a replacement default profile.
+Use the on-screen retry action after waiting, or rejoin if the progress session
+has ended. [Profile behavior and schema](PROFILES.md) describes the guarantees.
+
+`npm run build:test-project` builds an isolated test configuration whose bootstrap
+injects an in-memory store. Automated regressions do not access either real scope.
+Run `tests/RunPersistenceMultiplayer.luau` in that test place through Studio's
+Assistant MCP Edit context to check independent progress, switching, fresh Studio
+sessions, failed loads and bounded retry traffic with two clients. Real Roblox
+storage restoration is recorded separately in [the playtest log](PLAYTEST.md).

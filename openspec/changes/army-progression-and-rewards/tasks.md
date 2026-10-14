@@ -16,7 +16,7 @@
 
 - [x] 3.1 Add civilization ranged gear/rigs and independent two-slot lifecycle; verify all 13 variants, inherited tiers, cap transition and pending-deadline preservation.
 - [x] 3.2 Add visible bounded projectiles and ranged navigation/targeting; verify real flight, enemy impact, obstacles, immunity, cleanup and final-hit rewards in Studio.
-- [ ] 3.3 Update barracks signs, HUD tier/capacity/countdowns and army documentation; observe the delivered progression and feedback in a running client.
+- [x] 3.3 Update barracks signs, HUD tier/capacity/countdowns and army documentation; observe the delivered progression and feedback in a running client.
 
 - [x] 3.4 Integrate five user-provided melee model assets; verify each uses its custom template, preserves source cosmetics and originals, walks under real Humanoid physics, and receives tier upgrades.
 
@@ -34,6 +34,10 @@ multiplayer/native-input cases passed. Both final Rojo builds and strict OpenSpe
 validation passed. Test content was excluded from production and temporary
 Studio content removed. Independent review findings were resolved.
 
-Task 3.3's implementation is delivered; visual inspection of the level-IV
-independent countdown HUD on device viewports remains for the next session.
-Eight-player testing remains canceled by the user. Progress remains session-only.
+Task 3.3's level-IV progression and independent countdown HUD follow-up was
+observed in desktop and compact running clients on October 14, 2026, during
+civilization-profiles-and-switching. A tall viewport was also inspected.
+See docs/PLAYTEST.md for actual dimensions, text bounds and screenshot evidence.
+Eight-player testing remains canceled by the user. The profiles milestone adds
+persistent per-civilization progress; the earlier session-only result above
+remains a historical record.

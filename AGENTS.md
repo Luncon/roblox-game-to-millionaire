@@ -29,9 +29,12 @@ for the Windows/WSL workflow.
 The current prototype offers 13 civilizations, exclusive claims, eight generated
 plots, themed settlements/equipment, and physical tycoon pads for single-coin
 earning and separate settlement/weapon/armor upgrades. The HUD displays progress;
-there is no client earning/purchase remote. Progress survives character resets
-but remains session-only by the user's explicit choice. See `docs/ECONOMY.md`
-and `docs/PLAYTEST.md`. Stage-two settlements unlock a one-slot automatic melee
+there is no client earning/purchase remote. Coins and all four upgrade tracks
+save independently for each player's civilizations. Selection
+waits for a writable profile; a lost lease blocks earning, purchases and kill
+credits. Switching to a free civilization preserves the plot and restores its
+saved progression. See `docs/PROFILES.md`, `docs/ECONOMY.md` and `docs/PLAYTEST.md`.
+Stage-two settlements unlock a one-slot automatic melee
 barracks; three stage-gated purchases reduce future respawn waits by 0.5s each
 and level IV adds one ranged slot. Owner gear applies to both classes. Player
 melee and server-validated final hits award 10 coins, with shared damage/reward
@@ -40,4 +43,8 @@ new tier pads appear at stages 2/3/4. Five user-provided R6 melee templates live
 in `assets/npc-templates`, mapped into ServerStorage by Rojo. Clone/sanitize
 templates without mutating originals. Claimed-plot identity is incorporated
 into each civilization's main hall facade. See `docs/ARMY.md`.
-Persistence, matchmaking, formations, abilities and ranged player attacks remain planned.
+ProfileService uses `CivilizationProfilesV1` with `StudioDevelopment` in Studio
+and `Live` in Roblox servers. Automated tests must inject their fake store; never
+run regression fixtures against player data. Real storage verification is separate
+from fake-store checks. Matchmaking, formations, abilities and ranged player
+attacks remain planned.

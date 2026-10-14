@@ -59,6 +59,21 @@ function ClaimRegistry.new(plotCount: number, supported: { [string]: boolean })
 		return copyClaim(claim)
 	end
 
+	function registry:switch(playerId: number, civilizationId: unknown): Result
+		if type(civilizationId) ~= "string" or not supported[civilizationId] then
+			return {ok=false, reason="invalid"}
+		end
+		local existing = claims[playerId]
+		if not existing then return self:claim(playerId,civilizationId) end
+		if existing.civilizationId == civilizationId then return {ok=true,claim=copyClaim(existing)} end
+		if civilizationOwners[civilizationId] ~= nil then return {ok=false,reason="unavailable"} end
+		-- Reserve the destination and release the former civilization without yielding.
+		civilizationOwners[existing.civilizationId] = nil
+		civilizationOwners[civilizationId] = playerId
+		existing.civilizationId = civilizationId
+		return {ok=true,claim=copyClaim(existing)}
+	end
+
 	function registry:snapshot(): { [string]: { ownerId: number?, plotId: number? } }
 		local result = {}
 		for civilizationId in supported do

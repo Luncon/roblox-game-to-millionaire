@@ -112,6 +112,7 @@ local ok, result = pcall(function()
 	for _, response in hudReports do
 		local hud = response.result
 		assert(hud.visible and not hud.hasButtons, "HUD must display progress while physical pads perform actions")
+		assert(hud.hasSwitch,"HUD needs a civilization switch control")
 		assert(hud.coins == "0 coins" and string.find(hud.progression, "Weapon", 1, true))
 		assert(string.find(hud.progression, "Armor", 1, true))
 	end

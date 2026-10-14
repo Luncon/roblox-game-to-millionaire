@@ -75,13 +75,13 @@ function CivilizationUI.start()
 	local title = textLabel(content, "Title", "Choose your civilization", 0, 58, 24)
 	title.LayoutOrder = 0
 	title.Font = Enum.Font.GothamBold
-	local introduction = textLabel(content, "Introduction", "13 civilizations · 8 settlement plots\nChoose your civilization, then build your settlement.", 0, 42, 14)
+	local introduction = textLabel(content, "Introduction", "13 civilizations · 8 settlement plots\nContinue your civilization, or begin another settlement.", 0, 42, 14)
 	introduction.LayoutOrder = 1
 	introduction.TextColor3 = MUTED
 	local feedback = textLabel(content, "Feedback", "Connecting to the server…", 0, 58, 14)
 	feedback.LayoutOrder = 2
 	feedback.TextColor3 = GOLD
-	local notice = textLabel(content, "PrototypeNotice", "Session only · Progress is not saved yet", 0, 22, 11)
+	local notice = textLabel(content, "PrototypeNotice", "Progress is saved separately for each civilization", 0, 22, 11)
 	notice.LayoutOrder = 100
 	notice.TextColor3 = MUTED
 
@@ -110,14 +110,29 @@ function CivilizationUI.start()
 	hudLimit.Parent = hud
 	local ownedTitle = textLabel(hud, "Civilization", "", 8, 32, 20)
 	ownedTitle.Font = Enum.Font.GothamBold
-	textLabel(hud, "Instruction", "Build your civilization.\nCoins and upgrades last this session.", 44, 44, 12).TextColor3 = MUTED
+	textLabel(hud, "Instruction", "Build your civilization.\nProgress saves separately for each civilization.", 44, 44, 12).TextColor3 = MUTED
 
+	local switchButton = Instance.new("TextButton")
+	switchButton.Name = "SwitchCivilization"
+	switchButton.Size = UDim2.fromOffset(88,22)
+	switchButton.Position = UDim2.new(1,-100,0,6)
+	switchButton.BackgroundColor3 = Color3.fromRGB(54,66,68)
+	switchButton.BorderSizePixel = 0
+	switchButton.Font = Enum.Font.GothamMedium
+	switchButton.TextSize = 11
+	switchButton.TextColor3 = TEXT
+	switchButton.Text = "Change civ"
+	switchButton.Parent = hud
+	local cancel = refresh:Clone()
+	cancel.Name, cancel.Text, cancel.LayoutOrder = "Cancel", "Back to settlement", 3
+	cancel.Parent = content
+	refresh.LayoutOrder = 4
 	local buttons = {}
 	for index, civilization in Civilizations do
 		local button = Instance.new("TextButton")
 		button.Name = civilization.id
-		button.LayoutOrder = index + 3
-		button.Size = UDim2.new(1, -32, 0, 100)
+		button.LayoutOrder = index + 4
+		button.Size = UDim2.new(1, -32, 0, 138)
 		button.BackgroundColor3 = Color3.fromRGB(48, 59, 62)
 		button.BorderSizePixel = 0
 		button.Text = ""
@@ -128,15 +143,20 @@ function CivilizationUI.start()
 		accent.Parent = button
 		textLabel(button, "CivilizationName", civilization.name, 6, 26, 18).Font = Enum.Font.GothamBold
 		textLabel(button, "Period", civilization.period, 34, 30, 12).TextColor3 = MUTED
-		local availability = textLabel(button, "Availability", "Loading…", 70, 24, 12)
+		local progress = textLabel(button,"Progress","Loading saved progress…",70,36,11)
+		progress.TextColor3 = MUTED
+		local availability = textLabel(button, "Availability", "Loading…", 110, 24, 12)
 		availability.TextColor3 = GOLD
-		buttons[civilization.id] = { button = button, label = availability }
+		buttons[civilization.id] = { button = button, label = availability, progress = progress }
 	end
 
 	local busy = true
 	local requestNumber = 0
 	local revision = -1
 	local availability = nil
+	local profile = nil
+	local choosing = false
+	local lastStatus = nil
 	local requestRemote: RemoteFunction? = nil
 	local function render()
 		local owned = player:GetAttribute("CivilizationId")
@@ -146,22 +166,40 @@ function CivilizationUI.start()
 			if entry.id == owned then civilization = entry end
 		end
 		local claimed = civilization ~= nil and typeof(plotId) == "number"
-		panel.Visible = not claimed
-		hud.Visible = claimed
+		panel.Visible = not claimed or choosing
+		hud.Visible = claimed and not choosing
+		cancel.Visible = claimed
+		cancel.Active, cancel.Selectable = claimed and not busy, claimed and not busy
+		local status = player:GetAttribute("ProgressStatus") or (if profile then profile.status else "loading")
+		local ready = status == "ready" or status == "saving"
+		switchButton.Active, switchButton.Selectable = ready and not busy, ready and not busy
 		if claimed then
 			ownedTitle.Text = string.format("%s · Plot %02d", civilization.name, plotId)
 			ownedTitle.TextColor3 = civilization.color:Lerp(TEXT, .65)
 		end
 		for id, row in buttons do
 			local entry = if availability then availability[id] else nil
+			local current = id == owned
 			local available = entry ~= nil and entry.ownerId == nil
-			row.button.Active = available and not busy and not claimed
+			local saved = if profile and profile.civilizations then profile.civilizations[id] else nil
+			row.progress.Text = if saved then string.format("Settlement %d · %d coins\nWeapon %d · Armor %d · Barracks %d",saved.level,saved.coins,saved.weaponLevel,saved.armorLevel,saved.barracksLevel)
+				elseif ready then "New settlement · 0 coins\nAll upgrades start at level 1" else "Saved progress is not available yet"
+			row.button.Active = available and ready and not busy
 			row.button.Selectable = row.button.Active
 			row.button.AutoButtonColor = row.button.Active
 			row.button.BackgroundColor3 = if available then Color3.fromRGB(48, 59, 62) else Color3.fromRGB(40, 46, 49)
-			row.label.Text = if busy then "Please wait…" elseif not entry then "Unavailable · refresh to retry" elseif available then "AVAILABLE · SELECT" else "CLAIMED · " .. (entry.ownerName or "Another commander")
+			row.label.Text = if current then "CURRENT CIVILIZATION" elseif not ready then "Waiting for saved progress…" elseif busy then "Please wait…" elseif not entry then "Unavailable · refresh to retry" elseif available then "AVAILABLE · SELECT" else "CLAIMED · " .. (entry.ownerName or "Another commander")
 		end
-		refresh.Active = not busy and requestRemote ~= nil
+		local failed = status == "failed" or status == "locked" or status == "lost" or status == "closed"
+		refresh.Text = if status=="lost" then "Rejoin to reload progress" elseif failed and not claimed then "Retry loading progress" else "Refresh available civilizations"
+		if status~=lastStatus then
+			lastStatus=status
+			if status == "loading" or status == "not_loaded" then feedback.Text = "Loading your saved civilizations…"
+			elseif status=="lost" then feedback.Text="Your progress session ended. Rejoin to reload it safely."
+			elseif failed then feedback.Text = if player:GetAttribute("ProgressError") == "session_busy" then "Your progress is still open in another server. Wait a moment and retry." else "Your progress could not be loaded safely. Retry before choosing a civilization." end
+		end
+		refresh.Active = not busy and requestRemote ~= nil and status ~= "loading"
+		if status=="lost" then refresh.Active=false end
 		refresh.Selectable = refresh.Active
 		refresh.AutoButtonColor = refresh.Active
 	end
@@ -170,12 +208,15 @@ function CivilizationUI.start()
 		if type(state) == "table" and type(state.revision) == "number" and state.revision >= revision then
 			revision = state.revision
 			availability = state.availability
+			if state.profile then profile = state.profile end
 		end
 	end
 
 	local errors = {
 		unavailable = "Another commander claimed that civilization. Choose another or wait for it to open.",
-		already_claimed = "Your civilization is already claimed for this session.",
+		already_claimed = "Use Change civ to switch civilizations.",
+		profile_unavailable = "Your saved progress is not ready. Wait or retry loading.",
+		load_wait = "Please wait a few seconds before retrying saved progress.",
 		full = "All settlement plots are occupied. Try another server.",
 		invalid = "That selection was not accepted. Refresh and try again.",
 		rate_limited = "Please wait a moment, then try again.",
@@ -185,7 +226,7 @@ function CivilizationUI.start()
 		busy = true
 		requestNumber += 1
 		local ticket = requestNumber
-		feedback.Text = if action == "select" then "Claiming your settlement…" else "Refreshing available civilizations…"
+		feedback.Text = if action == "switch" then "Restoring your civilization…" elseif action == "select" then "Claiming your settlement…" elseif action == "retry" then "Retrying saved progress…" else "Refreshing available civilizations…"
 		render()
 		task.delay(8, function()
 			if requestNumber == ticket and busy then
@@ -207,6 +248,7 @@ function CivilizationUI.start()
 				content.CanvasPosition = Vector2.zero
 			else
 				acceptState(result.state)
+				if result.ok and (action == "select" or action == "switch") then choosing = false end
 				feedback.Text = if result.ok then "Choose an available civilization to claim your settlement." else errors[result.reason] or "Selection failed. Refresh and try again."
 				if not result.ok then content.CanvasPosition = Vector2.zero end
 			end
@@ -220,9 +262,16 @@ function CivilizationUI.start()
 	end
 
 	for id, row in buttons do
-		row.button.Activated:Connect(function() send("select", id) end)
+		row.button.Activated:Connect(function() send(if player:GetAttribute("CivilizationId") then "switch" else "select", id) end)
 	end
-	refresh.Activated:Connect(function() send("snapshot", nil) end)
+	refresh.Activated:Connect(function()
+		local status=player:GetAttribute("ProgressStatus")
+		send(if (status=="failed" or status=="locked" or status=="closed") and not player:GetAttribute("CivilizationId") then "retry" else "snapshot",nil)
+	end)
+	switchButton.Activated:Connect(function() choosing=true;content.CanvasPosition=Vector2.zero;render();send("snapshot",nil) end)
+	cancel.Activated:Connect(function() choosing=false;render() end)
+	player:GetAttributeChangedSignal("ProgressStatus"):Connect(render)
+	player:GetAttributeChangedSignal("ProgressError"):Connect(render)
 	player:GetAttributeChangedSignal("CivilizationId"):Connect(render)
 	player:GetAttributeChangedSignal("PlotId"):Connect(render)
 	render()

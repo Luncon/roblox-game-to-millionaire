@@ -35,7 +35,7 @@ function EconomyUI.start(screen: ScreenGui)
 	local notice = label(hud, "SessionNotice", 10)
 	local army = label(hud, "ArmyStatus", 10)
 	army.TextColor3 = GOLD
-	notice.Text = "SESSION ONLY · Coins and upgrades are not saved."
+	notice.Text = "Loading saved progress…"
 	notice.TextColor3 = Color3.fromRGB(183, 194, 193)
 	instruction.Text = "Click gold for +1 coin · Step on an upgrade pad."
 	local state = { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1, revision = -1 }
@@ -68,6 +68,16 @@ function EconomyUI.start(screen: ScreenGui)
 	end
 	local function render()
 		renderArmy()
+		local status=player:GetAttribute("ProgressStatus")
+		local reason=player:GetAttribute("ProgressError")
+		local saved=player:GetAttribute("ProgressSavedAt")
+		notice.Text = if status=="saving" then "Saving your civilization progress…"
+			elseif status=="ready" and reason=="save_failed" then "Save delayed · retrying automatically"
+			elseif status=="ready" then (if typeof(saved)=="number" then "Progress loaded · autosaving enabled" else "Progress autosaves for each civilization")
+			elseif status=="loading" then "Loading saved progress…"
+			elseif status=="releasing" then "Saving progress before leaving…"
+			elseif status=="lost" then "Progress session ended · rejoin to reload safely"
+			else "Saving unavailable · progress changes are paused"
 		coins.Text = string.format("%d coins", state.coins)
 		if compact then
 			local function short(kind: string, level: number): string
@@ -94,6 +104,12 @@ function EconomyUI.start(screen: ScreenGui)
 			object.TextSize = size
 		end
 		place(title, if compact then 4 else 6, if compact then 18 else 22, if compact then 14 else 16)
+		title.Size = UDim2.new(1,-124,0,if compact then 18 else 22)
+		local change = hud:FindFirstChild("SwitchCivilization")
+		if change and change:IsA("GuiButton") then
+			change.Position = UDim2.new(1,-100,0,if compact then 4 else 6)
+			change.Size = UDim2.fromOffset(88,if compact then 18 else 22)
+		end
 		title.TextScaled = true
 		title.TextWrapped = false
 		place(coins, if compact then 22 else 30, if compact then 20 else 26, if compact then 18 else 22)
@@ -118,7 +134,7 @@ function EconomyUI.start(screen: ScreenGui)
 			revision = player:GetAttribute("EconomyRevision") })
 		render()
 	end
-	for _, attribute in { "Coins", "SettlementLevel", "WeaponLevel", "ArmorLevel", "BarracksUpgradeLevel", "EconomyRevision" } do
+	for _, attribute in { "Coins", "SettlementLevel", "WeaponLevel", "ArmorLevel", "BarracksUpgradeLevel", "EconomyRevision", "ProgressStatus", "ProgressError", "ProgressSavedAt" } do
 		player:GetAttributeChangedSignal(attribute):Connect(syncAttributes)
 	end
 	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt" } do
@@ -132,6 +148,7 @@ function EconomyUI.start(screen: ScreenGui)
 	syncAttributes()
 	local errors = {
 		settlement_locked = "Expand your settlement to unlock this tier.",
+		profile_unavailable = "Saved progress is unavailable. Changes are paused.",
 		prerequisite = "Buy the preceding tier first.",
 		insufficient_funds = "Click the gold pad to afford this upgrade.",
 		stale_level = "Upgrade changed. Check the price on the pad.",
@@ -153,6 +170,7 @@ function EconomyUI.start(screen: ScreenGui)
 			acceptState(result.state)
 			if result.ok then
 				feedback.Text = if result.action == "upgrade" then "Settlement expanded!"
+					elseif result.action == "switch" then "Civilization progress restored!"
 					elseif result.action == "weapon" then "Civilization weapon upgraded!"
 					elseif result.action == "armor" then "Civilization armor upgraded!"
 					elseif result.action == "barracks" then "Barracks upgraded!"

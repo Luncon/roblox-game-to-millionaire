@@ -24,9 +24,11 @@ project.tree.ServerStorage = {
   Tests: { $path: '../tests/specs' },
   RuntimeTests: { $path: '../tests/runtime' },
 };
+project.tree.ServerScriptService.Game.Bootstrap = { $path: '../tests/TestBootstrap.server.luau' };
 project.tree.ServerScriptService.MultiplayerTests = { $path: '../tests/multiplayer/Server.server.luau' };
 project.tree.ServerScriptService.ArmyMultiplayerTests = { $path: '../tests/multiplayer/Army.server.luau' };
 project.tree.ServerScriptService.ProgressionTests = { $path: '../tests/multiplayer/Progression.server.luau' };
+project.tree.ServerScriptService.PersistenceTests = { $path: '../tests/multiplayer/Persistence.server.luau' };
 project.tree.ServerScriptService.FullServerTests = { $path: '../tests/multiplayer/FullServer.server.luau' };
 project.tree.StarterPlayer.StarterPlayerScripts.MultiplayerTests = { $path: '../tests/multiplayer/Client.client.luau' };
 fs.mkdirSync(outputDirectory, { recursive: true });

@@ -59,10 +59,16 @@ lamellar armor. Player gear and eight civilization NPCs use stylized generated m
 civilizations use the [user-provided models](../assets/README.md), preserving
 clothing and headwear. No Marketplace scripts are imported.
 
-## Session and server rules
+## Saved progress and server rules
 
-Coins and all upgrade tracks survive character resets and are isolated per
-player. Leaving the server resets them. **Saving per civilization remains planned.** No saved profiles are read or overwritten.
+Coins and all upgrade tracks save separately for each player and civilization.
+They survive character resets, civilization switches and later joins when storage
+is available. **Change civ** reopens the selector and keeps your plot when you
+choose a free civilization. Your old civilization retains its progress, while an
+unstarted one begins at zero coins and level one. Saved progress loads before
+selection; failed loads block play without replacing the record. See
+[saved profiles](PROFILES.md) for autosaves, final saves, failure feedback and
+Studio development isolation.
 
 The server checks the actual player's claim, living character, and distance to
 the fixed pad. There is no client earning/purchase remote. Earning allows a
@@ -72,6 +78,10 @@ response or rendering. Purchases check funds, tier, and a per-track cooldown
 before a non-yielding deduction. The contact latch prevents repeated purchases
 from multiple body parts or standing on a pad. These limits do not prove input
 came from a human and do not detect all autoclickers.
+
+A profile that is loading, closing, lost or expired cannot earn coins, buy
+upgrades or receive kill rewards. Temporary save failures retry while the known
+lease is valid. A lost session requires rejoining to reload safely.
 
 A final validated hostile kill awards 10 coins to its attacking civilization,
 including kills by either troop class or the player. Earlier attackers receive no

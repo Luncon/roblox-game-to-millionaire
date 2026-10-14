@@ -4,8 +4,9 @@ Connect Rojo to Studio and press Play. The map is generated at runtime inside
 `Workspace.CivilizationPrototype`; it disappears when Play stops. Existing
 Workspace objects are preserved. Large existing objects may cover the prototype.
 
-1. Choose any of the 13 civilizations. Your character moves to a numbered settlement,
-   its main building shows your civilization and display name, and a HUD shows your plot.
+1. Wait for your saved profiles to load, then choose an available civilization.
+   Your character moves to a numbered settlement. Its themed main building shows
+   your civilization and display name; the HUD shows your plot and restored progress.
 2. Reset your character. You should return to the same plot with the same HUD.
 3. Start a Studio server with two clients. Have both choose Sparta: only one
    should succeed; the other can choose Britain on a different plot.
@@ -16,25 +17,42 @@ Workspace objects are preserved. Large existing objects may cover the prototype.
    the settlement level.
 6. Walk onto an affordable upgrade pad, stay on it, then exit and re-enter.
    Standing should not buy multiple upgrades.
-7. Reset after upgrading. Coins, all levels, armor, and the equipped weapon
-   should be restored for this session.
-8. Try a phone viewport and a controller. The selector scrolls and the HUD only
-   displays progress. Ground prompts support alternate input.
+7. Reset after upgrading. Coins, all four upgrade levels, armor, the equipped
+   weapon and living troop identities should remain intact.
+8. Try a phone viewport and a controller. The selector scrolls; the HUD displays
+   progress and provides a Change civ control. Currency and purchases still use
+   ground buttons and their prompts.
 9. Upgrade the settlement to stage 2. A barracks appears and deploys one melee
    warrior automatically. Watch it walk to the central arena.
 10. Buy separate weapon and armor upgrades. Your living warrior should receive
     the matching civilization gear, damage tier, and armor health in place.
 11. With a second civilization active, bring the warriors into the arena. They
     should fight each other and hostile players. Owners and anyone outside the
-    arena are protected. After death, watch the HUD count down 15 seconds before
-    one replacement appears. A gear purchase during the wait should preserve it.
+    arena are protected. Barracks I replaces a dead warrior after 15 seconds.
+    A gear purchase during the wait should preserve its existing deadline.
+12. Expand the main building and settlement through stage IV. Matching barracks
+    upgrades reduce future replacement delays to 14.5, 14 and 13.5 seconds.
+    Barracks IV deploys one melee warrior and one ranged troop with independent
+    death and replacement timers. Owner gear upgrades apply to both.
+13. Use Change civ to view your saved progress and select another free civilization.
+    The same plot should rebuild with that civilization's separate coins and levels.
+    Selecting an occupied civilization must preserve your current settlement.
+    Switch back to verify the earlier progress returns.
+14. Leave and rejoin with the same account, then select the earlier civilization
+    when available. Its saved settlement, gear and troop capacity should return;
+    troop identities, current health and pending timers are rebuilt for the session.
+    Failed loads must block selection and progression rather than start fresh.
 
-This is a session-only prototype with 13 choices and eight plots. The map does
-not itself configure Roblox's server player limit. Selection happens inside the
-game server. Saved civilization profiles, a separate lobby, server routing,
-formations and abilities are future changes. Equipped player weapons attack in melee. NPC attacks
-use the owner's weapon damage and armor tiers. See [prices and equipment](ECONOMY.md)
-and [barracks and warriors](ARMY.md).
+The prototype has 13 choices, eight plots and independent saved civilization
+profiles. The generated map does not configure Roblox's server player limit;
+selection and switching happen inside the current server. A separate lobby,
+server routing, formations and abilities remain future changes. Progress autosaves
+and receives a final save attempt on departure or shutdown. Studio uses the
+separate StudioDevelopment storage scope; live servers use Live. Real-storage
+Studio checks require API access; the automated test place uses an injected fake
+store. Equipped player weapons attack in melee. NPC attacks use the owner's
+weapon damage and armor tiers. See [prices and equipment](ECONOMY.md) and
+[barracks and warriors](ARMY.md).
 
 ## Repeatable engine tests
 
@@ -55,11 +73,15 @@ $rojo = 'C:\Users\smitl\Downloads\rojo-7.7.1-windows-x86_64\rojo.exe'
 
 The normal place excludes test scripts. The generated test place includes test
 modules and multiplayer helpers; multiplayer helpers stay idle unless a test
-explicitly requests the `civilization-claims`, `warrior-combat`, `army-progression`, or
-`civilization-full-server` suite. Never publish the test place.
+explicitly requests the `civilization-claims`, `warrior-combat`, `army-progression`,
+`civilization-profiles`, or `civilization-full-server` suite. Its bootstrap injects
+an in-memory profile store; normal regression runs cannot touch production profiles.
+Never publish the test place.
 
-Run the following in Studio's Assistant MCP `execute_luau` tool in the test
-place's **Edit** DataModel (or through Studio's documented RunScript CLI):
+Use a freshly synced test place for module checks so cached modules cannot hide
+source changes. Run module checks in a fresh Server Play context or through
+Studio's RunScript CLI. Launch multiplayer runners from the **Edit** DataModel
+after stopping Play:
 
 ```lua
 -- Module tests
@@ -79,7 +101,13 @@ place's **Edit** DataModel (or through Studio's documented RunScript CLI):
 -- Verifies final-hit rewards, player melee, projectiles, real respawn timing,
 -- and all five imported models physically walking into the arena.
 
--- Eight-player run
+-- Persistence and switching (two clients per independent server)
+-- Execute tests/RunPersistenceMultiplayer.luau.
+-- Expected: PERSISTENCE_TEST_RESULT: PASS (20 cases).
+-- Covers native pads, independent profiles, periodic/final saves, a fresh
+-- Studio server with the flushed fake snapshot, failed loads and retry bounds.
+
+-- Eight-player run (deferred; canceled in the current scope)
 -- Execute tests/RunFullServer.luau (or use staged=true with two initial clients).
 -- The full-server suite still waits for eight real clients before gameplay checks.
 ```
@@ -90,6 +118,13 @@ then adds a new client to reclaim the released civilization. The expanded suite
 also runs controller boundary checks and actual virtual input for earning,
 walk-on purchase/exit/reentry, weapon clicks, and armor prompts. Client startup has
 a 45-second allowance; failed gameplay assertions remain failures.
+
+The persistence runner starts three separate two-client servers: initial progress
+and switching, restoration for matching Studio test UserIds, then locked/invalid
+load isolation. A short settling gap separates server teardown and startup. This
+runner verifies the injected store and session reconstruction; use the normal
+production bootstrap in StudioDevelopment for a separate real-storage restart
+check. Published Live-scope restoration requires its own Roblox client check.
 
 For the command line, use your installed `RobloxStudioBeta.exe` path:
 
@@ -261,3 +296,67 @@ physical mobile/controller input, and a full eight-player load remain unverified
 - Follow-up: inspect the level-IV two-slot HUD and countdown layouts on device
   viewports. Server timing and slot behavior passed; those specific client layouts
   have not been visually verified.
+
+## Civilization profiles and switching — October 14, 2026
+
+- **128 module cases passed across 21 suites** in a fresh Studio Server context.
+  The 19 profile-service cases include missing versus failed/invalid loads,
+  independent civilization fields, session contention and expiry, stale-writer
+  fencing during and after replacement ownership, ordered concurrent saves,
+  changes arriving during a save, uncertain backend outcomes, bounded retries,
+  departure during load, periodic saves and finalization. Schema, imported
+  economy state, mutation freezes, retained switch rate limits and atomic claims
+  are also covered.
+- **20 persistence runtime cases passed using two real Studio clients.** The
+  initial 14 cases checked private saved previews, an established level-IV
+  settlement and gear, two troop slots, occupied-switch protection, independent
+  progress after 55 actual coin clicks and ground purchases, character reset,
+  a real-time periodic save and final flush. Four cases in a fresh Studio server
+  restored the flushed snapshot for matching test UserIds. Two failure cases
+  checked locked/unsupported profiles, no default writes, bounded retry traffic
+  and recovery after an eligible retry.
+- These automated persistence runs use the injected in-memory store and the
+  test-only bootstrap. Carrying its snapshot into another Studio server verifies
+  session reconstruction; it does **not** demonstrate published DataStore
+  restoration or a public-client rejoin.
+- Native GUI input opened the civilization switcher, scrolled to and selected
+  Ming with level-II progress and 23 coins, and selected an unstarted Sparta
+  profile at level I with zero coins. This exercises the actual selector controls
+  rather than firing GUI signals. The final inspection also switched natively
+  from Ming II/23 coins to the established Sparta IV/417 coins while retaining
+  Plot 01. Native Cancel hid the selector and restored the HUD.
+- Actual HUD bounds checks passed at desktop **1180 × 504.8**, compact landscape
+  **634.4 × 320.8**, and tall **634.4 × 683.2** client viewports. All three MAX
+  fields fit their labels, rows did not overlap, and Change civ was the only HUD
+  button. Screenshots from all three viewports were viewed; the tall view showed
+  restored Sparta IV, 417 coins and 2/2 troops.
+- **Independent countdown layout checks passed on desktop and compact landscape.**
+  After staggered troop deaths, the actual HUD helper observed warrior 6s/ranged
+  9s against separate deadlines 3.016 seconds apart. Viewed desktop and compact
+  screenshots later showed warrior 4s/ranged 7s. These observations complete the
+  earlier level-IV HUD/countdown follow-up. The final inspection fixture passed
+  separately; its checks are not added to the 20 persistence cases above.
+- **Real DataStore restoration passed in StudioDevelopment** using the normal
+  production bootstrap and `CivilizationProfilesV1`. Native GUI input selected
+  Sparta; 25 actual coin activations bought settlement II, followed by 12 more
+  coins. Stopping Play performed the final flush. A fresh Play session read back
+  12 coins, settlement II and weapon/armor/barracks I. Native selection restored
+  those values, Spartan tier-I equipment and one automatically deployed warrior
+  using the custom template.
+- The real-store run's physical-input helper timed out on activation 38 after a
+  missed coin activation. Its full 55-click flow is **not** counted as passing.
+  The successful 37 activations, settlement purchase, final flush and fresh-session
+  restoration above are the narrower observed result. The complete 55-click
+  flow passed separately against the injected fake store. This real storage check
+  uses the isolated StudioDevelopment scope; published Live-scope restoration and
+  a public Roblox client rejoin remain unverified.
+
+- **43 multiplayer/native-input regression cases passed again with profiles
+  enabled:** claims, respawn/reclaim, isolated accounts, controller authorization,
+  actual coin clicks and ground purchases, entry latches, gear input and native
+  melee rewards. This run used the isolated fake-store bootstrap.
+
+Physical mobile/controller input, published Live-scope restoration and a public
+Roblox client rejoin remain unverified. Earlier verification records above
+describe the builds tested at those times; their session-only limitations do not
+describe the new profile implementation.

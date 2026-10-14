@@ -57,7 +57,11 @@ friendly units, unclaimed players and characters outside the arena are protected
 Character resets and settlement rebuilding preserve the army and its pending
 countdowns. Leaving removes both classes, corpses and in-flight shots, and cancels
 replacements. Corpses last three seconds. The server controls damage, rewards,
-NPC physics and timers. Progress remains session-only. Saving, formations,
+NPC physics and timers. Settlement, weapon, armor and barracks levels save for
+each civilization. Returning to a saved civilization rebuilds its army from those
+levels; troop health, locations and pending countdowns are not persisted.
+Switching removes the old civilization's units and deploys the selected
+civilization's eligible troops. See [saved profiles](PROFILES.md). Formations,
 additional troop slots, recruitment choices and ranged player attacks are planned.
 
 ## Custom melee models
