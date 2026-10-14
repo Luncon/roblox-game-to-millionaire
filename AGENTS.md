@@ -26,7 +26,18 @@ for the Windows/WSL workflow.
 - Keep dependency installation scripts disabled. Review the known OpenSpec
   dependency finding in `docs/DEPENDENCY_REVIEW.md` before tool upgrades.
 
-The current prototype implements session-only Sparta/Britain selection,
-exclusive claims, eight generated plots, placeholder settlements, and respawns.
-See `docs/PLAYTEST.md` for runtime tests. Persistence, matchmaking, armies,
-upgrades, formations, and combat remain planned.
+The current prototype offers 13 civilizations, exclusive claims, eight generated
+plots, themed settlements/equipment, and physical tycoon pads for single-coin
+earning and separate settlement/weapon/armor upgrades. The HUD displays progress;
+there is no client earning/purchase remote. Progress survives character resets
+but remains session-only by the user's explicit choice. See `docs/ECONOMY.md`
+and `docs/PLAYTEST.md`. Stage-two settlements unlock a one-slot automatic melee
+barracks; three stage-gated purchases reduce future respawn waits by 0.5s each
+and level IV adds one ranged slot. Owner gear applies to both classes. Player
+melee and server-validated final hits award 10 coins, with shared damage/reward
+authority. Weapon, armor and barracks levels are capped at settlement level;
+new tier pads appear at stages 2/3/4. Five user-provided R6 melee templates live
+in `assets/npc-templates`, mapped into ServerStorage by Rojo. Clone/sanitize
+templates without mutating originals. Claimed-plot identity is incorporated
+into each civilization's main hall facade. See `docs/ARMY.md`.
+Persistence, matchmaking, formations, abilities and ranged player attacks remain planned.

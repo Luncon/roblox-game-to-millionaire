@@ -2,13 +2,17 @@
 
 A Roblox game in which eight players build civilization-themed settlements
 around a shared battlefield, fight alongside NPC armies, and command formations.
-Progress is saved separately for each player's civilizations.
+Planned saving will preserve separate progress for each player's civilizations.
 
-The first playable prototype includes eight circular settlement plots, a
-Sparta/Britain selector, exclusive server-owned claims, placeholder settlements,
-and respawning at your claimed plot. Claims last for the current server session.
-Progress saving, other civilizations, matchmaking, armies, upgrades, formations,
-and combat are planned.
+The playable prototype includes eight circular settlement plots, 13 civilization
+choices, exclusive claims, themed settlements and equipped gear, and respawning
+at your claimed plot. Physical tycoon pads earn one coin per activation and buy
+separate settlement, weapon, and armor upgrades. Progress lasts for the current
+session. Settlement stage 2 unlocks a barracks with one automatic melee warrior,
+which inherits weapon/armor upgrades. Barracks upgrades shorten replacement
+waits by 0.5 seconds each; level IV adds a ranged troop. Player melee attacks
+and troop kills award 10 coins for the final hit. Settlement growth unlocks new
+physical upgrade pads. Saving, matchmaking, formations and abilities remain planned.
 
 Start with [Start here](START_HERE.md), the [setup guide](docs/SETUP.md),
 the [prototype playtest guide](docs/PLAYTEST.md), and the [game vision](docs/GAME_VISION.md).
@@ -37,9 +41,17 @@ Node runs tools; Roblox Studio runs the Luau game.
 - `.agents/skills/`: generated OpenSpec workflows for Codex.
 
 The current gameplay change and verification checklist are in
-[civilization-selection-prototype](openspec/changes/civilization-selection-prototype/tasks.md).
+[civilization-clicker-upgrades](openspec/changes/civilization-clicker-upgrades/tasks.md).
+See [economy and gear tuning](docs/ECONOMY.md) for prices and prototype limits.
+The [army guide](docs/ARMY.md) explains barracks, inherited gear, and arena combat;
+[barracks-warriors](openspec/changes/barracks-warriors/tasks.md) tracks that initial change. Current progression work is in
+[army-progression-and-rewards](openspec/changes/army-progression-and-rewards/tasks.md).
 Use `$openspec-propose` to plan the next small gameplay change. The six generated
 skills may require restarting the coding client to be discovered.
 
 See [Dependency review](docs/DEPENDENCY_REVIEW.md) for the current upstream
 audit finding. `npm run check` validates specs; it does not run gameplay tests.
+
+Weapon, armor, and barracks tiers are capped by your settlement level. Upgrade
+the settlement to reveal higher-tier floor buttons. Civilization and owner names
+are incorporated into each main building’s themed facade.

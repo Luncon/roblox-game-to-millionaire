@@ -63,3 +63,26 @@ Historical references: [Ganondagan](https://www.ganondagan.org/bark-longhouse),
 
 This order is a proposed implementation sequence, not completed work. Matchmaking
 must still be implemented before the intended public joining flow is available.
+
+On October 14, the user chose to test the clicker/upgrade loop before adding
+saving. The prototype now covers the full roster, physical tycoon pads, and
+separate settlement/weapon/armor progression with equipped themed gear.
+The user then prioritized the first automatic melee warrior: settlement stage 2
+unlocks a barracks with one troop, replaced 15 seconds after death. Owner weapon
+and armor upgrades apply to current and replacement troops. See [army details](ARMY.md).
+Per-civilization persistence remains planned; see [economy details](ECONOMY.md)
+for current session-only limits.
+
+The next requested milestone softens gear scaling, grants 10 coins to the final-hit
+civilization, adds player melee and settlement-unlocked floor pads, and expands
+barracks through three faster-respawn upgrades to one melee plus one ranged troop.
+See [army details](ARMY.md) and the active OpenSpec implementation checklist.
+
+### Settlement cap and building identity
+
+Every upgrade track is capped by the settlement level: a level-two settlement
+supports weapon, armor and barracks upgrades only through level two. Higher
+settlement stages reveal the matching floor pads. Civilization and owner names
+belong on themed main-building facades, rather than a freestanding board that
+blocks the settlement. Five user-provided character models supply the Spartan,
+British, Japanese, Seneca and Mauryan melee troop visuals.
