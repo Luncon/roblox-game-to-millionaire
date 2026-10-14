@@ -12,3 +12,21 @@ profile.svg
 
 # Time trace
 trace.json
+
+# Local development tooling
+node_modules/
+.cache/
+.env
+.env.*
+!.env.example
+
+# Obsidian keeps shared settings, but not personal workspace state
+.obsidian/workspace*.json
+.obsidian/cache/
+.obsidian/plugins/
+.trash/
+
+# Generated Roblox builds and local Studio recovery files
+build/
+*.rbxl.lock
+*.rbxlx.lock

@@ -1,0 +1,23 @@
+schema: spec-driven
+
+context: |
+  Build a Roblox civilization game in Luau for a first-time game developer.
+  Read docs/GAME_VISION.md for the agreed game direction and current unknowns.
+  Eight protected settlement plots surround a shared battlefield.
+  Players fight alongside NPC armies and command formations.
+  Each server allows one active player per civilization, up to eight players.
+  Players choose a civilization before civilization-aware server routing.
+  Save progress independently for each player and civilization.
+  Node.js is development tooling; Roblox Studio executes gameplay.
+  Development uses WSL tooling and Windows Studio/Rojo/Obsidian.
+
+rules:
+  proposal:
+    - State the player-visible outcome and what is outside this change's scope.
+    - Distinguish confirmed requirements from proposed design choices.
+  design:
+    - Identify server authority and save-data consequences where applicable.
+    - Explain any Studio-only or published-client verification needed.
+  tasks:
+    - Keep implementation slices small enough to verify independently.
+    - Include evidence of the relevant player behavior, not just a successful build.
