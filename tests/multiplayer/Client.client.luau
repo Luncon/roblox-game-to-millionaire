@@ -16,6 +16,21 @@ commands.OnClientEvent:Connect(function(command)
 		return
 	end
 	local ok, result = pcall(function()
+		if command.action == "meleeInput" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests", 10):WaitForChild("MeleeInput", 10))(command.options)
+		end
+		if command.action == "physicalInput" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests", 10):WaitForChild("PhysicalInput", 10))(command.options)
+		end
+		if command.action == "inspectHUD" then
+			local hud = player.PlayerGui:WaitForChild("CivilizationSelection", 10):WaitForChild("SettlementHUD", 10)
+			local hasButtons = false
+			for _, item in hud:GetDescendants() do
+				if item:IsA("GuiButton") then hasButtons = true end
+			end
+			return {visible=hud.Visible, hasButtons=hasButtons,
+				coins=hud:WaitForChild("Coins", 10).Text, progression=hud:WaitForChild("Progression", 10).Text}
+		end
 		local first = request:InvokeServer("select", command.civilization)
 		if command.action == "rapid" then
 			local second = request:InvokeServer("select", command.civilization)

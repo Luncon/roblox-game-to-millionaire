@@ -17,11 +17,17 @@ function relocatePaths(instance) {
 
 relocatePaths(project.tree);
 project.name += 'Tests';
+project.tree.ReplicatedStorage.ClientTests = { $path: '../tests/client-runtime' };
 project.tree.ServerStorage = {
+  ...project.tree.ServerStorage,
   $className: 'ServerStorage',
   Tests: { $path: '../tests/specs' },
+  RuntimeTests: { $path: '../tests/runtime' },
 };
 project.tree.ServerScriptService.MultiplayerTests = { $path: '../tests/multiplayer/Server.server.luau' };
+project.tree.ServerScriptService.ArmyMultiplayerTests = { $path: '../tests/multiplayer/Army.server.luau' };
+project.tree.ServerScriptService.ProgressionTests = { $path: '../tests/multiplayer/Progression.server.luau' };
+project.tree.ServerScriptService.FullServerTests = { $path: '../tests/multiplayer/FullServer.server.luau' };
 project.tree.StarterPlayer.StarterPlayerScripts.MultiplayerTests = { $path: '../tests/multiplayer/Client.client.luau' };
 fs.mkdirSync(outputDirectory, { recursive: true });
 fs.mkdirSync(path.join(root, 'build'), { recursive: true });
