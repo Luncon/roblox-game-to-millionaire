@@ -45,7 +45,7 @@ function CivilizationUI.start()
 	panel.BorderSizePixel = 0
 	panel.Parent = screen
 	local limit = Instance.new("UISizeConstraint")
-	limit.MaxSize = Vector2.new(440, 510)
+	limit.MaxSize = Vector2.new(480, 680)
 	limit.Parent = panel
 	local outline = Instance.new("UIStroke")
 	outline.Color = Color3.fromRGB(105, 119, 117)
@@ -56,21 +56,38 @@ function CivilizationUI.start()
 	local content = Instance.new("ScrollingFrame")
 	content.Name = "Content"
 	content.Size = UDim2.fromScale(1, 1)
-	content.CanvasSize = UDim2.fromOffset(0, 500)
+	content.CanvasSize = UDim2.fromOffset(0, 0)
+	content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	content.ScrollBarThickness = 4
 	content.BackgroundTransparency = 1
 	content.BorderSizePixel = 0
 	content.Parent = panel
-	local title = textLabel(content, "Title", "Choose your civilization", 14, 58, 24)
+	local layout = Instance.new("UIListLayout")
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Padding = UDim.new(0, 8)
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	layout.Parent = content
+	local padding = Instance.new("UIPadding")
+	padding.PaddingTop = UDim.new(0, 12)
+	-- Extra scroll space lets the last choice move above mobile movement controls.
+	padding.PaddingBottom = UDim.new(0, 112)
+	padding.Parent = content
+	local title = textLabel(content, "Title", "Choose your civilization", 0, 58, 24)
+	title.LayoutOrder = 0
 	title.Font = Enum.Font.GothamBold
-	textLabel(content, "Introduction", "Your settlement awaits. Claim a civilization and enter the battlefield.", 76, 42, 14).TextColor3 = MUTED
-	local feedback = textLabel(content, "Feedback", "Connecting to the server…", 316, 50, 14)
+	local introduction = textLabel(content, "Introduction", "13 civilizations · 8 settlement plots\nChoose your civilization, then build your settlement.", 0, 42, 14)
+	introduction.LayoutOrder = 1
+	introduction.TextColor3 = MUTED
+	local feedback = textLabel(content, "Feedback", "Connecting to the server…", 0, 58, 14)
+	feedback.LayoutOrder = 2
 	feedback.TextColor3 = GOLD
-	textLabel(content, "PrototypeNotice", "TWO-CIVILIZATION PROTOTYPE\nSession only · Progress is not saved yet", 432, 50, 12).TextColor3 = MUTED
+	local notice = textLabel(content, "PrototypeNotice", "Session only · Progress is not saved yet", 0, 22, 11)
+	notice.LayoutOrder = 100
+	notice.TextColor3 = MUTED
 
 	local refresh = Instance.new("TextButton")
 	refresh.Name = "Refresh"
-	refresh.Position = UDim2.new(0, 16, 0, 378)
+	refresh.LayoutOrder = 3
 	refresh.Size = UDim2.new(1, -32, 0, 40)
 	refresh.BackgroundColor3 = Color3.fromRGB(54, 66, 68)
 	refresh.BorderSizePixel = 0
@@ -93,14 +110,14 @@ function CivilizationUI.start()
 	hudLimit.Parent = hud
 	local ownedTitle = textLabel(hud, "Civilization", "", 8, 32, 20)
 	ownedTitle.Font = Enum.Font.GothamBold
-	textLabel(hud, "Instruction", "Settlement claimed. Explore the battlefield.\nSession-only prototype", 44, 44, 12).TextColor3 = MUTED
+	textLabel(hud, "Instruction", "Build your civilization.\nCoins and upgrades last this session.", 44, 44, 12).TextColor3 = MUTED
 
 	local buttons = {}
 	for index, civilization in Civilizations do
 		local button = Instance.new("TextButton")
 		button.Name = civilization.id
-		button.Position = UDim2.new(0, 16, 0, 128 + (index - 1) * 92)
-		button.Size = UDim2.new(1, -32, 0, 84)
+		button.LayoutOrder = index + 3
+		button.Size = UDim2.new(1, -32, 0, 100)
 		button.BackgroundColor3 = Color3.fromRGB(48, 59, 62)
 		button.BorderSizePixel = 0
 		button.Text = ""
@@ -109,9 +126,9 @@ function CivilizationUI.start()
 		accent.Color = civilization.color
 		accent.Thickness = 2
 		accent.Parent = button
-		textLabel(button, "CivilizationName", civilization.name, 6, 26, 20).Font = Enum.Font.GothamBold
-		textLabel(button, "Period", civilization.period, 32, 22, 12).TextColor3 = MUTED
-		local availability = textLabel(button, "Availability", "Loading…", 56, 22, 12)
+		textLabel(button, "CivilizationName", civilization.name, 6, 26, 18).Font = Enum.Font.GothamBold
+		textLabel(button, "Period", civilization.period, 34, 30, 12).TextColor3 = MUTED
+		local availability = textLabel(button, "Availability", "Loading…", 70, 24, 12)
 		availability.TextColor3 = GOLD
 		buttons[civilization.id] = { button = button, label = availability }
 	end
@@ -175,6 +192,7 @@ function CivilizationUI.start()
 				requestNumber += 1
 				busy = false
 				feedback.Text = "The server took too long. Refresh to check your selection."
+				content.CanvasPosition = Vector2.zero
 				render()
 			end
 		end)
@@ -186,9 +204,11 @@ function CivilizationUI.start()
 			busy = false
 			if not ok or type(result) ~= "table" then
 				feedback.Text = "Could not reach the server. Refresh and try again."
+				content.CanvasPosition = Vector2.zero
 			else
 				acceptState(result.state)
 				feedback.Text = if result.ok then "Choose an available civilization to claim your settlement." else errors[result.reason] or "Selection failed. Refresh and try again."
+				if not result.ok then content.CanvasPosition = Vector2.zero end
 			end
 			render()
 			if UserInputService:GetLastInputType() == Enum.UserInputType.Gamepad1 and panel.Visible then
@@ -206,6 +226,7 @@ function CivilizationUI.start()
 	player:GetAttributeChangedSignal("CivilizationId"):Connect(render)
 	player:GetAttributeChangedSignal("PlotId"):Connect(render)
 	render()
+	require(script.Parent:WaitForChild("EconomyUI")).start(screen)
 	task.spawn(function()
 		local remotes = ReplicatedStorage:WaitForChild("CivilizationRemotes", 15)
 		if not remotes then

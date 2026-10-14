@@ -1,6 +1,10 @@
 --!strict
 
 local BattlefieldMap = {}
+local SettlementBuilder = require(script.Parent.SettlementBuilder)
+local Progression = require(game:GetService("ReplicatedStorage").Shared.SettlementProgression)
+local PadCatalog = require(game:GetService("ReplicatedStorage").Shared.PadCatalog)
+local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local PLOT_COUNT = 8
 local PLOT_RADIUS = 160
 local NEUTRAL = Color3.fromRGB(103, 119, 104)
@@ -42,6 +46,45 @@ local function sign(parent: Instance, name: string, frame: CFrame, size: Vector3
 	return board
 end
 
+local function unclaimedMarker(plot: Instance, frame: CFrame, plotId: number)
+	local marker = sign(plot, "Sign", frame*CFrame.new(0,1.4,-28), Vector3.new(10,.4,3), string.format("PLOT %02d\nUNCLAIMED",plotId))
+	marker.CanCollide, marker.CanTouch, marker.CanQuery = false, false, false
+	local surface = marker:FindFirstChildOfClass("SurfaceGui") :: SurfaceGui
+	surface.Face = Enum.NormalId.Top
+end
+
+local function createPad(controls: Folder, frame: CFrame, definition, plotId: number)
+	local pad = part(controls, definition.name, Vector3.new(8,1,6), frame*CFrame.new(definition.x,2,definition.z), Color3.fromRGB(110,76,64))
+	pad:SetAttribute("Action",definition.action)
+	pad:SetAttribute("GeneratedBy","CivilizationTycoonPad")
+	pad:SetAttribute("PlotId",plotId)
+	pad.CanTouch = definition.action ~= "earn"
+	local detector = Instance.new("ClickDetector")
+	detector.MaxActivationDistance = 0
+	detector.Parent = pad
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Enabled = false
+	prompt.ActionText = string.upper(definition.track)
+	prompt.ObjectText = "Claim this civilization first"
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 10
+	prompt.Parent = pad
+	local surface = Instance.new("SurfaceGui")
+	surface.Face = Enum.NormalId.Top
+	surface.CanvasSize = Vector2.new(480,240)
+	surface.Parent = pad
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1,1)
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.GothamBold
+	label.TextScaled = true
+	label.TextWrapped = true
+	label.TextColor3 = Color3.fromRGB(255,248,225)
+	label.Text = string.upper(definition.track).."\nCLAIM YOUR PLOT"
+	label.Parent = surface
+	return pad
+end
+
 function BattlefieldMap.build(parent: Instance)
 	assert(not parent:FindFirstChild("CivilizationPrototype"), "Prototype map already exists in this container")
 	local model = Instance.new("Model")
@@ -57,12 +100,12 @@ function BattlefieldMap.build(parent: Instance)
 	local plots = Instance.new("Folder")
 	plots.Name = "Plots"
 	plots.Parent = model
-	local frames: { [number]: CFrame } = {}
+	local troops = Instance.new("Folder")
+	troops.Name, troops.Parent = "Troops", model
 	for plotId = 1, PLOT_COUNT do
 		local angle = (plotId - 1) * math.pi * 2 / PLOT_COUNT
 		local position = Vector3.new(math.sin(angle) * PLOT_RADIUS, 1, math.cos(angle) * PLOT_RADIUS)
 		local frame = CFrame.lookAt(position, Vector3.new(0, 1, 0))
-		frames[plotId] = frame
 		local plot = Instance.new("Model")
 		plot.Name = "Plot" .. plotId
 		plot:SetAttribute("PlotId", plotId)
@@ -70,10 +113,16 @@ function BattlefieldMap.build(parent: Instance)
 		local foundation = part(plot, "Foundation", Vector3.new(60, 2, 60), frame, STONE)
 		foundation.Material = Enum.Material.Cobblestone
 		part(plot, "Banner", Vector3.new(60, .5, 3), frame * CFrame.new(0, 1.3, -28), NEUTRAL)
-		sign(plot, "Sign", frame * CFrame.new(0, 8, -27), Vector3.new(24, 7, 1), string.format("PLOT %02d\nUNCLAIMED", plotId))
+		unclaimedMarker(plot, frame, plotId)
 		local settlement = Instance.new("Folder")
 		settlement.Name = "Settlement"
 		settlement.Parent = plot
+		local controls = Instance.new("Folder")
+		controls.Name = "Controls"
+		controls.Parent = plot
+		for _, definition in PadCatalog.definitions do
+			if definition.stage == 1 then createPad(controls, frame, definition, plotId) end
+		end
 		local roadPosition = Vector3.new(math.sin(angle) * 103, .2, math.cos(angle) * 103)
 		part(model, "Path" .. plotId, Vector3.new(14, .4, 60), CFrame.lookAt(roadPosition, Vector3.new(0, .2, 0)), Color3.fromRGB(155, 147, 117))
 	end
@@ -93,37 +142,75 @@ function BattlefieldMap.build(parent: Instance)
 
 	local world = { model = model, entry = entry, plotCount = PLOT_COUNT }
 	function world:getSpawn(plotId: number?): CFrame
-		if plotId and frames[plotId] then
-			return frames[plotId] * CFrame.new(0, 7, 17)
+		local plot = if plotId then plots:FindFirstChild("Plot" .. plotId) else nil
+		local foundation = if plot then plot:FindFirstChild("Foundation") else nil
+		if foundation and foundation:IsA("BasePart") then
+			return foundation.CFrame * CFrame.new(0, 7, 17)
 		end
-		return CFrame.lookAt(entry.Position + Vector3.new(0, 5, 0), Vector3.new(0, 7, 0))
+		return entry.CFrame * CFrame.new(0, 5, 0)
 	end
 
-	function world:setOwner(plotId: number, civilization, ownerId: number?, ownerName: string?)
+	function world:getBarracksSpawn(plotId: number, kind: string?): CFrame
+		local plot = plots:FindFirstChild("Plot" .. plotId)
+		assert(plot, "Unknown barracks plot")
+		return (plot.Foundation :: BasePart).CFrame * CFrame.new(if kind == "ranged" then -28 else -24, 5, -11)
+	end
+
+
+	function world:syncControls(plotId: number, state)
+		local plot = plots:FindFirstChild("Plot" .. plotId) :: Model
+		local foundation = plot:FindFirstChild("Foundation") :: BasePart
+		local controls = plot:FindFirstChild("Controls") :: Folder
+		local stage = if state then state.level else 1
+		for _, definition in PadCatalog.definitions do
+			local current = if state and definition.tier then state[PadCatalog.fields[definition.track]] or 1 else 1
+			local visible = stage >= definition.stage and (not definition.tier or definition.tier > current)
+			local existing = controls:FindFirstChild(definition.name)
+			if visible and not existing then
+				createPad(controls, foundation.CFrame, definition, plotId)
+			elseif not visible and existing and existing:GetAttribute("GeneratedBy") == "CivilizationTycoonPad" then
+				existing:Destroy()
+			end
+		end
+	end
+
+	function world:setBarracksLevel(plotId: number, level: number)
+		local plot = plots:FindFirstChild("Plot" .. plotId) :: Model
+		local barracks = plot.Settlement:FindFirstChild("Barracks")
+		if not barracks then return end
+		local tier = Tracks.barracks[level]
+		barracks:SetAttribute("BarracksLevel",level)
+		local label = barracks.BarracksSign:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel")
+		label.Text = string.format("BARRACKS %s · %d TROOP%s\n%gs REINFORCEMENTS",tier.name,tier.capacity,if tier.capacity > 1 then "S" else "",tier.respawnDelay)
+	end
+
+	function world:setOwner(plotId: number, civilization, ownerId: number?, ownerName: string?, level: number?)
 		local plot = plots:FindFirstChild("Plot" .. plotId)
 		assert(plot, "Unknown settlement plot")
-		local frame = frames[plotId]
+		local stage = level or 1
+		assert(Progression[stage], "Unknown settlement level")
+		local foundation = plot:FindFirstChild("Foundation") :: Part
+		-- A plot may have moved or rotated since construction. Its current
+		-- foundation anchors both the rebuilt settlement and its spawn point.
+		local frame = foundation.CFrame
 		local settlement = plot:FindFirstChild("Settlement") :: Folder
 		settlement:ClearAllChildren()
 		plot:SetAttribute("OwnerId", ownerId)
 		plot:SetAttribute("CivilizationId", if civilization then civilization.id else nil)
+		plot:SetAttribute("SettlementLevel", if civilization then stage else nil)
+		local size = if civilization then Progression[stage].size else Progression[1].size
+		foundation.Size = Vector3.new(size, 2, size)
 		local banner = plot:FindFirstChild("Banner") :: Part
 		banner.Color = if civilization then civilization.color else NEUTRAL
-		local board = plot:FindFirstChild("Sign") :: Part
-		local surface = board:FindFirstChildOfClass("SurfaceGui") :: SurfaceGui
-		local label = surface:FindFirstChildOfClass("TextLabel") :: TextLabel
+		local marker = plot:FindFirstChild("Sign")
 		if not civilization then
-			label.Text = string.format("PLOT %02d\nUNCLAIMED", plotId)
+			self:syncControls(plotId, nil)
+			settlement:SetAttribute("Architecture", nil)
+			if not marker then unclaimedMarker(plot, frame, plotId) end
 			return
 		end
-		label.Text = string.format("PLOT %02d · %s\n%s", plotId, civilization.name, ownerName or "Commander")
-		local hall = part(settlement, "Hall", Vector3.new(22, 10, 16), frame * CFrame.new(0, 6, -6), Color3.fromRGB(222, 213, 187))
-		hall.Material = if civilization.id == "sparta" then Enum.Material.Sandstone else Enum.Material.Brick
-		part(settlement, "Roof", Vector3.new(26, 2, 20), frame * CFrame.new(0, 12, -6), civilization.color)
-		for _, x in { -9, -3, 3, 9 } do
-			part(settlement, "Pillar", Vector3.new(2, 9, 2), frame * CFrame.new(x, 5.5, 4), STONE)
-		end
-		part(settlement, "Camp", Vector3.new(10, 5, 10), frame * CFrame.new(-18, 3.5, 16), civilization.color)
+		if marker then marker:Destroy() end
+		SettlementBuilder.build(settlement, frame, civilization, stage, {ownerName=ownerName or "Commander", plotId=plotId})
 	end
 
 	return world
