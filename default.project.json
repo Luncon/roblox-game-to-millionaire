@@ -17,6 +17,13 @@
         "$path": "src/server"
       }
     },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$ignoreUnknownInstances": true,
+      "NPCTemplates": {
+        "$path": "assets/npc-templates"
+      }
+    },
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "$ignoreUnknownInstances": true,
