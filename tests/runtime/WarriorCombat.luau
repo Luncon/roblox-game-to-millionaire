@@ -64,7 +64,7 @@ return function(firstPlayer,secondPlayer)
 			assert(registry:claim(player.UserId,id).ok)
 			economy:open(player.UserId)
 			local wanted = if index==1 then 2 else 4
-			for level,price in {25,75,150} do
+			for level,price in {25,35,45} do
 				if level>=wanted then break end
 				for _=1,price do assert(economy:earn(player.UserId).ok); clock+=.1 end
 				assert(economy:upgrade(player.UserId,level).ok)
@@ -81,7 +81,7 @@ return function(firstPlayer,secondPlayer)
 			local reached = {}
 			local previous = {rigs[1].HumanoidRootPart.Position,rigs[2].HumanoidRootPart.Position}
 			local sampledAt = now()
-			local deadline = now()+90
+			local deadline = now()+120
 			repeat
 				local currentTime = now()
 				for index,rig in rigs do
@@ -157,8 +157,8 @@ return function(firstPlayer,secondPlayer)
 		end)
 		test("claimed target outside arena remains immune even within melee reach",function()
 			placePlayer(owner,world:getSpawn(winnerIndex).Position)
-			warrior:PivotTo(CFrame.new(arena.Position+Vector3.new(73,4,0)))
-			placePlayer(enemy,arena.Position+Vector3.new(76,4,0))
+			warrior:PivotTo(CFrame.new(arena.Position+Vector3.new(arena.Size.Y/2-2,4,0)))
+			placePlayer(enemy,arena.Position+Vector3.new(arena.Size.Y/2+1,4,0))
 			assert((warrior.HumanoidRootPart.Position-enemy.Character.HumanoidRootPart.Position).Magnitude<5)
 			assertNoDamage(enemy,2.3,"Outside player received damage within reach")
 			assert(warrior:GetAttribute("WarriorState")=="Guarding","Outside target was still being pursued")

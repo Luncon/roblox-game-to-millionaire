@@ -1,25 +1,29 @@
 # Civilization Battlefield
 
 A Roblox game in which eight players build civilization-themed settlements
-around a shared battlefield, fight alongside NPC armies, and command formations.
+around a shared battlefield and fight alongside NPC armies. Formation commands
+remain planned.
 Saved profiles preserve separate progress for each player's civilizations.
 
-The playable prototype includes eight circular settlement plots, 13 civilization
-choices, exclusive claims, themed settlements and equipped gear, and respawning
-at your claimed plot. Physical tycoon pads earn one coin per activation and buy
-separate settlement, weapon, and armor upgrades. Coins and upgrade levels save
+The playable prototype has a 1,600 × 1,600-stud world with eight spaced plots,
+13 civilization choices and five biomes around a shared battlefield. Settlements
+grow from 60 to 256 studs through 50 levels, adding themed districts and landmarks.
+Weapon and armor tracks also have 50 gradual levels: melee damage rises from
+10 to 18 and standard maximum health from 100 to 140. Physical tycoon pads earn
+one coin per activation and buy separate upgrades. Coins and upgrade levels save
 independently for every civilization; use the HUD to switch to an available
 civilization while keeping your plot. Settlement stage 2 unlocks a barracks with
-one automatic melee warrior,
-which inherits weapon/armor upgrades. Barracks upgrades shorten replacement
-waits by 0.5 seconds each; level IV adds a ranged troop. Player melee attacks
+one automatic melee warrior, which inherits weapon/armor upgrades. Barracks
+retains four levels: its upgrades shorten replacement waits by 0.5 seconds each,
+and level IV adds a ranged troop for a maximum of two living units. Player melee
+attacks
 and troop kills award 10 coins for the final hit. Settlement growth unlocks new
 physical upgrade pads. Matchmaking, formations and abilities remain planned.
 
 Start with [Start here](START_HERE.md), the [setup guide](docs/SETUP.md),
 the [prototype playtest guide](docs/PLAYTEST.md), the
 [saved-profile guide](docs/PROFILES.md),
-and the [game vision](docs/GAME_VISION.md).
+the [world and settlement guide](docs/WORLD.md), and the [game vision](docs/GAME_VISION.md).
 
 ## Development tooling
 
@@ -44,11 +48,11 @@ Node runs tools; Roblox Studio runs the Luau game.
 - `.obsidian/`: shared vault settings; open this repository as an Obsidian vault.
 - `.agents/skills/`: generated OpenSpec workflows for Codex.
 
-The current gameplay change and verification checklist are in
-[civilization-clicker-upgrades](openspec/changes/civilization-clicker-upgrades/tasks.md).
+The current world and progression change and verification checklist are in
+[expanded-world-and-settlement-growth](openspec/changes/expanded-world-and-settlement-growth/tasks.md).
 See [economy and gear tuning](docs/ECONOMY.md) for prices and prototype limits.
 The [army guide](docs/ARMY.md) explains barracks, inherited gear, and arena combat;
-[barracks-warriors](openspec/changes/barracks-warriors/tasks.md) tracks that initial change. Current progression work is in
+[barracks-warriors](openspec/changes/barracks-warriors/tasks.md) tracks that initial change. Earlier progression work is in
 [army-progression-and-rewards](openspec/changes/army-progression-and-rewards/tasks.md).
 The [profile and switching milestone](openspec/changes/civilization-profiles-and-switching/tasks.md)
 tracks persistence implementation and verification. Studio saves use a separate

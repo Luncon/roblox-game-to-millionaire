@@ -43,8 +43,9 @@ which faction wins; strengths, costs, formations, and counters need playtesting.
 | Ming China | Approximately 1400–1600 CE |
 
 The roster can contain more than eight choices; only eight can be active in
-one full server. Britain uses redcoats and firearms. Specific unit lists,
-formation bonuses, ability effects, and economy values remain to be designed.
+one full server. Britain uses redcoats and firearms. More troop types, formation
+bonuses and ability effects remain to be designed; current economy and combat
+values are prototype tuning.
 
 Historical references: [Ganondagan](https://www.ganondagan.org/bark-longhouse),
 [Japan](https://www.metmuseum.org/essays/momoyama-period-1573-1615),
@@ -86,11 +87,26 @@ features have overtaken some of its steps; formations, battlefield objectives an
 civilization-aware cross-server routing still need implementation. Storage and
 multiplayer verification are recorded separately in [playtest notes](PLAYTEST.md).
 
-### Settlement cap and building identity
+### Expanded world and fifty-level growth
+
+The current world spans 1,600 × 1,600 studs, with eight protected plots spaced
+around a 500-stud-diameter battlefield. Grassland, forest, desert, snowy highlands
+and wetlands provide different scenery, with waterways and dry crossings.
+
+Settlement progression now has 50 levels. The starter footprint remains 60
+studs wide; each upgrade adds four studs and lasting details, reaching 256 studs.
+Districts, ceremonial landmarks and larger halls express each civilization's
+architecture. Weapon and armor progression also has 50 small linear steps:
+melee damage ranges from 10 to 18 and standard maximum health from 100 to 140.
+Barracks retains its four levels and two-slot maximum. Existing saved coins and
+numeric levels are preserved under the new visuals and combat curve. See
+[world and settlement growth](WORLD.md) for the layout and milestones, and
+[economy details](ECONOMY.md) for current tuning.
 
 Every upgrade track is capped by the settlement level: a level-two settlement
 supports weapon, armor and barracks upgrades only through level two. Higher
-settlement stages reveal the matching floor pads. Civilization and owner names
+settlement stages reveal early tier pads; stable weapon and armor pads offer
+later levels. Civilization and owner names
 belong on themed main-building facades, rather than a freestanding board that
 blocks the settlement. Five user-provided character models supply the Spartan,
 British, Japanese, Seneca and Mauryan melee troop visuals.

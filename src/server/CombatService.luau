@@ -87,7 +87,7 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		local time = os.clock()
 		if time < (nextAttack[attackerRig] or 0) then return {ok=false,reason="cooldown"} end
 		local damage = Tracks.weapon[state.weaponLevel].damage
-		if ranged then damage = math.max(1,math.floor(damage*Ranged.damageMultiplier)) end
+		if ranged then damage = math.max(1,damage*Ranged.damageMultiplier) end
 		nextAttack[attackerRig] = time + (if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
 		local humanoid = target.humanoid
 		local before = humanoid.Health

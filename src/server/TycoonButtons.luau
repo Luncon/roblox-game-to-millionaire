@@ -80,22 +80,28 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 			else
 				local track = Tracks[definition.track]
 				local current = if state then state[Catalog.fields[definition.track]] else 1
-				local expected = if definition.tier then definition.tier-1 else current
+				local expected = if definition.repeatFrom then math.max(definition.repeatFrom,current) elseif definition.tier then definition.tier-1 else current
 				local tier = track[expected]
 				local cost = tier.nextCost
 				local ready = enabled and current == expected
+				local required = tier.requiredSettlement or 1
+				local unlocked = state ~= nil and state.level >= required
 				local title = string.upper(definition.track)
 				if not enabled then bound.label.Text = title.."\nClaim this plot first"
 				elseif not ready then bound.label.Text = string.format("%s %s\nBUY TIER %d FIRST",title,track[definition.tier].name,expected)
 				elseif not cost then bound.label.Text = title.."\nMAX LEVEL"
+				elseif not unlocked then bound.label.Text = string.format("%s · TIER %d\nSETTLEMENT %d REQUIRED",title,expected+1,required)
 				else
-					local effect = if definition.track == "barracks" then string.format(" · %gs",track[expected+1].respawnDelay) else ""
+					local nextTier=track[expected+1]
+					local effect = if definition.track == "barracks" then string.format(" · %gs",nextTier.respawnDelay)
+						elseif definition.track == "weapon" then string.format(" · %.2f DMG",nextTier.damage)
+						elseif definition.track == "armor" then string.format(" · %.1f HP",nextTier.health) else ""
 					bound.label.Text = string.format("%s · %s%s\n%d COINS",title,track[expected+1].name,effect,cost)
 				end
-				bound.pad.Color = if ready and cost and state.coins >= cost then Color3.fromRGB(72,187,90)
-					elseif not ready or not cost then Color3.fromRGB(105,111,120) else Color3.fromRGB(207,67,63)
-				bound.prompt.ActionText = if not ready then "Previous tier required" elseif cost then string.format("Upgrade · %d Coins",cost) else "Max Level"
-				enabled = ready and cost ~= nil
+				bound.pad.Color = if ready and unlocked and cost and state.coins >= cost then Color3.fromRGB(72,187,90)
+					elseif not ready or not unlocked or not cost then Color3.fromRGB(105,111,120) else Color3.fromRGB(207,67,63)
+				bound.prompt.ActionText = if not ready then "Previous tier required" elseif cost and not unlocked then "Upgrade settlement first" elseif cost then string.format("Upgrade · %d Coins",cost) else "Max Level"
+				enabled = ready and unlocked and cost ~= nil
 			end
 			bound.detector.MaxActivationDistance = if enabled then 20 else 0
 			bound.prompt.Enabled = enabled
@@ -123,7 +129,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		local state = economy:get(player.UserId)
 		if not state then return {ok=false,reason="not_claimed"} end
 		local current = if action ~= "earn" then state[Catalog.fields[definition.track]] else nil
-		local expected = if definition.tier then definition.tier-1 else current
+		local expected = if definition.repeatFrom then math.max(definition.repeatFrom,current) elseif definition.tier then definition.tier-1 else current
 		local result
 		if action ~= "earn" and current ~= expected then
 			result = {ok=false,reason="prerequisite",state=state}

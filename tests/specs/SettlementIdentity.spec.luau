@@ -16,7 +16,7 @@ return function()
 		test("every civilization and stage embeds identity on existing hall surfaces", function()
 			local styles = {}
 			for _, civ in catalog do
-				for level=1,4 do
+				for _,level in {1,2,4,10,25,40,50} do
 					world:setOwner(1,civ,101,"Commander_With_A_Long_Display_Name",level)
 					assert(not plot:FindFirstChild("Sign"),"A freestanding identity board still blocks the settlement")
 					local labels = displays()
@@ -67,6 +67,53 @@ return function()
 			local localPosition = plot.Foundation.CFrame:PointToObjectSpace(marker.Position)
 			assert(localPosition.Y<4,"Unclaimed marker remains a tall blocking board")
 			assert(plot.Controls.CoinButton and plot.Controls.UpgradeButton and #plot.Controls:GetChildren()==2)
+			for _,name in {"BuildFrame","BuildOwnerName","BuildPlotId","BuiltLevel","Architecture","GrowthFeatureCount"} do
+				assert(plot.Settlement:GetAttribute(name)==nil,"Release retained stale builder metadata: "..name)
+			end
+		end)
+		test("grand identity panels physically clear civilization roofs columns posts and ornaments",function()
+			local function bounds(part)
+				local minimum,maximum=Vector3.new(math.huge,math.huge,math.huge),Vector3.new(-math.huge,-math.huge,-math.huge)
+				for _,x in {-1,1} do for _,y in {-1,1} do for _,z in {-1,1} do
+					local point=plot.Foundation.CFrame:PointToObjectSpace(part.CFrame:PointToWorldSpace(part.Size*Vector3.new(x,y,z)/2))
+					minimum=minimum:Min(point);maximum=maximum:Max(point)
+				end end end
+				return minimum,maximum
+			end
+			for _,civ in catalog do
+				for _,level in {30,50} do
+					world:setOwner(1,civ,101,"GrandFacadeCommander",level)
+					local host=plot.Settlement:FindFirstChild("GrandIdentityHost")
+					assert(host and host:GetAttribute("IntegratedFacade") and displays()[1].Parent==host)
+					local left,right=bounds(host)
+					local grand=plot.Settlement.GrowthFeature_30:FindFirstChildWhichIsA("Model")
+					assert(grand,"Grand civic building is missing")
+					local checked=0
+					local roofCorners=0
+					for _,obstacle in grand:GetChildren() do
+						if not obstacle:IsA("BasePart") then continue end
+						local a,b=bounds(obstacle)
+						if obstacle.Name=="RoofSlope" and (civ.id=="seneca" or civ.id=="vikings") then
+							for _,x in {-1,1} do for _,y in {-1,1} do
+								local point=obstacle.CFrame:PointToObjectSpace(host.CFrame:PointToWorldSpace(Vector3.new(x*host.Size.X/2,y*host.Size.Y/2,-host.Size.Z/2)))
+								if math.abs(point.X)<=obstacle.Size.X/2 and math.abs(point.Z)<=obstacle.Size.Z/2 then
+									assert(point.Y< -obstacle.Size.Y/2-.01,civ.id.." physical grand plaque reaches into the pitched roof underside")
+									roofCorners+=1
+								end
+							end end
+						elseif obstacle.Name=="WovenRoof" or obstacle.Name=="OverhangingRoof" or obstacle.Name=="CivicArchHeader" then
+							assert(right.Y<a.Y-.01,civ.id.." grand identity reaches into "..obstacle.Name);checked+=1
+						elseif obstacle.Name=="Column" or obstacle.Name=="WhiteSashWindow" or obstacle.Name=="ArcadePier" then
+							assert(right.X<a.X-.01 or left.X>b.X+.01,civ.id.." grand identity overlaps "..obstacle.Name);checked+=1
+						elseif obstacle.Name=="CarvedEndPost" or obstacle.Name=="RoundShield" or obstacle.Name=="WovenWallPanel" then
+							assert(right.X<-.01,"Longhouse grand identity is outside its negative side bay")
+							assert(right.X<a.X-.01 or left.X>b.X+.01,civ.id.." grand identity overlaps "..obstacle.Name);checked+=1
+						end
+					end
+					if civ.id=="seneca" or civ.id=="vikings" then assert(roofCorners>=4,"Pitched-roof regression did not exercise plaque corners beneath the roof") end
+					if civ.id~="maurya" and civ.id~="ottomans" and civ.id~="egypt" then assert(checked>0,"Facade obstruction fixture checked no obstacles") end
+				end
+			end
 		end)
 		return count
 	end)

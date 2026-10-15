@@ -40,7 +40,7 @@ return function(first,second,third)
 		local arena=world.model.Battlefield
 		local function position(x,z) return arena.Position+Vector3.new(x,4,z or 0) end
 		local function npc(player,x,z,health)
-			local rig=Rig.create(civilizations[player],CFrame.new(position(x,z)),player.UserId,plots[player])
+			local rig=Rig.create(civilizations[player],CFrame.new(position(x,z)),player.UserId,plots[player],economy:get(player.UserId))
 			rig.Parent=world.model.Troops
 			rig.HumanoidRootPart.Anchored=true
 			if health then rig.Humanoid.Health=health end
@@ -62,12 +62,25 @@ return function(first,second,third)
 			local before=economy:get(first.UserId).coins
 			local hit=combat:hit(attacker,target)
 			assert(hit.ok and hit.killed and hit.reward and hit.reward.ok and hit.reward.amount==10)
-			assert(target.Humanoid.Health==0 and economy:get(first.UserId).coins==before+10)
+			assert(target.Humanoid.Health<=0 and economy:get(first.UserId).coins==before+10)
 			assert(#publications==1 and publications[1].coins==before+10)
 			assert(not combat:hit(attacker,target).ok)
 			combat:unregister(target)
 			combat:register(target,second.UserId,"warrior")
 			assert(not combat:hit(attacker,target).ok and economy:get(first.UserId).coins==before+10)
+			clear()
+			local original=economy:get(first.UserId)
+			local fractional=table.clone(original)
+			fractional.level,fractional.weaponLevel=2,2
+			assert(economy:replace(first.UserId,fractional))
+			local damage=10+8/49
+			attacker,target=npc(first,0,0),npc(second,3,0,damage-.05)
+			local lethal=combat:hit(attacker,target)
+			assert(lethal.ok and lethal.killed and target.Humanoid.Health<=0)
+			assert(economy:get(first.UserId).coins==original.coins+10)
+			assert(not combat:hit(attacker,target).ok and economy:get(first.UserId).coins==original.coins+10)
+			original.coins+=10
+			assert(economy:replace(first.UserId,original))
 		end)
 		test("self friendly unregistered and unclaimed targets cannot generate kills",function()
 			clear()
@@ -107,8 +120,8 @@ return function(first,second,third)
 			wall:Destroy()
 			target:PivotTo(CFrame.new(position(6,0)))
 			assert(not combat:hit(attacker,target).ok)
-			attacker:PivotTo(CFrame.new(position(73,0)))
-			target:PivotTo(CFrame.new(position(76,0)))
+			attacker:PivotTo(CFrame.new(position(arena.Size.Y/2-2,0)))
+			target:PivotTo(CFrame.new(position(arena.Size.Y/2+1,0)))
 			assert(not combat:hit(attacker,target).ok)
 			attacker.Humanoid.Health=0
 			assert(not combat:hit(attacker,target).ok)

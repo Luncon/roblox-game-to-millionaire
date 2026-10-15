@@ -45,7 +45,7 @@ return function()
 		test("upgrading settlement preserves physical pad instances", function()
 			local plot = world.model.Plots.Plot1
 			local coin, upgrade = plot.Controls.CoinButton, plot.Controls.UpgradeButton
-			for level = 1, 4 do
+			for _,level in {1,2,4,10,25,40,50} do
 				world:setOwner(1, catalog[1], 101, "PadTester", level)
 				assert(coin.Parent == plot.Controls and upgrade.Parent == plot.Controls,
 					"Settlement rebuild destroyed pad input bindings")
@@ -57,7 +57,7 @@ return function()
 			overlap.FilterType = Enum.RaycastFilterType.Include
 			overlap.FilterDescendantsInstances = {plot.Settlement}
 			for _, civ in catalog do
-				for level = 1, 4 do
+				for _,level in {1,2,4,10,25,40,50} do
 					world:setOwner(1, civ, 101, "PadTester", level)
 					world:syncControls(1,{coins=0,level=level,weaponLevel=1,armorLevel=1,barracksLevel=1})
 					for _, pad in plot.Controls:GetChildren() do

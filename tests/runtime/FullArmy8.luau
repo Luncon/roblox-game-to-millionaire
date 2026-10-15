@@ -1,5 +1,7 @@
 -- Eight real players with fixture-funded profiles; physical purchases are a separate suite.
 return function(players)
+	local T=require(game.ReplicatedStorage.Shared.UpgradeTracks)
+	local function near(actual,expected) return math.abs(actual-expected)<.002 end
 	local Players = game:GetService("Players")
 	assert(#players==8,"Full army test requires eight real Studio players")
 	local Game=game.ServerScriptService.Game
@@ -63,14 +65,14 @@ return function(players)
 			local ownerId=player.UserId
 			if initial[ownerId] and rig~=initial[ownerId] then
 				assert(deaths[ownerId] and now()>=deaths[ownerId]+14.9,"Replacement appeared before fifteen seconds")
-				assert(rig.Humanoid.MaxHealth==115 and rig.Humanoid.Health==115)
+				assert(near(rig.Humanoid.MaxHealth,T.armor[2].health) and near(rig.Humanoid.Health,T.armor[2].health))
 				replacements[ownerId]=true
 			end
-			assert(rig:GetAttribute("WarriorDamage")==14 and rig:GetAttribute("WeaponLevel")==2 and rig:GetAttribute("ArmorLevel")==2)
+			assert(near(rig:GetAttribute("WarriorDamage"),T.weapon[2].damage) and rig:GetAttribute("WeaponLevel")==2 and rig:GetAttribute("ArmorLevel")==2)
 			local previousHealth=rig.Humanoid.Health
 			table.insert(connections,rig.Humanoid.HealthChanged:Connect(function(health)
 				if health<previousHealth then
-					if previousHealth-health~=math.min(14,previousHealth) then unexpectedDamage=previousHealth-health end
+					if math.abs((previousHealth-health)-math.min(T.weapon[2].damage,previousHealth))>.002 then unexpectedDamage=previousHealth-health end
 					damageEvents+=1
 				end
 				previousHealth=health
@@ -81,7 +83,7 @@ return function(players)
 			for _,player in players do
 				service:refresh(player)
 				local rig=service:get(player.UserId).rig
-				assert(rig and rig.Humanoid.Health==115 and rig.HumanoidRootPart:GetNetworkOwner()==nil)
+				assert(rig and near(rig.Humanoid.Health,T.armor[2].health) and rig.HumanoidRootPart:GetNetworkOwner()==nil)
 				initial[player.UserId]=rig
 				observe(player,rig)
 				local previousHealth=player.Character.Humanoid.Health

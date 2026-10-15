@@ -22,6 +22,12 @@
       "$ignoreUnknownInstances": true,
       "NPCTemplates": {
         "$path": "assets/npc-templates"
+      },
+      "EquipmentTemplates": {
+        "$path": "assets/equipment-templates"
+      },
+      "OutfitTemplates": {
+        "$path": "assets/outfit-templates"
       }
     },
     "StarterPlayer": {

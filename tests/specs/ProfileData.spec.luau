@@ -23,7 +23,7 @@ return function()
 	end)
 	test("invalid currency missing fields and levels above settlement fail validation",function()
 		for _,value in {false,"state",{},state(-1,1,1,1,1),state(1.5,1,1,1,1),state(0/0,1,1,1,1),
-			state(math.huge,1,1,1,1),state(1000000001,1,1,1,1),state(0,0,1,1,1),state(0,5,1,1,1),
+			state(math.huge,1,1,1,1),state(1000000001,1,1,1,1),state(0,0,1,1,1),state(0,51,1,1,1),
 			state(0,2,3,1,1),state(0,2,1,3,1),state(0,2,1,1,3),state(0,4,2.5,1,1)} do
 			assert(Data.copyState(value)==nil,"Malformed persisted state was accepted")
 		end

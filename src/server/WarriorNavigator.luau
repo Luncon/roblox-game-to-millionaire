@@ -89,7 +89,7 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean)
 	function controller:step(now: number)
 		if not active() or not goal then return end
 		local destination = goal
-		if flatDistance(root.Position, destination) <= 2 then
+		if flatDistance(root.Position, destination) <= 2 and math.abs(root.Position.Y-destination.Y) <= 6 then
 			humanoid:MoveTo(root.Position)
 			return
 		end

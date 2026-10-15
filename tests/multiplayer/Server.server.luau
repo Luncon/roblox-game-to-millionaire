@@ -60,9 +60,9 @@ local function assertEquipped(player, civilization, weaponLevel, armorLevel)
 	end, "equipped civilization gear after claim or respawn")
 	local armor = player.Character.CivilizationArmor
 	assert(weapon:GetAttribute("CivilizationId") == civilization and weapon:GetAttribute("WeaponLevel") == weaponLevel)
-	assert(weapon:GetAttribute("Damage") == ({10,14,19,25})[weaponLevel] and not weapon.CanBeDropped)
+	assert(math.abs(weapon:GetAttribute("Damage")-(10+8*(weaponLevel-1)/49))<.002 and not weapon.CanBeDropped)
 	assert(armor:GetAttribute("CivilizationId") == civilization and armor:GetAttribute("ArmorLevel") == armorLevel)
-	assert(player.Character:FindFirstChildOfClass("Humanoid").MaxHealth == ({100,115,135,170})[armorLevel])
+	assert(math.abs(player.Character:FindFirstChildOfClass("Humanoid").MaxHealth-(100+40*(armorLevel-1)/49))<.002)
 end
 
 local function ownedWarriors(ownerId)
@@ -117,14 +117,14 @@ local ok, result = pcall(function()
 		assert(string.find(hud.progression, "Armor", 1, true))
 	end
 	local physical = round("physical", "physicalInput", nil, winner, 1, 90)[winner].result
-	assert(physical.ok and physical.clicks == 130 and physical.cases == 6)
+	assert(physical.ok and physical.clicks == 90 and physical.cases == 6)
 	assert(physical.coins == 0 and physical.level == 3 and physical.weaponLevel == 2 and physical.armorLevel == 2)
 	assert(spartan:GetAttribute("Coins") == 0 and spartan:GetAttribute("SettlementLevel") == 3)
 	assert(spartan:GetAttribute("WeaponLevel") == 2 and spartan:GetAttribute("ArmorLevel") == 2)
 	assertEquipped(spartan, "sparta", 2, 2)
 	waitFor(function()
 		local rigs = ownedWarriors(winner)
-		return #rigs==1 and rigs[1]:GetAttribute("WarriorDamage")==14 and rigs[1].Humanoid.MaxHealth==115
+		return #rigs==1 and math.abs(rigs[1]:GetAttribute("WarriorDamage")-(10+8/49))<.002 and math.abs(rigs[1].Humanoid.MaxHealth-(100+40/49))<.002
 	end,"production warrior inherits physical equipment purchases")
 	local ownedWarrior = ownedWarriors(winner)[1]
 	local rapid = round("rapid", "rapid", "sparta", winner, 1)[winner].result

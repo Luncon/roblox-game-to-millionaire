@@ -28,10 +28,10 @@ return function()
 		local plot = world.model.Plots.Plot1
 		for _, civ in catalog do
 			local previousCount = 0
-			for level = 1, 4 do
+			for level = 1, 50 do
 				world:setOwner(1, civ, 101, "RosterTester", level)
 				assert(plot:GetAttribute("SettlementLevel") == level)
-				assert(plot.Foundation.Size.X == 60 + (level - 1) * 8)
+				assert(plot.Foundation.Size.X == 60 + (level - 1) * 4)
 				assert(plot.Settlement:GetAttribute("Architecture") == civ.id)
 				assert(plot:GetAttribute("CivilizationId") == civ.id)
 				local nameplate=plot.Settlement:FindFirstChild("CivilizationNameplate",true)

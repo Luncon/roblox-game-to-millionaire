@@ -24,7 +24,7 @@ return function()
 	test("malformed or over-cap imported states never create a fresh writable account",function()
 		for _,invalid in {
 			state(-1,1,1,1,1),state(1.5,1,1,1,1),state(0/0,1,1,1,1),state(math.huge,1,1,1,1),
-			state(1000000001,1,1,1,1),state(0,5,1,1,1),state(0,2,3,1,1),state(0,2,1,3,1),
+			state(1000000001,1,1,1,1),state(0,51,1,1,1),state(0,2,3,1,1),state(0,2,1,3,1),
 			state(0,2,1,1,3),{coins=0,level=1},false,"invalid",
 		} do
 			local economy=Economy.new()

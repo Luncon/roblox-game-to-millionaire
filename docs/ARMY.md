@@ -18,10 +18,45 @@ replace a living unit, or create an extra unit. The HUD shows both slots.
 
 Weapon and armor pads upgrade the player and both troop classes immediately.
 Armor preserves missing health; weapon upgrades do not heal. Replacements use
-the latest gear. Melee damage tiers are 10/14/19/25, and maximum health tiers are
-100/115/135/170. Ranged damage is 80% of the weapon tier, rounded down: 8/11/15/20.
+the latest gear. Fifty gradual weapon levels span 10–18 melee damage, and fifty
+armor levels span 100–140 standard maximum health. Ranged damage is 80% of the
+weapon stat, from 8 through 14.4; fractional gains are preserved. Each gear
+level is capped by settlement level. Barracks stays at four levels and a maximum
+of two troops. See [the balance curve](ECONOMY.md).
 Damage, armor, prices and barracks timing come from shared UpgradeTracks; ranged
 styles and flight tuning come from RangedConfig.
+
+Generated melee and ranged troops have rounded classic Roblox heads. Custom
+melee skins retain their existing head meshes and proportions. All live NPC
+clones, including the five custom melee skins, receive their civilization's
+natural skin-tone art default and one front warrior face after equipment is
+applied. TroopAppearance uses texture `10526794`, reused from the user's Seneca
+expression, and keeps NPC BodyColors fields and body-part colors consistent.
+These palettes are prototype art choices, not uniform historical skin tones.
+Head dimensions, neck joints, clothes and headwear remain intact. Skin baked
+into clothing textures is retained. Players keep the separate avatar wardrobe
+path and do not receive this NPC tint/face override.
+
+Thirteen outfit templates dress players and generated troops, and nineteen
+equipment templates cover every current weapon role. The five custom melee
+skins retain their original headwear and clothes. Other outfits combine
+free Creator Store garments/cosmetics with derived copies of the user skins.
+The looks are approximate historical themes fitted to existing R6 troops and
+R15 players. Egyptian players wear Pharaoh headwear, while Egyptian
+troops wear Anubis headwear. Britain’s player/melee weapon is the officer sword;
+its ranged troop retains the musket. Spartan shields are cosmetic and do not
+grant extra armor. See [the asset assignments](../assets/README.md#imported-equipment-visuals)
+and [marketplace provenance](MARKETPLACE_ASSETS.md) for source IDs and dated free-price
+checks. Safe visual-only clones attach to the server-generated
+equipment and follow upgrades, respawns and switches without changing combat
+stats or saved progression. Missing templates retain procedural visuals.
+
+Player uniforms preserve their original clothing instances and restore affected
+fields when cleared. Later external wardrobe edits become the restore baseline;
+destroyed originals are not recreated and unrelated avatar items are retained.
+Late native avatar appearance loading reapplies the outfit without clearing its
+baseline. Headwear precedence avoids layering imported hats over outfit head
+pieces, and generated tier details leave the uniform visible.
 
 | Civilization | Ranged troop weapon |
 | --- | --- |
@@ -66,4 +101,8 @@ additional troop slots, recruitment choices and ranged player attacks are planne
 
 ## Custom melee models
 
-Sparta, Britain, Japan, Seneca and Maurya now use the five user-provided R6 models in [the asset catalog](../assets/README.md). Their original clothes and headwear are retained; upgrades add tier gear and change the shared combat stats. Other civilizations and ranged troops keep their generated models. The Studio reference models remain untouched.
+Sparta, Britain, Japan, Seneca and Maurya use the five user-provided R6 models in
+[the asset catalog](../assets/README.md). Their original clothes and headwear are
+retained; upgrades add tier gear and change the shared combat stats. Other
+civilizations and ranged troops keep their generated rigs and wear the matching
+outfits. The Studio reference models remain untouched.

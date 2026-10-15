@@ -135,7 +135,7 @@ return function(player, controllerModule)
 			assert(activate("upgrade").ok)
 			assert(economy:get(player.UserId).coins == 0 and economy:get(player.UserId).level == 2)
 			assert(world.model.Plots.Plot1:GetAttribute("SettlementLevel") == 2)
-			assert(world.model.Plots.Plot1.Foundation.Size.X == 68)
+			assert(world.model.Plots.Plot1.Foundation.Size.X == 64)
 			assert(world.model.Plots.Plot1.Controls.UpgradeButton == upgrade)
 			weapon=world.model.Plots.Plot1.Controls.WeaponButton
 			armor=world.model.Plots.Plot1.Controls.ArmorButton
@@ -178,7 +178,7 @@ return function(player, controllerModule)
 			assert(activate("armor").ok)
 			assert(economy:get(player.UserId).coins == 0 and economy:get(player.UserId).armorLevel == 2)
 			assert(economy:get(player.UserId).weaponLevel == 2 and economy:get(player.UserId).level == 2)
-			assert(humanoid.MaxHealth == 115, "Armor purchase did not change actual character health")
+			assert(math.abs(humanoid.MaxHealth-(100+40/49))<.002, "Armor purchase did not change actual character health")
 			local ownedTools = {}
 			for _, item in character:GetChildren() do
 				if item:IsA("Tool") and item:GetAttribute("GeneratedBy") == "CivilizationEquipment" then
@@ -186,7 +186,7 @@ return function(player, controllerModule)
 				end
 			end
 			assert(#ownedTools == 1, "Actual character must equip exactly one owned weapon")
-			assert(ownedTools[1]:GetAttribute("WeaponLevel") == 2 and ownedTools[1]:GetAttribute("Damage") == 14)
+			assert(ownedTools[1]:GetAttribute("WeaponLevel") == 2 and math.abs(ownedTools[1]:GetAttribute("Damage")-(10+8/49))<.002)
 			assert(ownedTools[1]:GetAttribute("CivilizationId") == "sparta")
 			assert(character.CivilizationArmor:GetAttribute("ArmorLevel") == 2)
 		end)
@@ -206,21 +206,21 @@ return function(player, controllerModule)
 			assert(economy:get(player.UserId).weaponLevel == 2 and economy:get(player.UserId).armorLevel == 2)
 		end)
 		test("later settlement expansion binds new pads without resetting purchased barracks", function()
-			for _ = 1, 75 do assert(economy:earn(player.UserId).ok); time += .1 end
+			for _ = 1, 35 do assert(economy:earn(player.UserId).ok); time += .1 end
 			moveNear(upgrade)
 			assert(activate("upgrade").ok)
 			local controls = world.model.Plots.Plot1.Controls
 			assert(controls:FindFirstChild("Weapon3Button") and controls:FindFirstChild("Armor3Button") and controls:FindFirstChild("Barracks3Button"))
 			assert(controls:FindFirstChild("Weapon4Button")==nil and controls:FindFirstChild("Armor4Button")==nil)
 			assert(economy:get(player.UserId).barracksLevel == 2 and economy:get(player.UserId).level == 3)
-			for _ = 1, 50 do assert(economy:earn(player.UserId).ok); time += .1 end
+			for _ = 1, 18 do assert(economy:earn(player.UserId).ok); time += .1 end
 			moveNear(controls.Weapon3Button)
 			assert(activate("weapon3").ok and economy:get(player.UserId).weaponLevel == 3)
 			assert(controls:FindFirstChild("Weapon3Button") == nil and controls:FindFirstChild("Weapon4Button")==nil)
 		end)
 		test("visible high-tier pads independently reject skipped prerequisites",function()
 			economy:close(player.UserId); economy:open(player.UserId)
-			for level,cost in {25,75,150} do
+			for level,cost in {25,35,45} do
 				for _=1,cost do assert(economy:earn(player.UserId).ok); time+=.1 end
 				assert(economy:upgrade(player.UserId,level).ok); time+=1
 			end

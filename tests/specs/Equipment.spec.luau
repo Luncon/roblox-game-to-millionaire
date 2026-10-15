@@ -1,4 +1,6 @@
 return function()
+	local Tracks=require(game.ReplicatedStorage.Shared.UpgradeTracks)
+	local function near(actual,expected) assert(math.abs(actual-expected)<.002,tostring(actual).." ~= "..expected) end
 	local Equipment = require(game.ServerScriptService.Game.Equipment)
 	local catalog = require(game.ReplicatedStorage.Shared.Civilizations)
 	-- Assistant threads cannot create Player instances; only this boundary is a test double.
@@ -20,6 +22,8 @@ return function()
 		{"Head", Vector3.new(2,1,1), Vector3.new(0,1.5,0)},
 		{"Right Arm", Vector3.new(1,2,1), Vector3.new(1.5,0,0)},
 		{"Left Arm", Vector3.new(1,2,1), Vector3.new(-1.5,0,0)},
+		{"Right Leg", Vector3.new(1,2,1), Vector3.new(.5,-2,0)},
+		{"Left Leg", Vector3.new(1,2,1), Vector3.new(-.5,-2,0)},
 	} do
 		local part = Instance.new("Part")
 		part.Name, part.Size = definition[1], definition[2]
@@ -55,7 +59,8 @@ return function()
 	local ok, result = pcall(function()
 		test("all civilizations equip identifiable themed gear at every tier", function()
 			for _, civ in catalog do
-				for level, damage in {10,14,19,25} do
+				for level=1,50 do
+					local damage=Tracks.weapon[level].damage
 					assert(Equipment.apply(player, civ, {weaponLevel=level, armorLevel=level}))
 					local tools = ownedTools()
 					assert(#tools == 1, "Duplicate owned tools after equipment rebuild")
@@ -66,7 +71,20 @@ return function()
 					local armor = character:FindFirstChild("CivilizationArmor")
 					assert(armor and armor:GetAttribute("CivilizationId") == civ.id)
 					assert(armor:GetAttribute("ArmorLevel") == level and type(armor:GetAttribute("Style")) == "string")
-					assert(#armor:GetChildren() >= 3 and unrelated.Parent == character)
+					local source=game.ServerStorage.OutfitTemplates:FindFirstChild(civ.id)
+					assert(source,"Missing civilization outfit source: "..civ.id)
+					local clothed=false
+					for _,definition in {{"Shirt","ShirtTemplate"},{"Pants","PantsTemplate"},{"ShirtGraphic","Graphic"}} do
+						local garment=source:FindFirstChildOfClass(definition[1])
+						if garment and garment[definition[2]]~="" then
+							local equipped=character:FindFirstChildOfClass(definition[1])
+							assert(equipped and equipped[definition[2]]==garment[definition[2]],"Civilization garment missing at tier "..level)
+							clothed=true
+						end
+					end
+					for _,item in armor:GetDescendants() do if item:GetAttribute("OutfitCivilizationId")==civ.id then clothed=true end end
+					assert(clothed,"No mapped clothing/body outfit equipped for "..civ.id)
+					assert(unrelated.Parent==character)
 				end
 			end
 		end)
@@ -76,9 +94,9 @@ return function()
 			Equipment.apply(player, catalog[1], {weaponLevel=1, armorLevel=1})
 			assert(humanoid.MaxHealth == 150 and humanoid.Health == 70)
 			Equipment.apply(player, catalog[1], {weaponLevel=1, armorLevel=2})
-			assert(humanoid.MaxHealth == 165 and humanoid.Health == 85)
+			near(humanoid.MaxHealth,150+40/49); near(humanoid.Health,70+40/49)
 			Equipment.apply(player, catalog[1], {weaponLevel=1, armorLevel=2})
-			assert(humanoid.Health == 85, "Duplicate refresh healed the player")
+			near(humanoid.Health,70+40/49)
 		end)
 		test("generated equipment has no colliding touching or queryable geometry", function()
 			for _, item in character:GetDescendants() do

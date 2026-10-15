@@ -1,5 +1,7 @@
 -- Server-only integration helper; waits for the real production fifteen-second timers.
 return function(player)
+	local T=require(game.ReplicatedStorage.Shared.UpgradeTracks)
+	local function near(actual,expected) return math.abs(actual-expected)<.002 end
 	local Players = game:GetService("Players")
 	assert(player and player.Parent == Players, "Warrior lifecycle requires a connected test player")
 	local Game = game.ServerScriptService.Game
@@ -103,12 +105,12 @@ return function(player)
 		test("living warrior receives owner gear in place while preserving missing health", function()
 			first.Humanoid.Health = 70
 			upgrade("weapon")
-			assert(living() == first and first:GetAttribute("WarriorDamage") == 14)
+			assert(living() == first and near(first:GetAttribute("WarriorDamage"),T.weapon[2].damage))
 			assert(first.Humanoid.Health == 70 and first.Humanoid.MaxHealth == 100)
 			upgrade("armor")
-			assert(living() == first and first.Humanoid.Health == 85 and first.Humanoid.MaxHealth == 115)
+			assert(living() == first and near(first.Humanoid.Health,T.armor[2].health-30) and near(first.Humanoid.MaxHealth,T.armor[2].health))
 			service:refresh(player)
-			assert(first.Humanoid.Health == 85 and livingCount() == 1)
+			assert(near(first.Humanoid.Health,T.armor[2].health-30) and livingCount() == 1)
 		end)
 		local replacement = nil
 		test("death waits fifteen real seconds and replacement inherits gear bought while pending", function()
@@ -129,9 +131,9 @@ return function(player)
 			waitFor(function() return living() ~= nil end,"automatic warrior replacement",3)
 			replacement = living()
 			assert(replacement ~= first and livingCount() == 1)
-			assert(replacement:GetAttribute("WarriorDamage") == 19)
+			assert(near(replacement:GetAttribute("WarriorDamage"),T.weapon[3].damage))
 			assert(replacement:GetAttribute("WeaponLevel") == 3 and replacement:GetAttribute("ArmorLevel") == 3)
-			assert(replacement.Humanoid.MaxHealth == 135 and replacement.Humanoid.Health == 135)
+			assert(near(replacement.Humanoid.MaxHealth,T.armor[3].health) and near(replacement.Humanoid.Health,T.armor[3].health))
 		end)
 		test("release and reclaim cancel the old fifteen-second callback without duplicating a new unit", function()
 			replacement.Humanoid.Health = 0

@@ -13,42 +13,62 @@ and upgrade levels; it has no earning or purchase controls.
 - **Battlefield kills:** a player or troop final hit earns its civilization 10 coins.
 
 Upgrade pads turn green when you can afford them, red when you cannot, and gray
-when a preceding tier is required or the permanent settlement pad is maxed. They
-show prices. Each settlement expansion adds actual new floor buttons. Purchased
-tier buttons disappear. Walk-on input makes one purchase per entry; later tiers
-have their own separate pads. Mouse, keyboard prompt,
+when a preceding tier or settlement level is required, or a track is maxed.
+They show prices and next equipment stats. Early settlement expansions reveal
+new physical pads. Tier-two and tier-three pads retire after purchase; the
+tier-four weapon and armor pads remain and buy each later tier through 50.
+Keeping the same pad preserves one purchase per entry even across tier four.
+Mouse, keyboard prompt,
 mobile prompt, and native controller prompt are supported by the engine. Actual
 hardware input verification is recorded in the playtest guide.
 
 ## Settlement expansion
 
-| Level | Settlement | Size | Next price |
+| Level | Growth phase | Size | Next price |
 | --- | --- | --- | --- |
 | 1 | Outpost | 60 studs | 25 coins |
-| 2 | Village | 68 studs | 75 coins |
-| 3 | Town | 76 studs | 150 coins |
-| 4 | Citadel | 84 studs | Maximum |
+| 10 | Village | 96 studs | 115 coins |
+| 20 | Town | 136 studs | 215 coins |
+| 30 | City | 176 studs | 315 coins |
+| 40 | Capital | 216 studs | 415 coins |
+| 50 | Grand settlement | 256 studs | Maximum |
 
-Expansion adds buildings and perimeter structures. Reaching the Citadel costs
-250 coins in total and never increases income per activation.
+Every level adds four studs of width and a lasting themed feature. Architecture,
+districts and landmarks depend on the civilization. Next settlement cost at
+level L is `25 + 10*(L-1)`, through level 49. Reaching 50 costs 12,985 coins and
+never increases income per activation. See [world and settlement growth](WORLD.md).
 
 ## Weapon and armor tiers
 
-| Tier | Name | Next price per track | Weapon damage setting | Maximum health on a standard avatar |
-| --- | --- | --- | --- | --- |
-| 1 | Recruit | 15 coins | 10 | 100 |
-| 2 | Veteran | 50 coins | 14 | 115 |
-| 3 | Elite | 125 coins | 19 | 135 |
-| 4 | Champion | Maximum | 25 | 170 |
+| Tier | Next price per track | Melee damage | Standard maximum health |
+| --- | --- | --- | --- |
+| 1 | 15 coins | 10 | 100 |
+| 10 | 42 coins | 11.469 | 107.347 |
+| 25 | 87 coins | 13.918 | 119.592 |
+| 50 | Maximum | 18 | 140 |
 
-Each equipment track costs 190 coins in total. Buying a weapon does not buy
+Damage is `10 + 8*(L-1)/49`; armor health is `100 + 40*(L-1)/49`.
+Each adjacent level adds about 0.1633 damage or 0.8163 health. Stats remain
+fractional in combat; the displayed decimals are rounded. Ranged damage is 80%
+of the same weapon stat, from 8 through 14.4, without flooring away small gains.
+There are no exponential bonuses. Next gear cost is `15 + 3*(L-1)` through
+level 49. Each equipment track costs 4,263 coins in total. Buying a weapon does not buy
 armor or expand the settlement. Players equip themed armor and a weapon when
 claiming a civilization, receive updated gear on purchase, and regain it after
-character resets. Weapon/armor tiers 2, 3, and 4 unlock at settlement stages
-2, 3, and 4. Every upgrade level is capped by the settlement level. Expand the
-settlement before buying a higher tier. Their preceding tier is required even when a later button is visible.
+character resets. Every weapon/armor level through 50 is capped by the settlement
+level. Expand the settlement before buying a higher tier. Their preceding tier
+is required even when a later button is visible. Barracks remains a separate
+four-level track; its current prices, respawn timing and two-slot limit are
+listed in [army details](ARMY.md).
 Armor grants maximum health and preserves missing health. Equipped player weapons
 now attack in melee; army gear updates immediately as well.
+
+This rebalances old level-four gear: saved coins and level numbers stay intact,
+but level four now uses the gradual curve rather than its previous maximum
+stats. A maximum-tier melee attacker needs six hits against a standard starter;
+the starter needs fourteen against maximum armor. Equal-tier fights take ten
+hits at level one and eight at 50, ignoring regeneration, movement and other
+attackers. These bounds are tuning checks, not proof that live combat is balanced.
 
 Sparta uses a spear and bronze cuirass; Seneca a bow and tunic; Britain a musket
 and redcoat; Mongols a sabre and lamellar armor; Vikings an axe and mail; Persia
@@ -93,5 +113,6 @@ one billion; a full 10-coin award is rejected if it would exceed the cap.
 All 13 choices follow the [agreed roster](GAME_VISION.md); only eight can own
 plots in a full server. Tuning lives in
 [SettlementProgression](../src/shared/SettlementProgression.luau),
+[ProgressionConfig](../src/shared/ProgressionConfig.luau),
 [UpgradeTracks](../src/shared/UpgradeTracks.luau), and
 [Economy](../src/server/Economy.luau).

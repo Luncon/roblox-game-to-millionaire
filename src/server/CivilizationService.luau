@@ -166,6 +166,13 @@ function CivilizationService.start(options: any?)
 		player.RespawnLocation=world.entry
 		army:refresh(player)
 		player.CharacterAdded:Connect(function(character) task.defer(placeCharacter,player,character) end)
+		player.CharacterAppearanceLoaded:Connect(function(character)
+			if closing or activePlayers[player.UserId]~=player or player.Character~=character
+				or not profiles:isWritable(player.UserId) then return end
+			local claim=registry:get(player.UserId)
+			local state=economy:get(player.UserId)
+			if claim and state then Equipment.apply(player,catalog[claim.civilizationId],state,true) end
+		end)
 		if player.Character then task.defer(placeCharacter,player,player.Character) end
 		loadPlayer(player)
 	end

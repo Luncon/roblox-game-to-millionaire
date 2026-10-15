@@ -48,18 +48,20 @@ return function()
 		test("every civilization's final settlement fits and centers on each moved foundation", function()
 			for _, civ in catalog do
 				for plotId = 1, 8 do
-					world:setOwner(plotId, civ, 101, "MovedCommander", 4)
+					world:setOwner(plotId, civ, 101, "MovedCommander", 50)
 					local plot = world.model.Plots["Plot" .. plotId]
-					assert(plot.Foundation.Size.X == 84 and plot.Foundation.Size.Z == 84)
+					assert(plot.Foundation.Size.X == 256 and plot.Foundation.Size.Z == 256)
 					assert(sameFrame(plot.Foundation.CFrame, movedFrames[plotId]))
 					local minimum, maximum = Vector3.new(math.huge,0,math.huge), Vector3.new(-math.huge,0,-math.huge)
 					local walls = 0
 					for _, part in plot.Settlement:GetDescendants() do
 						if part:IsA("BasePart") then
-							local perimeter = part.Name == "Perimeter" or part.Name == "GateWall" or part.Name == "RearWall"
+							local perimeter = part.Parent.Name=="Perimeter" and (
+								part.Name=="WestWall" or part.Name=="EastWall" or part.Name=="CourtWallLeft"
+								or part.Name=="CourtWallRight" or part.Name=="ArenaWallLeft" or part.Name=="ArenaWallRight")
 							if perimeter then walls += 1 end
 							for _, point in corners(part, plot.Foundation.CFrame) do
-								assert(math.abs(point.X) <= 42.05 and math.abs(point.Z) <= 42.05,
+								assert(math.abs(point.X) <= 128.05 and math.abs(point.Z) <= 128.05,
 									civ.id .. " plot " .. plotId .. " has off-plot geometry: " .. part.Name)
 								if perimeter then
 									minimum = Vector3.new(math.min(minimum.X,point.X),0,math.min(minimum.Z,point.Z))
@@ -68,7 +70,7 @@ return function()
 							end
 						end
 					end
-					assert(walls == 5, "Final settlement is missing perimeter sections")
+					assert(walls == 6, "Final settlement is missing one of its six boundary wall sections")
 					assert(((minimum + maximum) / 2).Magnitude < .05,
 						"Final perimeter is off-center: " .. civ.id .. " plot " .. plotId)
 				end
@@ -79,7 +81,7 @@ return function()
 				local plot = world.model.Plots["Plot" .. plotId]
 				local detectors = {}
 				for name in controlFrames[plotId] do detectors[name] = plot.Controls[name]:FindFirstChildOfClass("ClickDetector") end
-				for level = 1, 4 do
+				for level = 1, 50 do
 					world:setOwner(plotId, catalog[1], 101, "MovedCommander", level)
 					for name, frame in controlFrames[plotId] do
 						local pad = plot.Controls[name]

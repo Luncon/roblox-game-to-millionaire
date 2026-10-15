@@ -2,7 +2,7 @@
 
 local variants = {
 	sparta = {name="Spartan Warrior", weaponName="Dory Spear", weaponKind="spear"},
-	britain = {name="Redcoat Warrior", weaponName="Redcoat Bayonet", weaponKind="bayonet"},
+	britain = {name="Redcoat Warrior", weaponName="Officer Sword", weaponKind="sword"},
 	seneca = {name="Seneca Warrior", weaponName="Woodland Axe", weaponKind="axe"},
 	mongols = {name="Mongol Warrior", weaponName="Steppe Sabre", weaponKind="sabre"},
 	vikings = {name="Norse Warrior", weaponName="Norse Axe", weaponKind="axe"},

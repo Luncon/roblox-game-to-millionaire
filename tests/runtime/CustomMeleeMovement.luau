@@ -1,5 +1,7 @@
 -- Five imported model assets, real Humanoid/Pathfinding movement; no claim or combat simulation.
-return function()
+return function(options)
+	local T=require(game.ReplicatedStorage.Shared.UpgradeTracks)
+	local function near(actual,expected) return math.abs(actual-expected)<.002 end
 	local RunService=game:GetService("RunService")
 	local Physics=game:GetService("PhysicsService")
 	local Game=game.ServerScriptService.Game
@@ -25,7 +27,8 @@ return function()
 		Physics:CollisionGroupSetCollidable(group,group,false)
 		test("all five imported melee models spawn as server-owned articulated characters",function()
 			for plotId,id in ids do
-				world:setOwner(plotId,catalog[id],-7000-plotId,"ModelMovementTester",4)
+				local levels=(options and options.levels) or {2,25,50,25,50}
+				world:setOwner(plotId,catalog[id],-7000-plotId,"ModelMovementTester",levels[plotId])
 				local spawn=world:getBarracksSpawn(plotId)
 				local rig=Rig.create(catalog[id],spawn,-7000-plotId,plotId,{weaponLevel=1,armorLevel=1})
 				assert(rig:GetAttribute("CustomMeleeModel")==true and rig:GetAttribute("TemplateCivilizationId")==id)
@@ -33,7 +36,7 @@ return function()
 				for _,part in rig:GetDescendants() do if part:IsA("BasePart") then part.CollisionGroup=group end end
 				rig.HumanoidRootPart:SetNetworkOwner(nil)
 				assert(not rig.HumanoidRootPart.Anchored and rig.HumanoidRootPart:GetNetworkOwner()==nil)
-				local context={rig=rig,civ=catalog[id],start=rig.HumanoidRootPart.Position,reached=false,pose=false}
+				local context={rig=rig,civ=catalog[id],start=rig.HumanoidRootPart.Position,reached=false,pose=false,started=os.clock()}
 				context.navigator=Navigator.new(rig,function() return active and rig.Parent~=nil and rig.Humanoid.Health>0 end)
 				local angle=(plotId-1)*math.pi*2/8+.25
 				context.navigator:setGoal(arena.Position+Vector3.new(math.sin(angle)*30,4,math.cos(angle)*30))
@@ -50,7 +53,9 @@ return function()
 					local hip=rig.Torso:FindFirstChild("Right Hip")
 					if moving and hip and hip.C0~=hip:GetAttribute("RestC0") then context.pose=true end
 					if Rules.containsArena(arena,rig.HumanoidRootPart.Position) and not context.reached then
-						context.reached=true; context.navigator:stop()
+						context.reached=true; context.duration=os.clock()-context.started
+						context.entryPosition=rig.HumanoidRootPart.Position
+						context.navigator:stop()
 					end
 				end
 			end)
@@ -62,8 +67,8 @@ return function()
 				local rig=context.rig
 				rig.Humanoid.Health=70
 				Rig.update(rig,context.civ,{weaponLevel=2,armorLevel=2})
-				assert(rig:GetAttribute("CustomMeleeModel")==true and rig:GetAttribute("WarriorDamage")==14)
-				assert(rig.Humanoid.MaxHealth==115 and rig.Humanoid.Health==85)
+				assert(rig:GetAttribute("CustomMeleeModel")==true and near(rig:GetAttribute("WarriorDamage"),T.weapon[2].damage))
+				assert(near(rig.Humanoid.MaxHealth,T.armor[2].health) and near(rig.Humanoid.Health,T.armor[2].health-30))
 				for _,joint in rig:GetDescendants() do
 					assert(not (joint:IsA("Motor6D") and joint.Name=="RightGrip"),"Engine grip reappeared on custom NPC")
 					if joint:IsA("Motor6D") and joint:GetAttribute("RestC0") then
@@ -73,16 +78,24 @@ return function()
 			end
 		end)
 		test("every imported civilization walks from its walled settlement into the battlefield",function()
-			local deadline=os.clock()+90
+			local deadline=os.clock()+120
 			repeat
 				assert(asynchronousFailure==nil,asynchronousFailure)
 				local complete=true
 				for _,context in contexts do if not context.reached then complete=false end end
 				if complete then
 					for _,context in contexts do
-						local delta=context.rig.HumanoidRootPart.Position-context.start
-						assert(Vector3.new(delta.X,0,delta.Z).Magnitude>65 and context.pose)
-						assert(context.rig.Humanoid.Health==85 and context.rig.HumanoidRootPart:GetNetworkOwner()==nil)
+						assert(Rules.containsArena(arena,context.entryPosition),"Recorded arrival lies outside the actual arena")
+						local startOffset=context.start-arena.Position
+						local radius=math.max(arena.Size.Y,arena.Size.Z)/2
+						local minimum=Vector3.new(startOffset.X,0,startOffset.Z).Magnitude-radius
+						local delta=context.entryPosition-context.start
+						context.distance=Vector3.new(delta.X,0,delta.Z).Magnitude
+						context.minimumDistance=minimum
+						assert(minimum>0 and context.distance>=minimum-5,
+							context.civ.id.." entered without covering the spawn-to-arena geometric minimum: actual="..context.distance.." minimum="..minimum)
+						assert(context.pose,"Imported model never animated a walking pose")
+						assert(near(context.rig.Humanoid.Health,T.armor[2].health-30) and context.rig.HumanoidRootPart:GetNetworkOwner()==nil)
 					end
 					return
 				end
@@ -94,7 +107,14 @@ return function()
 			end
 			error("Imported model failed actual movement: "..table.concat(missing,", "))
 		end)
-		return {ok=true,cases=cases,message="Five actual imported melee assets: server physics, live upgraded clothing/health/poses, and physical pathfinding out of citadels into the arena passed"}
+		local durations,distances,minimumDistances={},{},{}
+		for _,context in contexts do
+			durations[context.civ.id]=context.duration
+			distances[context.civ.id]=context.distance
+			minimumDistances[context.civ.id]=context.minimumDistance
+		end
+		return {ok=true,cases=cases,arrivalSeconds=durations,arrivalDistances=distances,minimumDistances=minimumDistances,
+			message="Five actual imported melee assets: server physics, live upgraded clothing/health/poses, and physical pathfinding out of citadels into the arena passed"}
 	end)
 	active=false
 	if heartbeat then heartbeat:Disconnect() end

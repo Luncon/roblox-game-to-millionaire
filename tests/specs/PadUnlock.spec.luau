@@ -43,18 +43,23 @@ return function()
 			assert(plot.Controls.CoinButton==coin and plot.Controls.UpgradeButton==settlement)
 			assert(plot.Controls:FindFirstChild("Weapon3Button") and plot.Controls:FindFirstChild("Barracks3Button"))
 			world:syncControls(1,state(4,4,4,4))
-			for _,name in {"Weapon3Button","Armor3Button","Weapon4Button","Armor4Button","Barracks3Button","Barracks4Button"} do assert(plot.Controls:FindFirstChild(name)==nil) end
+			for _,name in {"Weapon3Button","Armor3Button","Barracks3Button","Barracks4Button"} do assert(plot.Controls:FindFirstChild(name)==nil) end
+			local weapon,armor=plot.Controls.Weapon4Button,plot.Controls.Armor4Button
+			world:syncControls(1,state(5,5,5,4))
+			assert(plot.Controls.Weapon4Button==weapon and plot.Controls.Armor4Button==armor,"Higher gear purchase replaced its contact-latched physical pad")
+			world:syncControls(1,state(50,50,50,4))
+			assert(plot.Controls.Weapon4Button==weapon and plot.Controls.Armor4Button==armor,"Maximum level destroyed the stable gear controls")
 		end)
 		test("newly unlocked pads use the current moved and rotated foundation",function()
 			world.model:PivotTo(CFrame.new(900,20,-1200)*CFrame.Angles(0,.7,0)*world.model:GetPivot())
-			world:setOwner(1,catalog[1],101,"UnlockTester",4)
-			world:syncControls(1,state(4))
+			world:setOwner(1,catalog[1],101,"UnlockTester",50)
+			world:syncControls(1,state(50))
 			for _,definition in require(game.ReplicatedStorage.Shared.PadCatalog).definitions do
 				local pad=plot.Controls:FindFirstChild(definition.name)
 				assert(pad,"Unlocked pad is missing after profile change")
 				local position=plot.Foundation.CFrame:PointToObjectSpace(pad.Position)
 				assert((position-Vector3.new(definition.x,2,definition.z)).Magnitude<.01)
-				assert(math.abs(position.X)+pad.Size.X/2<=42 and math.abs(position.Z)+pad.Size.Z/2<=42)
+				assert(math.abs(position.X)+pad.Size.X/2<=128 and math.abs(position.Z)+pad.Size.Z/2<=128)
 			end
 		end)
 		return count

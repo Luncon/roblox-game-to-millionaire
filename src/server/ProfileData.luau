@@ -1,6 +1,7 @@
 --!strict
 
 local Civilizations = require(game:GetService("ReplicatedStorage").Shared.Civilizations)
+local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local ProfileData = {}
 
 export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number }
@@ -28,8 +29,12 @@ end
 
 function ProfileData.copyState(value: any): State?
 	if type(value) ~= "table" or not integer(value.coins, 0, 1000000000)
-		or not integer(value.level, 1, 4) or not integer(value.weaponLevel, 1, value.level)
-		or not integer(value.armorLevel, 1, value.level) or not integer(value.barracksLevel, 1, value.level) then
+		or not integer(value.level, 1, #Tracks.settlement) then
+		return nil
+	end
+	if not integer(value.weaponLevel, 1, math.min(value.level, #Tracks.weapon))
+		or not integer(value.armorLevel, 1, math.min(value.level, #Tracks.armor))
+		or not integer(value.barracksLevel, 1, math.min(value.level, #Tracks.barracks)) then
 		return nil
 	end
 	-- Deliberately omit account revisions, rate limits, plot IDs and troop instances.

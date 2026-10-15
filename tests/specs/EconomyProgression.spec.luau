@@ -14,8 +14,8 @@ return function()
 		return economy,fund,advance
 	end
 	test("gear balance uses the agreed softer damage and health tiers",function()
-		for level,damage in {10,14,19,25} do assert(Tracks.weapon[level].damage==damage) end
-		for level,health in {100,115,135,170} do assert(Tracks.armor[level].health==health) end
+		for _,level in {1,2,25,50} do assert(math.abs(Tracks.weapon[level].damage-(10+8*(level-1)/49))<.0001) end
+		for _,level in {1,2,25,50} do assert(math.abs(Tracks.armor[level].health-(100+40*(level-1)/49))<.0001) end
 	end)
 	test("barracks tier tuning reduces each future delay by half a second and only final tier adds capacity",function()
 		for level,delay in {15,14.5,14,13.5} do
@@ -55,9 +55,9 @@ return function()
 			advance()
 			assert(economy:upgrade(101,barracksLevel,"barracks").reason=="stale_level")
 		end
-		assert(economy:get(101).coins==95 and economy:get(101).barracksLevel==4)
+		assert(economy:get(101).coins==240 and economy:get(101).barracksLevel==4)
 		assert(economy:upgrade(101,4,"barracks").reason=="max_level")
-		assert(economy:get(101).coins==95)
+		assert(economy:get(101).coins==240)
 	end)
 	test("kill credits are fixed ten and do not refill or consume click tokens",function()
 		local economy=fixture()

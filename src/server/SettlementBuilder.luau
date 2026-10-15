@@ -1,6 +1,7 @@
 --!strict
 
 local SettlementBuilder = {}
+local Districts = require(script.Parent.SettlementDistricts)
 local STONE = Color3.fromRGB(214, 200, 166)
 local TIMBER = Color3.fromRGB(119, 85, 55)
 
@@ -26,7 +27,11 @@ local function identity(parent: Folder, civilization, level: number, metadata)
 	local ownerName = if metadata and metadata.ownerName then metadata.ownerName else "Commander"
 	local plotId = if metadata and metadata.plotId then metadata.plotId else 0
 	for _, courtyard in {false, true} do
-		local host = parent:FindFirstChild(if courtyard then style.court or style.host else style.host) :: BasePart
+		local guiName = if courtyard then "CourtyardNameplate" else "CivilizationNameplate"
+		local previous = parent:FindFirstChild(guiName, true)
+		if previous and previous:GetAttribute("GeneratedBy") == "CivilizationSettlementIdentity" then previous:Destroy() end
+		local grand = if not courtyard then parent:FindFirstChild("GrandIdentityHost") else nil
+		local host = (grand or parent:FindFirstChild(if courtyard then style.court or style.host else style.host)) :: BasePart
 		assert(host, "Civilization identity facade is missing")
 		local surface = Instance.new("SurfaceGui")
 		surface.Name = if courtyard then "CourtyardNameplate" else "CivilizationNameplate"
@@ -46,7 +51,7 @@ local function identity(parent: Folder, civilization, level: number, metadata)
 		local height = math.min(host.Size.Y*.7, if courtyard then 3 else 3.8)
 		label.Size = UDim2.fromScale(if courtyard then style.courtWidth or .88 else .88, height/host.Size.Y)
 		label.Position = UDim2.fromScale(.5, if host.Size.Y < 3 then .5 else .32)
-		if style.sidePlate then
+		if style.sidePlate and not grand then
 			-- The longhouse's central end post projects beyond this facade.
 			-- Keep the carved panel wholly inside the adjacent wall bay.
 			label.Size = UDim2.fromScale(.36, height/host.Size.Y)
@@ -56,12 +61,13 @@ local function identity(parent: Folder, civilization, level: number, metadata)
 			label.Size = UDim2.fromScale(.86,.16)
 			label.Position = UDim2.fromScale(.5,.09)
 		end
-		if style.rotated then
+		if style.rotated and not grand then
 			-- The yurt cylinder's local X axis is vertical after its model rotation.
 			label.Size = UDim2.fromOffset(16*32,3.6*32)
 			label.Position = UDim2.fromScale(.5,.5)
 			label.Rotation = if courtyard then 90 else -90
 		end
+		if grand then label.Position = UDim2.fromScale(.5,.5) end
 		label.BackgroundColor3 = style.back
 		label.BackgroundTransparency = .12
 		label.BorderSizePixel = 0
@@ -107,13 +113,10 @@ local function pitchedRoof(parent: Instance, frame: CFrame, width: number, depth
 	end
 end
 
-function SettlementBuilder.build(parent: Folder, frame: CFrame, civilization, level: number, metadata: {ownerName: string?, plotId: number?}?)
-	parent:ClearAllChildren()
-	parent:SetAttribute("Architecture", civilization.id)
+local function starter(parent: Folder, frame: CFrame, civilization)
 	local id = civilization.id
 	local color = civilization.color
 	-- Reserve the front courtyard for unchanged, reachable tycoon controls.
-	-- The Citadel walls remain centered on frame, not on this rear hall offset.
 	local hall = frame * CFrame.new(0, 0, -7)
 	local function piece(name: string, size: Vector3, position: Vector3, tint: Color3?, material: Enum.Material?)
 		return block(parent, name, size, hall * CFrame.new(position), tint or STONE, material)
@@ -186,64 +189,77 @@ function SettlementBuilder.build(parent: Folder, frame: CFrame, civilization, le
 		elseif id == "sparta" then pitchedRoof(parent, hall * CFrame.new(0, 16, 0), 28, 24, color) end
 	end
 
-	if level < 2 then
-		block(parent, "Camp", Vector3.new(9, 5, 8), frame * CFrame.new(-24, 3.5, 0), color, Enum.Material.Fabric)
-	else
-		local barracks = Instance.new("Model")
-		barracks.Name = "Barracks"
-		barracks:SetAttribute("CivilizationId", id)
-		barracks:SetAttribute("BarracksLevel", 1)
-		barracks.Parent = parent
-		local origin = frame * CFrame.new(-24,0,0)
-		local timber = id == "seneca" or id == "vikings" or id == "mongols"
-		local material = if timber then Enum.Material.WoodPlanks else Enum.Material.Sandstone
-		local wall = if timber then TIMBER else STONE
-		block(barracks,"Floor",Vector3.new(10,.4,14),origin*CFrame.new(0,1.2,0),wall,material)
-		for _, side in {-1,1} do
-			block(barracks,"SideWall",Vector3.new(1,7,14),origin*CFrame.new(side*4.5,4.8,0),wall,material)
-			block(barracks,"DoorPost",Vector3.new(2.5,7,1),origin*CFrame.new(side*3.75,4.8,-6.5),wall,material)
-		end
-		block(barracks,"BarracksBack",Vector3.new(10,7,1),origin*CFrame.new(0,4.8,6.5),wall,material)
-		block(barracks,"DoorBeam",Vector3.new(10,1.2,1),origin*CFrame.new(0,8,-6.5),color)
-		block(barracks,"Roof",Vector3.new(12,1.2,16),origin*CFrame.new(0,9,0),color,
-			if timber then Enum.Material.WoodPlanks else Enum.Material.Slate)
-		if id == "japan" or id == "ming" then
-			block(barracks,"RoofTier",Vector3.new(9,1,12),origin*CFrame.new(0,10,0),color)
-		elseif id == "egypt" or id == "sparta" or id == "rome" or id == "persia" then
-			for _, side in {-1,1} do block(barracks,"EntrancePillar",Vector3.new(.8,8,.8),origin*CFrame.new(side*4,5,-7.5),color) end
-		end
-		local board = block(barracks,"BarracksSign",Vector3.new(8,1.5,.25),origin*CFrame.new(0,9,-8.2),Color3.fromRGB(32,39,41))
-		local surface = Instance.new("SurfaceGui")
-		surface.Face, surface.CanvasSize, surface.Parent = Enum.NormalId.Front, Vector2.new(600,110), board
-		local label = Instance.new("TextLabel")
-		label.Size, label.BackgroundTransparency = UDim2.fromScale(1,1), 1
-		label.Font, label.TextScaled = Enum.Font.GothamBold, true
-		label.TextColor3 = Color3.fromRGB(247,239,216)
-		label.Text, label.Parent = "BARRACKS I · 1 WARRIOR", surface
+	block(parent, "Camp", Vector3.new(9,5,8), frame*CFrame.new(-24,3.5,0), civilization.color, Enum.Material.Fabric)
+end
+
+local function addBarracks(parent: Folder, frame: CFrame, civilization)
+	local id, color = civilization.id, civilization.color
+	-- The original tent becomes the entrance awning rather than an obstacle.
+	local camp = parent:FindFirstChild("Camp") :: Part
+	camp.Size, camp.CFrame = Vector3.new(10,.4,3), frame*CFrame.new(-24,9.2,-8)
+	camp.CanCollide, camp.CanTouch, camp.CanQuery = false, false, false
+	local barracks = Instance.new("Model")
+	barracks.Name = "Barracks"
+	barracks:SetAttribute("CivilizationId", id)
+	barracks:SetAttribute("BarracksLevel", 1)
+	barracks.Parent = parent
+	local origin = frame * CFrame.new(-24,0,0)
+	local timber = id == "seneca" or id == "vikings" or id == "mongols"
+	local material = if timber then Enum.Material.WoodPlanks else Enum.Material.Sandstone
+	local wall = if timber then TIMBER else STONE
+	block(barracks,"Floor",Vector3.new(10,.4,14),origin*CFrame.new(0,1.2,0),wall,material)
+	for _, side in {-1,1} do
+		block(barracks,"SideWall",Vector3.new(1,7,14),origin*CFrame.new(side*4.5,4.8,0),wall,material)
+		block(barracks,"DoorPost",Vector3.new(2.5,7,1),origin*CFrame.new(side*3.75,4.8,-6.5),wall,material)
 	end
-	if level == 4 then
-		block(parent, "EastCamp", Vector3.new(9, 5, 8), frame * CFrame.new(24, 3.5, 0), color, Enum.Material.Fabric)
+	block(barracks,"BarracksBack",Vector3.new(10,7,1),origin*CFrame.new(0,4.8,6.5),wall,material)
+	block(barracks,"DoorBeam",Vector3.new(10,1.2,1),origin*CFrame.new(0,8,-6.5),color)
+	block(barracks,"Roof",Vector3.new(12,1.2,16),origin*CFrame.new(0,9,0),color,
+		if timber then Enum.Material.WoodPlanks else Enum.Material.Slate)
+	if id == "japan" or id == "ming" then
+		block(barracks,"RoofTier",Vector3.new(9,1,12),origin*CFrame.new(0,10,0),color)
+	elseif id == "egypt" or id == "sparta" or id == "rome" or id == "persia" then
+		for _, side in {-1,1} do block(barracks,"EntrancePillar",Vector3.new(.8,8,.8),origin*CFrame.new(side*4,5,-7.5),color) end
 	end
-	for index = 1, level - 1 do
-		local x = if index % 2 == 0 then -24 else 24
-		local z = if index == 3 then -23 else 12
-		local dwelling = frame * CFrame.new(x, 0, z)
-		block(parent, "Dwelling" .. index, Vector3.new(9, 6, 9), dwelling * CFrame.new(0, 4, 0), STONE)
-		pitchedRoof(parent, dwelling * CFrame.new(0, 8, 0), 10, 10, color)
+	local board = block(barracks,"BarracksSign",Vector3.new(8,1.5,.25),origin*CFrame.new(0,9,-8.2),Color3.fromRGB(32,39,41))
+	local surface = Instance.new("SurfaceGui")
+	surface.Face, surface.CanvasSize, surface.Parent = Enum.NormalId.Front, Vector2.new(600,110), board
+	local label = Instance.new("TextLabel")
+	label.Size, label.BackgroundTransparency = UDim2.fromScale(1,1), 1
+	label.Font, label.TextScaled = Enum.Font.GothamBold, true
+	label.TextColor3 = Color3.fromRGB(247,239,216)
+	label.Text, label.Parent = "BARRACKS I · 1 WARRIOR", surface
+end
+
+function SettlementBuilder.build(parent: Folder, frame: CFrame, civilization, level: number, metadata: {ownerName: string?, plotId: number?}?)
+	assert(Progression[level], "Unknown settlement level")
+	local ownerName = if metadata then metadata.ownerName else nil
+	local plotId = if metadata then metadata.plotId else nil
+	local previousLevel = parent:GetAttribute("BuiltLevel")
+	local core = parent:FindFirstChild(IDENTITY_STYLES[civilization.id].host)
+	-- Instance attributes survive Lua wrapper collection while the engine-owned
+	-- Folder is alive; a weak-key cache could forget a build between upgrades.
+	local reuse = typeof(previousLevel)=="number" and parent:GetAttribute("Architecture")==civilization.id
+		and parent:GetAttribute("BuildFrame")==frame and parent:GetAttribute("BuildOwnerName")==ownerName
+		and parent:GetAttribute("BuildPlotId")==plotId and (level==previousLevel or level==previousLevel+1)
+		and core~=nil and core:IsA("BasePart")
+	local from = if reuse then (previousLevel :: number)+1 else 2
+	if not reuse then
+		parent:ClearAllChildren()
+		starter(parent,frame,civilization)
 	end
-	if level >= 3 then
-		block(parent, "Storehouse", Vector3.new(12, 8, 10), frame * CFrame.new(-24, 5, -23), TIMBER, Enum.Material.WoodPlanks)
-		block(parent, "Garden", Vector3.new(14, .5, 7), frame * CFrame.new(0, 1.5, 25), Color3.fromRGB(86, 133, 63), Enum.Material.Grass)
+	for unlocked = from,level do
+		if unlocked == 2 then addBarracks(parent,frame,civilization) end
+		Districts.add(parent,frame,civilization,unlocked)
 	end
-	if level == 4 then
-		for _, side in {-1, 1} do
-			block(parent, "Perimeter", Vector3.new(2, 5, 80), frame * CFrame.new(side * 40, 3.5, 0), STONE)
-			block(parent, "GateWall", Vector3.new(25, 5, 2), frame * CFrame.new(side * 27, 3.5, 40), STONE)
-			block(parent, "Watchtower", Vector3.new(7, 14, 7), frame * CFrame.new(side * 36, 8, -36), color)
-		end
-		block(parent, "RearWall", Vector3.new(80, 5, 2), frame * CFrame.new(0, 3.5, -40), STONE)
-	end
-	identity(parent, civilization, level, metadata)
+	Districts.perimeter(parent,frame,civilization,level)
+	parent:SetAttribute("Architecture",civilization.id)
+	parent:SetAttribute("BuiltLevel",level)
+	parent:SetAttribute("GrowthFeatureCount",level-1)
+	identity(parent,civilization,level,metadata)
+	parent:SetAttribute("BuildFrame",frame)
+	parent:SetAttribute("BuildOwnerName",ownerName)
+	parent:SetAttribute("BuildPlotId",plotId)
 end
 
 return SettlementBuilder

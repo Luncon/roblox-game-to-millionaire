@@ -12,7 +12,7 @@ return function()
 			for _, civ in catalog do
 				world:setOwner(1,civ,101,"BarracksTester",1)
 				assert(world.model.Plots.Plot1.Settlement:FindFirstChild("Barracks") == nil)
-				for level = 2, 4 do
+				for _,level in {2,4,25,50} do
 					world:setOwner(1,civ,101,"BarracksTester",level)
 					local barracks = world.model.Plots.Plot1.Settlement:FindFirstChild("Barracks")
 					assert(barracks and barracks:IsA("Model"), "Barracks missing for " .. civ.id)
@@ -23,7 +23,7 @@ return function()
 		test("barracks spawns track current moved and rotated plots", function()
 			world.model:PivotTo(CFrame.new(1200,20,-1100)*CFrame.Angles(0,.3,0)*world.model:GetPivot())
 			for plotId = 1, 8 do
-				world:setOwner(plotId,catalog[1],101,"BarracksTester",4)
+				world:setOwner(plotId,catalog[1],101,"BarracksTester",50)
 				local plot = world.model.Plots["Plot" .. plotId]
 				local expected = plot.Foundation.CFrame*CFrame.new(-24,5,-11)
 				local actual = world:getBarracksSpawn(plotId)

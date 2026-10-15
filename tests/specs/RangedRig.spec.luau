@@ -1,4 +1,6 @@
 return function()
+	local Tracks=require(game.ReplicatedStorage.Shared.UpgradeTracks)
+	local function near(actual,expected) assert(math.abs(actual-expected)<.002,tostring(actual).." ~= "..expected) end
 	local module=game.ReplicatedStorage.Shared:FindFirstChild("RangedConfig")
 	assert(module,"RangedConfig is not implemented yet")
 	local Config=require(module)
@@ -23,11 +25,12 @@ return function()
 		test("ranged warriors inherit every owner tier with eighty-percent damage",function()
 			for index,civ in catalog do
 				local rig=rigs[index]
-				for level,damage in {8,11,15,20} do
+				for level=1,50 do
+					local damage=Tracks.weapon[level].damage*.8
 					Rig.update(rig,civ,{weaponLevel=level,armorLevel=level})
 					assert(rig:GetAttribute("WarriorClass")=="ranged")
 					assert(rig:GetAttribute("WarriorDamage")==damage)
-					assert(rig.Humanoid.MaxHealth==({100,115,135,170})[level])
+					assert(math.abs(rig.Humanoid.MaxHealth-Tracks.armor[level].health)<.002)
 					assert(rig:FindFirstChildOfClass("Tool"):GetAttribute("Damage")==damage)
 				end
 			end

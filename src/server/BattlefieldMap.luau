@@ -5,8 +5,9 @@ local SettlementBuilder = require(script.Parent.SettlementBuilder)
 local Progression = require(game:GetService("ReplicatedStorage").Shared.SettlementProgression)
 local PadCatalog = require(game:GetService("ReplicatedStorage").Shared.PadCatalog)
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
-local PLOT_COUNT = 8
-local PLOT_RADIUS = 160
+local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
+local Landscape = require(script.Parent.WorldLandscape)
+local PLOT_COUNT = Layout.plotCount
 local NEUTRAL = Color3.fromRGB(103, 119, 104)
 local STONE = Color3.fromRGB(181, 174, 153)
 
@@ -90,12 +91,18 @@ function BattlefieldMap.build(parent: Instance)
 	local model = Instance.new("Model")
 	model.Name = "CivilizationPrototype"
 	model:SetAttribute("GeneratedBy", "CivilizationBattlefield")
-	local ground = part(model, "Ground", Vector3.new(640, 2, 640), CFrame.new(0, -1, 0), Color3.fromRGB(82, 105, 76))
+	model:SetAttribute("MaximumSettlementSize",Layout.maxPlotSize)
+	model:SetAttribute("PlotRadius",Layout.plotRadius)
+	model:SetAttribute("ArenaRadius",Layout.arenaRadius)
+	-- Keep the generated grass just above a default Baseplate without editing it.
+	local ground = part(model, "Ground", Vector3.new(Layout.groundSize, 2, Layout.groundSize), CFrame.new(0, -.95, 0), Color3.fromRGB(82, 105, 76))
 	ground.Material = Enum.Material.Grass
-	local field = part(model, "Battlefield", Vector3.new(2, 150, 150), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(116, 109, 90))
+	local field = part(model, "Battlefield", Vector3.new(2, Layout.arenaRadius*2, Layout.arenaRadius*2), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(116, 109, 90))
 	field.Shape = Enum.PartType.Cylinder
 	field.Material = Enum.Material.Ground
-	part(model, "FieldMarker", Vector3.new(12, .4, 12), CFrame.new(0, 2.2, 0), Color3.fromRGB(205, 169, 85))
+	field.Transparency,field.CanCollide,field.CanTouch,field.CanQuery=1,false,false,false
+	part(model, "FieldMarker", Vector3.new(12, .3, 12), CFrame.new(0, .3, 0), Color3.fromRGB(205, 169, 85))
+	Landscape.build(model)
 
 	local plots = Instance.new("Folder")
 	plots.Name = "Plots"
@@ -103,9 +110,7 @@ function BattlefieldMap.build(parent: Instance)
 	local troops = Instance.new("Folder")
 	troops.Name, troops.Parent = "Troops", model
 	for plotId = 1, PLOT_COUNT do
-		local angle = (plotId - 1) * math.pi * 2 / PLOT_COUNT
-		local position = Vector3.new(math.sin(angle) * PLOT_RADIUS, 1, math.cos(angle) * PLOT_RADIUS)
-		local frame = CFrame.lookAt(position, Vector3.new(0, 1, 0))
+		local frame = Layout.plotFrame(plotId)
 		local plot = Instance.new("Model")
 		plot.Name = "Plot" .. plotId
 		plot:SetAttribute("PlotId", plotId)
@@ -123,21 +128,27 @@ function BattlefieldMap.build(parent: Instance)
 		for _, definition in PadCatalog.definitions do
 			if definition.stage == 1 then createPad(controls, frame, definition, plotId) end
 		end
-		local roadPosition = Vector3.new(math.sin(angle) * 103, .2, math.cos(angle) * 103)
-		part(model, "Path" .. plotId, Vector3.new(14, .4, 60), CFrame.lookAt(roadPosition, Vector3.new(0, .2, 0)), Color3.fromRGB(155, 147, 117))
+		local direction=Vector3.new(frame.Position.X,0,frame.Position.Z).Unit
+		local inner=20
+		local outer=Layout.plotRadius-Progression[1].size/2+5
+		local roadPosition=direction*((inner+outer)/2)+Vector3.new(0,.25,0)
+		local road=part(model, "Path" .. plotId, Vector3.new(Layout.laneWidth,.4,outer-inner), CFrame.lookAt(roadPosition,Vector3.new(0,.25,0)), Color3.fromRGB(155, 147, 117))
+		road.Material=Enum.Material.Ground
+		road:SetAttribute("PlotId",plotId)
+		road:SetAttribute("ClearRouteWidth",Layout.laneWidth)
 	end
 
 	local entry = Instance.new("SpawnLocation")
 	entry.Name = "EntrySpawn"
 	entry.Size = Vector3.new(30, 1, 30)
-	entry.CFrame = CFrame.new(0, 2, 250)
+	entry.CFrame = CFrame.new(0, 2, Layout.groundSize/2-35)
 	entry.Anchored = true
 	entry.Neutral = true
 	entry.Duration = 0
 	entry.Color = Color3.fromRGB(205, 169, 85)
 	entry.Material = Enum.Material.Slate
 	entry.Parent = model
-	sign(model, "Welcome", CFrame.new(0, 10, 265), Vector3.new(35, 10, 1), "CLASH OF CIVILIZATIONS\nChoose your civilization\nSession-only prototype")
+	sign(model, "Welcome", entry.CFrame*CFrame.new(0,8,15), Vector3.new(35,10,1), "CLASH OF CIVILIZATIONS\nChoose your civilization\nYour civilizations grow with you")
 	model.Parent = parent
 
 	local world = { model = model, entry = entry, plotCount = PLOT_COUNT }
@@ -164,7 +175,7 @@ function BattlefieldMap.build(parent: Instance)
 		local stage = if state then state.level else 1
 		for _, definition in PadCatalog.definitions do
 			local current = if state and definition.tier then state[PadCatalog.fields[definition.track]] or 1 else 1
-			local visible = stage >= definition.stage and (not definition.tier or definition.tier > current)
+			local visible = stage >= definition.stage and (definition.repeatFrom ~= nil or not definition.tier or definition.tier > current)
 			local existing = controls:FindFirstChild(definition.name)
 			if visible and not existing then
 				createPad(controls, foundation.CFrame, definition, plotId)
@@ -194,7 +205,6 @@ function BattlefieldMap.build(parent: Instance)
 		-- foundation anchors both the rebuilt settlement and its spawn point.
 		local frame = foundation.CFrame
 		local settlement = plot:FindFirstChild("Settlement") :: Folder
-		settlement:ClearAllChildren()
 		plot:SetAttribute("OwnerId", ownerId)
 		plot:SetAttribute("CivilizationId", if civilization then civilization.id else nil)
 		plot:SetAttribute("SettlementLevel", if civilization then stage else nil)
@@ -204,8 +214,10 @@ function BattlefieldMap.build(parent: Instance)
 		banner.Color = if civilization then civilization.color else NEUTRAL
 		local marker = plot:FindFirstChild("Sign")
 		if not civilization then
+			settlement:ClearAllChildren()
 			self:syncControls(plotId, nil)
 			settlement:SetAttribute("Architecture", nil)
+			for _,attribute in {"BuiltLevel","GrowthFeatureCount","BuildFrame","BuildOwnerName","BuildPlotId"} do settlement:SetAttribute(attribute,nil) end
 			if not marker then unclaimedMarker(plot, frame, plotId) end
 			return
 		end

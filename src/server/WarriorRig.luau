@@ -6,6 +6,7 @@ local Tracks = require(ReplicatedStorage.Shared.UpgradeTracks)
 local Ranged = require(ReplicatedStorage.Shared.RangedConfig)
 local Equipment = require(script.Parent.Equipment)
 local NPCModelTemplates = require(script.Parent.NPCModelTemplates)
+local TroopAppearance = require(script.Parent.TroopAppearance)
 local WarriorRig = {}
 
 local function body(model: Model, name: string, size: Vector3, position: Vector3, color: Color3): Part
@@ -29,15 +30,23 @@ end
 
 function WarriorRig.update(rig: Model, civilization, state)
 	if not Equipment.applyWarrior(rig, civilization, state) then return end
+	TroopAppearance.apply(rig, civilization.id)
 	local weaponLevel, armorLevel = state.weaponLevel or 1, state.armorLevel or 1
 	rig:SetAttribute("WeaponLevel", weaponLevel)
 	rig:SetAttribute("ArmorLevel", armorLevel)
 	local kind = rig:GetAttribute("WarriorClass") or "warrior"
 	local damage = Tracks.weapon[weaponLevel].damage
-	if kind == "ranged" then damage = math.max(1,math.floor(damage*Ranged.damageMultiplier)) end
+	if kind == "ranged" then damage = math.max(1,damage*Ranged.damageMultiplier) end
 	rig:SetAttribute("WarriorDamage", damage)
 	for _, child in rig:GetChildren() do
 		if child:IsA("Tool") then child:SetAttribute("WarriorClass", kind) end
+	end
+	-- Rebuilding welded equipment can reset the mechanism to automatic ownership.
+	-- Unparented spawns receive their first server assignment from WarriorService.
+	local root=rig:FindFirstChild("HumanoidRootPart")
+	if rig:IsDescendantOf(workspace) and root and root:IsA("BasePart")
+		and not root.Anchored and root:CanSetNetworkOwnership() then
+		root:SetNetworkOwner(nil)
 	end
 end
 
@@ -54,11 +63,18 @@ function WarriorRig.create(civilization, spawnFrame: CFrame, ownerId: number, pl
 	rig:SetAttribute("PlotId", plotId)
 	rig:SetAttribute("WarriorClass", troopClass)
 	if not custom then
-		local skin = Color3.fromRGB(189,153,116)
+		local skin = TroopAppearance.skinColors[civilization.id]
 		local root = body(rig,"HumanoidRootPart",Vector3.new(2,2,1),Vector3.zero,civilization.color)
 		root.Transparency, root.RootPriority = 1, 127
 		local torso = body(rig,"Torso",Vector3.new(2,2,1),Vector3.zero,civilization.color)
 		local head = body(rig,"Head",Vector3.new(2,1,1),Vector3.new(0,1.5,0),skin)
+		local headMesh = Instance.new("SpecialMesh")
+		headMesh.MeshType = Enum.MeshType.Head
+		headMesh.Scale = Vector3.new(1.25,1.25,1.25)
+		headMesh.Parent = head
+		local face = Instance.new("Decal")
+		face.Name, face.Face, face.Texture = "face", Enum.NormalId.Front, TroopAppearance.faceTexture
+		face.Parent = head
 		local rightArm = body(rig,"Right Arm",Vector3.new(1,2,1),Vector3.new(1.5,0,0),skin)
 		local leftArm = body(rig,"Left Arm",Vector3.new(1,2,1),Vector3.new(-1.5,0,0),skin)
 		local rightLeg = body(rig,"Right Leg",Vector3.new(1,2,1),Vector3.new(.5,-2,0),Color3.fromRGB(62,65,64))

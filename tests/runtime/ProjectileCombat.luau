@@ -38,7 +38,7 @@ return function(first,second)
 		local arena=world.model.Battlefield
 		local function position(x,z) return arena.Position+Vector3.new(x,4,z or 0) end
 		local function rig(owner,civ,kind,x,z,health)
-			local model=Rig.create(civ,CFrame.new(position(x,z)),owner.UserId,if owner==first then 1 else 2,nil,kind)
+			local model=Rig.create(civ,CFrame.new(position(x,z)),owner.UserId,if owner==first then 1 else 2,economy:get(owner.UserId),kind)
 			model.Parent=world.model.Troops
 			model.HumanoidRootPart.Anchored=true
 			if health then model.Humanoid.Health=health end
@@ -87,9 +87,13 @@ return function(first,second)
 			end
 		end)
 		test("target crossing the arena boundary before impact cannot receive damage",function()
-			local shooter,target=setup(40,74)
+			local shooter,target=setup(arena.Size.Y/2-35,arena.Size.Y/2-1)
 			fire(shooter,target)
-			target:PivotTo(CFrame.new(position(76,0)))
+			target:PivotTo(CFrame.new(position(arena.Size.Y/2+1,0)))
+			local filter=RaycastParams.new()
+			filter.FilterType=Enum.RaycastFilterType.Exclude;filter.FilterDescendantsInstances={shooter}
+			local intercept=workspace:Raycast(shooter.HumanoidRootPart.Position+Vector3.new(0,1,0),Vector3.new(44,0,0),filter)
+			assert(intercept and intercept.Instance:IsDescendantOf(target),"Outside-target fixture does not intercept the fixed projectile path")
 			waitFor(function() return projectiles:count()==0 end,"outside-target projectile impact")
 			assert(target.Humanoid.Health==100)
 		end)
@@ -101,13 +105,21 @@ return function(first,second)
 			assert(target.Humanoid.Health==100)
 		end)
 		test("a lethal projectile awards exactly ten once through shared combat authority",function()
-			local shooter,target=setup(nil,nil,8)
+			local original=economy:get(first.UserId)
+			local fractional=table.clone(original)
+			fractional.level,fractional.weaponLevel=2,2
+			assert(economy:replace(first.UserId,fractional))
+			local damage=(10+8/49)*.8
+			local shooter,target=setup(nil,nil,damage-.05)
+			assert(math.abs(shooter:GetAttribute("WarriorDamage")-damage)<.002)
 			local before=economy:get(first.UserId).coins
 			fire(shooter,target)
 			waitFor(function() return target.Humanoid.Health<=0 end,"ranged final hit")
 			assert(economy:get(first.UserId).coins==before+10)
 			assert(not projectiles:fire(shooter,target))
 			assert(projectiles:count()==0 and economy:get(first.UserId).coins==before+10)
+			original.coins=before+10
+			assert(economy:replace(first.UserId,original))
 		end)
 		test("projectiles are capped and canceled when shooter authority is removed",function()
 			local shooter,target=setup()

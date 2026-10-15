@@ -1,5 +1,7 @@
 -- Two real players verify production wall-clock delays for tiers two, three, and four.
 return function(first,second)
+	local T=require(game.ReplicatedStorage.Shared.UpgradeTracks)
+	local function near(actual,expected) return math.abs(actual-expected)<.002 end
 	local Players=game:GetService("Players")
 	assert(first~=second and first.Parent==Players and second.Parent==Players)
 	local Game=game.ServerScriptService.Game
@@ -84,12 +86,12 @@ return function(first,second)
 		end)
 		test("ranged gear updates preserve missing health without replacing either slot",function()
 			upgrade(first,"weapon"); upgrade(first,"armor")
-			assert(firstRanged:GetAttribute("WarriorDamage")==11 and firstRanged.Humanoid.MaxHealth==115)
-			firstRanged.Humanoid.Health=85
+			assert(near(firstRanged:GetAttribute("WarriorDamage"),T.weapon[2].damage*.8) and near(firstRanged.Humanoid.MaxHealth,T.armor[2].health))
+			firstRanged.Humanoid.Health=T.armor[2].health-30
 			upgrade(first,"weapon")
-			assert(firstRanged.Humanoid.Health==85 and firstRanged:GetAttribute("WarriorDamage")==15)
+			assert(near(firstRanged.Humanoid.Health,T.armor[2].health-30) and near(firstRanged:GetAttribute("WarriorDamage"),T.weapon[3].damage*.8))
 			upgrade(first,"armor")
-			assert(slot(first,"ranged").rig==firstRanged and firstRanged.Humanoid.Health==105 and firstRanged.Humanoid.MaxHealth==135)
+			assert(slot(first,"ranged").rig==firstRanged and near(firstRanged.Humanoid.Health,T.armor[3].health-30) and near(firstRanged.Humanoid.MaxHealth,T.armor[3].health))
 			assert(slot(first,"warrior").respawnAt==meleeDeadline)
 		end)
 		test("ranged and melee deaths use independent real thirteen-and-a-half fourteen and fourteen-and-a-half deadlines",function()
@@ -106,9 +108,9 @@ return function(first,second)
 				task.wait(.05)
 			end
 			assert(firstMelee.Parent==nil and firstRanged.Parent==nil and secondMelee.Parent==nil)
-			assert(slot(first,"warrior").rig:GetAttribute("WarriorDamage")==19)
-			assert(slot(first,"ranged").rig:GetAttribute("WarriorDamage")==15)
-			assert(slot(first,"warrior").rig.Humanoid.Health==135 and slot(first,"ranged").rig.Humanoid.Health==135)
+			assert(near(slot(first,"warrior").rig:GetAttribute("WarriorDamage"),T.weapon[3].damage))
+			assert(near(slot(first,"ranged").rig:GetAttribute("WarriorDamage"),T.weapon[3].damage*.8))
+			assert(near(slot(first,"warrior").rig.Humanoid.Health,T.armor[3].health) and near(slot(first,"ranged").rig.Humanoid.Health,T.armor[3].health))
 		end)
 		test("live two-slot army survives actual owner reset without duplicate units",function()
 			local melee,ranged=slot(first,"warrior").rig,slot(first,"ranged").rig

@@ -98,7 +98,7 @@ return function(options)
 	local ok, result = pcall(function()
 		assert(player:GetAttribute("Coins") == 0 and player:GetAttribute("SettlementLevel") == 1)
 		assert(player:GetAttribute("WeaponLevel") == 1 and player:GetAttribute("ArmorLevel") == 1)
-		local initialCoins = if barracksOnly then 25 else 100
+		local initialCoins = if barracksOnly then 25 else 60
 		earn(initialCoins)
 		assert(player:GetAttribute("Coins") == initialCoins)
 		cases += 1
@@ -109,7 +109,7 @@ return function(options)
 		cases += 1
 		if not barracksOnly then
 			task.wait(2)
-			assert(player:GetAttribute("SettlementLevel") == 2 and player:GetAttribute("Coins") == 75,
+			assert(player:GetAttribute("SettlementLevel") == 2 and player:GetAttribute("Coins") == 35,
 				"Remaining on an upgrade pad bought a second tier despite the entry latch")
 			cases += 1
 			walkTo(center)
@@ -145,7 +145,7 @@ return function(options)
 		input:SendKey(false, Enum.KeyCode.E, false)
 		keyDown = false
 		waitFor(function() return player:GetAttribute("ArmorLevel") == 2 end, "actual armor proximity key")
-		assert(player:GetAttribute("Coins") == 0 and humanoid.MaxHealth == 115)
+		assert(player:GetAttribute("Coins") == 0 and math.abs(humanoid.MaxHealth-(100+40/49))<.002)
 		cases += 1
 		return {ok=true,cases=cases,clicks=clicks,coins=player:GetAttribute("Coins"),
 			level=player:GetAttribute("SettlementLevel"),weaponLevel=player:GetAttribute("WeaponLevel"),

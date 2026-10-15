@@ -24,10 +24,17 @@ The version-one profile stores these five fields for each started civilization:
 | Field | Meaning | Accepted values |
 | --- | --- | --- |
 | `coins` | Civilization currency | Integer from 0 through 1,000,000,000 |
-| `level` | Settlement stage | Integer from 1 through 4 |
-| `weaponLevel` | Player and troop weapon tier | Integer from 1 through settlement level |
-| `armorLevel` | Player and troop armor tier | Integer from 1 through settlement level |
-| `barracksLevel` | Barracks upgrade tier | Integer from 1 through settlement level |
+| `level` | Settlement stage | Integer from 1 through 50 |
+| `weaponLevel` | Player and troop weapon tier | Integer from 1 through settlement level, maximum 50 |
+| `armorLevel` | Player and troop armor tier | Integer from 1 through settlement level, maximum 50 |
+| `barracksLevel` | Barracks upgrade tier | Integer from 1 through settlement level, maximum 4 |
+
+The fifty-level update preserves existing coins, numeric levels, schema version
+and DataStore keys. Existing level four stays four and receives the new gradual
+visuals and combat curve; it is not remapped to 50. Each field has its own maximum,
+so a high settlement cannot accidentally admit unsupported barracks levels.
+An older four-level build cannot safely load newly saved high levels. Any rollback
+must retain compatible validation rather than clamp or reset stored progress.
 
 Level-one barracks state is stored even before the building unlocks at settlement
 stage 2. Restoring that stage deploys its automatic melee troop; barracks IV also

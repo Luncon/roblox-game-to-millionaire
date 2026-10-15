@@ -5,7 +5,7 @@ return function(options)
 	local screen=player.PlayerGui:WaitForChild("CivilizationSelection",10)
 	local hud=screen:WaitForChild("SettlementHUD",10)
 	local deadline=os.clock()+10
-	local expected=options.expected or {level=4,weaponLevel=4,armorLevel=4,barracksLevel=4}
+	local expected=options.expected or {level=50,weaponLevel=50,armorLevel=50,barracksLevel=4}
 	local attributes={level="SettlementLevel",weaponLevel="WeaponLevel",armorLevel="ArmorLevel",barracksLevel="BarracksUpgradeLevel",coins="Coins"}
 	repeat
 		local ready=hud.Visible
@@ -46,7 +46,7 @@ return function(options)
 		previousBottom=object.AbsolutePosition.Y+object.AbsoluteSize.Y
 	end
 	if expected.coins then assert(hud.Coins.Text==tostring(expected.coins).." coins") end
-	if expected.level==4 and expected.weaponLevel==4 and expected.armorLevel==4 then
+	if expected.level==50 and expected.weaponLevel==50 and expected.armorLevel==50 then
 		local _,maxCount=string.gsub(hud.Progression.Text,"MAX","")
 		assert(maxCount==3,"Maximum settlement/weapon/armor must each display MAX")
 	end

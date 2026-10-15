@@ -170,7 +170,7 @@ local ok, result = pcall(function()
 			return false
 		end, "living warrior for civilization " .. civ.id, 20)
 		assert(living:GetAttribute("CivilizationId") == civ.id)
-		assert(living:GetAttribute("WarriorDamage") == 14 and living.Humanoid.MaxHealth == 115)
+		assert(math.abs(living:GetAttribute("WarriorDamage")-(10+8/49))<.002 and math.abs(living.Humanoid.MaxHealth-(100+40/49))<.002)
 		assert(living:GetAttribute("WeaponLevel") == 2 and living:GetAttribute("ArmorLevel") == 2)
 		assert(player:GetAttribute("BarracksLevel") == 1)
 		passed("native ground input deploys and upgrades " .. civ.name .. " warrior")
@@ -194,7 +194,7 @@ local ok, result = pcall(function()
 	assert(not sampleFailure, sampleFailure)
 	passed("one living unit per owner and server-owned physics hold under eight-player load")
 	for _, player in players do
-		assert(player.Character.Humanoid.Health == 115, "A player was damaged on its protected settlement plot")
+		assert(math.abs(player.Character.Humanoid.Health-(100+40/49))<.002, "A player was damaged on its protected settlement plot")
 		assert(player:GetAttribute("Coins") == 0)
 	end
 	passed("all eight protected owners retain full upgraded health and isolated balances")

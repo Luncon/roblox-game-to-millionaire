@@ -21,30 +21,61 @@ for the Windows/WSL workflow.
   overwrite existing progress with a fresh profile.
 - Verify game behavior in Studio. A Rojo build or OpenSpec validation alone
   does not demonstrate that gameplay works. Teleports need Roblox client tests.
+- Keep one Studio playtest open at a time. Prefer solo checks; use extra clients
+  only when required by the behavior under test, and close owned test windows
+  before starting the next run.
 - Keep each change small enough to playtest. Report what was checked and any
   required runtime checks that could not be completed.
 - Keep dependency installation scripts disabled. Review the known OpenSpec
   dependency finding in `docs/DEPENDENCY_REVIEW.md` before tool upgrades.
 
-The current prototype offers 13 civilizations, exclusive claims, eight generated
-plots, themed settlements/equipment, and physical tycoon pads for single-coin
-earning and separate settlement/weapon/armor upgrades. The HUD displays progress;
+The current prototype offers 13 civilizations, exclusive claims and eight spaced
+plots in a 1,600-stud square world with five biomes. Settlements grow from 60 to
+256 studs through 50 levels with themed districts and landmarks. Weapon and armor
+also have 50 gradual levels: melee damage 10–18 and standard maximum health
+100–140. Physical tycoon pads provide single-coin earning and separate upgrades.
+See `docs/WORLD.md` for geometry and construction. The HUD displays progress;
 there is no client earning/purchase remote. Coins and all four upgrade tracks
 save independently for each player's civilizations. Selection
 waits for a writable profile; a lost lease blocks earning, purchases and kill
 credits. Switching to a free civilization preserves the plot and restores its
 saved progression. See `docs/PROFILES.md`, `docs/ECONOMY.md` and `docs/PLAYTEST.md`.
-Stage-two settlements unlock a one-slot automatic melee
-barracks; three stage-gated purchases reduce future respawn waits by 0.5s each
+Stage-two settlements unlock a one-slot automatic melee barracks with four
+upgrade levels. Three stage-gated purchases reduce future respawn waits by 0.5s each
 and level IV adds one ranged slot. Owner gear applies to both classes. Player
 melee and server-validated final hits award 10 coins, with shared damage/reward
 authority. Weapon, armor and barracks levels are capped at settlement level;
-new tier pads appear at stages 2/3/4. Five user-provided R6 melee templates live
+early tier pads appear at stages 2/3/4 and stable gear pads offer later levels.
+Five user-provided R6 melee templates live
 in `assets/npc-templates`, mapped into ServerStorage by Rojo. Clone/sanitize
 templates without mutating originals. Claimed-plot identity is incorporated
 into each civilization's main hall facade. See `docs/ARMY.md`.
+Nineteen cosmetic models in `assets/equipment-templates` map to
+ServerStorage.EquipmentTemplates and cover every current weapon role. Thirteen
+outfits in `assets/outfit-templates` map to ServerStorage.OutfitTemplates for
+players and generated troops. EquipmentVisuals rebuilds inert clones; never
+import their gameplay scripts, source rigs or stats. The five custom melee skins
+retain their original headwear and clothing. OutfitTemplates preserves avatar
+wardrobe restore baselines and later external edits; native late appearance
+loading must force reapplication without clearing those baselines. See
+`assets/README.md` for attachment conventions and `docs/MARKETPLACE_ASSETS.md`
+for source IDs, creators and dated free-price verification. Automated fixtures
+must preserve unrelated avatar items and immutable source models.
+TroopAppearance applies civilization-specific skin-tone art defaults and warrior
+face texture `10526794` after NPC equipment updates, including custom melee
+clones. Keep BodyColors and actual body-part colors consistent, exactly one
+front face, and existing head meshes/proportions/clothes/headwear. Never mutate
+source templates or apply this NPC override to player avatars. Palette defaults
+do not describe every historical person; baked clothing skin colors remain.
 ProfileService uses `CivilizationProfilesV1` with `StudioDevelopment` in Studio
 and `Live` in Roblox servers. Automated tests must inject their fake store; never
 run regression fixtures against player data. Real storage verification is separate
 from fake-store checks. Matchmaking, formations, abilities and ranged player
 attacks remain planned.
+
+The generated landscape uses deterministic connected native geometry with
+asymmetric relief. `Topography` samples the same local triangles used for
+collision; use its height sampler when grounding scenery. Final plots, radial
+troop roads and crossing reservations remain flat. Arena relief is capped at
+six studs inside the unchanged combat height band. Keep the complete landscape
+within 2,000 static BaseParts and preserve global Terrain/developer geometry.

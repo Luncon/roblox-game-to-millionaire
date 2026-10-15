@@ -16,6 +16,9 @@ commands.OnClientEvent:Connect(function(command)
 		return
 	end
 	local ok, result = pcall(function()
+		if command.action=="advancedPads" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("AdvancedPads",10))()
+		end
 		if command.action == "snapshot" then return request:InvokeServer("snapshot") end
 		if command.action == "retry" then return request:InvokeServer("retry") end
 		if command.action == "civilizationInput" then
