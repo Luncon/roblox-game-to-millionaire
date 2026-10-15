@@ -14,11 +14,18 @@ one coin per activation and buy separate upgrades. Coins and upgrade levels save
 independently for every civilization; use the HUD to switch to an available
 civilization while keeping your plot. Settlement stage 2 unlocks a barracks with
 one automatic melee warrior, which inherits weapon/armor upgrades. Barracks
-retains four levels: its upgrades shorten replacement waits by 0.5 seconds each,
-and level IV adds a ranged troop for a maximum of two living units. Player melee
-attacks
-and troop kills award 10 coins for the final hit. Settlement growth unlocks new
-physical upgrade pads. Matchmaking, formations and abilities remain planned.
+has six levels: its upgrades shorten replacement waits by 0.5 seconds each,
+and level IV adds a ranged troop for two barracks units. Army Camp I at settlement
+10 adds a third troop with a saved melee/ranged choice. Training Yard I at 5
+unlocks Advance, Hold and Regroup; Farm I and Worker Camp I at 7 supply online-only
+income collected beside the rural fields. Their second tiers at 12 raise
+production to four coins per five seconds; separate workshops at 13 discount
+gear prices and a storehouse at 16 raises reserve capacity to 180. Barracks V/VI
+at 8/14 shorten future respawns to 13/12.5 seconds while keeping the same slots.
+Player melee attacks and troop kills award 10 coins for the final hit. Settlement growth unlocks new
+physical upgrade pads beside each building; locked purchases remain hidden.
+Entering settlement 10 requires Barracks IV and the first training, farm and
+worker buildings. Matchmaking, formations and abilities remain planned.
 
 Start with [Start here](START_HERE.md), the [setup guide](docs/SETUP.md),
 the [prototype playtest guide](docs/PLAYTEST.md), the
@@ -50,6 +57,10 @@ Node runs tools; Roblox Studio runs the Luau game.
 
 The current world and progression change and verification checklist are in
 [expanded-world-and-settlement-growth](openspec/changes/expanded-world-and-settlement-growth/tasks.md).
+Building progression, farming and army controls are tracked in
+[settlement-development-milestone](openspec/changes/settlement-development-milestone/tasks.md).
+The next economic tiers and workshops are tracked in
+[settlement-economy-expansion](openspec/changes/settlement-economy-expansion/tasks.md).
 See [economy and gear tuning](docs/ECONOMY.md) for prices and prototype limits.
 The [army guide](docs/ARMY.md) explains barracks, inherited gear, and arena combat;
 [barracks-warriors](openspec/changes/barracks-warriors/tasks.md) tracks that initial change. Earlier progression work is in

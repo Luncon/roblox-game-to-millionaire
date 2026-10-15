@@ -19,7 +19,9 @@ local tracks = {
 		{name="I", nextCost=30, requiredSettlement=2, respawnDelay=15, capacity=1},
 		{name="II", nextCost=75, requiredSettlement=3, respawnDelay=14.5, capacity=1},
 		{name="III", nextCost=150, requiredSettlement=4, respawnDelay=14, capacity=1},
-		{name="IV", respawnDelay=13.5, capacity=2},
+		{name="IV", nextCost=200, requiredSettlement=8, respawnDelay=13.5, capacity=2},
+		{name="V", nextCost=300, requiredSettlement=14, respawnDelay=13, capacity=2},
+		{name="VI", respawnDelay=12.5, capacity=2},
 	},
 }
 for _, key in {"weapon", "armor", "barracks"} do

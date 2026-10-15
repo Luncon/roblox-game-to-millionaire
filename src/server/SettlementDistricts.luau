@@ -2,6 +2,7 @@
 
 local Progression = require(game:GetService("ReplicatedStorage").Shared.SettlementProgression)
 local Config = require(game:GetService("ReplicatedStorage").Shared.ProgressionConfig)
+local Sites = require(game:GetService("ReplicatedStorage").Shared.SettlementSites)
 local Districts = {}
 local STONE = Color3.fromRGB(219, 202, 165)
 local WOOD = Color3.fromRGB(113, 75, 43)
@@ -144,7 +145,12 @@ for x=-extent,extent,22 do
 		local exit=x>-51 and x<-21 and z<0
 		local early=(x==44 and z>=-44 and z<=44) or (x==-44 and z>=-22 and z<=22)
 		local wings=math.abs(math.abs(x)-66)<18 and math.abs(z+68)<20
-		if not core and not palace and not exit and not early and not wings then
+		local infrastructure=false
+		for _,site in {Sites.blacksmith,Sites.armorer,Sites.storehouse}do
+			-- Keep the forecourt clear after construction and later district growth.
+			if math.abs(x-site.X)<20 and math.abs(z-site.Z-10)<24 then infrastructure=true;break end
+		end
+		if not core and not palace and not exit and not early and not wings and not infrastructure then
 			table.insert(lots,{x=x,z=z,minimum=math.ceil((math.max(math.abs(x),math.abs(z))+14-Config.initialSize/2)/(Config.sizeIncrement/2)+1)})
 		end
 	end
@@ -194,7 +200,7 @@ function Districts.add(parent: Folder, frame: CFrame, civ, level: number)
 	elseif level==10 then monument(feature,frame*CFrame.new(0,0,-41),civ);featureId="civic_monument"
 	elseif level==11 then garden(feature,frame*CFrame.new(42,0,-30),civ,8);featureId="district_garden"
 	elseif level==12 then garden(feature,frame*CFrame.new(-44,0,4),civ,8);featureId="western_garden"
-	elseif level==13 then garden(feature,frame*CFrame.new(42,0,38),civ,8);featureId="outer_garden"
+	elseif level==13 then garden(feature,frame*CFrame.new(35,0,-39),civ,8);featureId="outer_garden"
 	elseif level==14 then monument(feature,frame*CFrame.new(44,0,-46),civ);featureId="district_emblem"
 	elseif level==20 then
 		for _, x in {-12,12} do part(feature,"CeremonialGatePier",Vector3.new(3,12,3),frame*CFrame.new(x,8,-46),civ.color) end
@@ -251,4 +257,6 @@ function Districts.perimeter(parent: Folder, frame: CFrame, civ, level: number)
 	wall("ArenaExitPaving",Vector3.new(10,.1,r-11),Vector3.new(-36,2.06,(-r-11)/2))
 end
 
+-- Purchased infrastructure uses the same civilization architecture as districts.
+Districts.house = house
 return Districts

@@ -3,6 +3,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Tracks = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("UpgradeTracks"))
+local Development = require(ReplicatedStorage.Shared.SettlementDevelopment)
 local EconomyUI = {}
 local TEXT = Color3.fromRGB(246, 240, 223)
 local GOLD = Color3.fromRGB(220, 181, 98)
@@ -37,7 +38,7 @@ function EconomyUI.start(screen: ScreenGui)
 	army.TextColor3 = GOLD
 	notice.Text = "Loading saved progress…"
 	notice.TextColor3 = Color3.fromRGB(183, 194, 193)
-	instruction.Text = "Click gold for +1 coin · Step on an upgrade pad."
+	instruction.Text = "Gold pad: +1 coin · Upgrades beside each building."
 	local state = { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1, revision = -1 }
 	local compact = false
 	local function renderArmy()
@@ -55,15 +56,19 @@ function EconomyUI.start(screen: ScreenGui)
 			local remaining = if typeof(deadline) == "number" then math.max(0,math.ceil(deadline-workspace:GetServerTimeNow())) else 0
 			return if remaining > 0 then remaining .. "s" else "deploying"
 		end
-		local units = "Warrior "..status(warrior,"WarriorRespawnAt")
-		if tier.capacity == 2 then units ..= " · Ranged "..status(ranged,"RangedRespawnAt") end
-		army.Text = string.format("Barracks %s · %d/%d troops · %gs respawn\n%s",tier.name,warrior+ranged,tier.capacity,tier.respawnDelay,units)
+		local campCount=player:GetAttribute("CampCount") or 0
+		local campClass=player:GetAttribute("CampClass")
+		local units = "Warrior "..status(warrior-(if campClass=="warrior" then campCount else 0),"WarriorRespawnAt")
+		if tier.capacity == 2 then units ..= " · Ranged "..status(ranged-(if campClass=="ranged" then campCount else 0),"RangedRespawnAt") end
+		local capacity=player:GetAttribute("TroopCapacity") or tier.capacity
+		if capacity>2 then units..=" · Camp "..status(player:GetAttribute("CampCount") or 0,"CampRespawnAt") end
+		army.Text = string.format("Barracks %s · %d/%d troops · %gs respawn\n%s",tier.name,warrior+ranged,capacity,tier.respawnDelay,units)
 	end
 
 	local function trackText(kind: string, level: number): string
-		local tier = Tracks[kind][level]
-		if (tier.requiredSettlement or 1) > state.level then return string.format("%d · Base %d unlock",level,tier.requiredSettlement) end
-		local cost = tier.nextCost
+		local offer = Development.offer(state,kind)
+		if offer.requiredSettlement > state.level then return string.format("%d · Base %d unlock",level,offer.requiredSettlement) end
+		local cost = offer.cost
 		return if cost then string.format("%d · Next %dc", level, cost) else string.format("%d · MAX", level)
 	end
 	local function render()
@@ -79,11 +84,12 @@ function EconomyUI.start(screen: ScreenGui)
 			elseif status=="lost" then "Progress session ended · rejoin to reload safely"
 			else "Saving unavailable · progress changes are paused"
 		coins.Text = string.format("%d coins", state.coins)
+		if (state.farmLevel or 0)>0 then coins.Text..=string.format(" · Farm %d/%d",state.farmCoins or 0,Development.storageCapacity(state)) end
 		if compact then
 			local function short(kind: string, level: number): string
-				local tier = Tracks[kind][level]
-				if (tier.requiredSettlement or 1) > state.level then return string.format("%d:Base%d",level,tier.requiredSettlement) end
-				local cost = tier.nextCost
+				local offer=Development.offer(state,kind)
+				if offer.requiredSettlement > state.level then return string.format("%d:Base%d",level,offer.requiredSettlement) end
+				local cost = offer.cost
 				return string.format("%d:%s", level, if cost then tostring(cost) .. "c" else "MAX")
 			end
 			progression.Text = string.format("Base %s · Weapon %s · Armor %s", short("settlement", state.level),
@@ -92,6 +98,8 @@ function EconomyUI.start(screen: ScreenGui)
 			progression.Text = string.format("Settlement %s\nWeapon %s · Armor %s", trackText("settlement", state.level),
 				trackText("weapon", state.weaponLevel), trackText("armor", state.armorLevel))
 		end
+		local offer=Development.offer(state,"settlement")
+		if #offer.missing>0 then progression.Text="Level 10 needs: "..table.concat(offer.missing,", ") end
 	end
 	local function layout()
 		compact = screen.AbsoluteSize.Y < 400
@@ -131,13 +139,20 @@ function EconomyUI.start(screen: ScreenGui)
 		acceptState({ coins = player:GetAttribute("Coins"), level = player:GetAttribute("SettlementLevel"),
 			weaponLevel = player:GetAttribute("WeaponLevel"), armorLevel = player:GetAttribute("ArmorLevel"),
 			barracksLevel = player:GetAttribute("BarracksUpgradeLevel"),
+			trainingLevel=player:GetAttribute("TrainingLevel"),farmLevel=player:GetAttribute("FarmLevel"),
+			workersLevel=player:GetAttribute("WorkersLevel"),armyCampLevel=player:GetAttribute("ArmyCampLevel"),
+			farmCoins=player:GetAttribute("FarmCoins"),extraTroopClass=player:GetAttribute("ExtraTroopClass"),
+			blacksmithLevel=player:GetAttribute("BlacksmithLevel"),armorerLevel=player:GetAttribute("ArmorerLevel"),
+			storehouseLevel=player:GetAttribute("StorehouseLevel"),
 			revision = player:GetAttribute("EconomyRevision") })
 		render()
 	end
-	for _, attribute in { "Coins", "SettlementLevel", "WeaponLevel", "ArmorLevel", "BarracksUpgradeLevel", "EconomyRevision", "ProgressStatus", "ProgressError", "ProgressSavedAt" } do
+	for _, attribute in { "Coins", "SettlementLevel", "WeaponLevel", "ArmorLevel", "BarracksUpgradeLevel", "EconomyRevision", "ProgressStatus", "ProgressError", "ProgressSavedAt",
+		"TrainingLevel","FarmLevel","WorkersLevel","ArmyCampLevel","FarmCoins","ExtraTroopClass",
+		"BlacksmithLevel","ArmorerLevel","StorehouseLevel" } do
 		player:GetAttributeChangedSignal(attribute):Connect(syncAttributes)
 	end
-	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt" } do
+	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","TroopCapacity" } do
 		player:GetAttributeChangedSignal(attribute):Connect(renderArmy)
 	end
 	task.spawn(function()
@@ -157,6 +172,7 @@ function EconomyUI.start(screen: ScreenGui)
 		invalid = "Try your own plot's pad again.",
 		not_claimed = "Choose a civilization before using the pads.",
 		coin_limit = "The coin limit has been reached.",
+		empty_farm = "Your farm crate is empty. Farmers earn while you play.",
 	}
 	task.spawn(function()
 		local remotes = ReplicatedStorage:WaitForChild("EconomyRemotes", 15)
@@ -169,7 +185,17 @@ function EconomyUI.start(screen: ScreenGui)
 			if type(result) ~= "table" then return end
 			acceptState(result.state)
 			if result.ok then
-				feedback.Text = if result.action == "upgrade" then "Settlement expanded!"
+				feedback.Text = if result.action=="farmIncome" then "Farmers added coins to your collection crate."
+					elseif result.action=="collectFarm" then string.format("Collected %d farm coins!",result.amount or 0)
+					elseif result.action=="training" then "Training yard built! Army orders unlocked."
+					elseif result.action=="farm" then "Farmland improved! Visit the fields along your approach road."
+					elseif result.action=="workers" then "Worker camp improved! Another farmer is tending the fields."
+					elseif result.action=="blacksmith" then "Blacksmith built! Weapon upgrades cost 5% less."
+					elseif result.action=="armorer" then "Armorer built! Armor upgrades cost 5% less."
+					elseif result.action=="storehouse" then "Storehouse built! Your farm can hold 180 coins."
+					elseif result.action=="armyCamp" then "Army camp built! Choose your third troop's class."
+					elseif result.action=="troopClass" then "Camp class saved for its next respawn."
+					elseif result.action == "upgrade" then "Settlement expanded!"
 					elseif result.action == "switch" then "Civilization progress restored!"
 					elseif result.action == "weapon" then "Civilization weapon upgraded!"
 					elseif result.action == "armor" then "Civilization armor upgraded!"

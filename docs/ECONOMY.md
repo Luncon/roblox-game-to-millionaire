@@ -1,8 +1,8 @@
 # Tycoon buttons and civilization equipment
 
-Choose one of the 13 civilizations and go to your assigned settlement. All
-purchases and earning happen on real buttons on the ground. The HUD shows coins
-and upgrade levels; it has no earning or purchase controls.
+Choose one of the 13 civilizations and go to your assigned settlement. Tycoon
+earning, purchases and farm collection use real ground buttons. The HUD shows
+progress; it has no earning or purchase controls.
 
 - **Gold coin button:** click it or use its interaction prompt for exactly one
   coin per accepted activation. Standing on it does not generate income.
@@ -10,15 +10,19 @@ and upgrade levels; it has no earning or purchase controls.
 - **Weapon pad:** buy the next civilization weapon tier independently.
 - **Armor pad:** buy the next civilization armor tier independently.
 - **Barracks pads:** buy faster reinforcements and eventually unlock a ranged troop.
+- **Building pads:** buy training, farming, army, workshop and storage improvements beside their sites.
+- **Farm collection pad:** transfer the active civilization's reserved farm coins to its wallet.
 - **Battlefield kills:** a player or troop final hit earns its civilization 10 coins.
 
-Upgrade pads turn green when you can afford them, red when you cannot, and gray
-when a preceding tier or settlement level is required, or a track is maxed.
-They show prices and next equipment stats. Early settlement expansions reveal
-new physical pads. Tier-two and tier-three pads retire after purchase; the
-tier-four weapon and armor pads remain and buy each later tier through 50.
-Keeping the same pad preserves one purchase per entry even across tier four.
-Mouse, keyboard prompt,
+Available upgrade pads turn green when affordable and red when unaffordable.
+Progression-locked and completed one-time pads are absent; the main hall lists
+missing milestone requirements. Weapon/armor pads sit at the armory, barracks
+pads at its entrance, and building pads beside their structures or construction
+sites. Eligible repeated pads retain their identity and one-purchase-per-entry
+latch while labels and balances change.
+While carrying an equipped weapon, use the pad's interaction prompt (E on PC)
+or step on an upgrade pad. Unequip the weapon before using mouse clicks on a pad;
+the equipped Tool consumes those clicks. Mouse, keyboard prompt,
 mobile prompt, and native controller prompt are supported by the engine. Actual
 hardware input verification is recorded in the playtest guide.
 
@@ -35,12 +39,67 @@ hardware input verification is recorded in the playtest guide.
 
 Every level adds four studs of width and a lasting themed feature. Architecture,
 districts and landmarks depend on the civilization. Next settlement cost at
-level L is `25 + 10*(L-1)`, through level 49. Reaching 50 costs 12,985 coins and
-never increases income per activation. See [world and settlement growth](WORLD.md).
+level L is `25 + 10*(L-1)`, through level 49. Settlement purchases alone total
+12,985 coins; the required settlement-10 buildings add 445 coins, for 13,430
+combined. Settlement size never increases coin-button income. See
+[world and settlement growth](WORLD.md). These prices do not establish measured
+30–45 minute or endgame pacing.
+
+## Useful buildings through settlement 16
+
+| Building | Required settlement | One-time price | Additional requirement | Effect |
+| --- | ---: | ---: | --- | --- |
+| Training Yard I | 5 | 50 coins | None | Unlocks advance, hold and regroup army orders |
+| Farm I | 7 | 80 coins | None | Produces one reserved coin per five active seconds |
+| Worker Camp I | 7 | 60 coins | Farm I | Adds a second farmer and one coin per production interval |
+| Army Camp I | 10 | 120 coins | Barracks IV | Adds one selectable melee/ranged reinforcement slot |
+| Farm II | 12 | 180 coins | Farm I | Adds one coin per production interval and improves the fields |
+| Worker Camp II | 12 | 140 coins | Worker Camp I and Farm II | Adds a third visible farmer and one coin per interval |
+| Blacksmith I | 13 | 150 coins | None | Reduces weapon purchase prices by 5%, rounded upward |
+| Armorer I | 13 | 150 coins | None | Reduces armor purchase prices by 5%, rounded upward |
+| Storehouse I | 16 | 140 coins | Farm I | Raises farm reserve capacity from 60 to 180 |
+
+Purchases complete immediately and save separately per civilization. Entering
+settlement 10 from level 9 requires **Barracks IV, Training Yard I, Farm I and
+Worker Camp I**. Their combined cost remains 445 coins, including the first three barracks
+purchases. Existing saved settlements already at 10–50 retain their level
+without retroactive building requirements. No later settlement checkpoint is
+enforced in this milestone.
+
+The army camp choice defaults to melee and saves as `warrior` or `ranged`.
+Changing it takes effect at the next camp-slot spawn; it does not heal or replace
+a living troop or restart a pending countdown. Actual class changes have a
+separate 0.4-second cooldown; selecting the current class is a no-op.
+
+## Active farming and collection
+
+An owned farm produces `farmLevel + workersLevel` coins every five seconds into
+a reserve, rather than directly into the wallet. Farm I alone earns one; Farm I
+and Worker Camp I earn two; Farm II with Worker Camp I earns three; both tier II
+buildings earn four. The reserve holds 60 coins, or 180 with Storehouse I, and
+stops earning at capacity. Visible passive workers tend the fields without
+participating in combat.
+
+Only the currently selected, writable civilization earns farm income. Clock
+state is local to its live account: joining, reopening or switching resets the
+clock, so offline time and inactive civilizations never earn. Switching discards
+an unfinished interval. Buying Farm I starts its clock at purchase. Every farm,
+worker or storehouse purchase settles completed intervals at the previous yield
+and capacity, then resets the unfinished interval. Expanding a full reserve
+leaves its existing 60 coins intact and starts a fresh interval; it never credits
+time spent full. Full reserves and lost profile authority discard blocked time
+rather than banking a later burst.
+
+The owner's collection pad transfers each reserved coin once. If the billion-coin
+wallet cap leaves room for only part of the reserve, the remainder stays in the
+farm. Empty or full-wallet collection changes neither balance. Collecting from
+a previously full reserve restarts its interval so time spent full is not earned
+retroactively. Farm production, collection and troop selection follow the same
+writable-profile guard as other economy mutations.
 
 ## Weapon and armor tiers
 
-| Tier | Next price per track | Melee damage | Standard maximum health |
+| Tier | Base next price per track | Melee damage | Standard maximum health |
 | --- | --- | --- | --- |
 | 1 | 15 coins | 10 | 100 |
 | 10 | 42 coins | 11.469 | 107.347 |
@@ -51,14 +110,19 @@ Damage is `10 + 8*(L-1)/49`; armor health is `100 + 40*(L-1)/49`.
 Each adjacent level adds about 0.1633 damage or 0.8163 health. Stats remain
 fractional in combat; the displayed decimals are rounded. Ranged damage is 80%
 of the same weapon stat, from 8 through 14.4, without flooring away small gains.
-There are no exponential bonuses. Next gear cost is `15 + 3*(L-1)` through
-level 49. Each equipment track costs 4,263 coins in total. Buying a weapon does not buy
+There are no exponential bonuses. Base next gear cost is `15 + 3*(L-1)` through
+level 49. Each equipment track costs 4,263 coins in total before discounts.
+Blacksmith I applies only to weapon purchases; Armorer I applies only to armor.
+Their final price is `ceil(baseCost * 0.95)`: a 42-coin tier becomes 40 coins.
+Owning the respective workshop before all 49 purchases makes that track total
+4,074 coins. Workshops change prices without adding damage or health; pads, HUD
+and server charges use the same final offer. Buying a weapon does not buy
 armor or expand the settlement. Players equip themed armor and a weapon when
 claiming a civilization, receive updated gear on purchase, and regain it after
 character resets. Every weapon/armor level through 50 is capped by the settlement
 level. Expand the settlement before buying a higher tier. Their preceding tier
-is required even when a later button is visible. Barracks remains a separate
-four-level track; its current prices, respawn timing and two-slot limit are
+is required even when a later button is visible. Barracks is a separate
+six-level track; its current prices, respawn timing and original two-slot capacity are
 listed in [army details](ARMY.md).
 Armor grants maximum health and preserves missing health. Equipped player weapons
 now attack in melee; army gear updates immediately as well.
@@ -70,14 +134,14 @@ the starter needs fourteen against maximum armor. Equal-tier fights take ten
 hits at level one and eight at 50, ignoring regeneration, movement and other
 attackers. These bounds are tuning checks, not proof that live combat is balanced.
 
-Sparta uses a spear and bronze cuirass; Seneca a bow and tunic; Britain a musket
+Sparta uses a spear and bronze cuirass; Seneca a bow and tunic; Britain an officer sword
 and redcoat; Mongols a sabre and lamellar armor; Vikings an axe and mail; Persia
 a spear and scale cuirass; Japan a katana and do armor; Mauryan India a spear and
 cuirass; Spain a rapier and breastplate; Egypt a khopesh and linen/bronze; Rome a
 gladius and segmented cuirass; Ottomans a kilij and mail; Ming China a dao and
-lamellar armor. Player gear and eight civilization NPCs use stylized generated models. Five melee
+lamellar armor. Players and generated troops wear matching outfits; five melee
 civilizations use the [user-provided models](../assets/README.md), preserving
-clothing and headwear. No Marketplace scripts are imported.
+clothing and headwear. Imported appearance does not supply combat stats or scripts.
 
 ## Saved progress and server rules
 
@@ -85,7 +149,8 @@ Coins and all upgrade tracks save separately for each player and civilization.
 They survive character resets, civilization switches and later joins when storage
 is available. **Change civ** reopens the selector and keeps your plot when you
 choose a free civilization. Your old civilization retains its progress, while an
-unstarted one begins at zero coins and level one. Saved progress loads before
+unstarted one begins at zero coins, level-one original tracks, unowned new
+buildings and an empty farm reserve. Saved progress loads before
 selection; failed loads block play without replacing the record. See
 [saved profiles](PROFILES.md) for autosaves, final saves, failure feedback and
 Studio development isolation.
@@ -100,7 +165,8 @@ from multiple body parts or standing on a pad. These limits do not prove input
 came from a human and do not detect all autoclickers.
 
 A profile that is loading, closing, lost or expired cannot earn coins, buy
-upgrades or receive kill rewards. Temporary save failures retry while the known
+upgrades, produce/collect farm coins, change troop choice or receive kill rewards.
+Temporary save failures retry while the known
 lease is valid. A lost session requires rejoining to reload safely.
 
 A final validated hostile kill awards 10 coins to its attacking civilization,
@@ -114,5 +180,11 @@ All 13 choices follow the [agreed roster](GAME_VISION.md); only eight can own
 plots in a full server. Tuning lives in
 [SettlementProgression](../src/shared/SettlementProgression.luau),
 [ProgressionConfig](../src/shared/ProgressionConfig.luau),
-[UpgradeTracks](../src/shared/UpgradeTracks.luau), and
+[UpgradeTracks](../src/shared/UpgradeTracks.luau),
+[SettlementDevelopment](../src/shared/SettlementDevelopment.luau), and
 [Economy](../src/server/Economy.luau).
+
+The expansion's fresh single-window Studio run passed 209 module cases and five
+native purchase, production, collection, restoration and replacement checks
+against injected fake profiles. Executed runtime evidence and remaining limits belong in
+[playtest records](PLAYTEST.md).

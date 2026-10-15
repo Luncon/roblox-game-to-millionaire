@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Tracks = require(Shared.UpgradeTracks)
 local Catalog = require(Shared.PadCatalog)
+local Development = require(Shared.SettlementDevelopment)
 local Equipment = require(script.Parent.Equipment)
 local TycoonButtons = {}
 
@@ -24,24 +25,26 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		connect(detector.MouseClick,function(player) activate(player,plotId,definition.action,20) end)
 		connect(prompt.Triggered,function(player) activate(player,plotId,definition.action,20) end)
 		prompt.MaxActivationDistance, prompt.HoldDuration = 10, 0
-		prompt.ObjectText = if definition.action == "earn" then "Coin Button" else string.upper(definition.track) .. " Upgrade"
+		prompt.ObjectText = if definition.action == "earn" then "Coin Button"
+			elseif definition.action=="collectFarm" then "Farm Collection" else string.upper(definition.track) .. " Upgrade"
 		if definition.action ~= "earn" then
-			contacts[plotId][definition.action] = contacts[plotId][definition.action] or {}
-			local touching = contacts[plotId][definition.action]
+			contacts[plotId][definition.track] = contacts[plotId][definition.track] or {}
+			local touching = contacts[plotId][definition.track]
+			local contactFrame,contactSize=pad.CFrame,pad.Size+Vector3.new(0,1,0)
 			local function overlaps(character)
-				if pad.Parent == nil then return false end
 				local overlap = OverlapParams.new()
 				overlap.FilterType = Enum.RaycastFilterType.Include
 				overlap.FilterDescendantsInstances = {character}
 				overlap.MaxParts = 1
-				return #workspace:GetPartBoundsInBox(pad.CFrame,pad.Size+Vector3.new(0,1,0),overlap)>0
+				-- The logical purchase zone survives replacement of its tier pad.
+				return #workspace:GetPartBoundsInBox(contactFrame,contactSize,overlap)>0
 			end
 			connect(pad.Touched,function(hit)
 				local character = hit:FindFirstAncestorOfClass("Model")
 				local player = if character then Players:GetPlayerFromCharacter(character) else nil
 				if not player or player.Character ~= character or not overlaps(character) then return end
 				local previous = touching[player.UserId]
-				if previous and previous.character == character and previous.pad == pad then return end
+				if previous and previous.character == character then return end
 				local entry = {character=character,pad=pad}
 				touching[player.UserId] = entry
 				task.spawn(function()
@@ -77,31 +80,31 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 				bound.pad.Color = Color3.fromRGB(240,191,54)
 				bound.label.Text = if enabled then "+1 COIN\nClick or interact" else "COINS\nClaim this plot first"
 				bound.prompt.ActionText = "+1 Coin"
+			elseif action=="collectFarm" then
+				local reserve=if state then state.farmCoins or 0 else 0
+				bound.pad.Color=if reserve>0 then Color3.fromRGB(72,187,90) else Color3.fromRGB(185,150,70)
+				bound.label.Text=string.format("COLLECT FARM\n%d / %d COINS",reserve,Development.storageCapacity(state or {}))
+				bound.prompt.ActionText="Collect "..reserve.." coins"
 			else
-				local track = Tracks[definition.track]
-				local current = if state then state[Catalog.fields[definition.track]] else 1
-				local expected = if definition.repeatFrom then math.max(definition.repeatFrom,current) elseif definition.tier then definition.tier-1 else current
-				local tier = track[expected]
-				local cost = tier.nextCost
-				local ready = enabled and current == expected
-				local required = tier.requiredSettlement or 1
-				local unlocked = state ~= nil and state.level >= required
-				local title = string.upper(definition.track)
-				if not enabled then bound.label.Text = title.."\nClaim this plot first"
-				elseif not ready then bound.label.Text = string.format("%s %s\nBUY TIER %d FIRST",title,track[definition.tier].name,expected)
-				elseif not cost then bound.label.Text = title.."\nMAX LEVEL"
-				elseif not unlocked then bound.label.Text = string.format("%s · TIER %d\nSETTLEMENT %d REQUIRED",title,expected+1,required)
-				else
-					local nextTier=track[expected+1]
+				local offer=if state then Development.offer(state,definition.track) else nil
+				local cost=if offer then offer.cost else nil
+				local available=offer and offer.available
+				local building=Development.buildings[definition.track]
+				local title=string.upper(if building then building.title else definition.track)
+				if not state then bound.label.Text=title.."\nClaim this plot first"
+				elseif available then
+					local track=Tracks[definition.track]
+					local nextTier=if track then track[offer.nextLevel] else nil
 					local effect = if definition.track == "barracks" then string.format(" · %gs",nextTier.respawnDelay)
 						elseif definition.track == "weapon" then string.format(" · %.2f DMG",nextTier.damage)
 						elseif definition.track == "armor" then string.format(" · %.1f HP",nextTier.health) else ""
-					bound.label.Text = string.format("%s · %s%s\n%d COINS",title,track[expected+1].name,effect,cost)
-				end
-				bound.pad.Color = if ready and unlocked and cost and state.coins >= cost then Color3.fromRGB(72,187,90)
-					elseif not ready or not unlocked or not cost then Color3.fromRGB(105,111,120) else Color3.fromRGB(207,67,63)
-				bound.prompt.ActionText = if not ready then "Previous tier required" elseif cost and not unlocked then "Upgrade settlement first" elseif cost then string.format("Upgrade · %d Coins",cost) else "Max Level"
-				enabled = ready and unlocked and cost ~= nil
+					bound.label.Text=string.format("%s · %s%s\n%d COINS",title,
+						if nextTier then nextTier.name elseif offer.nextLevel==2 then "II" else "I",effect,cost)
+				else bound.label.Text=title.."\nUnavailable" end
+				bound.pad.Color=if available and state.coins>=cost then Color3.fromRGB(72,187,90)
+					elseif available then Color3.fromRGB(207,67,63) else Color3.fromRGB(105,111,120)
+				bound.prompt.ActionText=if available then string.format("Buy · %d Coins",cost) else "Claim first"
+				enabled=available==true
 			end
 			bound.detector.MaxActivationDistance = if enabled then 20 else 0
 			bound.prompt.Enabled = enabled
@@ -128,13 +131,14 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		local definition = bound.definition
 		local state = economy:get(player.UserId)
 		if not state then return {ok=false,reason="not_claimed"} end
-		local current = if action ~= "earn" then state[Catalog.fields[definition.track]] else nil
-		local expected = if definition.repeatFrom then math.max(definition.repeatFrom,current) elseif definition.tier then definition.tier-1 else current
 		local result
-		if action ~= "earn" and current ~= expected then
-			result = {ok=false,reason="prerequisite",state=state}
+		if action=="earn" then result=economy:earn(player.UserId)
+		elseif action=="collectFarm" then result=economy:collectFarm(player.UserId)
 		else
-			result = if action == "earn" then economy:earn(player.UserId) else economy:upgrade(player.UserId,expected,definition.track)
+			local offer=Development.offer(state,definition.track)
+			local expected=if definition.tier and not definition.repeatFrom then definition.tier-1 else offer.current
+			if expected~=offer.current then result={ok=false,reason="prerequisite",state=state}
+			else result=economy:upgrade(player.UserId,expected,definition.track) end
 		end
 		if result.ok and action == "upgrade" then
 			world:setOwner(plotId,civilizations[claim.civilizationId],player.UserId,player.DisplayName,result.state.level)
@@ -154,6 +158,9 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		local state = economy:get(player.UserId)
 		render(claim.plotId,state)
 		if state then Equipment.apply(player,civilizations[claim.civilizationId],state) end
+	end
+	function controller:refreshState(player,claim)
+		render(claim.plotId,economy:get(player.UserId))
 	end
 	function controller:release(playerId)
 		local claim = registry:get(playerId)

@@ -44,13 +44,13 @@ small coplanar overlaps seal floating-point seams, including after a world moves
 or rotates. This uses ordinary generated parts rather than modifying global
 Roblox Terrain.
 
-Plot footprints, full-width roads, the entry, plaza and crossing reservations
+Plot footprints, rural farming sites, full-width roads, the entry, plaza and crossing reservations
 flatten intersecting triangles before construction. Gentle transitions lead
 into taller land. Biome boundaries and landforms use fixed noise and unequal
 offsets, while scenery and cover use a fixed seed. A fresh world has the same
 terrain instead of rearranging geography when players switch civilizations.
 
-The complete landscape currently measures **1,929 static BaseParts**, below its
+Before adding the rural reservations, the complete landscape measured **1,929 static BaseParts**, below its
 2,000-part limit. That includes terrain collision, vegetation, water, bridges
 and cover. Part counts are geometry measurements, not frame-rate guarantees.
 
@@ -101,11 +101,60 @@ domed courtyards and Ming palace courts. These are stylized generated references
 not complete historical reconstructions. Egyptian growth uses the chosen New
 Kingdom temple reference rather than adding a pyramid as its default landmark.
 
-The forecourt remains usable throughout growth. Initial weapon/armor tier pads
-retire when purchased; the tier-four pads remain stable and offer later tiers
-through 50, preserving one purchase per touch entry. The barracks retains its
-four-level progression and two-troop maximum. See [economy](ECONOMY.md) and
+The forecourt remains usable throughout growth. Only the next eligible weapon,
+armor and barracks pads appear; settlement-capped, completed and prerequisite-
+locked purchases are absent. Available but unaffordable pads stay visible with
+prices. A logical contact latch survives replacement of a tier pad, so standing
+on its site cannot buy the following tier. The barracks has six levels and
+two original troop slots; Army Camp I adds a third slot. See [economy](ECONOMY.md) and
 [army rules](ARMY.md).
+
+## Purchased building sites
+
+The first development milestone adds an armory automatically at settlement 2,
+a purchasable training yard at 5, farmland and worker camp at 7, and army camp at
+10. Training Yard I, Farm I, Worker Camp I and Barracks IV are prerequisites for
+entering settlement 10. Missing requirements appear at the main hall and HUD.
+Older saved settlements already beyond this checkpoint keep their levels.
+
+Weapon and armor controls sit beside the armory in the right courtyard. Barracks
+controls sit outside its arena-facing door. The training yard and army camp each
+have their own forecourt site. Purchased structures use the same civilization
+architecture and colors as surrounding districts, and update independently of
+settlement growth. Roads, entrances and standing room stay clear.
+
+Two rural fields sit on either side of the approach, centered at settlement-local
+x ±60, z −172. Their 56 × 40-stud beds lie beyond the final 128-stud settlement
+half-width and outside the central battlefield. Farm upgrades sit at x −48,
+z −145, separate from collection at x −24, z −145; the worker camp sits at
+x 60, z −144. Terrain and scenery reserve these
+areas before generation. The 28-stud road remains clear through the fields.
+
+Farm II at settlement 12 increases each field from five to seven crop rows, adding irrigation details and
+greater production. Worker Camp I adds a second farmer to the initial one;
+Worker Camp II at 12 adds a third and requires Farm II. These are small
+anchored animated visual rigs without Humanoids, pathfinding, combat or network
+ownership overhead. Their tending positions follow the current foundation even
+after moving the world. Farming income, collection and saving are described in
+[economy](ECONOMY.md).
+
+Settlement 13 offers separate themed Blacksmith and Armorer buildings at local
+(-42, 34) and (42, 34), with controls at z 51. Forge/anvil and display-armor
+details distinguish their roles. Storehouse I at 16 sits at (0, 45), with its
+control beside it at (20, 45), visible stored goods and 180-coin reserve capacity. Pads fit
+their unlock-stage foundations, and inner prompt positions remain outside newly built walls. District
+lots reserve these sites through level 50, including moving the earlier garden.
+Infrastructure cache keys include all purchased tiers; reserve changes update
+labels without rebuilding buildings or controls. Later farm tiers at 20/30/42,
+Storehouse II and further capacity upgrades remain planned.
+
+These earlier first-milestone level-10 Britain views show the still-small settlement, separate
+building controls, clear approach road and rural land reserved beyond the future
+capital footprint. They use one client and temporary inspection camera settings.
+
+![Level-ten settlement and rural farmland](assets/settlement-development/britain-level10-overview.png)
+
+![Civilization-colored workers tending the farm](assets/settlement-development/britain-farm-workers.png)
 
 ## Configuration and saved progress
 
@@ -126,8 +175,8 @@ The normal game restores each civilization independently. See
 
 Module checks verify all 13 civilizations at every level, retained features,
 structural bounds, forecourt/barracks exits, transformed rebuilds, independent
-upgrade caps, final plot separation and generated-world cleanup. Maximum
-settlements measured 203–272 static BaseParts each. Before the topography change,
+upgrade caps, final plot separation and generated-world cleanup. Earlier
+settlement-only builds measured 203–272 static BaseParts each. Before the topography change,
 one eight-capital geometry fixture contained 2,466 BaseParts, including 423
 landscape parts. Those earlier counts and captures below describe the previous
 flat landscape, not the new terrain or an eight-player performance test.

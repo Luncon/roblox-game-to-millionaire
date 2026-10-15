@@ -130,11 +130,11 @@ the Roblox application, since Studio play mode does not support them.
 
 Keep one Studio playtest open at a time and use solo Play for ordinary checks.
 For automated checks isolated from player data, run
-`npm run build:test-project -- --solo`, then build `.cache/solo-test.project.json`
+`npm run build:test-project -- --solo --development`, then build `.cache/solo-test.project.json`
 with Rojo and open the resulting place in the existing Studio window. Press
 **Play** normally; the solo harness uses an in-memory profile store and does not
 launch extra clients. See [the playtest instructions](PLAYTEST.md#repeatable-engine-tests)
-for the build command, progress/result fields and inspection completion step.
+for build commands and structured progress/results.
 Use multiple clients only when the specific behavior requires connected owners,
 and close owned test windows before the next run.
 
@@ -154,8 +154,10 @@ for a safe profile load; an error does not create a replacement default profile.
 Use the on-screen retry action after waiting, or rejoin if the progress session
 has ended. [Profile behavior and schema](PROFILES.md) describes the guarantees.
 
-`npm run build:test-project -- --solo` builds the preferred single-window isolated
-test configuration; omitting `--solo` creates the separate multiplayer test
+`npm run build:test-project -- --solo --expansion` builds the economic expansion
+check: Farm/Worker II, workshops, storage and Barracks V/VI. Use
+`--solo --development` for the first building/army milestone; plain `--solo` retains the earlier world-growth
+harness. Omitting `--solo` creates the separate multiplayer test
 configuration. Both bootstraps inject an in-memory store. Automated regressions
 do not access either real scope.
 For a focused two-player persistence check, stop solo Play and use the generated

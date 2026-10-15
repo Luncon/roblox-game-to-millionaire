@@ -4,6 +4,11 @@ import path from 'node:path';
 const root = process.cwd();
 const outputDirectory = path.join(root, '.cache');
 const solo = process.argv.includes('--solo');
+const development = process.argv.includes('--development');
+const expansion = process.argv.includes('--expansion');
+if (development && !solo) throw new Error('--development requires --solo');
+if (expansion && !solo) throw new Error('--expansion requires --solo');
+if (development && expansion) throw new Error('Choose --development or --expansion');
 const project = JSON.parse(fs.readFileSync('default.project.json', 'utf8'));
 
 function relocatePaths(instance) {
@@ -36,7 +41,8 @@ for (const name of fs.readdirSync(serverDirectory)) {
 }
 project.tree.ServerScriptService.Game.Bootstrap = { $path: solo ? '../tests/SoloBootstrap.server.luau' : '../tests/TestBootstrap.server.luau' };
 if (solo) {
-  project.tree.ServerScriptService.SoloWorldGrowthTests = { $path: '../tests/SoloWorldGrowth.server.luau' };
+  const runner = expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
+  project.tree.ServerScriptService[`${runner}Tests`] = { $path: `../tests/${runner}.server.luau` };
 } else {
 project.tree.ServerScriptService.MultiplayerTests = { $path: '../tests/multiplayer/Server.server.luau' };
 project.tree.ServerScriptService.ArmyMultiplayerTests = { $path: '../tests/multiplayer/Army.server.luau' };

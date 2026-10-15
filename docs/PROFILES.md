@@ -1,10 +1,11 @@
 # Saved civilization progress
 
 Each player has separate progress for all 13 civilizations. The server loads the
-player's profile before allowing civilization selection, coin earning, upgrades
-or kill rewards. Choosing a civilization restores its coins, settlement, weapons,
-armor and barracks. A civilization you have not started begins with zero coins
-and level-one upgrades, without changing your other civilizations.
+player's profile before allowing civilization selection or economy mutations.
+Choosing a civilization restores its coins, upgrade/building levels, farm reserve
+and extra troop choice. A civilization you have not started begins with zero coins,
+level-one original tracks, unowned new buildings and an empty farm reserve,
+without changing your other civilizations.
 
 Use **Change civ** in the HUD to reopen the selector. It shows your saved progress
 and which civilizations are available in this server. Switching to a free
@@ -19,7 +20,7 @@ Cross-server civilization matchmaking remains planned.
 
 ## What is saved
 
-The version-one profile stores these five fields for each started civilization:
+The version-one profile stores these fourteen scalar fields for each started civilization:
 
 | Field | Meaning | Accepted values |
 | --- | --- | --- |
@@ -27,7 +28,30 @@ The version-one profile stores these five fields for each started civilization:
 | `level` | Settlement stage | Integer from 1 through 50 |
 | `weaponLevel` | Player and troop weapon tier | Integer from 1 through settlement level, maximum 50 |
 | `armorLevel` | Player and troop armor tier | Integer from 1 through settlement level, maximum 50 |
-| `barracksLevel` | Barracks upgrade tier | Integer from 1 through settlement level, maximum 4 |
+| `barracksLevel` | Barracks upgrade tier | Integer 1–6, no higher than settlement; V requires 8, VI requires 14 |
+| `trainingLevel` | Training Yard purchase | 0 or 1; owning it requires settlement 5 |
+| `farmLevel` | Farm tier | 0–2; I requires settlement 7, II requires 12 |
+| `workersLevel` | Worker Camp tier | 0–2; I requires settlement 7, II requires 12; no higher than farm tier |
+| `armyCampLevel` | Army Camp purchase | 0 or 1; owning it requires settlement 10 and Barracks IV or higher |
+| `farmCoins` | Uncollected farm reserve | Integer 0–60, or 0–180 with Storehouse I; must be 0 without a farm |
+| `extraTroopClass` | Next camp reinforcement class | `warrior` or `ranged`; default `warrior` |
+| `blacksmithLevel` | Weapon-price workshop | 0 or 1; owning it requires settlement 13 |
+| `armorerLevel` | Armor-price workshop | 0 or 1; owning it requires settlement 13 |
+| `storehouseLevel` | Reserve-capacity building | 0 or 1; owning it requires settlement 16 and Farm I |
+
+Both building milestones retain `schemaVersion = 1` and the existing store/key.
+Only missing new fields receive defaults: building levels and reserve become
+zero, and troop choice becomes `warrior`. Explicitly malformed supplied values
+fail validation. Old coins and levels are not reset. Saved settlements already
+at 10–50 do not retroactively require the new settlement-10 checkpoint; buying
+the transition from 9 to 10 does require its buildings.
+
+The economy expansion adds only `blacksmithLevel`, `armorerLevel` and
+`storehouseLevel` to the eleven-field state. Older records receive zero for
+these missing fields while retaining their existing purchases, reserve, class
+and balances. Farm II with Worker Camp I is valid; Worker Camp II with Farm I
+is rejected. Premature Barracks V/VI and reserves above the owned storage
+capacity are rejected without resetting the profile.
 
 The fifty-level update preserves existing coins, numeric levels, schema version
 and DataStore keys. Existing level four stays four and receives the new gradual
@@ -35,20 +59,29 @@ visuals and combat curve; it is not remapped to 50. Each field has its own maxim
 so a high settlement cannot accidentally admit unsupported barracks levels.
 An older four-level build cannot safely load newly saved high levels. Any rollback
 must retain compatible validation rather than clamp or reset stored progress.
+A pre-building or eleven-field writer could silently omit newer fields on its
+next save; rollback must retain all fourteen fields, expanded tier validation
+and capacity rules.
 
 Level-one barracks state is stored even before the building unlocks at settlement
 stage 2. Restoring that stage deploys its automatic melee troop; barracks IV also
-deploys the ranged troop. Current NPC models, health, positions, corpses,
+deploys the ranged troop. Army Camp I adds a third slot whose saved class is
+used at its next spawn. Current NPC models, health, positions, corpses,
 projectiles and replacement countdowns are temporary. Switching civilization or
 rejoining creates the appropriate army again, rather than restoring a battle in
 progress. Character resets within the same civilization still preserve the
 current army and its timers.
 
+Farm reserve and storage ownership are saved; the farm clock is not. Switching/rejoining preserves earned
+reserve but discards unfinished intervals and creates no offline income. Farm
+worker poses, crop animation and transient advance/hold/regroup orders are not
+saved. A selected civilization starts with the advance order.
+
 The envelope is `{schemaVersion = 1, civilizations = {...}, session = {...}?,
 savedAt = ...?}`. Civilization dictionary keys use the IDs in
 [Civilizations](../src/shared/Civilizations.luau). `session` contains a unique token
 and an expiry timestamp; it is removed after an acknowledged final release.
-Account revisions, click tokens, purchase cooldowns, avatar health and plot IDs
+Account revisions, click tokens, purchase cooldowns, farm clocks, avatar health and plot IDs
 are excluded. [ProfileData](../src/server/ProfileData.luau) validates and copies
 the values; it rejects malformed and unsupported profiles instead of repairing
 them into defaults.
@@ -94,7 +127,8 @@ or expires.
 
 The HUD reports loading, saving and delayed saves. A temporary save failure can
 allow play while the previously confirmed lease remains valid; autosaving retries
-later. A lost or expired lease freezes coin earning, purchases and kill rewards.
+later. A lost or expired lease freezes coin earning, purchases, farm production/
+collection, troop-choice changes and kill rewards.
 The HUD asks you to rejoin to reload safely. The old session does not automatically
 take ownership again from stale memory.
 

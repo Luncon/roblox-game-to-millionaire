@@ -19,6 +19,12 @@ return function()
 			advance(.1)
 		end
 	end
+	local function checkpoint(economy,advance)
+		local before=economy:get(1).coins
+		for level=1,3 do assert(economy:upgrade(1,level,"barracks").ok);advance(1) end
+		for _,track in {"training","farm","workers"} do assert(economy:upgrade(1,0,track).ok);advance(1) end
+		assert(economy:get(1).coins==before-445,"Checkpoint buildings must charge their full independent prices")
+	end
 	test("unclaimed players cannot earn or purchase", function()
 		local economy = fixture()
 		assert(economy:earn(1).reason == "not_claimed")
@@ -79,8 +85,9 @@ return function()
 	test("all prices are sequential and maximum level cannot charge again", function()
 		local economy, advance = fixture()
 		economy:open(1)
-		earn(economy, advance, 1, 12995)
+		earn(economy, advance, 1, 13440)
 		for level=1,49 do
+			if level==9 then checkpoint(economy,advance) end
 			local price=25+10*(level-1)
 			local before = economy:get(1).coins
 			assert(economy:upgrade(1, level).ok)
@@ -150,8 +157,9 @@ return function()
 	test("both gear tracks charge linear prices independently and cap at level fifty", function()
 		local economy, advance = fixture()
 		economy:open(1)
-		earn(economy, advance, 1, 21521)
+		earn(economy, advance, 1, 21966)
 		for level=1,49 do
+			if level==9 then checkpoint(economy,advance) end
 			assert(economy:upgrade(1,level).ok)
 			advance(1)
 		end
@@ -202,6 +210,95 @@ return function()
 		assert(economy:upgrade(1, 2, "weapon").ok)
 		assert(economy:upgrade(1, 2, "armor").ok)
 		assert(economy:get(1).coins == 0)
+	end)
+	local function initial(level,coins,extra)
+		local value={coins=coins,level=level,weaponLevel=1,armorLevel=1,barracksLevel=1}
+		for field,item in extra or {} do value[field]=item end
+		return value
+	end
+	test("new buildings charge once and the settlement ten checkpoint requires every prerequisite",function()
+		local economy,advance=fixture()
+		assert(economy:open(1,initial(9,1000)))
+		assert(economy:upgrade(1,9).reason=="prerequisite" and economy:get(1).coins==1000)
+		assert(economy:upgrade(1,0,"workers").reason=="prerequisite")
+		checkpoint(economy,advance)
+		assert(economy:get(1).coins==555 and economy:get(1).trainingLevel==1 and economy:get(1).farmLevel==1 and economy:get(1).workersLevel==1)
+		assert(economy:upgrade(1,0,"training").reason=="stale_level")
+		assert(economy:upgrade(1,1,"training").reason=="max_level")
+		assert(economy:upgrade(1,9).ok and economy:get(1).coins==450 and economy:get(1).level==10)
+		assert(economy:upgrade(1,0,"armyCamp").ok and economy:get(1).coins==330 and economy:get(1).armyCampLevel==1)
+	end)
+	test("farm clock starts on purchase workers settle the old rate and full reserve cannot bank blocked time",function()
+		local economy,advance=fixture()
+		assert(economy:open(1,initial(7,1000)))
+		advance(100);assert(economy:farmStep(1).reason=="no_farm")
+		assert(economy:upgrade(1,0,"farm").ok)
+		local revision=economy:get(1).revision
+		advance(4.9);assert(economy:farmStep(1).amount==0 and economy:get(1).revision==revision)
+		advance(.1);assert(economy:farmStep(1).amount==1 and economy:get(1).farmCoins==1 and economy:get(1).coins==920)
+		advance(7);assert(economy:upgrade(1,0,"workers").ok)
+		assert(economy:get(1).farmCoins==2,"Worker purchase applied the new rate retroactively")
+		advance(10);assert(economy:farmStep(1).amount==4 and economy:get(1).farmCoins==6 and economy:get(1).coins==860)
+		advance(1000);assert(economy:farmStep(1).amount==54 and economy:get(1).farmCoins==60)
+		advance(4);assert(economy:collectFarm(1).amount==60 and economy:get(1).coins==920)
+		advance(1);assert(economy:farmStep(1).amount==0,"Collection banked partial time spent at reserve capacity")
+		advance(4);assert(economy:farmStep(1).amount==2)
+		assert(economy:collectFarm(1).amount==2 and economy:collectFarm(1).reason=="empty_farm")
+	end)
+	test("profile authority and account replacement discard inactive farm time",function()
+		local time,writable=0,true
+		local economy=Economy.new(function() return time end,function() return writable end)
+		local farm=initial(7,0,{farmLevel=1})
+		assert(economy:open(1,farm) and economy:canMutate(1) and not economy:canMutate(2))
+		local revision=economy:get(1).revision
+		time=10;writable=false
+		assert(not economy:canMutate(1) and economy:farmStep(1).reason=="profile_unavailable" and economy:collectFarm(1).reason=="profile_unavailable")
+		time=110;assert(not economy:farmStep(1).ok and economy:get(1).farmCoins==0 and economy:get(1).revision==revision)
+		writable=true;time=114;assert(economy:farmStep(1).amount==0)
+		time=115;assert(economy:farmStep(1).amount==1)
+		time=300;farm.farmCoins=10;assert(economy:replace(1,farm))
+		assert(economy:farmStep(1).amount==0 and economy:get(1).farmCoins==10)
+		economy:close(1);time=1000;assert(economy:open(1,farm))
+		assert(economy:farmStep(1).amount==0 and economy:get(1).farmCoins==10)
+	end)
+	test("collection preserves wallet overflow and troop selection has its own guarded no-op aware cooldown",function()
+		local economy,advance=fixture()
+		assert(economy:open(1,initial(10,999999995,{barracksLevel=4,farmLevel=1,armyCampLevel=1,farmCoins=10})))
+		assert(economy:collectFarm(1).amount==5 and economy:get(1).coins==1000000000 and economy:get(1).farmCoins==5)
+		assert(economy:collectFarm(1).reason=="coin_limit" and economy:get(1).farmCoins==5)
+		assert(economy:selectTroop(1,"ranged").ok and economy:get(1).extraTroopClass=="ranged")
+		local revision=economy:get(1).revision
+		assert(economy:selectTroop(1,"ranged").ok and economy:get(1).revision==revision)
+		assert(economy:selectTroop(1,"warrior").reason=="rate_limited")
+		advance(.4);assert(economy:selectTroop(1,"warrior").ok and economy:get(1).extraTroopClass=="warrior")
+		assert(economy:selectTroop(1,"mage").reason=="invalid")
+		economy:open(2);assert(economy:selectTroop(2,"ranged").reason=="prerequisite")
+	end)
+	test("legacy imports preserve high progression while malformed supplied development fields cannot open or replace",function()
+		local economy=fixture()
+		local legacy=initial(50,777,{weaponLevel=50,armorLevel=48,barracksLevel=4})
+		local state=economy:open(1,legacy)
+		assert(state.coins==777 and state.level==50 and state.weaponLevel==50 and state.armorLevel==48 and state.barracksLevel==4)
+		assert(state.trainingLevel==0 and state.farmLevel==0 and state.workersLevel==0 and state.armyCampLevel==0 and state.farmCoins==0 and state.extraTroopClass=="warrior")
+		local revision=state.revision
+		local invalid={}
+		for _,field in {"trainingLevel","farmLevel","workersLevel","armyCampLevel"} do
+			local aboveMax=if field=="farmLevel" or field=="workersLevel" then 3 else 2
+			for _,value in {false,-1,aboveMax,"1",.5,math.huge,0/0} do
+				local bad=table.clone(legacy);bad[field]=value;table.insert(invalid,bad)
+			end
+		end
+		for _,bad in {initial(4,0,{trainingLevel=1}),initial(6,0,{farmLevel=1}),initial(7,0,{workersLevel=1}),
+			initial(10,0,{armyCampLevel=1,barracksLevel=3}),initial(10,0,{farmCoins=1}),initial(10,0,{farmLevel=1,farmCoins=61}),
+			initial(10,0,{farmCoins=false}),initial(10,0,{extraTroopClass="mage"}),initial(10,0,{extraTroopClass=false})} do table.insert(invalid,bad) end
+		for _,bad in invalid do
+			assert(economy:open(2,bad)==nil and economy:get(2)==nil,"Malformed profile created an account")
+			assert(economy:replace(1,bad)==nil and economy:get(1).revision==revision and economy:get(1).coins==777,"Malformed profile reset active progress")
+		end
+		local valid=initial(10,5,{barracksLevel=4,trainingLevel=1,farmLevel=1,workersLevel=1,armyCampLevel=1,farmCoins=60,extraTroopClass="ranged"})
+		local imported=economy:open(3,valid)
+		assert(imported and imported.farmCoins==60 and imported.extraTroopClass=="ranged" and imported.armyCampLevel==1)
+		imported.farmCoins=999;assert(economy:get(3).farmCoins==60 and economy:get(3).farmUpdatedAt==nil)
 	end)
 	return count
 end

@@ -2,9 +2,12 @@
 
 local Civilizations = require(game:GetService("ReplicatedStorage").Shared.Civilizations)
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
+local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local ProfileData = {}
 
-export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number }
+export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number,
+	trainingLevel: number, farmLevel: number, workersLevel: number, armyCampLevel: number, farmCoins: number, extraTroopClass: string,
+	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number }
 export type Profile = {
 	schemaVersion: number,
 	civilizations: { [string]: State },
@@ -24,7 +27,9 @@ local function timestamp(value: any): boolean
 end
 
 function ProfileData.defaultState(): State
-	return { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1 }
+	return { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1,
+		trainingLevel=0,farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
+		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0 }
 end
 
 function ProfileData.copyState(value: any): State?
@@ -37,9 +42,25 @@ function ProfileData.copyState(value: any): State?
 		or not integer(value.barracksLevel, 1, math.min(value.level, #Tracks.barracks)) then
 		return nil
 	end
-	-- Deliberately omit account revisions, rate limits, plot IDs and troop instances.
-	return { coins = value.coins, level = value.level, weaponLevel = value.weaponLevel,
-		armorLevel = value.armorLevel, barracksLevel = value.barracksLevel }
+	if value.barracksLevel>1 and value.level<(Tracks.barracks[value.barracksLevel-1].requiredSettlement or 1) then return nil end
+	local copied={ coins=value.coins,level=value.level,weaponLevel=value.weaponLevel,
+		armorLevel=value.armorLevel,barracksLevel=value.barracksLevel }
+	for _,building in Development.buildings do
+		local level=if value[building.field]==nil then 0 else value[building.field]
+		if not integer(level,0,building.maxLevel) or (level>0 and value.level<building.tiers[level].unlock) then return nil end
+		copied[building.field]=level
+	end
+	if copied.workersLevel>copied.farmLevel then return nil end
+	if copied.armyCampLevel==1 and copied.barracksLevel<4 then return nil end
+	if copied.storehouseLevel==1 and copied.farmLevel<1 then return nil end
+	local reserve=if value.farmCoins==nil then 0 else value.farmCoins
+	local kind=if value.extraTroopClass==nil then "warrior" else value.extraTroopClass
+	if not integer(reserve,0,Development.storageCapacity(copied)) or (copied.farmLevel==0 and reserve~=0)
+		or (kind~="warrior" and kind~="ranged") then return nil end
+	copied.farmCoins,copied.extraTroopClass=reserve,kind
+	-- Legacy settlement 10+ does not retroactively require the new checkpoint.
+	-- Omit revisions, live clocks, rate limits, plot IDs and troop instances.
+	return copied
 end
 
 function ProfileData.isCivilization(value: any): boolean

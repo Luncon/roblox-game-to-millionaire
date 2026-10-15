@@ -17,10 +17,10 @@ return function()
 		for _,level in {1,2,25,50} do assert(math.abs(Tracks.weapon[level].damage-(10+8*(level-1)/49))<.0001) end
 		for _,level in {1,2,25,50} do assert(math.abs(Tracks.armor[level].health-(100+40*(level-1)/49))<.0001) end
 	end)
-	test("barracks tier tuning reduces each future delay by half a second and only final tier adds capacity",function()
-		for level,delay in {15,14.5,14,13.5} do
+	test("barracks tiers reduce each future delay by half a second and capacity stops growing at four",function()
+		for level,delay in {15,14.5,14,13.5,13,12.5} do
 			assert(Tracks.barracks[level].respawnDelay==delay)
-			assert(Tracks.barracks[level].capacity==(if level==4 then 2 else 1))
+			assert(Tracks.barracks[level].capacity==(if level>=4 then 2 else 1))
 		end
 	end)
 	test("gear purchases enforce settlement gates before taking coins",function()
@@ -56,7 +56,7 @@ return function()
 			assert(economy:upgrade(101,barracksLevel,"barracks").reason=="stale_level")
 		end
 		assert(economy:get(101).coins==240 and economy:get(101).barracksLevel==4)
-		assert(economy:upgrade(101,4,"barracks").reason=="max_level")
+		assert(economy:upgrade(101,4,"barracks").reason=="settlement_locked")
 		assert(economy:get(101).coins==240)
 	end)
 	test("kill credits are fixed ten and do not refill or consume click tokens",function()

@@ -7,6 +7,8 @@ local PadCatalog = require(game:GetService("ReplicatedStorage").Shared.PadCatalo
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
 local Landscape = require(script.Parent.WorldLandscape)
+local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
+local Infrastructure = require(script.Parent.SettlementInfrastructure)
 local PLOT_COUNT = Layout.plotCount
 local NEUTRAL = Color3.fromRGB(103, 119, 104)
 local STONE = Color3.fromRGB(181, 174, 153)
@@ -55,7 +57,7 @@ local function unclaimedMarker(plot: Instance, frame: CFrame, plotId: number)
 end
 
 local function createPad(controls: Folder, frame: CFrame, definition, plotId: number)
-	local pad = part(controls, definition.name, Vector3.new(8,1,6), frame*CFrame.new(definition.x,2,definition.z), Color3.fromRGB(110,76,64))
+	local pad = part(controls, definition.name, Vector3.new(8,1,6), frame*CFrame.new(definition.x,definition.y or 2,definition.z), Color3.fromRGB(110,76,64))
 	pad:SetAttribute("Action",definition.action)
 	pad:SetAttribute("GeneratedBy","CivilizationTycoonPad")
 	pad:SetAttribute("PlotId",plotId)
@@ -152,6 +154,7 @@ function BattlefieldMap.build(parent: Instance)
 	model.Parent = parent
 
 	local world = { model = model, entry = entry, plotCount = PLOT_COUNT }
+	local plotCivilizations = {}
 	function world:getSpawn(plotId: number?): CFrame
 		local plot = if plotId then plots:FindFirstChild("Plot" .. plotId) else nil
 		local foundation = if plot then plot:FindFirstChild("Foundation") else nil
@@ -161,21 +164,38 @@ function BattlefieldMap.build(parent: Instance)
 		return entry.CFrame * CFrame.new(0, 5, 0)
 	end
 
-	function world:getBarracksSpawn(plotId: number, kind: string?): CFrame
+	function world:getBarracksSpawn(plotId: number, kind: string?, slotId: string?): CFrame
 		local plot = plots:FindFirstChild("Plot" .. plotId)
 		assert(plot, "Unknown barracks plot")
-		return (plot.Foundation :: BasePart).CFrame * CFrame.new(if kind == "ranged" then -28 else -24, 5, -11)
+		return (plot.Foundation :: BasePart).CFrame * (if slotId=="camp" then CFrame.new(-36,5,-16)
+			else CFrame.new(if kind == "ranged" then -28 else -24, 5, -11))
 	end
 
+	function world:getArmyRally(plotId: number,slotId: string?): CFrame
+		local plot=plots:FindFirstChild("Plot"..plotId)
+		return plot.Foundation.CFrame*CFrame.new(if slotId=="ranged" then -28 elseif slotId=="camp" then -36 else -24,5,-18)
+	end
+
+	function world:syncInfrastructure(plotId: number,state,civilization)
+		local plot=plots:FindFirstChild("Plot"..plotId)
+		Infrastructure.sync(plot,plot.Foundation.CFrame,civilization or plotCivilizations[plotId],state)
+		Infrastructure.status(plot,plot.Foundation.CFrame,state)
+	end
 
 	function world:syncControls(plotId: number, state)
 		local plot = plots:FindFirstChild("Plot" .. plotId) :: Model
 		local foundation = plot:FindFirstChild("Foundation") :: BasePart
 		local controls = plot:FindFirstChild("Controls") :: Folder
-		local stage = if state then state.level else 1
 		for _, definition in PadCatalog.definitions do
-			local current = if state and definition.tier then state[PadCatalog.fields[definition.track]] or 1 else 1
-			local visible = stage >= definition.stage and (definition.repeatFrom ~= nil or not definition.tier or definition.tier > current)
+			local visible=false
+			if definition.action=="earn" then visible=true
+			elseif not state then visible=definition.stage==1
+			elseif definition.action=="collectFarm" then visible=(state.farmLevel or 0)>0
+			else
+				local offer=Development.offer(state,definition.track)
+				visible=offer and offer.available and state.level>=definition.stage
+					and (if definition.repeatFrom then offer.current>=definition.repeatFrom elseif definition.tier then offer.nextLevel==definition.tier else true)
+			end
 			local existing = controls:FindFirstChild(definition.name)
 			if visible and not existing then
 				createPad(controls, foundation.CFrame, definition, plotId)
@@ -183,6 +203,7 @@ function BattlefieldMap.build(parent: Instance)
 				existing:Destroy()
 			end
 		end
+		self:syncInfrastructure(plotId,state)
 	end
 
 	function world:setBarracksLevel(plotId: number, level: number)
@@ -199,6 +220,7 @@ function BattlefieldMap.build(parent: Instance)
 		local plot = plots:FindFirstChild("Plot" .. plotId)
 		assert(plot, "Unknown settlement plot")
 		local stage = level or 1
+		plotCivilizations[plotId]=civilization
 		assert(Progression[stage], "Unknown settlement level")
 		local foundation = plot:FindFirstChild("Foundation") :: Part
 		-- A plot may have moved or rotated since construction. Its current
@@ -215,6 +237,7 @@ function BattlefieldMap.build(parent: Instance)
 		local marker = plot:FindFirstChild("Sign")
 		if not civilization then
 			settlement:ClearAllChildren()
+			self:syncInfrastructure(plotId,nil)
 			self:syncControls(plotId, nil)
 			settlement:SetAttribute("Architecture", nil)
 			for _,attribute in {"BuiltLevel","GrowthFeatureCount","BuildFrame","BuildOwnerName","BuildPlotId"} do settlement:SetAttribute(attribute,nil) end

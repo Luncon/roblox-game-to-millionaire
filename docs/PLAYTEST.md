@@ -14,12 +14,13 @@ Workspace objects are preserved. Large existing objects may cover the prototype.
 4. In that multiplayer check, disconnect the Spartan owner. A new client can
    select Sparta and reuse its plot. Close owned test windows before another run.
 5. Click the gold ground button or use its prompt: each accepted activation adds
-   one coin. At level one only coin and settlement pads exist. Expand to level two
+   one coin. Use E while armed, or unequip the weapon before mouse clicking.
+   At level one only coin and settlement pads exist. Expand to level two
    to reveal weapon, armor, and barracks upgrade pads. Each track is capped by
    the settlement level.
 6. Walk onto an affordable upgrade pad, stay on it, then exit and re-enter.
    Standing should not buy multiple upgrades.
-7. Reset after upgrading. Coins, all four upgrade levels, armor, the equipped
+7. Reset after upgrading. Coins, upgrade/building levels, farm reserve, armor, the equipped
    weapon and living troop identities should remain intact.
 8. Try a phone viewport and a controller. The selector scrolls; the HUD displays
    progress and provides a Change civ control. Currency and purchases still use
@@ -34,8 +35,11 @@ Workspace objects are preserved. Large existing objects may cover the prototype.
     A gear purchase during the wait should preserve its existing deadline.
 12. Expand the settlement and gear through level 50. Each settlement level adds
     land and a lasting themed feature; completed capitals occupy 256-stud plots.
-    Barracks upgrades stop at IV and reduce future replacement delays to 14.5,
-    14 and 13.5 seconds.
+    Before entering level 10, buy Training Yard I, Farm I, Worker Camp I and
+    Barracks IV. Missing requirements appear at the main hall; locked pads stay hidden.
+    Barracks II–IV reduce future replacement delays to 14.5,
+    14 and 13.5 seconds. V unlocks at settlement 8 for 200 coins and reduces
+    future waits to 13 seconds; VI unlocks at 14 for 300 coins and reaches 12.5 seconds.
     Barracks IV deploys one melee warrior and one ranged troop with independent
     death and replacement timers. Owner gear upgrades apply to both.
 13. Use Change civ to view your saved progress and select another free civilization.
@@ -46,6 +50,24 @@ Workspace objects are preserved. Large existing objects may cover the prototype.
     when available. Its saved settlement, gear and troop capacity should return;
     troop identities, current health and pending timers are rebuilt for the session.
     Failed loads must block selection and progression rather than start fresh.
+15. Buy Training Yard I at level 5 and test Advance, Hold and Regroup. Hold should
+    stop pursuit; Regroup should walk troops home and remain selected until a new
+    order. Opening Change civ should hide the command panel behind the selector.
+16. At level 7 buy Farm I, then Worker Camp I at their rural sites. The reserve
+    grows by one coin per five active seconds, or two with workers, up to 60.
+    Collect beside the farm; switching away or leaving must not earn offline coins.
+17. At level 10 buy Army Camp I. Choose its third troop's melee/ranged class in
+    the army panel. A living troop should keep its health and class; the choice
+    takes effect on its next replacement without resetting that death timer.
+18. At level 12 buy Farm II for 180 coins, then Worker Camp II for 140. Production
+    should rise from two to three, then four reserved coins per five seconds;
+    three passive farmers should tend the improved fields.
+19. At level 13 buy the Blacksmith and Armorer for 150 coins each. Each discounts
+    its own gear track by 5%, rounded upward; a base 42-coin upgrade becomes 40.
+    Combat stats and the other track's price should remain unchanged.
+20. At level 16 buy Storehouse I for 140 coins. The reserve cap rises from 60 to
+    180; buying while full must wait a fresh interval before producing above 60.
+    Switch away and back to check separate building tiers and earned reserves.
 
 The prototype has 13 choices, eight plots and independent saved civilization
 profiles. The generated map does not configure Roblox's server player limit;
@@ -65,6 +87,47 @@ need their own focused multiplayer evidence; owner-interface doubles cannot
 replace connected players for the shared combat authority.
 
 ## Repeatable engine tests
+
+### Settlement economic expansion
+
+```bash
+npm run build:test-project -- --solo --expansion
+```
+
+Build `.cache/solo-test.project.json` with Rojo, open it in the existing Studio
+window and press ordinary **Play**. This runner injects a fake profile store and
+runs module suites followed by native economic purchases, collection, switching
+and real Barracks V/VI replacement timers. It seeds level-13 and level-16 fixtures; it does
+not measure full progression pacing. `--expansion` requires `--solo` and cannot
+be combined with `--development`.
+
+Poll `EconomyExpansionPhase`, `EconomyExpansionUnitCases` and the JSON attribute
+`EconomyExpansionResult` on `game` in the Server context. The result separates
+module and runtime cases. Stop Play after checking it; never publish a test place.
+
+### Settlement development milestone
+
+Use the current building/farming/army check in one existing Studio window:
+
+```bash
+npm run build:test-project -- --solo --development
+```
+
+Build `.cache/solo-test.project.json` with the installed Windows Rojo executable,
+open that generated place in the existing window, and press ordinary **Play**.
+The bootstrap injects an in-memory profile store. The runner executes module
+suites followed by native floor entry, E prompts, GUI commands, real five-second
+farm ticks, collection, the level-10 checkpoint, three-slot movement and real
+replacement timers. It never opens more clients or accesses real player storage.
+
+Poll `game:GetAttribute("DevelopmentVerificationPhase")` in the Server context.
+`DevelopmentVerificationResult` contains JSON with separate `units`, runtime
+`cases`, evidence and `ok`. The focused fixture seeds levels 5 and 9; it does
+not claim to test earning the entire level-50 progression or measure session pace.
+After reading the result, stop Play. Use the production place for normal gameplay;
+never publish a generated test place.
+
+### Earlier world-growth harness
 
 In WSL at the repository root:
 
@@ -809,3 +872,94 @@ multiplayer behavior remain unverified.
   sources** exactly; Edit retained thirteen outfits/nineteen equipment models,
   zero owned fixtures and one Studio window. This focused run does not reverify
   native floor-pad contact, multiplayer or published asset loading.
+
+## Settlement buildings, farming and army orders — October 14, 2026
+
+- Missing-feature RED was observed in Studio before implementation: stable army
+  slots and the settlement-development policy were absent. A cloned checkpoint
+  mutation moving the gate from 9 to 8 was detected without altering production.
+- A fresh ordinary single-window Play passed **195 module cases across 33 suites**.
+  Coverage includes the level-10 prerequisites, precise purchase charges,
+  legacy additive defaults and malformed-field rejection, all thirteen
+  civilizations' eleven saved fields through fake-store release/reload, online
+  farm intervals and capacity, blocked authority, wallet overflow, selected class,
+  hidden pads, all eight capital farm reservations and moved-farmer animation.
+- A separate native-only follow-up passed **seven development cases** with one
+  real client and the injected fake store: early-tier replacement/standing/exit;
+  building purchases and real five-second reserve production; checkpoint 10 and
+  the third slot; farm collection; actual Hold/Advance/Regroup; independent main
+  and camp respawns; and per-civilization restoration without inactive income.
+  Three real troops walked back to their protected rally in **45.12 seconds**.
+  Collection transferred **14 coins** exactly. Camp selection preserved its
+  living melee rig, pending deadline and the other slots; the real replacement
+  became ranged after the **13.5-second** wait and inherited Regroup.
+- The initial native mouse attempt reproduced equipped-Tool input priority:
+  Tool.Activated fired and ClickDetector did not. The same mouse input succeeded
+  after unequipping. The successful building loop used actual E prompts while
+  armed, retaining equipment and checking that farm ticks do not recreate it.
+- A final follow-up passed **six updated AdvancedPads cases**, preserving the
+  exact 1,000 → 743 coin flow, fractional armor, touch latches, cap-pad removal
+  and recreation, real unequipped mouse input and armed E interaction. Four
+  additional GUI clicks rechecked Hold, Advance, Regroup and camp selection
+  after lifting the command panel clear of Roblox's tool hotbar. These repeated
+  command checks are separate from the thirteen distinct gameplay cases above.
+- Inspection used fake saved level-10 Britain with both fields and worker camp;
+  local camera/lighting overrides were temporary. [Settlement and rural layout](assets/settlement-development/britain-level10-overview.png)
+  and [tending farmers](assets/settlement-development/britain-farm-workers.png)
+  are one-client views, not an eight-player performance test.
+- The new repeatable full runner is `npm run build:test-project -- --solo
+  --development`. The seven-case follow-up and final ten-check follow-up omitted
+  the already-passed module loop; they are not claimed as fresh module reruns.
+- Not reverified here: connected multi-owner combat/networking, a full eight-client
+  server, live Roblox storage with the extended fields, native command rejection
+  after an actual lease loss, phone/controller input, published assets or measured
+  level-50 session pacing. The older full world-growth harness was not rerun;
+  its updated AdvancedPads component was run separately. An unrelated original
+  Workspace hat helper still logs an Accessory.Touched error; generated assets
+  remain sanitized and those original objects were preserved.
+- Final production, development-solo and standard test Rojo builds passed;
+  strict OpenSpec validation passed all eleven items. Stopped Play, restored
+  normal production startup and verified **41 exact managed sources**, zero
+  owned fixtures and one existing Studio window. Source templates were unchanged.
+
+## Settlement economic expansion — October 14, 2026
+
+- Observed missing-feature RED before implementation (`Second farm tier is not
+  implemented`). A native construction check later exposed an actual clearance
+  issue: a workshop/storehouse could appear around an inner prompt user. The new
+  regression reproduced `Purchase encloses its inner prompt user` before moving
+  workshop controls to z51 and the Storehouse control beside its building at
+  (20,45). Pads fit their unlock foundations; seven- and 9.5-stud inner approaches
+  now clear colliders for all thirteen civilizations at levels 13/16/50.
+- A fresh ordinary single-window Play passed **209 module cases across 35 suites**
+  and **five native expansion cases** in the same run. The runner used injected
+  fake profiles, level-13/16 preconditions, real walking and armed E prompts.
+  Production and test code never accessed real player storage for these checks.
+- Native purchases charged Farm II 180, Worker Camp II 140, Blacksmith and Armorer
+  150 each, Storehouse 140, and Barracks V/VI 200/300. Real production advanced
+  through two, three and four coins per five-second interval, settling completed
+  purchase intervals at the old rate. Separate discounted gear pads displayed
+  and charged **40 rather than 42 coins**, preserving the original combat curves.
+- A full reserve stayed at 60 before storage; after buying, its first new growth
+  was observed **5.218 seconds** later. Collection transferred **72 coins** exactly.
+  Barracks VI preserved a pending **13-second** replacement; the next death used
+  a real **12.5-second** delay, with the other living slots and three-unit capacity
+  intact. All fourteen fields survived fake-backend save and civilization
+  switching; an inactive civilization earned nothing.
+- Test navigation initially collected nine coins while crossing the real farm
+  collection pad. Tracing confirmed the correct 140-coin Worker II charge; rural
+  routes now avoid other pads. Later approach checks reject occupied standing
+  points and roof shortcuts; E input uses the character's eye view so the real
+  line-of-sight rule remains in effect. Exact balance assertions were retained.
+- Not reverified here: real-storage restoration with fourteen fields, connected
+  multi-owner combat, eight-client performance, phone/controller hardware,
+  published assets or measured session/endgame pacing. The preexisting original
+  Workspace hat-helper Accessory.Touched error remains separate from sanitized
+  generated equipment. Previous full first-milestone/world-growth native suites
+  were not rerun; their module regressions were included.
+- Independent review found no remaining blockers. Production, expansion-solo,
+  retained development-solo and standard test Rojo mappings built successfully;
+  strict OpenSpec validation passed twelve items. Stopped Play and restored normal
+  startup: **41 managed sources matched exactly**, zero owned fixtures remained,
+  all five original NPC templates were preserved, and one existing Studio window
+  remained open.

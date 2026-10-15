@@ -1,6 +1,7 @@
 --!strict
 
 local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
+local Sites = require(game:GetService("ReplicatedStorage").Shared.SettlementSites)
 local Topography = {}
 local BASE, SEED, THICKNESS = .15, 137, .25
 local scale = Layout.groundSize/1600
@@ -50,6 +51,14 @@ end
 for id=1,Layout.plotCount do
 	local frame=Layout.plotFrame(id)
 	rectangle(frame.X,frame.Z,frame.RightVector.X,frame.RightVector.Z,Layout.maxPlotSize/2,Layout.maxPlotSize/2,"plot")
+	for _,site in Sites.fields do
+		local p=frame:PointToWorldSpace(site)
+		rectangle(p.X,p.Z,frame.RightVector.X,frame.RightVector.Z,Sites.fieldSize.X/2+3,Sites.fieldSize.Z/2+3,"farm")
+	end
+	for _,site in {Sites.workers,Vector3.new(-24,0,-145),Vector3.new(-48,0,-145)}do
+		local p=frame:PointToWorldSpace(site)
+		rectangle(p.X,p.Z,frame.RightVector.X,frame.RightVector.Z,12,12,"farm_access")
+	end
 	local direction=Vector3.new(frame.X,0,frame.Z).Unit
 	local length=Layout.plotRadius+40
 	rectangle(direction.X*length/2,direction.Z*length/2,direction.Z,-direction.X,Layout.laneWidth/2,length/2,"lane")

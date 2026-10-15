@@ -10,21 +10,53 @@ Upgrade the barracks through its newly unlocked ground buttons:
 | II | 2 | 30 coins | 14.5 seconds | One melee |
 | III | 3 | 75 coins | 14 seconds | One melee |
 | IV | 4 | 150 coins | 13.5 seconds | One melee + one ranged |
+| V | 8 | 200 coins | 13 seconds | One melee + one ranged |
+| VI | 14 | 300 coins | 12.5 seconds | One melee + one ranged |
 
 Each paid upgrade reduces future respawn waits by 0.5 seconds. At level IV, the
-ranged troop deploys automatically alongside the warrior. Each class has its own
+ranged troop deploys automatically alongside the warrior. Each slot has its own
 replacement countdown. A purchase does not shorten a countdown already running,
-replace a living unit, or create an extra unit. The HUD shows both slots.
+replace a living unit, or create an extra unit. Tiers V and VI keep the two
+barracks slots; only future deaths receive their shorter delay. Living identities,
+health, classes, orders and pending deadlines survive these purchases. The HUD
+shows each available slot.
+
+Army Camp I is available at settlement 10 with Barracks IV or higher and costs 120 coins.
+It adds one independent reinforcement slot, bringing the army to three troops.
+Choose melee or ranged for this camp slot. The choice saves for each civilization
+and applies at its next spawn: a living troop retains its class and health, and
+changing the choice never resets a pending replacement countdown. The original
+melee and ranged slots remain unchanged. Each camp replacement receives the
+latest owner gear and uses the barracks respawn delay in effect when it died.
+
+Training Yard I is available at settlement 5 and costs 50 coins. It unlocks
+three army orders for the living owner:
+
+- **Advance:** march toward the battlefield and engage enemies automatically.
+- **Hold:** stop pursuing enemies and attack only those already within the
+  troop's normal attack range. Troops retain their current positions.
+- **Regroup:** cancel in-flight shots and return to the protected home rally
+  without pursuing or attacking enemies. Troops remain regrouped until ordered
+  to advance or hold.
+
+New replacements inherit the current order. Orders remain active through owner
+character resets and gear upgrades, then reset to Advance when switching
+civilizations or rejoining. Orders require a writable profile and are limited
+on the server; clients cannot choose arbitrary movement destinations.
 
 Weapon and armor pads upgrade the player and both troop classes immediately.
 Armor preserves missing health; weapon upgrades do not heal. Replacements use
 the latest gear. Fifty gradual weapon levels span 10–18 melee damage, and fifty
 armor levels span 100–140 standard maximum health. Ranged damage is 80% of the
 weapon stat, from 8 through 14.4; fractional gains are preserved. Each gear
-level is capped by settlement level. Barracks stays at four levels and a maximum
-of two troops. See [the balance curve](ECONOMY.md).
+level is capped by settlement level. Barracks has six levels and a maximum
+of two troops from the barracks, plus one from Army Camp I. See
+[the balance curve](ECONOMY.md).
 Damage, armor, prices and barracks timing come from shared UpgradeTracks; ranged
 styles and flight tuning come from RangedConfig.
+Blacksmith I and Armorer I at settlement 13 independently discount the respective
+gear purchase prices by 5%, rounded upward. They add no damage, health or troop
+slots. Final purchase prices come from SettlementDevelopment offers.
 
 Generated melee and ranged troops have rounded classic Roblox heads. Custom
 melee skins retain their existing head meshes and proportions. All live NPC
@@ -90,14 +122,15 @@ player or troop earns 10 coins; earlier attackers get no assist reward. Owners,
 friendly units, unclaimed players and characters outside the arena are protected.
 
 Character resets and settlement rebuilding preserve the army and its pending
-countdowns. Leaving removes both classes, corpses and in-flight shots, and cancels
+countdowns. Leaving removes every troop slot, corpses and in-flight shots, and cancels
 replacements. Corpses last three seconds. The server controls damage, rewards,
-NPC physics and timers. Settlement, weapon, armor and barracks levels save for
-each civilization. Returning to a saved civilization rebuilds its army from those
-levels; troop health, locations and pending countdowns are not persisted.
+NPC physics and timers. Settlement, weapon, armor, barracks and infrastructure
+purchases, plus the camp class choice, save for each civilization. Returning to
+a saved civilization rebuilds its army from those levels; troop health,
+locations, orders and pending countdowns are not persisted.
 Switching removes the old civilization's units and deploys the selected
 civilization's eligible troops. See [saved profiles](PROFILES.md). Formations,
-additional troop slots, recruitment choices and ranged player attacks are planned.
+fourth/fifth troop slots, specialist recruitment and ranged player attacks are planned.
 
 ## Custom melee models
 

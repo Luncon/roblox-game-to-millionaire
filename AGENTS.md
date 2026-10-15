@@ -35,17 +35,39 @@ plots in a 1,600-stud square world with five biomes. Settlements grow from 60 to
 also have 50 gradual levels: melee damage 10–18 and standard maximum health
 100–140. Physical tycoon pads provide single-coin earning and separate upgrades.
 See `docs/WORLD.md` for geometry and construction. The HUD displays progress;
-there is no client earning/purchase remote. Coins and all four upgrade tracks
+there is no client earning/purchase remote. Coins, progression, building levels,
+farm reserve and extra troop class
 save independently for each player's civilizations. Selection
 waits for a writable profile; a lost lease blocks earning, purchases and kill
 credits. Switching to a free civilization preserves the plot and restores its
 saved progression. See `docs/PROFILES.md`, `docs/ECONOMY.md` and `docs/PLAYTEST.md`.
-Stage-two settlements unlock a one-slot automatic melee barracks with four
-upgrade levels. Three stage-gated purchases reduce future respawn waits by 0.5s each
+Stage-two settlements unlock a one-slot automatic melee barracks with six
+upgrade levels. Five stage-gated purchases reduce future respawn waits by 0.5s each
 and level IV adds one ranged slot. Owner gear applies to both classes. Player
 melee and server-validated final hits award 10 coins, with shared damage/reward
 authority. Weapon, armor and barracks levels are capped at settlement level;
-early tier pads appear at stages 2/3/4 and stable gear pads offer later levels.
+only the next eligible tier pad appears; capped, completed and progression-locked
+pads are absent. Distributed controls sit beside their corresponding buildings.
+Armory visuals appear at settlement 2; purchased Training Yard I unlocks at 5,
+Farm I/Worker Camp I at 7 and Army Camp I at 10. Entering 10 requires Barracks IV
+and the first training/farm/worker buildings; legacy saved levels 10+ remain valid.
+Farm II and Worker Camp II unlock at 12; workers cannot exceed the farm tier.
+Production is farm level plus worker level coins per five active seconds.
+Blacksmith/Armorer I at 13 discount only weapon/armor prices by 5% with upward
+rounding; never change their combat stats. Storehouse I at 16 requires a farm
+and raises reserve capacity from 60 to 180. Use storageCapacity(state) everywhere
+the cap matters. Farm/worker/storage purchases settle old-yield/old-capacity
+whole intervals then reset the clock; never bank full, offline or inactive time.
+Save all fourteen scalar fields, with missing-only zero defaults for the three
+workshop/storage fields and unchanged version-one keys. Barracks V/VI require
+settlement 8/14, cost 200/300 and set future delays to 13/12.5 seconds; they
+preserve two barracks slots, pending deadlines and the optional camp slot.
+Rural fields reserve space outside the final plot
+and battlefield; passive tending workers have no Humanoids/combat registration.
+Army Camp I adds one independent third slot; its saved melee/ranged selection
+applies only at next spawn and never resets health or pending respawn timers.
+Training unlocks server-guarded advance/hold/regroup, with server-chosen rally
+positions and transient orders. See `src/shared/SettlementDevelopment.luau`.
 Five user-provided R6 melee templates live
 in `assets/npc-templates`, mapped into ServerStorage by Rojo. Clone/sanitize
 templates without mutating originals. Claimed-plot identity is incorporated

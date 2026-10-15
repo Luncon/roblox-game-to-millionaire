@@ -13,6 +13,7 @@ local WarriorService = require(script.Parent.WarriorService)
 local CombatService = require(script.Parent.CombatService)
 local PlayerCombatService = require(script.Parent.PlayerCombatService)
 local ProfileService = require(script.Parent.ProfileService)
+local Infrastructure = require(script.Parent.SettlementInfrastructure)
 local CivilizationService = {}
 
 function CivilizationService.start(options: any?)
@@ -27,6 +28,7 @@ function CivilizationService.start(options: any?)
 	local lastRequest, lastLoad, activePlayers, loading, generations = {}, {}, {}, {}, {}
 	local closing = false
 	local army, buttons, profiles, snapshot
+	local commandTraffic = {}
 	local remotes = Instance.new("Folder")
 	remotes.Name = "CivilizationRemotes"
 	local request = Instance.new("RemoteFunction")
@@ -37,6 +39,10 @@ function CivilizationService.start(options: any?)
 	economyRemotes.Name = "EconomyRemotes"
 	local economyState = Instance.new("RemoteEvent")
 	economyState.Name, economyState.Parent = "State", economyRemotes
+	local armyRemotes=Instance.new("Folder")
+	armyRemotes.Name="ArmyRemotes"
+	local armyRequest=Instance.new("RemoteFunction")
+	armyRequest.Name,armyRequest.Parent="Request",armyRemotes
 	local scope = if RunService:IsStudio() then "StudioDevelopment" else "Live"
 	local store = options.profileStore or game:GetService("DataStoreService"):GetDataStore("CivilizationProfilesV1",scope)
 	local profileOptions = table.clone(options.profileOptions or {})
@@ -80,7 +86,9 @@ function CivilizationService.start(options: any?)
 		changed:FireAllClients(snapshot()) -- Saved previews are sent only to their owner.
 	end
 	local function capture(player: Player)
-		local claim, state = registry:get(player.UserId), economy:get(player.UserId)
+		local claim=registry:get(player.UserId)
+		if claim then economy:farmStep(player.UserId) end
+		local state=economy:get(player.UserId)
 		if claim and state then return profiles:set(player.UserId,claim.civilizationId,state) end
 		return true
 	end
@@ -94,7 +102,10 @@ function CivilizationService.start(options: any?)
 		end
 		if state then
 			for attribute,field in {Coins="coins",SettlementLevel="level",WeaponLevel="weaponLevel",
-				ArmorLevel="armorLevel",BarracksUpgradeLevel="barracksLevel",EconomyRevision="revision"} do
+				ArmorLevel="armorLevel",BarracksUpgradeLevel="barracksLevel",EconomyRevision="revision",
+				TrainingLevel="trainingLevel",FarmLevel="farmLevel",WorkersLevel="workersLevel",ArmyCampLevel="armyCampLevel",
+				BlacksmithLevel="blacksmithLevel",ArmorerLevel="armorerLevel",StorehouseLevel="storehouseLevel",
+				FarmCoins="farmCoins",ExtraTroopClass="extraTroopClass"} do
 				player:SetAttribute(attribute,state[field])
 			end
 			local stats = player:FindFirstChild("leaderstats")
@@ -103,7 +114,8 @@ function CivilizationService.start(options: any?)
 			if not coins then coins=Instance.new("IntValue");coins.Name="Coins";coins.Parent=stats end
 			if coins:IsA("IntValue") then coins.Value=state.coins end
 		end
-		if result.ok and (action=="claim" or action=="switch" or action=="upgrade" or action=="weapon" or action=="armor" or action=="barracks") then
+		if result.ok and (action=="claim" or action=="switch" or action=="upgrade" or action=="weapon" or action=="armor" or action=="barracks"
+			or action=="training" or action=="armyCamp" or action=="troopClass") then
 			if army then army:refresh(player) end
 		end
 		if result.ok and action=="kill" and buttons then
@@ -118,6 +130,42 @@ function CivilizationService.start(options: any?)
 	local playerCombat=PlayerCombatService.start(world,registry,economy,combat)
 	army=WarriorService.start(world,registry,economy,catalog,combat)
 	buttons=TycoonButtons.new(world,registry,economy,catalog,publishEconomy)
+	local function command(player: Player,action: unknown,value: unknown)
+		local id=player.UserId
+		if closing or activePlayers[id]~=player or not profiles:isWritable(id) or not registry:get(id) then
+			return {ok=false,reason="profile_unavailable"}
+		end
+		local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		if not humanoid or humanoid.Health<=0 then return {ok=false,reason="not_alive"} end
+		local now=os.clock()
+		if commandTraffic[id] and now-commandTraffic[id]<.3 then return {ok=false,reason="rate_limited"} end
+		commandTraffic[id]=now
+		if action=="order" then return army:command(player,value) end
+		if action=="class" then
+			local result=economy:selectTroop(id,value)
+			publishEconomy(player,result,"troopClass")
+			return result
+		end
+		return {ok=false,reason="invalid"}
+	end
+	armyRequest.OnServerInvoke=command
+	local farmElapsed=0
+	local farmHeartbeat=RunService.Heartbeat:Connect(function(dt)
+		if closing or not world.model.Parent then return end
+		Infrastructure.animate(world.model,os.clock())
+		farmElapsed+=dt
+		if farmElapsed<1 then return end
+		farmElapsed=0
+		for id,player in activePlayers do
+			local claim=registry:get(id)
+			if not claim then continue end
+			local result=economy:farmStep(id)
+			if result.ok and result.amount>0 then
+				publishEconomy(player,result,"farmIncome")
+				buttons:refreshState(player,claim)
+			end
+		end
+	end)
 
 	local function placeCharacter(player: Player,character: Model)
 		local generation=generations[player.UserId] or 0
@@ -241,6 +289,7 @@ function CivilizationService.start(options: any?)
 		economy:close(userId)
 		lastRequest[userId]=nil
 		lastLoad[userId]=nil
+		commandTraffic[userId]=nil
 		if claim then world:setOwner(claim.plotId,nil,nil,nil);broadcast() end
 		task.spawn(function()
 			local result=profiles:release(userId)
@@ -253,8 +302,9 @@ function CivilizationService.start(options: any?)
 		if shutdownResult then return shutdownResult end
 		if shuttingDown then repeat task.wait() until shutdownResult;return shutdownResult end
 		shuttingDown=true
-		closing=true
 		for _,player in activePlayers do capture(player) end
+		closing=true
+		farmHeartbeat:Disconnect()
 		shutdownResult=profiles:shutdown(25)
 		return shutdownResult
 	end
@@ -263,11 +313,12 @@ function CivilizationService.start(options: any?)
 	game:BindToClose(shutdown)
 	remotes.Parent=ReplicatedStorage
 	economyRemotes.Parent=ReplicatedStorage
+	armyRemotes.Parent=ReplicatedStorage
 	for _,player in Players:GetPlayers() do addPlayer(player) end
 	if options.autosave~=false then profiles:startAutosave() end
 	print(string.format("Civilization selection ready: 8 plots, %d civilizations, independent saved profiles (%s)",#Civilizations,scope))
 	return {profiles=profiles,economy=economy,registry=registry,army=army,buttons=buttons,world=world,
-		combat=combat,playerCombat=playerCombat,shutdown=shutdown,select=select,snapshot=snapshot}
+		combat=combat,playerCombat=playerCombat,shutdown=shutdown,select=select,snapshot=snapshot,command=command}
 end
 
 return CivilizationService

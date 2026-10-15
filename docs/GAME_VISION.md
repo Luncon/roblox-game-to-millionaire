@@ -98,7 +98,8 @@ studs wide; each upgrade adds four studs and lasting details, reaching 256 studs
 Districts, ceremonial landmarks and larger halls express each civilization's
 architecture. Weapon and armor progression also has 50 small linear steps:
 melee damage ranges from 10 to 18 and standard maximum health from 100 to 140.
-Barracks retains its four levels and two-slot maximum. Existing saved coins and
+Barracks has six levels and two original slots. Army Camp I adds a
+separate third slot with a saved choice of melee or ranged. Existing saved coins and
 numeric levels are preserved under the new visuals and combat curve. See
 [world and settlement growth](WORLD.md) for the layout and milestones, and
 [economy details](ECONOMY.md) for current tuning.
@@ -110,3 +111,26 @@ later levels. Civilization and owner names
 belong on themed main-building facades, rather than a freestanding board that
 blocks the settlement. Five user-provided character models supply the Spartan,
 British, Japanese, Seneca and Mauryan melee troop visuals.
+
+The first building progression milestone introduces Training Yard I at 5,
+Farm I and Worker Camp I at 7, and Army Camp I at 10. Entering level 10 requires
+the first training/farm/worker buildings and Barracks IV. Purchases complete
+immediately. Available upgrades have floor pads beside their buildings; locked
+ones stay hidden. Connected farming produces a saved coin reserve only while
+playing that civilization, with tending workers in fields outside the future
+settlement footprint. Training enables advance, hold and regroup orders.
+
+The next economy slice adds Farm II and Worker Camp II at 12, independent
+weapon/armor price workshops at 13 and Storehouse I at 16. Farming yields the
+farm plus worker tier every five active seconds, reaching four coins; storage
+increases the saved reserve from 60 to 180. Each workshop discounts only its
+gear track by 5%, rounded upward, without changing combat stats. Barracks V at
+8 and VI at 14 shorten future waits to 13 and 12.5 seconds, preserving existing
+slots and pending timers. All fourteen progression/economy fields save per
+civilization without changing the profile schema or keys.
+
+The intended pace remains multiple 30–45 minute sessions with meaningful
+purchases along the way. Later farm tiers at 20/30/42, Storehouse II and beyond,
+checkpoint 20, more army slots, infirmaries, formations, abilities and specialist
+buildings remain planned.
+Current tuning has not yet established a measured level-50 completion time.

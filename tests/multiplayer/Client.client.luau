@@ -19,6 +19,9 @@ commands.OnClientEvent:Connect(function(command)
 		if command.action=="advancedPads" then
 			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("AdvancedPads",10))()
 		end
+		if command.action=="developmentInput" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("SettlementDevelopment",10))(command.options)
+		end
 		if command.action == "snapshot" then return request:InvokeServer("snapshot") end
 		if command.action == "retry" then return request:InvokeServer("retry") end
 		if command.action == "civilizationInput" then

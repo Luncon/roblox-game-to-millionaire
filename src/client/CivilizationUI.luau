@@ -276,6 +276,7 @@ function CivilizationUI.start()
 	player:GetAttributeChangedSignal("PlotId"):Connect(render)
 	render()
 	require(script.Parent:WaitForChild("EconomyUI")).start(screen)
+	require(script.Parent:WaitForChild("ArmyUI")).start(screen)
 	task.spawn(function()
 		local remotes = ReplicatedStorage:WaitForChild("CivilizationRemotes", 15)
 		if not remotes then

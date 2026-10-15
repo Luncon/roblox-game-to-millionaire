@@ -70,11 +70,13 @@ return function()
 				end
 			end
 		end)
-		test("plot release preserves reusable pads and resets settlement", function()
+		test("plot release preserves the coin pad and restores starter controls after a capped settlement", function()
 			local plot = world.model.Plots.Plot1
-			local coin, upgrade = plot.Controls.CoinButton, plot.Controls.UpgradeButton
+			local coin = plot.Controls.CoinButton
+			assert(not plot.Controls:FindFirstChild("UpgradeButton"),"Completed settlement retained its purchase pad")
 			world:setOwner(1, nil, nil, nil)
-			assert(coin.Parent == plot.Controls and upgrade.Parent == plot.Controls)
+			assert(coin.Parent == plot.Controls and plot.Controls:FindFirstChild("UpgradeButton"))
+			assert(plot.Controls.UpgradeButton:FindFirstChildOfClass("ClickDetector") and plot.Controls.UpgradeButton:FindFirstChildOfClass("ProximityPrompt"))
 			assert(plot:GetAttribute("OwnerId") == nil and plot:GetAttribute("SettlementLevel") == nil)
 			assert(plot.Foundation.Size.X == 60 and #plot.Settlement:GetChildren() == 0)
 		end)

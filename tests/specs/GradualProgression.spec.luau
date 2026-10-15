@@ -3,9 +3,9 @@ return function()
 	local count=0
 	local function test(name,callback) callback(); count+=1; print("PASS: "..name) end
 	local function near(actual,expected) assert(math.abs(actual-expected)<.0001,tostring(actual).." ~= "..expected) end
-	test("settlement weapons and armor have fifty contiguous levels while barracks remains four",function()
+	test("settlement weapons and armor have fifty contiguous levels while barracks has six",function()
 		assert(#Tracks.settlement==50 and #Tracks.weapon==50 and #Tracks.armor==50,"Gradual fifty-level tracks are missing")
-		assert(#Tracks.barracks==4)
+		assert(#Tracks.barracks==6)
 		for level=1,50 do
 			assert(Tracks.settlement[level] and Tracks.weapon[level] and Tracks.armor[level])
 			near(Tracks.settlement[level].size,60+4*(level-1))
