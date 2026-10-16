@@ -6,6 +6,7 @@ local Camp = require(Shared.TrainingCampConfig)
 local Development = require(Shared.SettlementDevelopment)
 local Districts = require(script.Parent.SettlementDistricts)
 local Tenders = require(script.Parent.FarmTenders)
+local Topography = require(script.Parent.Topography)
 local Infrastructure = {}
 
 local function part(parent, name, size, frame, tint, material)
@@ -17,15 +18,29 @@ local function part(parent, name, size, frame, tint, material)
 	return p
 end
 
-local function label(parent, frame, name, text, tint)
-	local board=part(parent,name,Vector3.new(12,2,.3),frame,tint,Enum.Material.WoodPlanks)
+local function label(parent, frame, name, text, tint, size, face)
+	local board=part(parent,name,size or Vector3.new(12,2,.3),frame,tint,Enum.Material.WoodPlanks)
 	local surface=Instance.new("SurfaceGui")
-	surface.Face,surface.CanvasSize,surface.Parent=Enum.NormalId.Back,Vector2.new(600,120),board
+	surface.Face,surface.CanvasSize,surface.Parent=face or Enum.NormalId.Back,Vector2.new(600,120),board
 	local textLabel=Instance.new("TextLabel")
 	textLabel.Size,textLabel.BackgroundTransparency=UDim2.fromScale(1,1),1
 	textLabel.Text,textLabel.TextColor3,textLabel.TextScaled=text,Color3.fromRGB(255,242,208),true
 	textLabel.Font,textLabel.Parent=Enum.Font.GothamBold,surface
 	return textLabel
+end
+
+local function facadeLabel(parent,building,name,text,tint,height,offsetY)
+	local face=building:GetAttribute("FacadeFrame")
+	assert(typeof(face)=="CFrame","Purchased building needs a physical label facade")
+	local size=Vector3.new(math.min(12,building:GetAttribute("FacadeWidth")),height or 2,.3)
+	return label(parent,face*CFrame.new(0,offsetY or 0,-.17),name,text,tint,size,Enum.NormalId.Front)
+end
+
+local function exteriorY(plot,frame,site)
+	local ground=plot.Parent.Parent.Ground
+	local localPoint=ground.CFrame:PointToObjectSpace(frame:PointToWorldSpace(site))
+	local surface=ground.CFrame:PointToWorldSpace(Vector3.new(localPoint.X,.95+Topography.sampleHeight(localPoint.X,localPoint.Z),localPoint.Z))
+	return frame:PointToObjectSpace(surface).Y
 end
 
 local function model(parent,name,civ)
@@ -40,23 +55,33 @@ local function farmland(parent,frame,civ,workers,level)
 	farm:SetAttribute("FarmLevel",level)
 	for index,site in Sites.fields do
 		local origin=frame*CFrame.new(site)
-		local soil=part(farm,"Field"..index,Sites.fieldSize,origin*CFrame.new(0,-.55,0),Color3.fromRGB(107,78,47),Enum.Material.Ground)
+		local groundY=exteriorY(parent.Parent,frame,site)
+		-- Preserve the existing soil top and farmer feet while filling its base.
+		local soilTop=-.4
+		local soil=part(farm,"Field"..index,Vector3.new(Sites.fieldSize.X,soilTop-groundY,Sites.fieldSize.Z),
+			origin*CFrame.new(0,(soilTop+groundY)/2,0),Color3.fromRGB(107,78,47),Enum.Material.Ground)
 		soil.CanCollide,soil.CanQuery=true,true
 		local rows=if level>=2 then 3 else 2
 		for row=-rows,rows do
-			part(farm,"CropRow",Vector3.new(48,.8,2),origin*CFrame.new(0,.15,row*(if level>=2 then 5 else 6)),
+			part(farm,"CropRow",Vector3.new(48,.8,2),origin*CFrame.new(0,soilTop+.4,row*(if level>=2 then 5 else 6)),
 				if civ.id=="egypt" or civ.id=="britain" then Color3.fromRGB(194,171,71) else Color3.fromRGB(107,147,66),Enum.Material.Grass)
 		end
 		if level>=2 then
 			for _,side in {-1,1}do
-				part(farm,"IrrigationChannel",Vector3.new(.8,.25,34),origin*CFrame.new(side*25,-.25,0),Color3.fromRGB(83,145,157),Enum.Material.SmoothPlastic)
+				part(farm,"IrrigationChannel",Vector3.new(.8,.25,34),origin*CFrame.new(side*25,soilTop+.125,0),Color3.fromRGB(83,145,157),Enum.Material.SmoothPlastic)
 			end
 		end
-		for _,side in {-1,1}do part(farm,"FieldFence",Vector3.new(56,.5,.5),origin*CFrame.new(0,1.5,side*20),Color3.fromRGB(141,104,61)) end
+		for _,side in {-1,1}do
+			part(farm,"FieldFence",Vector3.new(56,.5,.5),origin*CFrame.new(0,1.5,side*20),Color3.fromRGB(141,104,61))
+			for _,x in {-27,27}do
+				local base=exteriorY(parent.Parent,frame,site+Vector3.new(x,0,side*20))
+				part(farm,"FencePost",Vector3.new(.5,1.25-base,.5),origin*CFrame.new(x,(base+1.25)/2,side*20),Color3.fromRGB(141,104,61))
+			end
+		end
 	end
 	for index=1,1+workers do Tenders.create(farm,frame,civ,index,level) end
 	part(farm,"CollectionCrate",Vector3.new(6,4,5),frame*CFrame.new(-24,1,-152),Color3.fromRGB(151,109,59))
-	label(farm,frame*CFrame.new(-24,4.2,-152),"FarmStatus","FARM I",civ.color)
+	label(farm,frame*CFrame.new(-24,4,-152),"FarmStatus","FARM I",civ.color)
 	farm:SetAttribute("WorkerCount",1+workers)
 	return farm
 end
@@ -86,11 +111,14 @@ local function trainingYard(parent,frame,civ)
 	light.Color,light.Range,light.Brightness=Color3.fromRGB(255,179,86),16,1.8
 	light.Shadows,light.Parent=false,embers
 	for _,side in {-1,1} do
-		part(yard,"LogSeat",Vector3.new(1,1,5),origin*CFrame.new(side*12,.7,0),Color3.fromRGB(120,83,47))
+		part(yard,"LogSeat",Vector3.new(1,1,5),origin*CFrame.new(side*12,.6,0),Color3.fromRGB(120,83,47))
 		part(yard,"CampBanner",Vector3.new(.25,5,.25),origin*CFrame.new(side*12,2.5,-12),Color3.fromRGB(100,77,53))
 		part(yard,"CampColors",Vector3.new(2.5,2,.15),origin*CFrame.new(side*12,4,-12),civ.color,Enum.Material.Fabric)
 	end
 	label(yard,origin*CFrame.new(0,4,13),"TrainingLabel","TRAINING CAMP I",civ.color)
+	for _,x in {-5,5}do
+		part(yard,"TrainingSignPost",Vector3.new(.35,2.9,.35),origin*CFrame.new(x,1.55,13),Color3.fromRGB(120,83,47))
+	end
 	local length=Camp.approachInnerX-Camp.center.X
 	part(parent,"TrainingApproach",Vector3.new(length,.1,6),frame*CFrame.new((Camp.center.X+Camp.approachInnerX)/2,-.8,Camp.center.Z),
 		Color3.fromRGB(151,131,94),Enum.Material.Ground)
@@ -108,24 +136,26 @@ function Infrastructure.sync(plot,frame,civ,state)
 		folder:ClearAllChildren()
 		if state.level>=2 then
 			Districts.house(folder,frame*CFrame.new(Sites.armory),civ,10,"Armory")
-			label(folder.Armory,frame*CFrame.new(24,8,14.5),"ArmoryLabel","ARMORY",civ.color)
+			facadeLabel(folder.Armory,folder.Armory,"ArmoryLabel","ARMORY",civ.color,1,.85)
 		end
 		if (state.trainingLevel or 0)>0 then
 			trainingYard(folder,frame,civ)
 		end
 		if (state.armyCampLevel or 0)>0 then
 			Districts.house(folder,frame*CFrame.new(Sites.armyCamp),civ,12,"ArmyCamp")
-			label(folder.ArmyCamp,frame*CFrame.new(-24,8,31.5),"CampLabel","ARMY CAMP I",civ.color)
+			facadeLabel(folder.ArmyCamp,folder.ArmyCamp,"CampLabel","ARMY CAMP I",civ.color)
 		end
 		if (state.farmLevel or 0)>0 then farmland(folder,frame,civ,state.workersLevel or 0,state.farmLevel) end
 		if (state.workersLevel or 0)>0 then
 			local workers=state.workersLevel
-			Districts.house(folder,frame*CFrame.new(Sites.workers+Vector3.new(0,-1.7,0)),civ,if workers>=2 then 12 else 10,"WorkerCamp")
+			local groundY=exteriorY(plot,frame,Sites.workers)
+			Districts.house(folder,frame*CFrame.new(Sites.workers+Vector3.new(0,groundY-1,0)),civ,if workers>=2 then 12 else 10,"WorkerCamp")
 			folder.WorkerCamp:SetAttribute("WorkersLevel",workers)
-			label(folder.WorkerCamp,frame*CFrame.new(60,6,-137.5),"WorkersLabel","WORKER CAMP "..(if workers>=2 then "II" else "I"),civ.color)
+			facadeLabel(folder.WorkerCamp,folder.WorkerCamp,"WorkersLabel","WORKER CAMP "..(if workers>=2 then "II" else "I"),civ.color)
 			if workers>=2 then
 				for index=1,3 do
-					part(folder.WorkerCamp,"FarmTools",Vector3.new(.2,3,.2),frame*CFrame.new(67,index*.15+.8,-147+index),Color3.fromRGB(123,86,46))
+					local point=Vector3.new(67,0,-147+index)
+					part(folder.WorkerCamp,"FarmTools",Vector3.new(.2,3,.2),frame*CFrame.new(point+Vector3.new(0,exteriorY(plot,frame,point)+1.5,0)),Color3.fromRGB(123,86,46))
 				end
 			end
 		end
@@ -138,17 +168,18 @@ function Infrastructure.sync(plot,frame,civ,state)
 			Districts.house(folder,frame*CFrame.new(site),civ,if building.track=="storehouse" then 12 else 10,building.name)
 			local built=folder[building.name]
 			built:SetAttribute(building.name.."Level",1)
-			label(built,frame*CFrame.new(site+Vector3.new(0,8,6)),"BuildingLabel",building.text,civ.color)
+			facadeLabel(built,built,"BuildingLabel",building.text,civ.color)
+			local front=math.max(built:GetAttribute("FrontDepth"),built.FoundationFooting.Size.Z/2)
 			if building.track=="blacksmith" then
-				part(built,"AnvilBase",Vector3.new(3,1.5,2),frame*CFrame.new(site+Vector3.new(0,2,5)),Color3.fromRGB(83,88,93),Enum.Material.Metal)
-				part(built,"Anvil",Vector3.new(4,.6,1.5),frame*CFrame.new(site+Vector3.new(0,3.1,5)),Color3.fromRGB(108,115,120),Enum.Material.Metal)
-				part(built,"ForgeGlow",Vector3.new(2,.3,1),frame*CFrame.new(site+Vector3.new(-3,2.5,3)),Color3.fromRGB(242,128,38),Enum.Material.Neon)
+				part(built,"AnvilBase",Vector3.new(3,1.5,2),frame*CFrame.new(site+Vector3.new(0,1.75,front+1.3)),Color3.fromRGB(83,88,93),Enum.Material.Metal)
+				part(built,"Anvil",Vector3.new(4,.6,1.5),frame*CFrame.new(site+Vector3.new(0,2.8,front+1.3)),Color3.fromRGB(108,115,120),Enum.Material.Metal)
+				part(built,"ForgeGlow",Vector3.new(2,.3,1),frame*CFrame.new(site+Vector3.new(0,3.25,front+1.3)),Color3.fromRGB(242,128,38),Enum.Material.Neon)
 			elseif building.track=="armorer" then
-				part(built,"ArmorStand",Vector3.new(.5,3,.5),frame*CFrame.new(site+Vector3.new(0,3,5)),Color3.fromRGB(111,80,49))
-				part(built,"DisplayArmor",Vector3.new(2,2,1),frame*CFrame.new(site+Vector3.new(0,4,5)),civ.color,Enum.Material.Metal)
+				part(built,"ArmorStand",Vector3.new(.5,3,.5),frame*CFrame.new(site+Vector3.new(0,2.5,front+1.3)),Color3.fromRGB(111,80,49))
+				part(built,"DisplayArmor",Vector3.new(2,2,1),frame*CFrame.new(site+Vector3.new(0,4,front+1.3)),civ.color,Enum.Material.Metal)
 			else
 				for _,x in {-3,3}do
-					part(built,"GrainCrate",Vector3.new(3,3,3),frame*CFrame.new(site+Vector3.new(x,2.5,5)),Color3.fromRGB(159,119,65))
+					part(built,"GrainCrate",Vector3.new(3,3,3),frame*CFrame.new(site+Vector3.new(x,2.5,front+1.75)),Color3.fromRGB(159,119,65))
 				end
 			end
 		end
@@ -169,7 +200,9 @@ function Infrastructure.status(plot,frame,state)
 	local board=folder:FindFirstChild("MilestoneStatus")
 	if #missing==0 then if board then board:Destroy() end;return end
 	if not board then
-		label(folder,frame*CFrame.new(12,4,9),"MilestoneStatus","",Color3.fromRGB(71,62,46))
+		local armory=folder:FindFirstChild("Armory")
+		if not armory then return end
+		facadeLabel(folder,armory,"MilestoneStatus","",Color3.fromRGB(71,62,46),1.5,-.7)
 		board=folder.MilestoneStatus
 		board:SetAttribute("MainHallChecklist",true)
 	end

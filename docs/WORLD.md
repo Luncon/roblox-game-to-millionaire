@@ -111,10 +111,27 @@ two original troop slots; Army Camp I adds a third slot. See [economy](ECONOMY.m
 
 ## Purchased building sites
 
+Generated architecture uses the foundation's local top at y 1. District buildings
+keep their existing floor heights and meet the foundation through physical
+footings; processional pillars and monuments have their own bases. Shared pitched
+roofs cover both outer wall corners and the ridge at their lower and upper faces,
+with filled attic wedges closing the space above the walls. Flat roofs, starter
+towers, terrace risers and gate posts meet their supporting surfaces.
+
+Grand Seneca and Viking halls have a 38-stud depth and inset end posts. Their
+ceremonial entrance sits at local z −34, leaving room between the hall, entrance
+and level-30 perimeter. Arena exits and training-yard side openings retain their
+clear approach lanes. The settlement-only geometry budget remains 400 BaseParts.
+
+Every visible earning, upgrade and farm-collection pad has a child support from
+its underside to the foundation or sampled exterior terrain. Supports stay
+within the pad's footprint and carry no touch handler, action or prompt. Pad
+positions, prices, eligibility and interaction zones remain unchanged.
+
 The first development milestone adds an armory automatically at settlement 2,
 a purchasable training yard at 5, farmland and worker camp at 7, and army camp at
 10. Training Yard I, Farm I, Worker Camp I and Barracks IV are prerequisites for
-entering settlement 10. Missing requirements appear at the main hall and HUD.
+entering settlement 10. Missing requirements appear on the armory facade and HUD.
 Older saved settlements already beyond this checkpoint keep their levels.
 
 Weapon and armor controls sit beside the armory in the right courtyard. Barracks
@@ -138,6 +155,12 @@ half-width and outside the central battlefield. Farm upgrades sit at x −48,
 z −145, separate from collection at x −24, z −145; the worker camp sits at
 x 60, z −144. Terrain and scenery reserve these
 areas before generation. The 28-stud road remains clear through the fields.
+
+Rural worker-camp footings and field-fence posts sample the same native terrain
+triangles as the landscape. Soil extends down to that ground while retaining its
+existing crop surface and farmer routes. Crop rows meet the soil, training signs
+have posts, and building labels mount to physical facade surfaces. Workshop
+furniture and storehouse crates stand beyond both walls and raised footings.
 
 Farm II at settlement 12 increases each field from five to seven crop rows, adding irrigation details and
 greater production. Worker Camp I adds a second farmer to the initial one;

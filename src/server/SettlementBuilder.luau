@@ -2,6 +2,7 @@
 
 local SettlementBuilder = {}
 local Districts = require(script.Parent.SettlementDistricts)
+local Geometry = require(script.Parent.SettlementGeometry)
 local STONE = Color3.fromRGB(214, 200, 166)
 local TIMBER = Color3.fromRGB(119, 85, 55)
 
@@ -106,11 +107,11 @@ local function block(parent: Instance, name: string, size: Vector3, frame: CFram
 	return object
 end
 
-local function pitchedRoof(parent: Instance, frame: CFrame, width: number, depth: number, color: Color3)
-	for _, side in {-1, 1} do
-		block(parent, "RoofSlope", Vector3.new(width / 2 + 2, 1.5, depth + 3),
-			frame * CFrame.new(side * width / 4, 0, 0) * CFrame.Angles(0, 0, side * -.4), color, Enum.Material.WoodPlanks)
-	end
+local function pitchedRoof(parent: Instance, frame: CFrame, width: number, depth: number, color: Color3,
+	wallWidth: number, wallDepth: number, wallTop: number, wallColor: Color3, wallMaterial: Enum.Material?)
+	return Geometry.pitchedRoof(parent,frame,{width=width,depth=depth+3,wallWidth=wallWidth,
+		wallDepth=wallDepth,wallTop=wallTop,thickness=1.5,overhang=2},
+		{roofColor=color,wallColor=wallColor,wallMaterial=wallMaterial or Enum.Material.Sandstone,solid=true})
 end
 
 local function starter(parent: Folder, frame: CFrame, civilization)
@@ -130,11 +131,13 @@ local function starter(parent: Folder, frame: CFrame, civilization)
 	elseif id == "seneca" or id == "vikings" then
 		local length = if id == "seneca" then 32 else 26
 		piece(if id == "seneca" then "BarkLonghouse" else "TimberLonghall", Vector3.new(18, 9, length), Vector3.new(0, 5.5, 0), TIMBER, Enum.Material.WoodPlanks)
-		pitchedRoof(parent, hall * CFrame.new(0, 12, 0), 20, length, if id == "seneca" then TIMBER else color)
+		pitchedRoof(parent,hall,20,length,if id=="seneca" then TIMBER else color,18,length,10,TIMBER,Enum.Material.WoodPlanks)
 		for _, z in {-length / 2, length / 2} do
-			piece("EndPost", Vector3.new(2, if id == "vikings" then 16 else 12, 2), Vector3.new(0, 7, z), color, Enum.Material.Wood)
+			local height=if id=="vikings" then 16 else 12
+			piece("EndPost",Vector3.new(2,height,2),Vector3.new(0,1+height/2,z),color,Enum.Material.Wood)
 		end
 	elseif id == "japan" or id == "ming" then
+		piece("TowerFooting",Vector3.new(24,2.5,24),Vector3.new(0,2.25,0),STONE)
 		local tiers = if id == "japan" then 3 else 2
 		for tier = 1, tiers do
 			local width = 27 - tier * 5
@@ -142,7 +145,7 @@ local function starter(parent: Folder, frame: CFrame, civilization)
 			piece("OverhangingRoof", Vector3.new(width + 7, 1.5, width + 7), Vector3.new(0, 4 + tier * 5, 0), if id == "japan" then color else Color3.fromRGB(219, 175, 65))
 		end
 		piece("GateBeam", Vector3.new(30, 2, 2), Vector3.new(0, 10, 16), color, Enum.Material.Wood)
-		for _, x in {-12, 12} do piece("GatePost", Vector3.new(2, 10, 2), Vector3.new(x, 5, 16), color, Enum.Material.Wood) end
+		for _, x in {-12, 12} do piece("GatePost", Vector3.new(2, 8, 2), Vector3.new(x, 5, 16), color, Enum.Material.Wood) end
 	elseif id == "egypt" then
 		piece("Temple", Vector3.new(24, 9, 18), Vector3.new(0, 5.5, 0))
 		for _, x in {-9, 9} do
@@ -162,18 +165,20 @@ local function starter(parent: Folder, frame: CFrame, civilization)
 			end
 		else
 			piece("ToranaBeam", Vector3.new(26, 2, 3), Vector3.new(0, 12, 15), color)
-			for _, x in {-10, 10} do piece("ToranaPost", Vector3.new(3, 12, 3), Vector3.new(x, 6, 15)) end
+			for _, x in {-10, 10} do piece("ToranaPost", Vector3.new(3, 10, 3), Vector3.new(x, 6, 15)) end
 		end
 	elseif id == "britain" or id == "spain" then
 		piece(if id == "britain" then "BrickManor" else "ColonialHall", Vector3.new(24, 11, 18), Vector3.new(0, 6.5, 0),
 			if id == "britain" then Color3.fromRGB(159, 91, 72) else STONE, if id == "britain" then Enum.Material.Brick else Enum.Material.Sandstone)
-		pitchedRoof(parent, hall * CFrame.new(0, 14, 0), 26, 20, color)
+		pitchedRoof(parent,hall,26,20,color,24,18,12,
+			if id=="britain" then Color3.fromRGB(159,91,72) else STONE,
+			if id=="britain" then Enum.Material.Brick else Enum.Material.Sandstone)
 		if id == "britain" then piece("Chimney", Vector3.new(3, 8, 3), Vector3.new(7, 15, -4), STONE, Enum.Material.Brick)
 		else
 			piece("BellTower", Vector3.new(6, 20, 6), Vector3.new(14, 11, -3))
 			piece("BellTowerCap", Vector3.new(8, 2, 8), Vector3.new(14, 22, -3), color)
 		end
-		for _, x in {-7, 7} do piece("Window", Vector3.new(4, 4, .5), Vector3.new(x, 8, 9.3), Color3.fromRGB(102, 159, 170), Enum.Material.Glass) end
+		for _, x in {-7, 7} do piece("Window", Vector3.new(4, 4, .5), Vector3.new(x, 8, 9.25), Color3.fromRGB(102, 159, 170), Enum.Material.Glass) end
 	else -- Spartan temple, Persian terrace, or Roman civic hall
 		local width = if id == "persia" then 30 else 24
 		piece(if id == "persia" then "PalaceTerrace" else "Hall", Vector3.new(width + 6, 2, 23), Vector3.new(0, 2, 0))
@@ -184,9 +189,10 @@ local function starter(parent: Folder, frame: CFrame, civilization)
 			if id == "rome" then piece("ArchHeader", Vector3.new(5, 2, 3), Vector3.new(x, 11, 9), color) end
 		end
 		if id == "persia" then
+			piece("TerraceRiser",Vector3.new(22,1,14),Vector3.new(0,14.5,-3),STONE)
 			piece("UpperTerrace", Vector3.new(22, 2, 14), Vector3.new(0, 16, -3), STONE)
 			for _, x in {-13, 13} do piece("Gateway", Vector3.new(3, 17, 5), Vector3.new(x, 9.5, 12), color) end
-		elseif id == "sparta" then pitchedRoof(parent, hall * CFrame.new(0, 16, 0), 28, 24, color) end
+		elseif id == "sparta" then pitchedRoof(parent,hall,28,24,color,24,22,14,STONE) end
 	end
 
 	block(parent, "Camp", Vector3.new(9,5,8), frame*CFrame.new(-24,3.5,0), civilization.color, Enum.Material.Fabric)
@@ -221,7 +227,7 @@ local function addBarracks(parent: Folder, frame: CFrame, civilization)
 	elseif id == "egypt" or id == "sparta" or id == "rome" or id == "persia" then
 		for _, side in {-1,1} do block(barracks,"EntrancePillar",Vector3.new(.8,8,.8),origin*CFrame.new(side*4,5,-7.5),color) end
 	end
-	local board = block(barracks,"BarracksSign",Vector3.new(8,1.5,.25),origin*CFrame.new(0,9,-8.2),Color3.fromRGB(32,39,41))
+	local board = block(barracks,"BarracksSign",Vector3.new(8,1.5,.25),origin*CFrame.new(0,9,-8.1),Color3.fromRGB(32,39,41))
 	local surface = Instance.new("SurfaceGui")
 	surface.Face, surface.CanvasSize, surface.Parent = Enum.NormalId.Front, Vector2.new(600,110), board
 	local label = Instance.new("TextLabel")

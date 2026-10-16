@@ -3,9 +3,12 @@ return function()
 	local Tenders=require(game.ServerScriptService.Game.FarmTenders)
 	local civs=require(game.ReplicatedStorage.Shared.Civilizations)
 	local root=Instance.new("Model");root.Name="FarmTenderFixture";root.Parent=workspace
+	local ground=Instance.new("Part");ground.Name="Ground";ground.Size=Vector3.new(2000,2,2000)
+	ground.CFrame=CFrame.new(0,-.95,0);ground.Anchored=true;ground.Parent=root
 	local plots=Instance.new("Folder");plots.Name="Plots";plots.Parent=root
 	local plot=Instance.new("Model");plot.Parent=plots
 	local foundation=Instance.new("Part");foundation.Name="Foundation";foundation.Anchored=true;foundation.Parent=plot
+	foundation.Size=Vector3.new(60,2,60);foundation.CFrame=CFrame.new(0,1,0)
 	local state={level=12,farmLevel=1,workersLevel=0,farmCoins=0}
 	local cases=0
 	local ok,result=pcall(function()
@@ -35,7 +38,9 @@ return function()
 			assert(plot.Infrastructure.Farmland==farm and farm.Farmer1==farmers[1],"Reserve tick restarted the routine")
 		end
 		cases+=1
-		foundation.CFrame=CFrame.new(900,17,-650)*CFrame.Angles(0,.61,0)
+		local moved=CFrame.new(900,17,-650)*CFrame.Angles(0,.61,0)
+		ground.CFrame=moved*foundation.CFrame:Inverse()*ground.CFrame
+		foundation.CFrame=moved
 		Infrastructure.animate(root,now)
 		local moved=foundation.CFrame:ToObjectSpace(farmers[1]:GetPivot())
 		assert((point.Position-moved.Position).Magnitude<.002,"Routine snapped to its original world frame")

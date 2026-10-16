@@ -4,6 +4,7 @@ local Progression = require(game:GetService("ReplicatedStorage").Shared.Settleme
 local Config = require(game:GetService("ReplicatedStorage").Shared.ProgressionConfig)
 local Sites = require(game:GetService("ReplicatedStorage").Shared.SettlementSites)
 local Camp = require(game:GetService("ReplicatedStorage").Shared.TrainingCampConfig)
+local Geometry = require(script.Parent.SettlementGeometry)
 local Districts = {}
 local STONE = Color3.fromRGB(219, 202, 165)
 local WOOD = Color3.fromRGB(113, 75, 43)
@@ -35,13 +36,6 @@ local function part(parent: Instance, name: string, size: Vector3, frame: CFrame
 	return object
 end
 
-local function roof(parent: Instance, frame: CFrame, width: number, depth: number, tint: Color3)
-	for _, side in {-1,1} do
-		part(parent,"RoofSlope",Vector3.new(width/2+1,1,depth+2),
-			frame*CFrame.new(side*width/4,0,0)*CFrame.Angles(0,0,-side*.4),tint,Enum.Material.WoodPlanks)
-	end
-end
-
 local function house(parent: Instance, frame: CFrame, civ, width: number, name: string)
 	local style, family = styles[civ.id], styles[civ.id].family
 	local model = Instance.new("Model")
@@ -50,23 +44,47 @@ local function house(parent: Instance, frame: CFrame, civ, width: number, name: 
 	local wall = if family=="longhouse" then WOOD elseif family=="brick" then Color3.fromRGB(163,87,66) else STONE
 	if civ.id=="ming" then wall=Color3.fromRGB(165,47,39) end
 	local h = width*.42
+	local longDepth=if width==42 then 38 else width
+	local postDepth=width*.08
+	local postZ=if width==42 then longDepth/2-postDepth/2 else longDepth/2
+	local frontDepth=if family=="longhouse" then longDepth/2 elseif family=="yurt" then width*.425
+		elseif family=="pagoda" then width*.4 else width*.35
+	local footingWidth,footingDepth=width,width*.7
+	if family=="longhouse" then footingWidth,footingDepth=width*.75,2*postZ+postDepth
+	elseif family=="yurt" then footingWidth,footingDepth=width*.86+.5,math.max(width*.85,width*.8+.5)
+	elseif family=="pagoda" then footingWidth,footingDepth=width*.8,width*.84+.8
+	elseif family=="pylon" then footingDepth=width*.9
+	elseif family=="classical" then footingWidth,footingDepth=width+1,width*.91+.5
+	elseif family=="brick" or family=="stucco" then footingDepth=width*.7+1.2 end
 	local function piece(label: string, size: Vector3, position: Vector3, tint: Color3?, material: Enum.Material?, solid: boolean?)
 		return part(model,label,size,frame*CFrame.new(position),tint or wall,material or style.material,solid)
 	end
+	local function pitched(roofWidth,roofDepth,wallWidth,wallDepth,wallTop,tint)
+		return Geometry.pitchedRoof(model,frame,
+			{width=roofWidth,depth=roofDepth,wallWidth=wallWidth,wallDepth=wallDepth,wallTop=wallTop,thickness=1},
+			{roofColor=tint,wallColor=wall,wallMaterial=style.material,solid=false})
+	end
+	piece("FoundationFooting",Vector3.new(footingWidth,1,footingDepth),Vector3.new(0,1.5,0),wall,
+		if family=="yurt" then Enum.Material.WoodPlanks else style.material,true)
+	model:SetAttribute("FrontDepth",frontDepth)
+	model:SetAttribute("FacadeFrame",frame*CFrame.new(if family=="longhouse" then -width*.22 else 0,
+		(if family=="classical" then 3 else 2)+h/2,frontDepth)*CFrame.Angles(0,math.pi,0))
+	model:SetAttribute("FacadeWidth",width*(if family=="longhouse" then .28 else .7))
+	model:SetAttribute("FacadeHeight",h*.7)
 	if family=="yurt" then
 		local tent=piece("FeltYurt",Vector3.new(h,width*.85,width*.85),Vector3.new(0,2+h/2,0),Color3.fromRGB(229,216,180),nil,true)
 		tent.Shape=Enum.PartType.Cylinder
 		tent.CFrame*=CFrame.Angles(0,0,math.pi/2)
-		piece("WovenRoof",Vector3.new(width,1,width),Vector3.new(0,h+2.6,0),civ.color)
+		piece("WovenRoof",Vector3.new(width,1,width),Vector3.new(0,h+2.5,0),civ.color)
 		piece("SmokeVent",Vector3.new(width*.2,1.5,width*.2),Vector3.new(0,h+3.5,0),WOOD)
-		piece("ClanStandard",Vector3.new(.5,h+3,.5),Vector3.new(width*.43,2+h/2,-width*.4),GOLD)
+		piece("ClanStandard",Vector3.new(.5,h+3,.5),Vector3.new(width*.43,2+(h+3)/2,-width*.4),GOLD)
 	elseif family=="longhouse" then
-		piece("TimberHall",Vector3.new(width*.75,h,width),Vector3.new(0,2+h/2,0),nil,nil,true)
-		roof(model,frame*CFrame.new(0,h+3,0),width*.85,width,if civ.id=="seneca" then WOOD else civ.color)
-		for _, z in {-width/2,width/2} do
+		piece("TimberHall",Vector3.new(width*.75,h,longDepth),Vector3.new(0,2+h/2,0),nil,nil,true)
+		pitched(width*.85,longDepth+2,width*.75,longDepth,h+2,if civ.id=="seneca" then WOOD else civ.color)
+		for _, z in {-postZ,postZ} do
 			piece("CarvedEndPost",Vector3.new(width*.08,h+5,width*.08),Vector3.new(0,2+(h+5)/2,z),civ.color)
 		end
-		local shield=piece(if civ.id=="vikings" then "RoundShield" else "WovenWallPanel",Vector3.new(width*.2,width*.2,.25),Vector3.new(width*.24,h*.65+2,-width/2-.15),civ.color)
+		local shield=piece(if civ.id=="vikings" then "RoundShield" else "WovenWallPanel",Vector3.new(width*.2,width*.2,.25),Vector3.new(width*.24,h*.65+2,-longDepth/2-.1),civ.color)
 		if civ.id=="vikings" then shield.Shape=Enum.PartType.Ball end
 	elseif family=="dome" then
 		piece("AssemblyBase",Vector3.new(width,h,width*.7),Vector3.new(0,2+h/2,0),nil,nil,true)
@@ -81,9 +99,9 @@ local function house(parent: Instance, frame: CFrame, civ, width: number, name: 
 	elseif family=="pagoda" then
 		piece("LacquerHall",Vector3.new(width*.8,h,width*.8),Vector3.new(0,2+h/2,0),if civ.id=="ming" then wall else STONE,nil,true)
 		local tint=if civ.id=="ming" then GOLD else civ.color
-		piece("OverhangingRoof",Vector3.new(width+2,1.2,width+2),Vector3.new(0,h+3,0),tint,Enum.Material.Slate)
+		piece("OverhangingRoof",Vector3.new(width+2,1.2,width+2),Vector3.new(0,h+2.6,0),tint,Enum.Material.Slate)
 		for _, side in {-1,1} do
-			part(model,"UpturnedEave",Vector3.new(2,1.2,width+2),frame*CFrame.new(side*(width/2-.25),h+3.5,0)*CFrame.Angles(0,0,side*.3),tint,Enum.Material.Slate)
+			part(model,"UpturnedEave",Vector3.new(2,1.2,width+2),frame*CFrame.new(side*(width/2-.25),h+3.1,0)*CFrame.Angles(0,0,side*.3),tint,Enum.Material.Slate)
 			piece("LacquerPillar",Vector3.new(.8,h,.8),Vector3.new(side*width*.32,2+h/2,-width*.42),civ.color)
 		end
 	elseif family=="pylon" then
@@ -94,38 +112,39 @@ local function house(parent: Instance, frame: CFrame, civ, width: number, name: 
 		piece("PaintedLintel",Vector3.new(width*.84,1.3,width*.18),Vector3.new(0,h+5,-width*.38),civ.color)
 		piece("RoofCornice",Vector3.new(width+1,1,width*.72),Vector3.new(0,h+2.5,0),civ.color)
 	elseif family=="classical" then
-		piece("Podium",Vector3.new(width+1,1,width*.8),Vector3.new(0,2.5,0))
+		piece("Podium",Vector3.new(width+1,1,width*.91+.5),Vector3.new(0,2.5,0))
 		piece("CivicChamber",Vector3.new(width*.82,h,width*.7),Vector3.new(0,3+h/2,0),nil,nil,true)
 		for _, side in {-1,1} do
 			piece("Column",Vector3.new(width*.07,h,width*.07),Vector3.new(side*width*.35,3+h/2,-width*.42),nil,nil,true)
 		end
 		piece("PaintedEntablature",Vector3.new(width+2,1.5,width*.9),Vector3.new(0,h+3.5,0),if civ.id=="persia" then Color3.fromRGB(49,101,135) else civ.color)
-		if civ.id=="sparta" then roof(model,frame*CFrame.new(0,h+5,0),width,width*.8,civ.color)
-		elseif civ.id=="rome" then piece("CivicArchHeader",Vector3.new(width*.5,1.5,2),Vector3.new(0,h+1.5,-width*.43),STONE)
+		if civ.id=="sparta" then pitched(width,math.max(width*.8+2,width*.9+.2),width,width*.9,h+4.25,civ.color)
+		elseif civ.id=="rome" then piece("CivicArchHeader",Vector3.new(width*.8,1.5,2),Vector3.new(0,h+2.25,-width*.42),STONE)
 		else
 			for _, side in {-1,1} do piece("BullCapital",Vector3.new(width*.13,1.7,width*.12),Vector3.new(side*width*.35,h+3,-width*.42),GOLD) end
 		end
 	else
 		piece("CivicHouse",Vector3.new(width,h,width*.7),Vector3.new(0,2+h/2,0),nil,nil,true)
-		roof(model,frame*CFrame.new(0,h+3,0),width,width*.8,civ.color)
+		local profile=pitched(width,width*.8+2,width,width*.7,h+2,civ.color)
 		for _, side in {-1,1} do
 			piece(if family=="brick" then "WhiteSashWindow" else "ArcadePier",Vector3.new(width*.16,if family=="brick" then h*.4 else h,if family=="brick" then .25 else 1),
-				Vector3.new(side*width*.3,2+h*.6,-width*.36),if family=="brick" then Color3.fromRGB(191,218,221) else STONE)
+				Vector3.new(side*width*.3,2+h*(if family=="brick" then .6 else .5),-width*.35-.1),if family=="brick" then Color3.fromRGB(191,218,221) else STONE)
 		end
-		piece(if family=="brick" then "Chimney" else "BellTurret",Vector3.new(1.7,4,1.7),Vector3.new(width*.3,h+4,0),if family=="brick" then wall else GOLD)
+		piece(if family=="brick" then "Chimney" else "BellTurret",Vector3.new(1.7,4,1.7),Vector3.new(width*.3,Geometry.roofY(profile,width*.3)+1.7,0),if family=="brick" then wall else GOLD)
 	end
 	return model
 end
 
 local function garden(parent: Instance, frame: CFrame, civ, width: number)
-	part(parent,"CultivatedGround",Vector3.new(width,.2,6),frame*CFrame.new(0,2.12,0),Color3.fromRGB(79,115,61),Enum.Material.Grass)
+	part(parent,"CultivatedGround",Vector3.new(width,.2,6),frame*CFrame.new(0,1.1,0),Color3.fromRGB(79,115,61),Enum.Material.Grass)
 	for _, side in {-1,1} do
-		part(parent,if civ.id=="seneca" then "ThreeSistersBed" else "GardenBed",Vector3.new(width*.35,.6,2),frame*CFrame.new(side*width*.25,2.5,0),Color3.fromRGB(104,147,65),Enum.Material.LeafyGrass)
+		part(parent,if civ.id=="seneca" then "ThreeSistersBed" else "GardenBed",Vector3.new(width*.35,.6,2),frame*CFrame.new(side*width*.25,1.5,0),Color3.fromRGB(104,147,65),Enum.Material.LeafyGrass)
 	end
 end
 
 local function monument(parent: Instance, frame: CFrame, civ, tall: boolean?)
 	local h=if tall then 17 else 8
+	part(parent,"MonumentFooting",Vector3.new(6,1,6),frame*CFrame.new(0,1.5,0),STONE)
 	part(parent,"CeremonialPlinth",Vector3.new(6,1,6),frame*CFrame.new(0,2.5,0),STONE)
 	local id=civ.id
 	local label=if id=="egypt" then "Obelisk" elseif id=="seneca" then "CouncilCarving"
@@ -186,7 +205,7 @@ function Districts.add(parent: Folder, frame: CFrame, civ, level: number)
 	feature:SetAttribute("Theme",styles[civ.id].name)
 	local half=Progression[level].size/2
 	-- A new paved course records every small land expansion and stays in place.
-	part(feature,"ExpansionAvenue",Vector3.new(12,.12,4),frame*CFrame.new(0,2.08,half-2),STONE,Enum.Material.Cobblestone)
+	part(feature,"ExpansionAvenue",Vector3.new(12,.12,4),frame*CFrame.new(0,1.06,half-2),STONE,Enum.Material.Cobblestone)
 	local featureId="avenue_detail"
 	if level==2 then featureId="barracks"
 	elseif level==3 then house(feature,frame*CFrame.new(24,0,-25),civ,10,"FirstDwelling");featureId="dwelling"
@@ -196,7 +215,10 @@ function Districts.add(parent: Folder, frame: CFrame, civ, level: number)
 	elseif level==7 then garden(feature,frame*CFrame.new(36,0,10),civ,8);featureId="orchard"
 	elseif level==8 then house(feature,frame*CFrame.new(-38,0,22),civ,8,"CraftHall");featureId="craft_hall"
 	elseif level==9 then
-		for _, x in {-12,12} do part(feature,"ProcessionalPillar",Vector3.new(2,9,2),frame*CFrame.new(x,6.5,-38),civ.color) end
+		for _, x in {-12,12} do
+			part(feature,"PillarFooting",Vector3.new(3,1,3),frame*CFrame.new(x,1.5,-38),STONE)
+			part(feature,"ProcessionalPillar",Vector3.new(2,9,2),frame*CFrame.new(x,6.5,-38),civ.color)
+		end
 		featureId="processional_entrance"
 	elseif level==10 then monument(feature,frame*CFrame.new(0,0,-41),civ);featureId="civic_monument"
 	elseif level==11 then garden(feature,frame*CFrame.new(42,0,-30),civ,8);featureId="district_garden"
@@ -204,13 +226,16 @@ function Districts.add(parent: Folder, frame: CFrame, civ, level: number)
 	elseif level==13 then garden(feature,frame*CFrame.new(35,0,-39),civ,8);featureId="outer_garden"
 	elseif level==14 then monument(feature,frame*CFrame.new(44,0,-46),civ);featureId="district_emblem"
 	elseif level==20 then
-		for _, x in {-12,12} do part(feature,"CeremonialGatePier",Vector3.new(3,12,3),frame*CFrame.new(x,8,-46),civ.color) end
-		part(feature,"CeremonialGateLintel",Vector3.new(27,2,3),frame*CFrame.new(0,14,-46),GOLD)
+		for _, x in {-12,12} do
+			part(feature,"GateFooting",Vector3.new(3,1,3),frame*CFrame.new(x,1.5,-34),STONE)
+			part(feature,"CeremonialGatePier",Vector3.new(3,12,3),frame*CFrame.new(x,8,-34),civ.color)
+		end
+		part(feature,"CeremonialGateLintel",Vector3.new(27,2,3),frame*CFrame.new(0,14,-34),GOLD)
 		featureId="ceremonial_gate"
 	elseif level==30 then
 		house(feature,frame*CFrame.new(0,0,-65),civ,42,styles[civ.id].landmark)
 		local family=styles[civ.id].family
-		local depth=if family=="longhouse" then .5 elseif family=="pagoda" then .4 elseif family=="yurt" then .43 else .35
+		local depth=if family=="longhouse" then 38/(2*42) elseif family=="pagoda" then .4 elseif family=="yurt" then .425 else .35
 		local width=if family=="longhouse" then 42*.28 elseif family=="pylon" then 42*.42
 			elseif family=="brick" or family=="stucco" then 42*.4 elseif family=="classical" then 42*.6 else 42*.7
 		local x=if family=="longhouse" then -42*.22 else 0
@@ -229,7 +254,7 @@ function Districts.add(parent: Folder, frame: CFrame, civ, level: number)
 		house(feature,frame*CFrame.new(lot.x,0,lot.z),civ,14,"DistrictHouse_"..level)
 		featureId="themed_district"
 	else
-		part(feature,"AvenueCarving",Vector3.new(1.5,3,1.5),frame*CFrame.new(if level%2==0 then -8 else 8,3.5,half-4),civ.color,styles[civ.id].material)
+		part(feature,"AvenueCarving",Vector3.new(1.5,3,1.5),frame*CFrame.new(if level%2==0 then -8 else 8,2.5,half-4),civ.color,styles[civ.id].material)
 	end
 	feature:SetAttribute("FeatureId",featureId)
 end
@@ -248,17 +273,26 @@ function Districts.perimeter(parent: Folder, frame: CFrame, civ, level: number)
 		else part(walls,name,size,frame*CFrame.new(position),tint,material,solid) end
 	end
 	local gateNear,gateFar=Camp.center.Z-Camp.approachHalfWidth,Camp.center.Z+Camp.approachHalfWidth
-	wall("WestWall",Vector3.new(2,6,r+gateNear),Vector3.new(-r,5,(-r+gateNear)/2),true)
-	wall("WestWallBeyondCamp",Vector3.new(2,6,r-gateFar),Vector3.new(-r,5,(r+gateFar)/2),true)
+	wall("WestWall",Vector3.new(2,7,r+gateNear),Vector3.new(-r,4.5,(-r+gateNear)/2),true)
+	wall("WestWallBeyondCamp",Vector3.new(2,7,r-gateFar),Vector3.new(-r,4.5,(r+gateFar)/2),true)
 	wall("TrainingGateLintel",Vector3.new(3,2,2*Camp.approachHalfWidth+2),Vector3.new(-r,13,Camp.center.Z))
-	wall("EastWall",Vector3.new(2,6,2*r),Vector3.new(r,5,0),true)
-	wall("CourtWallLeft",Vector3.new(r-9,6,2),Vector3.new((-r-9)/2,5,r),true)
-	wall("CourtWallRight",Vector3.new(r-9,6,2),Vector3.new((r+9)/2,5,r),true)
-	wall("ArenaWallLeft",Vector3.new(r-42,6,2),Vector3.new((-r-42)/2,5,-r),true)
-	wall("ArenaWallRight",Vector3.new(r+30,6,2),Vector3.new((r-30)/2,5,-r),true)
+	wall("EastWall",Vector3.new(2,7,2*r),Vector3.new(r,4.5,0),true)
+	wall("CourtWallLeft",Vector3.new(r-9,7,2),Vector3.new((-r-9)/2,4.5,r),true)
+	wall("CourtWallRight",Vector3.new(r-9,7,2),Vector3.new((r+9)/2,4.5,r),true)
+	wall("ArenaWallLeft",Vector3.new(r-42,7,2),Vector3.new((-r-42)/2,4.5,-r),true)
+	wall("ArenaWallRight",Vector3.new(r+30,7,2),Vector3.new((r-30)/2,4.5,-r),true)
 	wall("CourtGateLintel",Vector3.new(20,2,3),Vector3.new(0,13,r))
 	wall("ArenaGateLintel",Vector3.new(14,2,3),Vector3.new(-36,13,-r))
-	wall("ArenaExitPaving",Vector3.new(10,.1,r-11),Vector3.new(-36,2.06,(-r-11)/2))
+	wall("ArenaExitPaving",Vector3.new(10,.1,r-11),Vector3.new(-36,1.05,(-r-11)/2))
+	for index,z in {gateNear-1,gateFar+1} do
+		wall("TrainingGatePost"..index,Vector3.new(3,11,2),Vector3.new(-r,6.5,z),true)
+	end
+	for index,x in {-10,10} do
+		wall("CourtGatePost"..index,Vector3.new(2,11,3),Vector3.new(x,6.5,r),true)
+	end
+	for index,x in {-43,-29} do
+		wall("ArenaGatePost"..index,Vector3.new(2,11,3),Vector3.new(x,6.5,-r),true)
+	end
 end
 
 -- Purchased infrastructure uses the same civilization architecture as districts.

@@ -10,6 +10,7 @@ local Landscape = require(script.Parent.WorldLandscape)
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local Infrastructure = require(script.Parent.SettlementInfrastructure)
 local Camp = require(game:GetService("ReplicatedStorage").Shared.TrainingCampConfig)
+local Topography = require(script.Parent.Topography)
 local PLOT_COUNT = Layout.plotCount
 local NEUTRAL = Color3.fromRGB(103, 119, 104)
 local STONE = Color3.fromRGB(181, 174, 153)
@@ -59,6 +60,27 @@ end
 
 local function createPad(controls: Folder, frame: CFrame, definition, plotId: number)
 	local pad = part(controls, definition.name, Vector3.new(8,1,6), frame*CFrame.new(definition.x,definition.y or 2,definition.z), Color3.fromRGB(110,76,64))
+	local plot=controls.Parent
+	local foundation=plot.Foundation
+	local inside=math.abs(definition.x)+pad.Size.X/2<=foundation.Size.X/2+.001
+		and math.abs(definition.z)+pad.Size.Z/2<=foundation.Size.Z/2+.001
+	local surfaceY=foundation.Size.Y/2
+	if not inside then
+		-- The map is not parented to Workspace during its first construction.
+		-- Sample the same local triangles that build native exterior collision.
+		local ground=plot.Parent.Parent.Ground
+		local point=ground.CFrame:PointToObjectSpace(pad.Position)
+		local surface=ground.CFrame:PointToWorldSpace(Vector3.new(point.X,.95+Topography.sampleHeight(point.X,point.Z),point.Z))
+		surfaceY=frame:PointToObjectSpace(surface).Y
+	end
+	local bottom=(definition.y or 2)-pad.Size.Y/2
+	local gap=bottom-surfaceY
+	if gap>.001 then
+		local support=part(pad,"PadSupport",Vector3.new(pad.Size.X,gap,pad.Size.Z),
+			frame*CFrame.new(definition.x,surfaceY+gap/2,definition.z),STONE)
+		support.Material=Enum.Material.Slate
+		support.CanTouch=false
+	end
 	pad:SetAttribute("Action",definition.action)
 	pad:SetAttribute("GeneratedBy","CivilizationTycoonPad")
 	pad:SetAttribute("PlotId",plotId)
