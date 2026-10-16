@@ -11,11 +11,14 @@ local Rig=require(script.Parent.WarriorRig)
 local Navigator=require(script.Parent.WarriorNavigator)
 local Projectile=require(script.Parent.TroopProjectile)
 local Topography=require(script.Parent.Topography)
+local Encounter=require(script.Parent.CombatEncounter)
+local Motion=require(script.Parent.EncounterMotion)
 local NeutralOpponentService={}
 local COLLISION_GROUP="CivilizationWarriors"
 
-function NeutralOpponentService.start(world,combat,configuration: any?)
+function NeutralOpponentService.start(world,combat,configuration: any?,sharedEncounter: any?)
 	local config=configuration or Defaults
+	local encounters=sharedEncounter or Encounter.new(world,combat)
 	local controller={}
 	local active=true
 	local slots={}
@@ -31,7 +34,7 @@ function NeutralOpponentService.start(world,combat,configuration: any?)
 		if slot.deathConnection then slot.deathConnection:Disconnect();slot.deathConnection=nil end
 		if slot.destroyConnection then slot.destroyConnection:Disconnect();slot.destroyConnection=nil end
 		if slot.navigator then slot.navigator:destroy();slot.navigator=nil end
-		if slot.rig then projectiles:cancel(slot.rig);combat:unregister(slot.rig) end
+		if slot.rig then projectiles:cancel(slot.rig);encounters:forget(slot.rig);combat:unregister(slot.rig) end
 		slot.target=nil
 	end
 	local function fallen(slot,rig)
@@ -41,6 +44,7 @@ function NeutralOpponentService.start(world,combat,configuration: any?)
 		slot.respawnAt=workspace:GetServerTimeNow()+config.respawnDelay
 		slot.corpses[rig]=workspace:GetServerTimeNow()+Warrior.corpseLifetime
 		rig:SetAttribute("WarriorState","Fallen")
+		local flash=rig:FindFirstChild("CombatHitFlash");if flash then flash.Enabled=false end
 	end
 	local function spawn(slot)
 		local rig=Rig.createNeutral(slot.spawnFrame,slot.kind)
@@ -76,6 +80,7 @@ function NeutralOpponentService.start(world,combat,configuration: any?)
 			slot.respawnAt=0
 		end
 		projectiles:destroy()
+		if not sharedEncounter then encounters:destroy() end
 		folder:Destroy()
 	end
 	if not config.enabled then return controller end
@@ -103,40 +108,10 @@ function NeutralOpponentService.start(world,combat,configuration: any?)
 			local rig=slot.rig
 			local attacker=combat:actor(rig)
 			if not attacker then fallen(slot,rig);continue end
-			local ranged=slot.kind=="ranged"
-			local reach=if ranged then Ranged.range else Warrior.attackRange
-			local distance=if ranged then Ranged.aggroRange else Warrior.aggroRange
-			local nearest=nil
-			if Rules.containsArena(arena,attacker.position) then
-				for _,candidate in actors do
-					local separation=(candidate.position-attacker.position).Magnitude
-					if Rules.hostile(attacker,candidate) and separation<=distance and Rules.containsArena(arena,candidate.position) then
-						nearest,distance=candidate,separation
-					end
-				end
-			end
-			local target=if nearest then nearest.rig else nil
-			if slot.target~=target then slot.navigator:stop();slot.target=target end
-			if nearest then
-				rig:SetAttribute("WarriorState","Fighting")
-				if distance<=reach and combat:visible(attacker,nearest) then
-					slot.navigator:stop()
-					local facing=Vector3.new(nearest.position.X,attacker.position.Y,nearest.position.Z)
-					if (facing-attacker.position).Magnitude>.01 then attacker.root.CFrame=CFrame.lookAt(attacker.position,facing) end
-					if now>=slot.nextAttack then
-						local accepted=if ranged then projectiles:fire(rig,nearest.rig,"arrow") else combat:hit(rig,nearest.rig).ok
-						if accepted then
-							slot.nextAttack=now+(if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
-							slot.attackUntil=now+.35
-							rig:SetAttribute("LastAttackAt",serverNow)
-						end
-					end
-				else slot.navigator:setGoal(nearest.position) end
-			else
-				slot.navigator:setGoal(slot.spawnFrame.Position)
-				rig:SetAttribute("WarriorState","Guarding")
-			end
-			slot.navigator:step(now)
+			local plan=encounters:step(rig,{order="advance",homeGoal=slot.spawnFrame.Position,actors=actors,
+				fire=function(target)return projectiles:fire(rig,target,"arrow")end},now)
+			slot.target=plan.target
+			Motion.apply(rig,slot.navigator,world,plan,now)
 		end
 	end
 	local elapsed=0
@@ -148,7 +123,10 @@ function NeutralOpponentService.start(world,combat,configuration: any?)
 		if elapsed>=Warrior.thinkInterval then elapsed=0;think(now) end
 		for _,slot in slots do
 			if slot.rig then
-				Rig.animate(slot.rig,now,slot.rig.HumanoidRootPart.AssemblyLinearVelocity.Magnitude>.5,now<slot.attackUntil)
+				if slot.rig.Humanoid.Health>0 then
+					Motion.publish(slot.rig,encounters:advance(slot.rig,now))
+					Rig.animate(slot.rig,now,slot.rig.HumanoidRootPart.AssemblyLinearVelocity.Magnitude>.5)
+				end
 			end
 		end
 	end)

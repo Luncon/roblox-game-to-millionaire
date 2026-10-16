@@ -79,6 +79,10 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		end
 		return actors
 	end
+	function controller:canAct(rig): boolean
+		local actor=self:actor(rig)
+		return actor~=nil and (actor.neutral==true or type(economy.canMutate)~="function" or economy:canMutate(actor.ownerId))
+	end
 	function controller:visible(attacker, target)
 		local filter = RaycastParams.new()
 		filter.FilterType = Enum.RaycastFilterType.Exclude
@@ -90,7 +94,7 @@ function CombatService.new(world, registry, economy, publishEconomy)
 	end
 	function controller:hit(attackerRig, targetRig)
 		local attacker, target = self:actor(attackerRig), self:actor(targetRig)
-		if not attacker or not target then return {ok=false,reason="invalid_actor"} end
+		if not attacker or not target or not self:canAct(attackerRig) then return {ok=false,reason="invalid_actor"} end
 		local ranged = attacker.kind == "ranged"
 		local reach = if ranged then Ranged.range else Warrior.attackRange
 		if not Rules.canDamage(attacker,target,arena,reach) or not self:visible(attacker,target) then
@@ -113,6 +117,7 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		humanoid:TakeDamage(damage)
 		local after = humanoid.Health
 		if after >= before then return {ok=false,reason="blocked_damage"} end
+		targetRig:SetAttribute("LastHitAt",workspace:GetServerTimeNow())
 		local killed = before > 0 and after <= 0
 		local reward
 		if killed and not rewarded[humanoid] then

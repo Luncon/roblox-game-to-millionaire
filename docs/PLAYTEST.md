@@ -1107,3 +1107,60 @@ multiplayer behavior remain unverified.
   startup: **41 managed sources matched exactly**, zero owned fixtures remained,
   all five original NPC templates were preserved, and one existing Studio window
   remained open.
+
+
+## Tactical NPC combat — October 15, 2026
+
+- The coordinator/developer/tester/reviewer workflow implemented shared target
+  selection, melee engagement reservations, overlap escapes, bounded ranged
+  repositioning and windup/contact/recovery attacks. Missing-module RED and an
+  isolated mutation removing the windup contact guard were detected in Studio.
+- A fresh ordinary solo Play passed **270 module cases across 46 suites** and
+  **four native cases** using production services and explicitly injected fake
+  profiles. No regression fixture accessed player storage. The repeatable runner
+  is `npm run build:test-project -- --solo --combat`.
+- In a twelve-second encounter, all six unanchored NPCs physically moved and
+  showed windup, contact and recovery. **37 damage events** matched published accepted
+  attacks; the earliest observed contact was **0.200185 seconds** after windup
+  began. After the initial separation grace, minimum root separation was
+  **3.652 studs**, with **zero sustained torso overlap**. This is a six-NPC
+  observation, not a guarantee that transient crowd crossings never occur.
+- A target escaping a held melee windup received no damage, and the attacker
+  stayed in place. An archer pressured near the arena edge physically retreated
+  **17.399 studs** within three seconds without leaving the battlefield. Hold
+  remained stationary; Regroup stopped contacts while preserving reinforcement
+  capacity and the camp timer. Focused tests additionally cover line of sight,
+  lease loss, fixed targets, cadence, six-slot overflow and cleanup of 27 actors.
+- Native tests exposed two movement defects during development: overlapping
+  travellers needed a short separation step before pursuit, and changing root
+  facing after `MoveTo` cancelled the new movement request. They also exposed
+  an edge retreat with no legal backward candidate; tangent alternatives now
+  remain inside the same distance/time/speed guards. Original assertions were
+  retained through these fixes.
+- Visual review caught a doubled grip rotation that tipped spear/barrel axes
+  upright. Contact geometry regressions now require forward spear/barrel axes
+  and upright bows. Imported, neutral and procedural fallback bows retain
+  separate grip bases. The gallery shows isolated, anchored, unregistered pose
+  previews using production animation code: [melee preparation](assets/tactical-combat/melee-windup.png),
+  [melee contact](assets/tactical-combat/melee-contact.png),
+  [ranged preparation](assets/tactical-combat/ranged-windup.png) and
+  [ranged contact](assets/tactical-combat/ranged-contact.png).
+  Movement and damage evidence comes from the unanchored encounters above.
+- A separate focused test used **two genuine Roblox clients** and passed three
+  checks: owner-isolated orders, server-owned NPC physics, and replicated
+  movement/poses/damage. Both clients observed six moving troops, all six showing every attack
+  phase, six distinct visible attack poses and **32 damage updates**;
+  maximum rendered arm displacement between preparation/contact was **1.710
+  studs** on both clients. Test windows closed before cleanup. Detailed results
+  are in [verification.json](assets/tactical-combat/verification.json).
+- This run does not verify an eight-client load, long-session performance,
+  published asset availability, live storage or player teleport behavior.
+  Combat stats, reward amounts and respawn delays were preserved; formations,
+  additional abilities and ranged player attacks remain planned.
+- Independent reviewer and tester approved the final implementation and
+  evidence. Strict OpenSpec validation passed all sixteen items; production,
+  combat-solo and standard test Rojo builds passed. Stopped tests and restored
+  normal startup: **50 managed sources matched exactly**, zero owned fixtures,
+  all five NPC templates, nineteen equipment models and thirteen outfits
+  remained. The original 147-descendant Farmer and its template mesh IDs were
+  preserved. One original Studio window remained in Edit mode.

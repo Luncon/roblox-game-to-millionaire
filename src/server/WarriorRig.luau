@@ -59,6 +59,15 @@ function WarriorRig.update(rig: Model, civilization, state)
 	rig:SetAttribute("WeaponLevel", weaponLevel)
 	rig:SetAttribute("ArmorLevel", armorLevel)
 	local kind = rig:GetAttribute("WarriorClass") or "warrior"
+	if kind=="ranged" then
+		local basis="procedural"
+		for _,tool in rig:GetChildren()do if tool:IsA("Tool")then
+			for _,visual in tool:GetChildren()do
+				if visual:IsA("Model") and visual:GetAttribute("TemplateId")=="bow" then basis="imported" end
+			end
+		end end
+		rig:SetAttribute("CombatBowBasis",basis)
+	end
 	local damage = Tracks.weapon[weaponLevel].damage
 	if kind == "ranged" then damage = math.max(1,damage*Ranged.damageMultiplier) end
 	rig:SetAttribute("WarriorDamage", damage)
@@ -108,6 +117,7 @@ function WarriorRig.createNeutral(spawnFrame: CFrame, kind: string): Model
 	local rig=Instance.new("Model")
 	rig.Name=if kind=="ranged" then "Neutral Archer" else "Neutral Warrior"
 	rig:SetAttribute("WarriorClass",kind)
+	rig:SetAttribute("CombatBowBasis","neutral")
 	proceduralBody(rig,Color3.fromRGB(198,166,136),Color3.fromRGB(110,112,119))
 	local root=rig.HumanoidRootPart
 	local humanoid=Instance.new("Humanoid")
@@ -143,22 +153,99 @@ function WarriorRig.createNeutral(spawnFrame: CFrame, kind: string): Model
 	return rig
 end
 
-function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking: boolean?)
-	local torso = rig:FindFirstChild("Torso")
-	if not torso then return end
-	local swing = if moving then math.sin(now*9)*.55 else 0
-	for _, name in {"Right Hip", "Left Hip", "Right Shoulder", "Left Shoulder"} do
-		local motor = torso:FindFirstChild(name)
-		if motor and motor:IsA("Motor6D") then
-			local angle = if name == "Right Hip" or name == "Left Shoulder" then swing else -swing
-			if name == "Right Shoulder" then angle = if attacking then -1.4 + math.sin(now*20)*.7 else -.35 - swing*.3 end
-			-- C0 replicates procedural poses to observers; Transform does not.
-			-- Imported R6 joints can have rotated local axes. Swing in the
-			-- torso's frame while preserving the imported rest orientation.
-			local rest = motor:GetAttribute("RestC0")
-			motor.C0 = CFrame.new(rest.Position) * CFrame.Angles(angle,0,0) * (rest - rest.Position)
-		end
+local attacks={
+	-- Equipment's NPC grip already points spear/barrel axes forward at rest.
+	thrust={ready=Vector3.new(.12,0,0),windup=Vector3.new(.25,-.12,.06),strike=Vector3.new(0,0,0)},
+	slash={ready=Vector3.new(.25,0,.1),windup=Vector3.new(1.15,-.9,.2),strike=Vector3.new(.1,.85,-.3)},
+	chop={ready=Vector3.new(.3,0,.1),windup=Vector3.new(2.7,0,.15),strike=Vector3.new(.1,0,-.12)},
+	firearm={ready=Vector3.new(.2,0,.05),windup=Vector3.new(0,0,0),strike=Vector3.new(.04,0,0)},
+	throw={ready=Vector3.new(.3,0,0),windup=Vector3.new(2.5,-.3,.2),strike=Vector3.new(.1,.2,0)},
+}
+local bows={
+	imported={ready=Vector3.new(0,math.pi,math.pi/2),windup=Vector3.new(.08,math.pi-.1,math.pi/2),strike=Vector3.new(0,math.pi,math.pi/2)},
+	neutral={ready=Vector3.zero,windup=Vector3.new(.08,-.1,0),strike=Vector3.zero},
+	procedural={ready=Vector3.new(math.pi/2,0,0),windup=Vector3.new(math.pi/2,-.1,0),strike=Vector3.new(math.pi/2,0,0)},
+}
+
+function WarriorRig.combatStyle(rig): string
+	local ranged=rig:GetAttribute("WarriorClass")=="ranged"
+	local civilization=rig:GetAttribute("CivilizationId")
+	local variant=(if ranged then Ranged else Config).variants[civilization]
+	local kind=if variant then variant.weaponKind else if ranged then "bow" else "sword"
+	if ranged then
+		if kind=="bow" then return "bow" end
+		if kind=="musket" or kind=="crossbow" then return "firearm" end
+		return "throw"
 	end
+	return if kind=="spear" or kind=="rapier" then "thrust" elseif kind=="axe" then "chop" else "slash"
+end
+
+local function poseJoint(motor,angles,offset)
+	if not motor or not motor:IsA("Motor6D") then return end
+	local rest=motor:GetAttribute("RestC0")
+	if not rest then rest=motor.C0;motor:SetAttribute("RestC0",rest)end
+	-- Apply in the parent body's axes, retaining imported joint rest rotations.
+	motor.C0=CFrame.new(rest.Position+(offset or Vector3.zero))*CFrame.Angles(angles.X,angles.Y,angles.Z)*(rest-rest.Position)
+end
+
+function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking: boolean?)
+	local torso=rig:FindFirstChild("Torso")
+	if not torso then return end
+	local serverNow=workspace:GetServerTimeNow()
+	local phase=rig:GetAttribute("CombatPhase") or (if attacking then "contact" else "idle")
+	local duration=rig:GetAttribute("CombatPhaseDuration") or .35
+	local began=rig:GetAttribute("CombatPhaseStartedAt") or serverNow-duration*.5
+	local progress=math.clamp((serverNow-began)/math.max(.01,duration),0,1)
+	local alpha=progress*progress*(3-2*progress)
+	local style=WarriorRig.combatStyle(rig)
+	local bowBasis=rig:GetAttribute("CombatBowBasis") or "neutral"
+	local poses=if style=="bow" then bows[bowBasis] or bows.neutral else attacks[style]
+	local right=poses.ready
+	local offset=Vector3.zero
+	local left=Vector3.new(.35,0,-.1)
+	local leftOffset=Vector3.zero
+	local twist=0
+	local engaged=rig:GetAttribute("WarriorState")=="Fighting" or rig:GetAttribute("WarriorState")=="Waiting" or phase~="idle"
+	local gait=if moving then math.sin(now*9)*.55 else 0
+	if phase=="windup" then
+		-- Anticipate, then complete the fast stroke exactly at contact start.
+		local prepare=math.clamp(progress/.65,0,1)
+		local stroke=math.clamp((progress-.65)/.35,0,1)
+		prepare=prepare*prepare*(3-2*prepare);stroke=stroke*stroke*(3-2*stroke)
+		right=poses.ready:Lerp(poses.windup,prepare):Lerp(poses.strike,stroke)
+		twist=-.25*prepare+.5*stroke
+		if style=="thrust" then offset=(Vector3.new(0,.05,.3)*prepare):Lerp(Vector3.new(0,0,-.75),stroke)end
+	elseif phase=="contact" then
+		right=poses.strike+Vector3.new(-.08,.08,0)*alpha;twist=.25
+		if style=="thrust" then offset=Vector3.new(0,0,-.75)end
+	elseif phase=="recovery" then
+		right=poses.strike:Lerp(poses.ready,alpha);twist=.25*(1-alpha)
+		if style=="thrust" then offset=Vector3.new(0,0,-.75)*(1-alpha)end
+	elseif moving then right=Vector3.new(.35-gait*.3,0,0)end
+	if style=="bow" then
+		offset+=if bowBasis=="imported" then Vector3.new(.4,.15,-1) else Vector3.new(0,.5,-.4)
+		if phase~="idle" then left=Vector3.new(.9,-.3,-.4);leftOffset=Vector3.new(.6,.1,-.15)end
+	elseif style=="firearm" and phase~="idle" then
+		offset+=Vector3.new(0,.3,-.2)
+		left=Vector3.new(.9,0,1.1);leftOffset=Vector3.new(.4,0,-.35)
+	elseif not engaged then left=Vector3.new(gait,0,0)end
+	local hitAt=rig:GetAttribute("LastHitAt")
+	local hit=hitAt and serverNow-hitAt>=0 and serverNow-hitAt<.18
+	local flash=rig:FindFirstChild("CombatHitFlash")
+	if hit and not flash then
+		flash=Instance.new("Highlight");flash.Name="CombatHitFlash"
+		flash.FillColor=Color3.fromRGB(255,197,130);flash.FillTransparency=.55
+		flash.OutlineTransparency=1;flash.DepthMode=Enum.HighlightDepthMode.Occluded
+		flash.Adornee=rig;flash.Parent=rig
+	end
+	if flash then flash.Enabled=hit==true end
+	poseJoint(torso:FindFirstChild("Right Shoulder"),right,offset)
+	poseJoint(torso:FindFirstChild("Left Shoulder"),left,leftOffset)
+	poseJoint(torso:FindFirstChild("Right Hip"),Vector3.new(gait,0,0))
+	poseJoint(torso:FindFirstChild("Left Hip"),Vector3.new(-gait,0,0))
+	local root=rig:FindFirstChild("HumanoidRootPart")
+	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new(if hit then .12 else 0,if phase~="idle" then twist else 0,0))
+	poseJoint(torso:FindFirstChild("Neck"),Vector3.new(if hit then -.1 else 0,0,0))
 end
 
 return WarriorRig

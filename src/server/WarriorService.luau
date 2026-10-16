@@ -14,6 +14,8 @@ local WarriorNavigator = require(script.Parent.WarriorNavigator)
 local ArmyRest = require(script.Parent.ArmyRest)
 local TrainingCamp = require(Shared.TrainingCampConfig)
 local TroopProjectile = require(script.Parent.TroopProjectile)
+local Encounter = require(script.Parent.CombatEncounter)
+local Motion = require(script.Parent.EncounterMotion)
 local WarriorService = {}
 local COLLISION_GROUP = "CivilizationWarriors"
 local ORDERS = {advance=true,hold=true,regroup=true}
@@ -30,7 +32,7 @@ function WarriorService.slotDefinitions(state)
 	return slots
 end
 
-function WarriorService.start(world, registry, economy, catalog, sharedCombat)
+function WarriorService.start(world, registry, economy, catalog, sharedCombat, sharedEncounter)
 	local controller = {}
 	local owners, rigSlots, playerRigs = {}, {}, {}
 	local alive = true
@@ -38,6 +40,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 	local troops = world.model:FindFirstChild("Troops")
 	assert(troops and troops:IsA("Folder"), "Map must provide a Troops folder")
 	local combat = sharedCombat or CombatService.new(world, registry, economy)
+	local encounters=sharedEncounter or Encounter.new(world,combat)
 	local projectiles = TroopProjectile.new(world, combat, function(rig)
 		return alive and rigSlots[rig] ~= nil
 	end)
@@ -93,6 +96,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 		if slot.rig then
 			projectiles:cancel(slot.rig)
+			encounters:forget(slot.rig)
 			combat:unregister(slot.rig)
 			rigSlots[slot.rig] = nil
 		end
@@ -117,6 +121,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 		slot.respawnAt = workspace:GetServerTimeNow() + delay
 		slot.corpses[rig] = true
 		rig:SetAttribute("WarriorState", "Fallen")
+		local flash=rig:FindFirstChild("CombatHitFlash");if flash then flash.Enabled=false end
 		publish(owner)
 		task.delay(Config.corpseLifetime, function()
 			slot.corpses[rig] = nil
@@ -236,6 +241,8 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 				local troopRoot=rig and rig:FindFirstChild("HumanoidRootPart")
 				slot.holdPosition=if order=="hold" and troopRoot then troopRoot.Position else nil
 				if rig then
+					encounters:cancel(rig)
+					Motion.clear(rig)
 					rig.Humanoid.WalkSpeed=Config.walkSpeed
 					rig:SetAttribute("RestPhase",nil)
 					if order=="regroup" then projectiles:cancel(rig) end
@@ -273,13 +280,6 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 			if not connected[ownerId] then combat:unregister(rig); playerRigs[ownerId] = nil end
 		end
 	end
-	local function visible(attacker, target): boolean
-		local filter = RaycastParams.new()
-		filter.FilterType = Enum.RaycastFilterType.Exclude
-		filter.FilterDescendantsInstances = {attacker.rig}
-		local hit = workspace:Raycast(attacker.position + Vector3.new(0, 1, 0), target.position - attacker.position, filter)
-		return hit == nil or hit.Instance:IsDescendantOf(target.rig)
-	end
 	local function think(now: number)
 		syncFallbackPlayers()
 		local actors = combat:actors() -- Owned armies, players and neutral test opponents.
@@ -309,50 +309,17 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 					rig:SetAttribute("RestPhase",slot.rest.phase)
 					continue
 				end
-				local nearest = nil
-				local attackRange=if slot.kind=="ranged" then Ranged.range else Config.attackRange
-				local distance = if owner.order=="hold" then attackRange elseif slot.kind == "ranged" then Ranged.aggroRange else Config.aggroRange
-				if CombatRules.containsArena(arena, attacker.position) then
-					for _, candidate in actors do
-						local separation = (candidate.position - attacker.position).Magnitude
-						if CombatRules.hostile(attacker,candidate) and separation <= distance and CombatRules.containsArena(arena, candidate.position) then
-							nearest, distance = candidate, separation
-						end
-					end
-				end
-				local target = if nearest then nearest.rig else nil
-				if slot.target ~= target then slot.navigator:stop(); slot.target = target end
-				if nearest then
-					rig:SetAttribute("WarriorState", "Fighting")
-					if owner.order~="hold" then slot.navigator:setGoal(nearest.position) end
-					if distance <= attackRange and visible(attacker, nearest) then
-						slot.navigator:stop()
-						local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart
-						local facing = Vector3.new(nearest.position.X, root.Position.Y, nearest.position.Z)
-						if (facing - root.Position).Magnitude > .01 then root.CFrame = CFrame.lookAt(root.Position, facing) end
-						if now >= slot.nextAttack then
-							if slot.kind == "ranged" then
-								local variant = Ranged.variants[rig:GetAttribute("CivilizationId")]
-								if projectiles:fire(rig, nearest.rig, variant.projectileKind) then
-									slot.nextAttack, slot.attackUntil = now + Ranged.attackCooldown, now + .35
-									rig:SetAttribute("LastAttackAt", workspace:GetServerTimeNow())
-								end
-							else
-								local result = combat:hit(rig, nearest.rig)
-								if result.ok then slot.nextAttack, slot.attackUntil = now + Config.attackCooldown, now + .35 end
-							end
-						end
-					end
-				elseif owner.order=="hold" then
-					rig:SetAttribute("WarriorState","Holding")
-				else
-					local claim = registry:get(ownerId)
-					local angle = (claim.plotId - 1) * math.pi * 2 / world.plotCount
-					local radius = if slot.id=="camp" then 32 elseif slot.kind == "ranged" then 22 else 12
-					slot.navigator:setGoal(arena.Position + Vector3.new(math.sin(angle) * radius, 4, math.cos(angle) * radius))
-					rig:SetAttribute("WarriorState", if CombatRules.containsArena(arena, attacker.position) then "Guarding" else "Marching")
-				end
-				if owner.order~="hold" then slot.navigator:step(now) end
+				local claim=registry:get(ownerId)
+				local angle=(claim.plotId-1)*math.pi*2/world.plotCount
+				local radius=if slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
+				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
+				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,
+					fire=function(target)
+						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
+						return projectiles:fire(rig,target,variant.projectileKind)
+					end},now)
+				slot.target=plan.target
+				Motion.apply(rig,slot.navigator,world,plan,now)
 			end
 		end
 	end
@@ -366,6 +333,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 		for ownerId in owners do table.insert(ids, ownerId) end
 		for _, ownerId in ids do self:release(ownerId) end
 		projectiles:destroy()
+		if not sharedEncounter then encounters:destroy() end
 		if not sharedCombat then combat:destroy() end
 		troops:Destroy()
 	end
@@ -379,7 +347,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 			for _, slot in owner.slots do
 				if slot.rig then
 					local root = slot.rig:FindFirstChild("HumanoidRootPart")
-					WarriorRig.animate(slot.rig, now, root and root.AssemblyLinearVelocity.Magnitude > .5, now < slot.attackUntil)
+					if slot.rig.Humanoid.Health>0 then
+						if owner.order~="regroup" then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
+						WarriorRig.animate(slot.rig,now,root and root.AssemblyLinearVelocity.Magnitude>.5)
+					end
 				end
 			end
 		end

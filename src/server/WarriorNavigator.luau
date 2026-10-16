@@ -1,6 +1,8 @@
 --!strict
 
 local PathfindingService = game:GetService("PathfindingService")
+local Rules = require(script.Parent.CombatRules)
+local Tuning = require(game.ReplicatedStorage.Shared.TacticalCombatConfig)
 local WarriorNavigator = {}
 
 local function flatDistance(a: Vector3, b: Vector3): number
@@ -59,6 +61,50 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean)
 	function controller:setGoal(position: Vector3)
 		if not active() then return end
 		goal = position
+	end
+
+	-- Short encounter legs need tighter stopping than travelling waypoints.
+	-- Ray/volume checks keep local steering on supported ground and out of walls.
+	function controller:walkCombat(position: Vector3,world): boolean
+		if not active() then return false end
+		local arena=world.model.Battlefield
+		local distance=flatDistance(root.Position,position)
+		if distance>Tuning.closeDistance or not Rules.containsArena(arena,position) then return false end
+		local terrain=RaycastParams.new()
+		terrain.FilterType=Enum.RaycastFilterType.Include
+		local surfaces={world.model.Ground,workspace.Terrain}
+		local landscape=world.model:FindFirstChild("Landscape")
+		if landscape and landscape:FindFirstChild("TerrainSurface") then table.insert(surfaces,landscape.TerrainSurface) end
+		terrain.FilterDescendantsInstances=surfaces
+		terrain.RespectCanCollide=true
+		local function support(point)
+			return workspace:Raycast(point+Vector3.new(0,8,0),Vector3.new(0,-24,0),terrain)
+		end
+		local below=support(root.Position)
+		local endGround=support(position)
+		if not below or not endGround or endGround.Normal.Y<.65 then return false end
+		local height=math.clamp(root.Position.Y-below.Position.Y,2.5,4)
+		local destination=Vector3.new(position.X,endGround.Position.Y+height,position.Z)
+		local delta=destination-root.Position
+		for fraction=.25,1,.25 do
+			local point=root.Position+delta*fraction
+			local hit=support(point)
+			if not hit or hit.Normal.Y<.65 or math.abs(point.Y-height-hit.Position.Y)>2 then return false end
+		end
+		local filter=RaycastParams.new()
+		filter.FilterType=Enum.RaycastFilterType.Exclude
+		local exclude={rig}
+		for _,name in {"Troops","NeutralOpponents","TroopProjectiles"}do
+			for _,child in world.model:GetChildren()do if child.Name==name then table.insert(exclude,child)end end
+		end
+		filter.FilterDescendantsInstances=exclude
+		filter.RespectCanCollide=true
+		if delta.Magnitude>.01 and workspace:Blockcast(CFrame.new(root.Position+Vector3.new(0,.5,0)),Vector3.new(1.6,3.6,1.6),delta,filter) then return false end
+		-- Cancel stale long routes before issuing an authoritative local goal.
+		self:stop()
+		if distance>.45 then humanoid:MoveTo(destination) end
+		rig:SetAttribute("NavigationStatus","Combat footwork")
+		return true
 	end
 
 	local function compute(destination: Vector3, now: number)

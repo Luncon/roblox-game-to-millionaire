@@ -130,7 +130,39 @@ raycasts check the flight path; walls and protected actors stop shots. Shots are
 removed on impact, range/lifetime expiry, or the shooter's death/departure.
 The impact damage cooldown is also two seconds, so varying flight times can make
 some successive shots deal no damage. Melee reach is five studs with a one-second
-cooldown. NPC movement speed remains 12.
+cooldown. Marching speed remains 12; close melee footwork slows to 6 and ranged
+retreats use speed 8.
+
+Owned troops and neutral opponents share encounter coordination. Advancing melee
+troops take separate four-stud approach positions around an enemy, wait outside
+reach when all six positions are occupied, and walk apart before pursuit if
+bodies overlap. Nearby separation uses walking, not teleporting or physical
+pushing. Troops retain valid targets through small distance changes, consider
+crowding and favor threats close to friendly ranged troops when choosing an
+opponent. Pathfinding handles travel; supported, obstacle-checked local steps
+handle nearby encounters.
+
+Ranged troops prefer a 22–35 stud firing distance. Hostile melee inside 12 studs
+triggers slower backward or diagonal steps, with sideways alternatives at the
+arena edge, stopping when safe at 18 studs or
+after an 18-stud/three-second retreat episode. Changing firing targets cannot
+renew that episode. Blocked shots prompt short sideways searches for a clear
+line of sight. Ranged troops remain catchable and commit to standing still while
+aiming, releasing and recovering. Hold permits stationary attacks only.
+
+Melee cycles wind up for 0.2 seconds, contact for 0.15 and recover for 0.65.
+Ranged cycles use 0.35/0.15/1.5 seconds. The weapon reaches its strike pose at
+contact; one server contact attempt applies normal melee damage or releases
+one normal projectile. Moving out of reach, obstructing sight, leaving the
+arena or losing authority can make the pending attack miss. Targets stay locked
+through the swing. Cancelled attacks consume their cadence, and Regroup cancels
+pending contacts and in-flight shots before returning to camp.
+
+Spears thrust, swords slash, axes chop, bows draw and release, and firearms or
+crossbows aim and recover. Imported R6 rest orientations and source skins stay
+intact. Accepted hits briefly recoil and flash; these effects add no damage or
+stun. Poses and movement are controlled by the server. Encounter state is transient
+and clears on death, orders, civilization switching and teardown.
 
 Equip your civilization weapon and activate it (click/tap, or the tool's normal
 controller action) to strike a nearby enemy in front. Player weapons currently

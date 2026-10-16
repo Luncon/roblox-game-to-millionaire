@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-15",
+  "storage": "injected fake store only",
+  "solo": {
+    "ok": true,
+    "result": {
+      "message": "Native six-NPC fight, escape miss, bounded edge retreat and commander orders",
+      "cases": 4,
+      "evidence": {
+        "encounter": {
+          "longestTorsoOverlap": 0,
+          "seconds": 12,
+          "earliestObservedContact": 0.20018506050109863,
+          "matchedContactEvents": 37,
+          "damageEvents": 37,
+          "movingCombatants": 6,
+          "minimumRootSeparation": 3.6521542072296143,
+          "completeCycles": 6
+        },
+        "orders": {
+          "regroupContactFreeSeconds": 0.65,
+          "holdSeconds": 1
+        },
+        "retreat": {
+          "maximumDisplacement": 17.398624420166016,
+          "seconds": 3
+        }
+      }
+    },
+    "evidence": {
+      "runtime": {
+        "message": "Native six-NPC fight, escape miss, bounded edge retreat and commander orders",
+        "cases": 4,
+        "evidence": {
+          "encounter": {
+            "longestTorsoOverlap": 0,
+            "seconds": 12,
+            "earliestObservedContact": 0.20018506050109863,
+            "matchedContactEvents": 37,
+            "damageEvents": 37,
+            "movingCombatants": 6,
+            "minimumRootSeparation": 3.6521542072296143,
+            "completeCycles": 6
+          },
+          "orders": {
+            "regroupContactFreeSeconds": 0.65,
+            "holdSeconds": 1
+          },
+          "retreat": {
+            "maximumDisplacement": 17.398624420166016,
+            "seconds": 3
+          }
+        }
+      },
+      "suites": {
+        "EconomyExpansion.spec": 8,
+        "EconomyPersistence.spec": 8,
+        "EquipmentVisuals.spec": 4,
+        "ArmyRest.spec": 4,
+        "RangedRig.spec": 2,
+        "NeutralRig.spec": 1,
+        "CombatRewards.spec": 4,
+        "ProfileGrowth.spec": 4,
+        "EconomyProgression.spec": 6,
+        "TrainingCampWorld.spec": 4,
+        "CombatEncounter.spec": 19,
+        "FarmTenderRig.spec": 2,
+        "CombatTactics.spec": 6,
+        "OutfitTemplates.spec": 8,
+        "FarmTenderRoutine.spec": 2,
+        "ClaimSwitch.spec": 4,
+        "ClaimRegistry.spec": 8,
+        "ProfileService.spec": 19,
+        "DevelopmentWorld.spec": 4,
+        "EconomyExpansionWorld.spec": 4,
+        "SettlementIdentity.spec": 5,
+        "Equipment.spec": 4,
+        "NPCModelTemplates.spec": 4,
+        "BattlefieldMap.spec": 5,
+        "WorldLandscape.spec": 4,
+        "Barracks.spec": 3,
+        "CombatPose.spec": 11,
+        "ArmyCommands.spec": 3,
+        "CombatNavigation.spec": 3,
+        "TycoonPads.spec": 4,
+        "Topography.spec": 6,
+        "TroopProjectile.spec": 1,
+        "ProfileData.spec": 10,
+        "NeutralCombat.spec": 5,
+        "TroopAppearance.spec": 3,
+        "WarriorRig.spec": 7,
+        "CombatRules.spec": 7,
+        "SettlementDevelopment.spec": 7,
+        "Economy.spec": 19,
+        "SettlementGrowth.spec": 4,
+        "GradualProgression.spec": 4,
+        "BattlefieldMapTransform.spec": 4,
+        "PadUnlock.spec": 3,
+        "ImportedEquipment.spec": 4,
+        "CivilizationRoster.spec": 15,
+        "FarmTenderWorld.spec": 4
+      }
+    },
+    "units": 270
+  },
+  "twoClients": {
+    "result": {
+      "ok": true,
+      "clients": 2,
+      "evidence": {
+        "-1": {
+          "completePhaseCycles": 6,
+          "ok": true,
+          "maximumArmDisplacement": 1.7103673219680786,
+          "seen": 6,
+          "movingCombatants": 6,
+          "damageEvents": 32,
+          "visibleAttackPoses": 6
+        },
+        "-2": {
+          "completePhaseCycles": 6,
+          "ok": true,
+          "maximumArmDisplacement": 1.7103617191314697,
+          "seen": 6,
+          "movingCombatants": 6,
+          "damageEvents": 32,
+          "visibleAttackPoses": 6
+        }
+      },
+      "cases": 3,
+      "message": "Two native clients: isolated commander orders, server-owned movement, replicated limb poses and damage"
+    },
+    "executed": true
+  }
+}

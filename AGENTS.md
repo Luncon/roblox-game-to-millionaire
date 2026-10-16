@@ -95,8 +95,12 @@ do not describe every historical person; baked clothing skin colors remain.
 ProfileService uses `CivilizationProfilesV1` with `StudioDevelopment` in Studio
 and `Live` in Roblox servers. Automated tests must inject their fake store; never
 run regression fixtures against player data. Real storage verification is separate
-from fake-store checks. Matchmaking, formations, abilities and ranged player
-attacks remain planned.
+from fake-store checks. NPC combat shares server-owned target selection, engagement reservations, local
+separation and bounded ranged retreats across both troop services. Windup/contact/
+recovery drives exactly-once validated strikes and weapon-family R6 poses; preserve
+source joints, equipment grips and distinct imported/neutral/fallback bow bases.
+Hold remains stationary; Regroup cancels pending contacts and shots. Matchmaking,
+formations, abilities and ranged player attacks remain planned.
 
 The generated landscape uses deterministic connected native geometry with
 asymmetric relief. `Topography` samples the same local triangles used for
