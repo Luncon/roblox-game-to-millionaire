@@ -25,6 +25,10 @@ function CombatEncounter.new(world,combat)
 		return phases.windup+phases.contact+phases.recovery
 	end
 	local function pose(record,now,accepted)
+		if combat.skills then
+			local skillPlan=combat.skills:plan(record.rig)
+			if skillPlan then record.snapshot=skillPlan;return table.clone(skillPlan) end
+		end
 		local action=record.action
 		local phase,progress="idle",0
 		local phaseStart,phaseDuration=nil,nil
@@ -51,13 +55,17 @@ function CombatEncounter.new(world,combat)
 		return if record and record.snapshot then table.clone(record.snapshot) else nil
 	end
 	function controller:cancel(rig)
+		if combat.skills then combat.skills:cancel(rig) end
 		local record=records[rig]
 		if not record then return end
 		record.action,record.reservation,record.target,record.retreatOrigin,record.retreatStartedAt=nil,nil,nil,nil,nil
 		record.plan={goal=nil,state="Holding",direct=false,speed=Warrior.walkSpeed}
 		pose(record,record.lastNow or 0,false)
 	end
-	function controller:forget(rig) records[rig]=nil;actorsByRig[rig]=nil end
+	function controller:forget(rig)
+		if combat.skills then combat.skills:cancel(rig) end
+		records[rig]=nil;actorsByRig[rig]=nil
+	end
 	function controller:destroy() active=false;table.clear(records);table.clear(actorsByRig) end
 
 	local function ground(point,attacker): Vector3
@@ -150,10 +158,11 @@ function CombatEncounter.new(world,combat)
 		local attacker=combat:actor(rig)
 		if not attacker then self:forget(rig);return {phase="idle"} end
 		local record=records[rig]
-		if not record then record={nextAttackAt=0};records[rig]=record end
+		if not record then record={rig=rig,nextAttackAt=0};records[rig]=record end
 		record.lastNow=now
 		if record.order~=options.order then self:cancel(rig);record.order=options.order end
 		if options.order=="regroup" or not permitted(rig) then self:cancel(rig);return pose(record,now,false) end
+		if combat.skills and combat.skills:busy(rig) then return pose(record,now,false) end
 		local actors,occupancy={},{}
 		actorsByRig={}
 		for _,actor in options.actors or combat:actors() do
@@ -182,6 +191,17 @@ function CombatEncounter.new(world,combat)
 		record.target=if target then target.rig else nil
 		local plan={goal=nil,facing=if target then target.position else nil,direct=false,speed=Warrior.walkSpeed,state="Fighting"}
 		record.plan=plan
+		if combat.skills and not record.action and now>=record.nextAttackAt and target then
+			local result=combat.skills:activate(rig,options.order,true)
+			if result.ok then
+				if options.cancelShots then options.cancelShots() end
+				record.reservation=nil
+				return pose(record,now,false)
+			end
+			-- A ready skill waits for the previous normal contact's cooldown.
+			-- Otherwise beginning another windup here can starve it forever.
+			if result.reason=="busy" then return pose(record,now,false) end
+		end
 		local ranged=attacker.kind=="ranged"
 		local pressure,pressureDistance=nil,math.huge
 		if ranged then
@@ -277,6 +297,7 @@ function CombatEncounter.new(world,combat)
 		plan.direct=plan.goal~=nil and Tactics.flatDistance(plan.goal,attacker.position)<=Tuning.closeDistance
 		if not plan.goal and canStrike and not moving(attacker) and now>=record.nextAttackAt then
 			local kind=if ranged then "ranged" else "warrior"
+			if combat.skills then combat.skills:lockOrdinary(rig,if ranged then Ranged.attackCooldown else Warrior.attackCooldown) end
 			record.action={target=target.rig,kind=kind,startedAt=now,serverAt=workspace:GetServerTimeNow(),fire=options.fire,resolved=false}
 			record.nextAttackAt=now+(if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
 		end
@@ -288,6 +309,7 @@ function CombatEncounter.new(world,combat)
 		if not active or not record then return {phase="idle"} end
 		record.lastNow=now
 		if not permitted(rig) then self:cancel(rig);return pose(record,now,false) end
+		if combat.skills and combat.skills:busy(rig) then return pose(record,now,false) end
 		local action=record.action
 		local accepted=false
 		if action then

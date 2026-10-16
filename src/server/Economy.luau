@@ -98,8 +98,8 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 		local field = Development.fields[trackId]
 		local currentLevel = account[field]
 		local building=Development.buildings[trackId]
-		local minimum=if building then 0 else 1
-		local maximum=if building then building.maxLevel else #Tracks[trackId]
+		local minimum=if building or trackId=="skill" then 0 else 1
+		local maximum=if trackId=="skill" then 5 elseif building then building.maxLevel else #Tracks[trackId]
 		if type(expectedLevel) ~= "number" or expectedLevel % 1 ~= 0
 			or expectedLevel < minimum or expectedLevel > maximum then
 			return rejected(playerId, "invalid")

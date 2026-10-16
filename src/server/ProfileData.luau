@@ -7,7 +7,7 @@ local ProfileData = {}
 
 export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number,
 	trainingLevel: number, farmLevel: number, workersLevel: number, armyCampLevel: number, farmCoins: number, extraTroopClass: string,
-	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number }
+	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number }
 export type Profile = {
 	schemaVersion: number,
 	civilizations: { [string]: State },
@@ -29,7 +29,7 @@ end
 function ProfileData.defaultState(): State
 	return { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1,
 		trainingLevel=0,farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
-		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0 }
+		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0 }
 end
 
 function ProfileData.copyState(value: any): State?
@@ -58,6 +58,9 @@ function ProfileData.copyState(value: any): State?
 	if not integer(reserve,0,Development.storageCapacity(copied)) or (copied.farmLevel==0 and reserve~=0)
 		or (kind~="warrior" and kind~="ranged") then return nil end
 	copied.farmCoins,copied.extraTroopClass=reserve,kind
+	local skill=if value.skillLevel==nil then 0 else value.skillLevel
+	if not integer(skill,0,5) or (skill>0 and (copied.trainingLevel~=1 or copied.weaponLevel<skill*10)) then return nil end
+	copied.skillLevel=skill
 	-- Legacy settlement 10+ does not retroactively require the new checkpoint.
 	-- Omit revisions, live clocks, rate limits, plot IDs and troop instances.
 	return copied

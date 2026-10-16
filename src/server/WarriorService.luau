@@ -161,6 +161,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		slot.deathConnection = humanoid.Died:Connect(function() fallen(owner, slot, rig) end)
 		slot.destroyConnection = rig.Destroying:Connect(function() fallen(owner, slot, rig) end)
 		rig:SetAttribute("ArmySlot",slot.id)
+		combat.skills:refresh(rig)
 		rig:SetAttribute("WarriorState", if owner.order=="hold" then "Holding" elseif owner.order=="regroup" then "Regrouping" else "Marching")
 		publish(owner)
 	end
@@ -191,7 +192,9 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				spawnSlot(owner, slot)
 			elseif slot.rig then
 				local humanoid = slot.rig:FindFirstChildOfClass("Humanoid")
-				if humanoid and humanoid.Health > 0 then WarriorRig.update(slot.rig, catalog[claim.civilizationId], state)
+				if humanoid and humanoid.Health > 0 then
+					WarriorRig.update(slot.rig, catalog[claim.civilizationId], state)
+					combat.skills:refresh(slot.rig)
 				else fallen(owner, slot, slot.rig) end
 			end
 		end
@@ -200,6 +203,11 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		end
 		-- Each slot keeps its original pending deadline through all purchases.
 		publish(owner)
+	end
+	function controller:refreshSkills(player: Player)
+		local owner=owners[player.UserId]
+		if not owner then return end
+		for _,slot in owner.slots do if slot.rig then combat.skills:refresh(slot.rig) end end
 	end
 	function controller:get(ownerId: number)
 		local owner = owners[ownerId]
@@ -314,6 +322,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				local radius=if slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
 				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,
+					cancelShots=function() projectiles:cancel(rig) end,
 					fire=function(target)
 						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
 						return projectiles:fire(rig,target,variant.projectileKind)
@@ -340,6 +349,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	heartbeat = RunService.Heartbeat:Connect(function(dt)
 		if not world.model:IsDescendantOf(workspace) then controller:destroy(); return end
 		local now = os.clock()
+		combat.skills:step()
 		projectiles:step(dt)
 		elapsed += dt
 		if elapsed >= Config.thinkInterval then elapsed = 0; think(now) end

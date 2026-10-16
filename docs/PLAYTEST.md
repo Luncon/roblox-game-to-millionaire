@@ -1164,3 +1164,89 @@ multiplayer behavior remain unverified.
   all five NPC templates, nineteen equipment models and thirteen outfits
   remained. The original 147-descendant Farmer and its template mesh IDs were
   preserved. One original Studio window remained in Edit mode.
+
+## Weapon-family skills — implementation verification, October 15, 2026
+
+Branch: `feature/troop-weapon-skills`. Repository implementation includes player
+R/gamepad Y/touch activation and automatic owned-troop skills, paid skill tiers
+at weapon 10/20/30/40/50, a training-camp skill pad, and fifteen-field profile
+preservation. Mounts remain deferred. The existing local `.rbxl` change was not
+edited by this implementation.
+
+Executed outside Studio:
+
+- `npm run check:skills`: 81 deterministic Luau logic cases passed using explicit
+  actor, geometry and event doubles. Includes all thirteen melee families,
+  ranged axe/javelin eligibility, prices, workshop exclusion, authority fencing,
+  legacy defaults, independent fifteen-field copies, injected fake-store release/
+  reload, action cancellation, cooldown persistence, per-life combo contacts,
+  spin caps, bounded dash logic, NPC network ownership and exactly-once kill
+  credit through the production damage path. Existing economy and profile
+  progression suites also passed in this isolated runner.
+- Luau CLI 0.740 compiled all 164 files in src/ and tests/ successfully.
+- Rojo built `build/weapon-skills-game.rbxlx` and the dedicated
+  `build/weapon-skills-tests.rbxlx` from the generated `--solo --skills` project.
+
+Executed in Studio through its enabled MCP server, using one real solo client
+and an explicitly injected FakeProfileStore:
+
+- All **307 engine module cases and 13 native gameplay cases** passed, including pad geometry/gating, all
+  thirteen NPC weapon families, immutable source templates, joints and grips,
+  save round trips, authority fencing and existing combat regressions. The
+  action unit cases still use explicit doubles; the native cases below exercise
+  actual characters, collision geometry, damage and client input.
+- Native camp-pad prompts purchased tiers I and II for exactly 300 coins.
+  Living troop identity/health, the independent camp slot and a pending ranged
+  respawn deadline were preserved.
+- Native **R** activated sword, axe and spear attacks. Tier-II, weapon-50 damage
+  measured 27, 16.2 and 25.2 respectively; cooldowns were 9, 12 and 8 seconds.
+  Immediate repeat input was rejected without extra damage.
+- Actual dash movement stopped before a wall and inside the combat boundary;
+  activation outside the battlefield was rejected. A target escaping after
+  the first sword contact avoided the second. A spin killed three enemies for
+  exactly 30 coins while preserving a fourth target, a wall-obscured target
+  and a friendly troop. Owned melee troops activated skills automatically. Spartan/Roman javelin troops
+  dealt 20.16 damage and Viking axe throwers dealt 12.96 at tier II; their skills
+  had no overlapping projectile damage during recovery and retained server
+  network ownership.
+
+Detailed successful solo evidence is in
+[solo-verification.json](assets/weapon-skills/solo-verification.json). Harness
+failures during expansion involved command timing: Hold permits ordinary ranged
+shots, so the ranged fixture must issue Advance before introducing its hostile.
+These setup failures are not counted as passing acceptance checks.
+
+Still pending: a focused two-player skill replication session, measured tier-I/V
+multi-unit time-to-kill, native touch/gamepad input, visual R15 animation review,
+published clients and real StudioDevelopment tier restoration. Automated tests
+never used player stores. Real storage checks must remain separate; the current
+unpublished place cannot establish persistent storage acceptance.
+
+The generated `--solo --skills` test project reproduces the automated run.
+Inspect `WeaponSkillsVerificationPhase` and `WeaponSkillsVerificationResult`
+after one ordinary Play session. Mounts remain deferred.
+
+Cleanup completed: Play stopped, the original Bootstrap was re-enabled, seven
+temporary verification roots were removed, and zero tagged fixtures remained.
+All managed source scripts matched the repository after cleanup. The temporary
+test Rojo server on port 34873 stopped; the original Rojo connection was retained.
+The place was not saved or published by this verification.
+
+Follow-up startup diagnosis: the normal Studio place has PlaceId/GameId zero.
+Saved-profile startup therefore cannot run there. Bootstrap now reports the
+unpublished-place requirement explicitly; the selector displays it immediately
+instead of attributing every missing remote to Rojo. Verified the replicated
+error and actual client label in solo Studio, then stopped Play. No fallback
+profile was created and no real store was accessed.
+
+At the user’s request, a Studio-only `ServerScriptService.LocalPlaytest` override
+was installed from `tests/LocalPlaytest.server.luau` and the injected in-memory
+FakeProfileStore. Normal Game.Bootstrap is disabled while this explicit override
+exists. The HUD labels progress as temporary; each Play starts a fresh store.
+To restore saved-profile startup in Edit mode, restore Game.Bootstrap.Enabled
+from LocalPlaytest.OriginalBootstrapEnabled and remove only the generated
+LocalPlaytest folder. Do this before testing real persistence or publishing.
+
+The local-only bootstrap now seeds every civilization with 3,000 coins for
+manual tests, as requested. This seed lives only in the explicit Studio override;
+production default profiles and the normal published startup remain unchanged.

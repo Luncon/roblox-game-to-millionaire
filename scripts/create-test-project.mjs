@@ -10,13 +10,15 @@ const neutral = process.argv.includes('--neutral');
 const training = process.argv.includes('--training');
 const farmers = process.argv.includes('--farmers');
 const combat = process.argv.includes('--combat');
+const skills = process.argv.includes('--skills');
 if (development && !solo) throw new Error('--development requires --solo');
 if (expansion && !solo) throw new Error('--expansion requires --solo');
 if (neutral && !solo) throw new Error('--neutral requires --solo');
 if (training && !solo) throw new Error('--training requires --solo');
 if (farmers && !solo) throw new Error('--farmers requires --solo');
 if (combat && !solo) throw new Error('--combat requires --solo');
-if ([development, expansion, neutral, training, farmers, combat].filter(Boolean).length > 1) throw new Error('Choose --development, --expansion, --neutral, --training, --farmers or --combat');
+if (skills && !solo) throw new Error('--skills requires --solo');
+if ([development, expansion, neutral, training, farmers, combat, skills].filter(Boolean).length > 1) throw new Error('Choose --development, --expansion, --neutral, --training, --farmers, --combat or --skills');
 const project = JSON.parse(fs.readFileSync('default.project.json', 'utf8'));
 
 function relocatePaths(instance) {
@@ -49,7 +51,7 @@ for (const name of fs.readdirSync(serverDirectory)) {
 }
 project.tree.ServerScriptService.Game.Bootstrap = { $path: solo ? '../tests/SoloBootstrap.server.luau' : '../tests/TestBootstrap.server.luau' };
 if (solo) {
-  const runner = combat ? 'SoloTacticalCombat' : farmers ? 'SoloFarmTenders' : training ? 'SoloTrainingCamp' : neutral ? 'SoloNeutralOpponents' : expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
+  const runner = skills ? 'SoloWeaponSkills' : combat ? 'SoloTacticalCombat' : farmers ? 'SoloFarmTenders' : training ? 'SoloTrainingCamp' : neutral ? 'SoloNeutralOpponents' : expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
   project.tree.ServerScriptService[`${runner}Tests`] = { $path: `../tests/${runner}.server.luau` };
 } else {
 project.tree.ServerScriptService.TacticalCombatMultiplayerTests = { $path: '../tests/multiplayer/TacticalCombat.server.luau' };
