@@ -11,6 +11,8 @@ local CombatRules = require(script.Parent.CombatRules)
 local CombatService = require(script.Parent.CombatService)
 local WarriorRig = require(script.Parent.WarriorRig)
 local WarriorNavigator = require(script.Parent.WarriorNavigator)
+local ArmyRest = require(script.Parent.ArmyRest)
+local TrainingCamp = require(Shared.TrainingCampConfig)
 local TroopProjectile = require(script.Parent.TroopProjectile)
 local WarriorService = {}
 local COLLISION_GROUP = "CivilizationWarriors"
@@ -88,6 +90,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 		if slot.destroyConnection then slot.destroyConnection:Disconnect(); slot.destroyConnection = nil end
 		if slot.navigator then slot.navigator:destroy(); slot.navigator = nil end
 		slot.target = nil
+		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 		if slot.rig then
 			projectiles:cancel(slot.rig)
 			combat:unregister(slot.rig)
@@ -227,11 +230,14 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 			owner.order=order
 			for _, slot in owner.slots do
 				slot.target=nil
+				slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 				if slot.navigator then slot.navigator:stop() end
 				local rig=slot.rig
 				local troopRoot=rig and rig:FindFirstChild("HumanoidRootPart")
 				slot.holdPosition=if order=="hold" and troopRoot then troopRoot.Position else nil
 				if rig then
+					rig.Humanoid.WalkSpeed=Config.walkSpeed
+					rig:SetAttribute("RestPhase",nil)
 					if order=="regroup" then projectiles:cancel(rig) end
 					rig:SetAttribute("WarriorState",if order=="hold" then "Holding" elseif order=="regroup" then "Regrouping" else "Marching")
 				end
@@ -276,7 +282,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 	end
 	local function think(now: number)
 		syncFallbackPlayers()
-		local actors = combat:actors() -- At most twenty-four troops plus eight players.
+		local actors = combat:actors() -- Owned armies, players and neutral test opponents.
 		for ownerId, owner in owners do
 			for _, slot in owner.slots do
 				local rig = slot.rig
@@ -284,12 +290,23 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 				local attacker = combat:actor(rig)
 				if not attacker then fallen(owner, slot, rig); continue end
 				if owner.order=="regroup" then
-					local rally=world:getArmyRally(owner.plotId,slot.id)
-					slot.navigator:setGoal(rally.Position)
-					slot.navigator:step(now)
-					local delta=attacker.position-rally.Position
-					local arrived=Vector3.new(delta.X,0,delta.Z).Magnitude<=2 and math.abs(delta.Y)<=6
+					slot.rest=slot.rest or ArmyRest.new(slot.id)
+					local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
+					local position=frame:PointToObjectSpace(attacker.position)
+					local goal,speed,arrived=ArmyRest.step(slot.rest,position,now)
+					local direct=goal~=nil and TrainingCamp.contains(position,2)
+					attacker.humanoid.WalkSpeed=speed
+					if goal~=slot.restGoal or frame~=slot.restFrame or direct~=slot.restDirect then
+						if not goal then slot.navigator:stop()
+						elseif direct then slot.navigator:walkDirect(frame:PointToWorldSpace(goal))
+						else slot.navigator:setGoal(frame:PointToWorldSpace(goal)) end
+						slot.restGoal=goal
+						slot.restFrame=frame
+						slot.restDirect=direct
+					end
+					if goal and not direct then slot.navigator:step(now) end
 					rig:SetAttribute("WarriorState",if arrived then "Regrouped" else "Regrouping")
+					rig:SetAttribute("RestPhase",slot.rest.phase)
 					continue
 				end
 				local nearest = nil

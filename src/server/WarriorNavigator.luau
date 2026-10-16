@@ -49,6 +49,13 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean)
 		alive = false
 		self:stop()
 	end
+	-- Only used for server-chosen legs inside the clear, bounded training yard.
+	function controller:walkDirect(position: Vector3)
+		if not active() then return end
+		self:stop()
+		humanoid:MoveTo(position)
+		rig:SetAttribute("NavigationStatus","Walking inside training yard")
+	end
 	function controller:setGoal(position: Vector3)
 		if not active() then return end
 		goal = position

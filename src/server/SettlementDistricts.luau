@@ -3,6 +3,7 @@
 local Progression = require(game:GetService("ReplicatedStorage").Shared.SettlementProgression)
 local Config = require(game:GetService("ReplicatedStorage").Shared.ProgressionConfig)
 local Sites = require(game:GetService("ReplicatedStorage").Shared.SettlementSites)
+local Camp = require(game:GetService("ReplicatedStorage").Shared.TrainingCampConfig)
 local Districts = {}
 local STONE = Color3.fromRGB(219, 202, 165)
 local WOOD = Color3.fromRGB(113, 75, 43)
@@ -145,7 +146,7 @@ for x=-extent,extent,22 do
 		local exit=x>-51 and x<-21 and z<0
 		local early=(x==44 and z>=-44 and z<=44) or (x==-44 and z>=-22 and z<=22)
 		local wings=math.abs(math.abs(x)-66)<18 and math.abs(z+68)<20
-		local infrastructure=false
+		local infrastructure=Camp.blocksApproach(x,z,14)
 		for _,site in {Sites.blacksmith,Sites.armorer,Sites.storehouse}do
 			-- Keep the forecourt clear after construction and later district growth.
 			if math.abs(x-site.X)<20 and math.abs(z-site.Z-10)<24 then infrastructure=true;break end
@@ -246,7 +247,10 @@ function Districts.perimeter(parent: Folder, frame: CFrame, civ, level: number)
 		if existing then existing.Size,existing.CFrame=size,frame*CFrame.new(position)
 		else part(walls,name,size,frame*CFrame.new(position),tint,material,solid) end
 	end
-	wall("WestWall",Vector3.new(2,6,2*r),Vector3.new(-r,5,0),true)
+	local gateNear,gateFar=Camp.center.Z-Camp.approachHalfWidth,Camp.center.Z+Camp.approachHalfWidth
+	wall("WestWall",Vector3.new(2,6,r+gateNear),Vector3.new(-r,5,(-r+gateNear)/2),true)
+	wall("WestWallBeyondCamp",Vector3.new(2,6,r-gateFar),Vector3.new(-r,5,(r+gateFar)/2),true)
+	wall("TrainingGateLintel",Vector3.new(3,2,2*Camp.approachHalfWidth+2),Vector3.new(-r,13,Camp.center.Z))
 	wall("EastWall",Vector3.new(2,6,2*r),Vector3.new(r,5,0),true)
 	wall("CourtWallLeft",Vector3.new(r-9,6,2),Vector3.new((-r-9)/2,5,r),true)
 	wall("CourtWallRight",Vector3.new(r-9,6,2),Vector3.new((r+9)/2,5,r),true)

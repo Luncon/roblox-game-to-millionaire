@@ -2,6 +2,7 @@
 
 local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
 local Sites = require(game:GetService("ReplicatedStorage").Shared.SettlementSites)
+local Camp = require(game:GetService("ReplicatedStorage").Shared.TrainingCampConfig)
 local Topography = {}
 local BASE, SEED, THICKNESS = .15, 137, .25
 local scale = Layout.groundSize/1600
@@ -51,6 +52,11 @@ end
 for id=1,Layout.plotCount do
 	local frame=Layout.plotFrame(id)
 	rectangle(frame.X,frame.Z,frame.RightVector.X,frame.RightVector.Z,Layout.maxPlotSize/2,Layout.maxPlotSize/2,"plot")
+	local camp=frame:PointToWorldSpace(Camp.center+Vector3.new(0,0,6))
+	rectangle(camp.X,camp.Z,frame.RightVector.X,frame.RightVector.Z,Camp.size.X/2+6,Camp.size.Z/2+18,"training_camp")
+	local approach=frame:PointToWorldSpace(Vector3.new((Camp.center.X+Camp.approachInnerX)/2,0,Camp.center.Z))
+	rectangle(approach.X,approach.Z,frame.RightVector.X,frame.RightVector.Z,
+		(Camp.approachInnerX-Camp.center.X)/2,Camp.approachHalfWidth,"training_access")
 	for _,site in Sites.fields do
 		local p=frame:PointToWorldSpace(site)
 		rectangle(p.X,p.Z,frame.RightVector.X,frame.RightVector.Z,Sites.fieldSize.X/2+3,Sites.fieldSize.Z/2+3,"farm")

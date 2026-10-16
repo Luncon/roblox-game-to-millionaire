@@ -118,10 +118,19 @@ entering settlement 10. Missing requirements appear at the main hall and HUD.
 Older saved settlements already beyond this checkpoint keep their levels.
 
 Weapon and armor controls sit beside the armory in the right courtyard. Barracks
-controls sit outside its arena-facing door. The training yard and army camp each
-have their own forecourt site. Purchased structures use the same civilization
+controls sit outside its arena-facing door. The army camp has its own forecourt;
+the training yard occupies a separate exterior campfire site. Purchased structures use the same civilization
 architecture and colors as surrounding districts, and update independently of
 settlement growth. Roads, entrances and standing room stay clear.
+
+Training Yard I is an open 28 × 28-stud campfire yard at local (-148, -12),
+beside the plot's left side. Its level-five, 50-coin construction pad is at
+(-148, 14), outside the main foundation even at level 50. A stone fire ring,
+logs, warm flame and light, seats and civilization-colored banners mark the
+site. The fire is decorative. Flat terrain and a clear approach at local
+z −12 connect it to the settlement; later west walls leave a side gate there.
+Districts and scenery reserve the approach, yard and pad standing space.
+Regrouped troops gather here and slowly stroll within the yard between pauses.
 
 Two rural fields sit on either side of the approach, centered at settlement-local
 x ±60, z −172. Their 56 × 40-stud beds lie beyond the final 128-stud settlement

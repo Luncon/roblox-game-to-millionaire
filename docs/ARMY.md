@@ -48,9 +48,14 @@ three army orders for the living owner:
 - **Advance:** march toward the battlefield and engage enemies automatically.
 - **Hold:** stop pursuing enemies and attack only those already within the
   troop's normal attack range. Troops retain their current positions.
-- **Regroup:** cancel in-flight shots and return to the protected home rally
-  without pursuing or attacking enemies. Troops remain regrouped until ordered
-  to advance or hold.
+- **Regroup:** cancel in-flight shots and walk to the exterior campfire training
+  yard without pursuing or attacking enemies. After arrival, troops stroll
+  slowly around the fire at speed 5, pausing for 2–5 seconds between walks.
+  They stay inside the yard and clear of the decorative fire. Blocked walks
+  retry in the other direction; troops never teleport to resting positions.
+  Advance restores normal speed 12 and battlefield movement. Hold stops the
+  current stroll and retains that position. Repeating Regroup preserves the
+  ongoing rest cycle.
 
 New replacements inherit the current order. Orders remain active through owner
 character resets and gear upgrades, then reset to Advance when switching

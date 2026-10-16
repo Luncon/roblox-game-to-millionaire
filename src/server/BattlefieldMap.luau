@@ -9,6 +9,7 @@ local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
 local Landscape = require(script.Parent.WorldLandscape)
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local Infrastructure = require(script.Parent.SettlementInfrastructure)
+local Camp = require(game:GetService("ReplicatedStorage").Shared.TrainingCampConfig)
 local PLOT_COUNT = Layout.plotCount
 local NEUTRAL = Color3.fromRGB(103, 119, 104)
 local STONE = Color3.fromRGB(181, 174, 153)
@@ -173,7 +174,11 @@ function BattlefieldMap.build(parent: Instance)
 
 	function world:getArmyRally(plotId: number,slotId: string?): CFrame
 		local plot=plots:FindFirstChild("Plot"..plotId)
-		return plot.Foundation.CFrame*CFrame.new(if slotId=="ranged" then -28 elseif slotId=="camp" then -36 else -24,5,-18)
+		return plot.Foundation.CFrame*CFrame.new(Camp.point(Camp.arrivalIndex(slotId)))
+	end
+
+	function world:getTrainingPoint(plotId: number,index: number): CFrame
+		return plots["Plot"..plotId].Foundation.CFrame*CFrame.new(Camp.point(index))
 	end
 
 	function world:syncInfrastructure(plotId: number,state,civilization)

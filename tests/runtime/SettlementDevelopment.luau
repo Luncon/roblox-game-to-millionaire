@@ -86,8 +86,9 @@ return function(context,player,round)
 			local began=os.clock()
 			waitFor(function()
 				for id,slot in army().slots do
-					local delta=slot.rig.HumanoidRootPart.Position-service.world:getArmyRally(player:GetAttribute("PlotId"),id).Position
-					if Vector3.new(delta.X,0,delta.Z).Magnitude>4 then return false end
+					local Camp=require(game.ReplicatedStorage.Shared.TrainingCampConfig)
+					local position=plot.Foundation.CFrame:PointToObjectSpace(slot.rig.HumanoidRootPart.Position)
+					if slot.rig:GetAttribute("WarriorState")~="Regrouped" or not Camp.contains(position,1) then return false end
 				end
 				return true
 			end,"all three real troops walking home",120)

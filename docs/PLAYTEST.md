@@ -119,6 +119,55 @@ replace connected players for the shared combat authority.
 
 ## Repeatable engine tests
 
+### Campfire yard verification — October 15, 2026
+
+- Missing-feature failures were observed in Studio before implementation:
+  the training pad was inside the final foundation, resting movement was absent,
+  and arrived troops retained normal speed in fixed-rally mode.
+- **223 checks across 39 module suites passed**, including the new camp layout
+  and resting-state fixtures, all civilization appearances, eight plot sites,
+  levels 5/20/50, moved/rotated worlds and existing neutral/combat/profile checks.
+- The isolated `--solo --training` native runner passed **seven runtime checks**
+  with one connected owner and fake storage. Normal prompt input bought training
+  outside the plot for exactly 50 coins; all three troops then walked from the
+  barracks to the camp in 11.45 seconds. An 18-second observation verified slow
+  walking, pauses, fire clearance, stable health and bounded positions.
+- Native Hold stopped strolling; Advance restored speed 12; repeating Regroup
+  retained resting behavior. Gear and settlement upgrades retained identities,
+  health deficits and the camp slot's existing replacement deadline. Its new
+  troop walked to the yard before resting. Switching restored the purchased
+  camp with normal transient-order reset and no extra charge.
+- Level-20 and level-50 native return paths crossed the side gate in 8.60 and
+  3.60 seconds. Separate path computations found the clear camp entrance from
+  all eight plots. Interior ring destinations exposed engine NoPath results
+  despite clear collision space; the implemented return uses the clear entrance
+  and bounded native Humanoid walks for the short legs inside the yard.
+- A review mutation restoring normal speed during resting made the actual
+  ArmyRest fixture fail. Only a temporary module clone was mutated and removed.
+- Removing the generated world destroyed its resting troops and canceled a
+  pending replacement, checked again after fourteen seconds. Developer geometry
+  was preserved.
+- Specification validation passed all 14 items. Production and isolated test
+  Rojo builds succeeded after the navigation correction. No automated fixture
+  accessed real player storage; multiplayer stress and public-client testing
+  were not repeated for this visual/movement change.
+- Final Studio cleanup restored normal startup, left no owned test fixtures and
+  verified all 45 managed script sources exactly matched the repository. The
+  five original NPC templates remained present.
+
+![Campfire training yard with regrouped troops](assets/training-camp/campfire-yard.png)
+
+### Campfire training yard
+
+Run `npm run build:test-project -- --solo --training`, build
+`.cache/solo-test.project.json` with Rojo and press Play in the existing Studio
+window. This runs the module suite and one connected owner's native-input
+campfire checks against fake profiles. Read `TrainingCampVerificationResult`
+on `game` for results, `TrainingCampPhase` for the current behavior check and
+`TrainingCampVerificationPhase` for native input progress. It verifies the
+exterior purchase, three actual return paths, slow resting cycles, Hold/Advance,
+health and respawn preservation, level-20/50 side gates and civilization switches.
+
 ### Neutral battlefield opponents
 
 Run `npm run build:test-project -- --solo --neutral`, then build

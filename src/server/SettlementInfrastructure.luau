@@ -2,6 +2,7 @@
 
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Sites = require(Shared.SettlementSites)
+local Camp = require(Shared.TrainingCampConfig)
 local Development = require(Shared.SettlementDevelopment)
 local Districts = require(script.Parent.SettlementDistricts)
 local Infrastructure = {}
@@ -81,6 +82,42 @@ local function farmland(parent,frame,civ,workers,level)
 	return farm
 end
 
+local function trainingYard(parent,frame,civ)
+	local yard=model(parent,"TrainingYard",civ)
+	local origin=frame*CFrame.new(Camp.center+Vector3.new(0,-.85,0))
+	local ground=part(yard,"TrainingGround",Camp.size,origin,Color3.fromRGB(139,115,77),Enum.Material.Ground)
+	ground.CanCollide,ground.CanQuery=true,true
+	local fire=model(yard,"Campfire",civ)
+	for index=1,10 do
+		local angle=index*math.pi*2/10
+		local stone=part(fire,"FireRingStone",Vector3.new(1.7,.8,1.3),origin*CFrame.new(math.cos(angle)*3,.45,math.sin(angle)*3)
+			*CFrame.Angles(0,-angle,0),Color3.fromRGB(103,106,105),Enum.Material.Slate)
+		stone.Shape=Enum.PartType.Ball
+	end
+	for _,angle in {-.6,.6} do
+		local log=part(fire,"FireLog",Vector3.new(5,.8,.8),origin*CFrame.new(0,.5,0)*CFrame.Angles(0,angle,0),Color3.fromRGB(99,65,39))
+		log.Shape=Enum.PartType.Cylinder
+	end
+	local embers=part(fire,"Embers",Vector3.new(2.5,.2,2.5),origin*CFrame.new(0,.45,0),Color3.fromRGB(242,114,24),Enum.Material.Neon)
+	local flame=Instance.new("Fire")
+	flame.Name,flame.Size,flame.Heat="CampFlame",4,3
+	flame.Color,flame.SecondaryColor=Color3.fromRGB(255,174,53),Color3.fromRGB(255,82,20)
+	flame.Parent=embers
+	local light=Instance.new("PointLight")
+	light.Color,light.Range,light.Brightness=Color3.fromRGB(255,179,86),16,1.8
+	light.Shadows,light.Parent=false,embers
+	for _,side in {-1,1} do
+		part(yard,"LogSeat",Vector3.new(1,1,5),origin*CFrame.new(side*12,.7,0),Color3.fromRGB(120,83,47))
+		part(yard,"CampBanner",Vector3.new(.25,5,.25),origin*CFrame.new(side*12,2.5,-12),Color3.fromRGB(100,77,53))
+		part(yard,"CampColors",Vector3.new(2.5,2,.15),origin*CFrame.new(side*12,4,-12),civ.color,Enum.Material.Fabric)
+	end
+	label(yard,origin*CFrame.new(0,4,13),"TrainingLabel","TRAINING CAMP I",civ.color)
+	local length=Camp.approachInnerX-Camp.center.X
+	part(parent,"TrainingApproach",Vector3.new(length,.1,6),frame*CFrame.new((Camp.center.X+Camp.approachInnerX)/2,-.8,Camp.center.Z),
+		Color3.fromRGB(151,131,94),Enum.Material.Ground)
+	return yard
+end
+
 function Infrastructure.sync(plot,frame,civ,state)
 	local folder=plot:FindFirstChild("Infrastructure")
 	if not folder then folder=Instance.new("Folder");folder.Name="Infrastructure";folder.Parent=plot end
@@ -95,13 +132,7 @@ function Infrastructure.sync(plot,frame,civ,state)
 			label(folder.Armory,frame*CFrame.new(24,8,14.5),"ArmoryLabel","ARMORY",civ.color)
 		end
 		if (state.trainingLevel or 0)>0 then
-			local yard=model(folder,"TrainingYard",civ)
-			part(yard,"TrainingGround",Vector3.new(18,.2,10),frame*CFrame.new(Sites.training+Vector3.new(0,1.15,0)),Color3.fromRGB(166,146,105),Enum.Material.Ground)
-			for _,x in {-5,5} do
-				part(yard,"PracticePost",Vector3.new(1,5,1),frame*CFrame.new(x,3.5,24),Color3.fromRGB(127,89,53))
-				part(yard,"PracticeShield",Vector3.new(3,3,.6),frame*CFrame.new(x,4,25),civ.color)
-			end
-			label(yard,frame*CFrame.new(0,7,22),"TrainingLabel","TRAINING YARD I",civ.color)
+			trainingYard(folder,frame,civ)
 		end
 		if (state.armyCampLevel or 0)>0 then
 			Districts.house(folder,frame*CFrame.new(Sites.armyCamp),civ,12,"ArmyCamp")

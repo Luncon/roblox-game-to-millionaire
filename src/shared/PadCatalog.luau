@@ -1,5 +1,6 @@
 --!strict
 
+local Camp = require(script.Parent.TrainingCampConfig)
 local definitions = {
 	{action="earn",name="CoinButton",track="earn",x=-12,z=14,stage=1},
 	{action="upgrade",name="UpgradeButton",track="settlement",x=12,z=14,stage=1},
@@ -14,7 +15,7 @@ local definitions = {
 	{action="barracks4",name="Barracks4Button",track="barracks",tier=4,x=-24,z=-16,stage=4},
 	{action="barracks5",name="Barracks5Button",track="barracks",tier=5,x=-24,z=-16,stage=8},
 	{action="barracks6",name="Barracks6Button",track="barracks",tier=6,x=-24,z=-16,stage=14},
-	{action="training",name="TrainingButton",track="training",x=0,z=34,stage=5},
+	{action="training",name="TrainingButton",track="training",x=Camp.pad.X,y=Camp.pad.Y,z=Camp.pad.Z,stage=5},
 	{action="farm",name="FarmButton",track="farm",x=-48,y=-.3,z=-145,stage=7},
 	{action="workers",name="WorkersButton",track="workers",x=60,y=-.3,z=-132,stage=7},
 	{action="armyCamp",name="ArmyCampButton",track="armyCamp",x=-24,z=36,stage=10},
