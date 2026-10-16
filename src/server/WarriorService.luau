@@ -298,7 +298,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat)
 				if CombatRules.containsArena(arena, attacker.position) then
 					for _, candidate in actors do
 						local separation = (candidate.position - attacker.position).Magnitude
-						if candidate.ownerId ~= ownerId and separation <= distance and CombatRules.containsArena(arena, candidate.position) then
+						if CombatRules.hostile(attacker,candidate) and separation <= distance and CombatRules.containsArena(arena, candidate.position) then
 							nearest, distance = candidate, separation
 						end
 					end

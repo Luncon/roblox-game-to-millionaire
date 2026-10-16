@@ -36,7 +36,7 @@ function TroopProjectile.new(world, combat, isShooterActive: ((Model) -> boolean
 	function controller:fire(shooter: Model, target: Model, kind: string?): boolean
 		if not active(shooter) or count >= Config.maxProjectiles then return false end
 		local attacker, victim = combat:actor(shooter), combat:actor(target)
-		if not attacker or not victim or attacker.kind ~= "ranged" or attacker.ownerId == victim.ownerId
+		if not attacker or not victim or attacker.kind ~= "ranged" or not CombatRules.hostile(attacker,victim)
 			or not CombatRules.containsArena(arena, attacker.position)
 			or not CombatRules.containsArena(arena, victim.position) then return false end
 		local origin = attacker.position + Vector3.new(0, 1, 0)
@@ -86,7 +86,7 @@ function TroopProjectile.new(world, combat, isShooterActive: ((Model) -> boolean
 						local victim = combat:actor(candidate)
 						if victim then
 							local attacker = combat:actor(shot.shooter)
-							if attacker and attacker.ownerId ~= victim.ownerId
+							if attacker and CombatRules.hostile(attacker,victim)
 								and CombatRules.containsArena(arena, attacker.position)
 								and CombatRules.containsArena(arena, victim.position) then
 								combat:hit(shot.shooter, candidate)

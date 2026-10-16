@@ -33,10 +33,29 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		record.connection = rig.Destroying:Connect(function() self:unregister(rig) end)
 		return true
 	end
+	function controller:registerNeutral(rig, kind)
+		local folder=world.model:FindFirstChild("NeutralOpponents")
+		if not active or typeof(rig)~="Instance" or not rig:IsA("Model")
+			or not folder or not rig:IsDescendantOf(folder)
+			or (kind~="warrior" and kind~="ranged") or rig:GetAttribute("WarriorClass")~=kind then return false end
+		self:unregister(rig)
+		local record={neutral=true,kind=kind,folder=folder}
+		records[rig]=record
+		record.connection=rig.Destroying:Connect(function() self:unregister(rig) end)
+		return true
+	end
 	function controller:actor(rig)
 		if not active or not world.model:IsDescendantOf(workspace) then return nil end
 		local record = records[rig]
 		if not record or not rig:IsDescendantOf(workspace) then return nil end
+		if record.neutral then
+			if record.folder.Parent~=world.model or not rig:IsDescendantOf(record.folder)
+				or rig:GetAttribute("WarriorClass")~=record.kind then return nil end
+			local humanoid=rig:FindFirstChildOfClass("Humanoid")
+			local root=rig:FindFirstChild("HumanoidRootPart")
+			if not humanoid or humanoid.Health<=0 or not root or not root:IsA("BasePart") then return nil end
+			return {neutral=true,kind=record.kind,position=root.Position,alive=true,rig=rig,humanoid=humanoid,root=root}
+		end
 		local owner = Players:GetPlayerByUserId(record.ownerId)
 		local claim = registry:get(record.ownerId)
 		if not owner or owner.Parent ~= Players or not claim or not economy:get(record.ownerId)
@@ -77,7 +96,7 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		if not Rules.canDamage(attacker,target,arena,reach) or not self:visible(attacker,target) then
 			return {ok=false,reason="protected_or_blocked"}
 		end
-		local state = economy:get(attacker.ownerId)
+		local state = if attacker.neutral then nil else economy:get(attacker.ownerId)
 		if attacker.kind == "player" then
 			local tool = attackerRig:FindFirstChildOfClass("Tool")
 			if not tool or tool:GetAttribute("GeneratedBy") ~= "CivilizationEquipment"
@@ -86,7 +105,7 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		end
 		local time = os.clock()
 		if time < (nextAttack[attackerRig] or 0) then return {ok=false,reason="cooldown"} end
-		local damage = Tracks.weapon[state.weaponLevel].damage
+		local damage = if attacker.neutral then Warrior.damage else Tracks.weapon[state.weaponLevel].damage
 		if ranged then damage = math.max(1,damage*Ranged.damageMultiplier) end
 		nextAttack[attackerRig] = time + (if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
 		local humanoid = target.humanoid
@@ -100,8 +119,8 @@ function CombatService.new(world, registry, economy, publishEconomy)
 			-- Consume this life before publication; Died may already have released
 			-- the victim's troop slot. Its validated lethal transition is sufficient.
 			rewarded[humanoid] = true
-			local current = registry:get(attacker.ownerId)
-			if attacker.player.Parent == Players and current and current.civilizationId == attacker.civilizationId
+			local current = if attacker.neutral then nil else registry:get(attacker.ownerId)
+			if attacker.player and attacker.player.Parent == Players and current and current.civilizationId == attacker.civilizationId
 				and current.plotId == attacker.plotId then
 				reward = economy:rewardKill(attacker.ownerId)
 				if reward.ok and publishEconomy then publishEconomy(attacker.player,reward,"kill") end

@@ -86,7 +86,50 @@ lifecycle. Multiple connected owners, claim races and hostile player/NPC combat
 need their own focused multiplayer evidence; owner-interface doubles cannot
 replace connected players for the shared combat authority.
 
+## Neutral opponent verification — October 15, 2026
+
+- Observed the missing-feature failure in Studio before implementation:
+  the neutral combat fixture could not call `registerNeutral`.
+- All **215 module checks across 37 suites passed** in solo Studio Play,
+  including neutral combat/rig tests and existing combat, projectile, equipment,
+  profile, economy, landscape and army regressions.
+- The repeatable `--solo --neutral` runner passed **nine runtime checks** with
+  one connected owner and an injected fake profile store. Player melee and
+  genuinely registered owned troops damaged the enemies for all thirteen
+  civilizations. Native melee pursuit and visible arrow flight dealt the basic
+  10/8 damage; neutral final hits awarded exactly ten coins once.
+- Staggered melee/ranged deaths retained separate deadlines. In the final run,
+  replacements were observed 0.215 and 0.248 seconds after their ten-second
+  deadlines, with no early replacement, duplicate fighter or retained corpse.
+  The surviving melee fighter kept its identity. Owner switches, gear changes
+  and advance/hold/regroup orders preserved neutral identities, health and
+  pending deadlines; owner capacity remained three.
+- Disabled startup produced no fighters. Removing the generated world cleaned
+  its neutral resources; stopping the service canceled pending replacements,
+  checked after waiting beyond the full ten-second interval.
+- An actual virtual mouse click activated the equipped player Tool once and
+  reduced a neutral warrior from 100 to 90 health through the production remote.
+  A persistent client camera view showed the three generic center opponents.
+- Review mutation: allowing neutral-to-neutral hostility made the real neutral
+  combat spec fail. The mutated module was an isolated clone and was destroyed.
+- `npm run check` passed all 13 specification items. Rojo built both
+  `default.project.json` and the generated solo neutral test project. Automated
+  checks never accessed real player storage. No teleport or published-client
+  behavior changes are involved; multiplayer stress was not repeated here.
+
 ## Repeatable engine tests
+
+### Neutral battlefield opponents
+
+Run `npm run build:test-project -- --solo --neutral`, then build
+`.cache/solo-test.project.json` with Rojo. Open that test place in the existing
+Studio window and press Play once. The runner executes the module specs and
+`tests/runtime/NeutralOpponents.luau` with one connected player and fake storage.
+Read the JSON `NeutralRuntimeResult` attribute on `game` for the result and
+`NeutralTestPhase` for progress. It checks all thirteen civilizations, owned
+troop damage, basic retaliation, staggered respawns, army commands, gear changes,
+disabled startup and cleanup. The fixture deliberately destroys its neutral
+service at the end to verify pending replacements cannot run after shutdown.
 
 ### Settlement economic expansion
 

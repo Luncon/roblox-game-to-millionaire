@@ -6,9 +6,11 @@ const outputDirectory = path.join(root, '.cache');
 const solo = process.argv.includes('--solo');
 const development = process.argv.includes('--development');
 const expansion = process.argv.includes('--expansion');
+const neutral = process.argv.includes('--neutral');
 if (development && !solo) throw new Error('--development requires --solo');
 if (expansion && !solo) throw new Error('--expansion requires --solo');
-if (development && expansion) throw new Error('Choose --development or --expansion');
+if (neutral && !solo) throw new Error('--neutral requires --solo');
+if ([development, expansion, neutral].filter(Boolean).length > 1) throw new Error('Choose --development, --expansion or --neutral');
 const project = JSON.parse(fs.readFileSync('default.project.json', 'utf8'));
 
 function relocatePaths(instance) {
@@ -41,7 +43,7 @@ for (const name of fs.readdirSync(serverDirectory)) {
 }
 project.tree.ServerScriptService.Game.Bootstrap = { $path: solo ? '../tests/SoloBootstrap.server.luau' : '../tests/TestBootstrap.server.luau' };
 if (solo) {
-  const runner = expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
+  const runner = neutral ? 'SoloNeutralOpponents' : expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
   project.tree.ServerScriptService[`${runner}Tests`] = { $path: `../tests/${runner}.server.luau` };
 } else {
 project.tree.ServerScriptService.MultiplayerTests = { $path: '../tests/multiplayer/Server.server.luau' };

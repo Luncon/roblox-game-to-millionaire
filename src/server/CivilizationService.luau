@@ -12,6 +12,7 @@ local TycoonButtons = require(script.Parent.TycoonButtons)
 local WarriorService = require(script.Parent.WarriorService)
 local CombatService = require(script.Parent.CombatService)
 local PlayerCombatService = require(script.Parent.PlayerCombatService)
+local NeutralOpponentService = require(script.Parent.NeutralOpponentService)
 local ProfileService = require(script.Parent.ProfileService)
 local Infrastructure = require(script.Parent.SettlementInfrastructure)
 local CivilizationService = {}
@@ -129,6 +130,7 @@ function CivilizationService.start(options: any?)
 	local combat=CombatService.new(world,registry,economy,publishEconomy)
 	local playerCombat=PlayerCombatService.start(world,registry,economy,combat)
 	army=WarriorService.start(world,registry,economy,catalog,combat)
+	local neutralOpponents=NeutralOpponentService.start(world,combat)
 	buttons=TycoonButtons.new(world,registry,economy,catalog,publishEconomy)
 	local function command(player: Player,action: unknown,value: unknown)
 		local id=player.UserId
@@ -305,6 +307,7 @@ function CivilizationService.start(options: any?)
 		for _,player in activePlayers do capture(player) end
 		closing=true
 		farmHeartbeat:Disconnect()
+		neutralOpponents:destroy()
 		shutdownResult=profiles:shutdown(25)
 		return shutdownResult
 	end
@@ -318,7 +321,8 @@ function CivilizationService.start(options: any?)
 	if options.autosave~=false then profiles:startAutosave() end
 	print(string.format("Civilization selection ready: 8 plots, %d civilizations, independent saved profiles (%s)",#Civilizations,scope))
 	return {profiles=profiles,economy=economy,registry=registry,army=army,buttons=buttons,world=world,
-		combat=combat,playerCombat=playerCombat,shutdown=shutdown,select=select,snapshot=snapshot,command=command}
+		combat=combat,playerCombat=playerCombat,neutralOpponents=neutralOpponents,
+		shutdown=shutdown,select=select,snapshot=snapshot,command=command}
 end
 
 return CivilizationService

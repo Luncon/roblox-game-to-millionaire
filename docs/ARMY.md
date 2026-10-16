@@ -1,5 +1,18 @@
 # Barracks, troops, and player combat
 
+The prototype's neutral test opposition consists of two generic melee fighters
+and one generic archer near the battlefield center. Every claimed civilization's
+players and troops can fight them. They are friendly to one another and cannot
+damage unclaimed players or actors outside the arena. Their basic stats are
+100 health, 10 melee damage or 8 ranged damage, with the normal reach and attack
+cooldowns. Valid final hits give the usual 10 coins to the attacking owner.
+
+Each neutral slot replaces its dead fighter independently ten seconds after
+death. Neutral fighters return toward their center positions when idle. They
+have no civilization, plot or saved progression and ignore owner army orders,
+upgrades and switches. Set `enabled=false` in
+`src/shared/NeutralOpponentConfig.luau` to disable them on the next server start.
+
 Settlement stage 2 unlocks a level-one barracks and deploys one free melee warrior.
 It walks into the battlefield and attacks enemy troops and claimed enemy players.
 Upgrade the barracks through its newly unlocked ground buttons:
