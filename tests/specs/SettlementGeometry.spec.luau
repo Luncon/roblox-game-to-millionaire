@@ -105,19 +105,51 @@ return function(selectedCase)
 				local value={coins=10000,level=level,weaponLevel=1,armorLevel=1,barracksLevel=if level>=10 then 4 else 1,
 					trainingLevel=if level>=10 then 1 else 0,farmLevel=if level>=10 then 1 else 0,
 					workersLevel=if level>=10 then 1 else 0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
-					blacksmithLevel=0,armorerLevel=0,storehouseLevel=0}
+					blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0}
 				world:syncControls(1,value);checkPads()
 			end
 			build("sparta",5)
 			local value={coins=10000,level=5,weaponLevel=1,armorLevel=1,barracksLevel=1,trainingLevel=0,
 				farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
-				blacksmithLevel=0,armorerLevel=0,storehouseLevel=0}
+				blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0}
 			world:syncControls(1,value)
 			local old=assert(plot.Controls:FindFirstChild("TrainingButton"));local supports={}
 			for _,part in old:GetDescendants()do if part:IsA("BasePart")then table.insert(supports,part)end end
 			value.trainingLevel=1;world:syncControls(1,value)
 			assert(not plot.Controls:FindFirstChild("TrainingButton")and not old:IsDescendantOf(workspace))
 			for _,support in supports do assert(not support:IsDescendantOf(workspace),"Hidden pad left a detached support")end
+		end)
+		test("exterior skill pad has real ground support and disappears at the final tier",function()
+			local Camp=require(game.ReplicatedStorage.Shared.TrainingCampConfig)
+			local value={coins=10000,level=50,weaponLevel=50,armorLevel=1,barracksLevel=4,trainingLevel=1,
+				farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
+				blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0}
+			build("sparta",50);world:syncControls(1,value)
+			local pad=assert(plot.Controls:FindFirstChild("SkillButton"),"Eligible skill pad is absent")
+			local frame=plot.Foundation.CFrame
+			local expected=frame*CFrame.new(Camp.pad.X+12,Camp.pad.Y,Camp.pad.Z)
+			assert((pad.Position-expected.Position).Magnitude<.002 and pad.Size==Vector3.new(8,1,6),"Skill support changed the input footprint or coordinates")
+			assert(pad.CFrame.RightVector:Dot(expected.RightVector)>.99999 and pad.CFrame.UpVector:Dot(expected.UpVector)>.99999
+				and pad.CFrame.LookVector:Dot(expected.LookVector)>.99999,"Skill support rotated the pad")
+			assert(math.abs(frame:PointToObjectSpace(pad.Position).X)-pad.Size.X/2>plot.Foundation.Size.X/2,"Skill pad moved inside the main settlement")
+			local ground=RaycastParams.new();ground.FilterType=Enum.RaycastFilterType.Include
+			ground.FilterDescendantsInstances={world.model.Ground,world.model.Landscape.TerrainSurface}
+			local supports={}
+			for _,support in pad:GetDescendants()do if support:IsA("BasePart")then
+				table.insert(supports,support);support.CanQuery=true
+				assert(not support.CanTouch and support:GetAttribute("Action")==nil,"Skill support became an input")
+				local bottom=support.CFrame:PointToWorldSpace(Vector3.new(0,-support.Size.Y/2,0))
+				local hit=workspace:Raycast(bottom+frame.UpVector*.02,-frame.UpVector*6,ground)
+				assert(hit and (bottom-hit.Position):Dot(frame.UpVector)<=.05,"Skill pad support floats above actual exterior ground")
+			end end
+			assert(#supports>0,"Exterior skill pad has no physical support")
+			local supportFilter=RaycastParams.new();supportFilter.FilterType=Enum.RaycastFilterType.Include;supportFilter.FilterDescendantsInstances=supports
+			local bottom=pad.CFrame:PointToWorldSpace(Vector3.new(0,-pad.Size.Y/2,0))
+			local hit=workspace:Raycast(bottom+frame.UpVector*.02,-frame.UpVector*6,supportFilter)
+			assert(hit and (bottom-hit.Position):Dot(frame.UpVector)<=.05,"Skill pad floats above its support")
+			value.skillLevel=5;world:syncControls(1,value)
+			assert(not plot.Controls:FindFirstChild("SkillButton")and not pad:IsDescendantOf(workspace),"Completed skill pad remains interactive")
+			for _,support in supports do assert(not support:IsDescendantOf(workspace),"Completed skill pad left a detached support")end
 		end)
 		return cases
 	end)

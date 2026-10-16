@@ -5,6 +5,8 @@ local Shared = game:GetService("ReplicatedStorage").Shared
 local Tracks = require(Shared.UpgradeTracks)
 local Catalog = require(Shared.PadCatalog)
 local Development = require(Shared.SettlementDevelopment)
+local Skills = require(Shared.WeaponSkillConfig)
+local Variants = require(Shared.WarriorConfig).variants
 local Equipment = require(script.Parent.Equipment)
 local TycoonButtons = {}
 
@@ -91,7 +93,14 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 				local available=offer and offer.available
 				local building=Development.buildings[definition.track]
 				local title=string.upper(if building then building.title else definition.track)
-				if not state then bound.label.Text=title.."\nClaim this plot first"
+				if definition.track=="skill" and available then
+					local civId=world.model.Plots["Plot"..plotId]:GetAttribute("CivilizationId")
+					local variant=Variants[civId]
+					local family=if variant then Skills.family(variant.weaponKind) else nil
+					local name=if family then Skills.families[family].name else "Weapon Skill"
+					bound.label.Text=string.format("%s · %s\n%d COINS · %s",string.upper(name),Skills.tiers[offer.nextLevel].name,
+						cost,if family then Skills.description(family,offer.nextLevel) else "All eligible troops")
+				elseif not state then bound.label.Text=title.."\nClaim this plot first"
 				elseif available then
 					local track=Tracks[definition.track]
 					local nextTier=if track then track[offer.nextLevel] else nil

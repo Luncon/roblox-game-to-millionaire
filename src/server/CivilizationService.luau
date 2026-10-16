@@ -106,7 +106,7 @@ function CivilizationService.start(options: any?)
 				ArmorLevel="armorLevel",BarracksUpgradeLevel="barracksLevel",EconomyRevision="revision",
 				TrainingLevel="trainingLevel",FarmLevel="farmLevel",WorkersLevel="workersLevel",ArmyCampLevel="armyCampLevel",
 				BlacksmithLevel="blacksmithLevel",ArmorerLevel="armorerLevel",StorehouseLevel="storehouseLevel",
-				FarmCoins="farmCoins",ExtraTroopClass="extraTroopClass"} do
+				FarmCoins="farmCoins",ExtraTroopClass="extraTroopClass",SkillLevel="skillLevel"} do
 				player:SetAttribute(attribute,state[field])
 			end
 			local stats = player:FindFirstChild("leaderstats")
@@ -116,8 +116,10 @@ function CivilizationService.start(options: any?)
 			if coins:IsA("IntValue") then coins.Value=state.coins end
 		end
 		if result.ok and (action=="claim" or action=="switch" or action=="upgrade" or action=="weapon" or action=="armor" or action=="barracks"
-			or action=="training" or action=="armyCamp" or action=="troopClass") then
-			if army then army:refresh(player) end
+			or action=="training" or action=="armyCamp" or action=="troopClass" or action=="skill") then
+			if army then
+				if action=="skill" then army:refreshSkills(player) else army:refresh(player) end
+			end
 		end
 		if result.ok and action=="kill" and buttons then
 			local claim=registry:get(player.UserId)
@@ -288,6 +290,7 @@ function CivilizationService.start(options: any?)
 		activePlayers[userId]=nil
 		generations[userId]=(generations[userId] or 0)+1
 		playerCombat:release(userId);army:release(userId);buttons:release(userId)
+		combat.skills:forgetOwner(userId)
 		local claim=registry:release(userId)
 		economy:close(userId)
 		lastRequest[userId]=nil

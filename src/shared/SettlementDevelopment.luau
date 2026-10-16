@@ -1,13 +1,14 @@
 --!strict
 
 local Tracks=require(script.Parent.UpgradeTracks)
+local Skills=require(script.Parent.WeaponSkillConfig)
 local Development={}
 Development.fields=table.freeze({settlement="level",weapon="weaponLevel",armor="armorLevel",barracks="barracksLevel",
 	training="trainingLevel",farm="farmLevel",workers="workersLevel",armyCamp="armyCampLevel",
-	blacksmith="blacksmithLevel",armorer="armorerLevel",storehouse="storehouseLevel"})
+	blacksmith="blacksmithLevel",armorer="armorerLevel",storehouse="storehouseLevel",skill="skillLevel"})
 Development.persistentFields=table.freeze({"coins","level","weaponLevel","armorLevel","barracksLevel",
 	"trainingLevel","farmLevel","workersLevel","armyCampLevel","farmCoins","extraTroopClass",
-	"blacksmithLevel","armorerLevel","storehouseLevel"})
+	"blacksmithLevel","armorerLevel","storehouseLevel","skillLevel"})
 local buildings={
 	training={field="trainingLevel",title="Training Yard",tiers={{unlock=5,cost=50}}},
 	farm={field="farmLevel",title="Farm",tiers={{unlock=7,cost=80},{unlock=12,cost=180}}},
@@ -31,9 +32,14 @@ function Development.offer(state,track: string)
 	local field=Development.fields[track]
 	if not field then return nil end
 	local building=buildings[track]
-	local current=state[field] or (if building then 0 else 1)
+	local current=state[field] or (if building or track=="skill" then 0 else 1)
 	local cost,required,nextLevel
-	if building then
+	if track=="skill" then
+		local tier=Skills.tiers[current+1]
+		cost=if tier then tier.cost else nil
+		required=if tier then tier.unlock else 50
+		nextLevel=if tier then current+1 else nil
+	elseif building then
 		local tier=building.tiers[current+1]
 		cost=if tier then tier.cost else nil
 		required=(tier or building.tiers[current] or building.tiers[1]).unlock
@@ -48,6 +54,10 @@ function Development.offer(state,track: string)
 		end
 	end
 	local missing={}
+	if track=="skill" then
+		if state.trainingLevel~=1 then table.insert(missing,"Training Yard I") end
+		if (state.weaponLevel or 1)<required then table.insert(missing,"Weapon "..required) end
+	end
 	if track=="workers" and nextLevel and (state.farmLevel or 0)<nextLevel then
 		table.insert(missing,if nextLevel==2 then "Farm II" else "Farm I")
 	end

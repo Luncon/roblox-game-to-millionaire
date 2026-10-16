@@ -188,3 +188,17 @@ The expansion's fresh single-window Studio run passed 209 module cases and five
 native purchase, production, collection, restoration and replacement checks
 against injected fake profiles. Executed runtime evidence and remaining limits belong in
 [playtest records](PLAYTEST.md).
+
+## Weapon skill purchases
+
+A next-tier skill pad beside the training camp offers tiers I–V at weapon
+levels 10/20/30/40/50 for 100/200/350/550/800 coins, respectively. Training
+Yard I is required. All five purchases total 2,000 coins; workshop discounts
+apply only to their original gear tracks. Eligibility does not grant a tier for
+free. The pad is absent while progression-locked or completed and uses existing
+ownership, funds, writable-profile and one-purchase-per-entry guards.
+
+Each civilization saves one skillLevel shared by its eligible players and troops.
+Purchases do not heal or reset attacks, cooldowns or troop replacement deadlines.
+See [weapon skills](WEAPON_SKILLS.md) for damage, cooldowns and controls. Runtime
+acceptance of this new purchase path remains pending in [PLAYTEST.md](PLAYTEST.md).

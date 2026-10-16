@@ -58,8 +58,8 @@ rounding; never change their combat stats. Storehouse I at 16 requires a farm
 and raises reserve capacity from 60 to 180. Use storageCapacity(state) everywhere
 the cap matters. Farm/worker/storage purchases settle old-yield/old-capacity
 whole intervals then reset the clock; never bank full, offline or inactive time.
-Save all fourteen scalar fields, with missing-only zero defaults for the three
-workshop/storage fields and unchanged version-one keys. Barracks V/VI require
+Save all fifteen scalar fields, with missing-only zero defaults for the three
+workshop/storage fields and skillLevel, and unchanged version-one keys. Barracks V/VI require
 settlement 8/14, cost 200/300 and set future delays to 13/12.5 seconds; they
 preserve two barracks slots, pending deadlines and the optional camp slot.
 Rural fields reserve space outside the final plot
@@ -99,8 +99,13 @@ from fake-store checks. NPC combat shares server-owned target selection, engagem
 separation and bounded ranged retreats across both troop services. Windup/contact/
 recovery drives exactly-once validated strikes and weapon-family R6 poses; preserve
 source joints, equipment grips and distinct imported/neutral/fallback bow bases.
-Hold remains stationary; Regroup cancels pending contacts and shots. Matchmaking,
-formations, abilities and ranged player attacks remain planned.
+Hold remains stationary; Regroup cancels pending contacts and shots. Weapon-family
+skills use server-authoritative contacts, cooldowns and five paid tiers requiring
+Training Yard I and weapon levels 10/20/30/40/50. Players activate with R; eligible
+owned troops activate automatically. Regroup cancels skills, and Hold prohibits
+dash skills. Preserve ordinary attack exclusion, source grips and pending respawns.
+Matchmaking, formations, civilization-specific abilities, mounts and ranged player
+attacks remain planned. See docs/WEAPON_SKILLS.md for verification boundaries.
 
 The generated landscape uses deterministic connected native geometry with
 asymmetric relief. `Topography` samples the same local triangles used for

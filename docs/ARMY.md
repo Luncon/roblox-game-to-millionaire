@@ -189,3 +189,20 @@ Sparta, Britain, Japan, Seneca and Maurya use the five user-provided R6 models i
 retained; upgrades add tier gear and change the shared combat stats. Other
 civilizations and ranged troops keep their generated rigs and wear the matching
 outfits. The Studio reference models remain untouched.
+
+## Weapon-family skills
+
+Players and owned troops gain paid weapon skills through the training-camp pad:
+spear/javelin Dash Thrust (8s cooldown), axe Whirlwind (12s), and sword Double
+Slash (9s). Tiers I–V require weapon levels 10/20/30/40/50. NPCs activate
+skills automatically; players use **R**, gamepad **Y**, or the touch skill button.
+Ranged spear/axe roles use the same skill at close range with their ordinary 0.8
+role damage multiplier. Hold prevents dashing; Regroup cancels pending skills.
+Neutral opponents and unsupported weapon families do not receive skills.
+
+Skills replace ordinary attacks during their animation and recovery, with no stun,
+invulnerability or healing. Source rigs, grips and clothing are preserved. The
+server validates every contact and consumes each victim-life kill reward once.
+See [the full damage/price tables and controls](WEAPON_SKILLS.md). Solo Studio
+checks passed; multiplayer, additional input-device and published-client checks
+remain pending. See [playtest evidence](PLAYTEST.md).

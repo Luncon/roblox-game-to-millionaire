@@ -165,3 +165,24 @@ multiplayer test place. Run `tests/RunPersistenceMultiplayer.luau` through Studi
 Assistant MCP Edit context to check independent progress, switching, fresh Studio
 sessions, failed loads and bounded retry traffic. Real Roblox storage restoration
 is recorded separately in [the playtest log](PLAYTEST.md).
+
+## Weapon skill checks and standalone Luau CLI
+
+The optional Luau 0.740 command-line tools are installed on this Mac at
+`~/.local/bin/luau`, `~/.local/bin/luau-compile`, and
+`~/.local/bin/luau-analyze`, with the official release archive retained in
+`~/.local/share/luau/0.740/`. They do not change the project's npm dependencies.
+[Official Luau releases](https://github.com/luau-lang/luau/releases/tag/0.740)
+provide binaries for other machines.
+
+Run `npm run check:skills` for deterministic logic tests, including skills,
+economy, profile validation and fake-store restoration. The runner detects the
+Mac install or uses `luau` from PATH; `LUAU_CLI` can specify another executable.
+Explicit engine doubles support this CLI suite; physics, rigs and native input
+require Studio. No player DataStores are opened.
+
+`npm run build:test-project -- --solo --skills` prepares the dedicated fake-store
+skill place. Build `.cache/solo-test.project.json` with Rojo, open the resulting
+place in the existing Studio window, and run one solo Play session. See
+[weapon skills](WEAPON_SKILLS.md) for the generated result attributes and the
+[playtest record](PLAYTEST.md) for checks actually executed.

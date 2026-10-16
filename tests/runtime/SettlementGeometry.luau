@@ -8,7 +8,7 @@ return function(context,player)
 	local container=Instance.new("Folder");container.Name="SettlementGeometryMatrix";container.Parent=workspace
 	local probes={}
 	local report={variants=0,civilizations=#civilizations,levels=50,transforms=2,failureCount=0,failureKinds={},firstPerKind={},examples={},
-		architecturalParts=0,nativeContactQueries=0,crossBuildingQueries=0,padChecks=0,padSupportChecks=0,roofChecks=0,atticChecks=0,maximumSettlementParts=0}
+		architecturalParts=0,nativeContactQueries=0,crossBuildingQueries=0,padChecks=0,padSupportChecks=0,skillPadChecks=0,completedSkillPads=0,roofChecks=0,atticChecks=0,maximumSettlementParts=0}
 	local label,civilizationId="initializing","initializing"
 	local exampleKeys={}
 	local function issue(kind,detail)
@@ -45,7 +45,7 @@ return function(context,player)
 			trainingLevel=if level>=5 then 1 else 0,farmLevel=if level>=12 then 2 elseif level>=7 then 1 else 0,
 			workersLevel=if level>=12 then 2 elseif level>=7 then 1 else 0,armyCampLevel=if level>=10 then 1 else 0,
 			farmCoins=0,extraTroopClass="warrior",blacksmithLevel=if level>=13 then 1 else 0,
-			armorerLevel=if level>=13 then 1 else 0,storehouseLevel=if level>=16 then 1 else 0}
+			armorerLevel=if level>=13 then 1 else 0,storehouseLevel=if level>=16 then 1 else 0,skillLevel=0}
 	end
 	local function nativeFilter(parts)
 		local params=OverlapParams.new();params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances=parts
@@ -221,6 +221,7 @@ return function(context,player)
 				local liveCollisionFilter=nativeFilter(liveCollision)
 				for _,pad in plot.Controls:GetChildren()do if pad:IsA("BasePart")then
 					report.padChecks+=1
+					if pad:GetAttribute("Action")=="skill"then report.skillPadChecks+=1 end
 					local definition=definitions[pad:GetAttribute("Action")]
 					if not definition then issue("pad action",pad.Name);continue end
 					local expected=frame*CFrame.new(definition.x,definition.y or 2,definition.z)
@@ -262,6 +263,22 @@ return function(context,player)
 				alternative.workersLevel=0
 				world:syncControls(1,alternative);checkPads()
 			end
+			if value.level>=10 then
+				local skillState=table.clone(value)
+				skillState.weaponLevel,skillState.trainingLevel,skillState.skillLevel=value.level,1,0
+				world:syncControls(1,skillState)
+				if not plot.Controls:FindFirstChild("SkillButton")then issue("missing eligible skill pad",label)end
+				checkPads()
+				if value.level==50 then
+					local old=plot.Controls:FindFirstChild("SkillButton")
+					local supports={}
+					if old then for _,part in old:GetDescendants()do if part:IsA("BasePart")then table.insert(supports,part)end end end
+					skillState.skillLevel=5;world:syncControls(1,skillState)
+					if plot.Controls:FindFirstChild("SkillButton")or (old and old:IsDescendantOf(workspace))then issue("completed skill pad retained",label)end
+					for _,support in supports do if support:IsDescendantOf(workspace)then issue("completed skill support retained",label)end end
+					report.completedSkillPads+=1;checkPads()
+				end
+			end
 			world:syncControls(1,value)
 			for part,flag in flags do if part.Parent then part.CanQuery=flag end end
 		end
@@ -280,6 +297,7 @@ return function(context,player)
 		end
 		game:SetAttribute("SettlementGeometryMatrixEvidence",game.HttpService:JSONEncode(report))
 		assert(report.variants==1300,"Incomplete geometry matrix")
+		assert(report.skillPadChecks==13*41*2 and report.completedSkillPads==13*2,"Incomplete skill-pad geometry coverage")
 		assert(report.failureCount==0,"Geometry matrix failures: "..game.HttpService:JSONEncode(report.examples))
 		return {ok=true,cases=5,evidence=report,message="All 13 civilizations and 50 levels in two transformed worlds: native supports, roofs, intersections, bounds, exits and supported pads"}
 	end)

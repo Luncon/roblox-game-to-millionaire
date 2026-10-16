@@ -7,7 +7,7 @@ return function(context,player,round)
 	local Data=require(game.ServerScriptService.Game.ProfileData)
 	local Development=require(game.ReplicatedStorage.Shared.SettlementDevelopment)
 	local fields=Development.persistentFields
-	assert(#fields==14)
+	assert(#fields==15)
 	local cases,evidence=0,{purchases={}}
 	local function stage(name)game:SetAttribute("SettlementGeometryAccessPhase",name)end
 	local function choose(id)
@@ -58,7 +58,7 @@ return function(context,player,round)
 		if service.registry:get(uid).civilizationId==advancedCiv then choose(economicCiv)end
 		local advanced={coins=1000,level=5,weaponLevel=3,armorLevel=3,barracksLevel=4,
 			trainingLevel=0,farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
-			blacksmithLevel=0,armorerLevel=0,storehouseLevel=0}
+			blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0}
 		assert(service.profiles:set(uid,advancedCiv,advanced));choose(advancedCiv)
 		waitFor(function()
 			local owner=service.army:get(uid)
@@ -81,7 +81,7 @@ return function(context,player,round)
 		stage("Native workshop and storage pads")
 		local economic={coins=1000,level=16,weaponLevel=3,armorLevel=3,barracksLevel=4,
 			trainingLevel=1,farmLevel=2,workersLevel=2,armyCampLevel=1,farmCoins=0,extraTroopClass="warrior",
-			blacksmithLevel=0,armorerLevel=0,storehouseLevel=0}
+			blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0}
 		assert(service.profiles:set(uid,economicCiv,economic));choose(economicCiv)
 		assert(round("developmentInput",{kind="command",button="Hold"},30).ok)
 		assert(service.army:get(uid).order=="hold")

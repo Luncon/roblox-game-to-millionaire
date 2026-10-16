@@ -278,10 +278,23 @@ function CivilizationUI.start()
 	require(script.Parent:WaitForChild("EconomyUI")).start(screen)
 	require(script.Parent:WaitForChild("ArmyUI")).start(screen)
 	task.spawn(function()
+		local function startupFailure()
+			local reason = ReplicatedStorage:GetAttribute("GameStartupError")
+			if not reason then return false end
+			busy = false
+			feedback.Text = if reason == "unpublished_place"
+				then "Saved progress requires a published test experience with Studio API access. For temporary progress, use the isolated test place."
+				else "Server startup failed. Check Studio Output for the error, then restart Play after fixing it."
+			render()
+			return true
+		end
+		ReplicatedStorage:GetAttributeChangedSignal("GameStartupError"):Connect(startupFailure)
+		if startupFailure() then return end
 		local remotes = ReplicatedStorage:WaitForChild("CivilizationRemotes", 15)
 		if not remotes then
+			if startupFailure() then return end
 			busy = false
-			feedback.Text = "The server is not ready. Stop and restart Play after Rojo finishes syncing."
+			feedback.Text = "Server startup did not finish. Check Studio Output for errors and confirm Rojo is connected before restarting Play."
 			render()
 			return
 		end

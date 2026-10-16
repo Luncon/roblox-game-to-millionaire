@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "units": 307,
+  "result": {
+    "ok": true,
+    "cases": 13,
+    "message": "One client: native skill pads/R and automatic troop attack against fake profiles",
+    "evidence": {
+      "axe": {
+        "displacement": 0.29726481437683105,
+        "cooldown": 12,
+        "damage": 16.20001220703125
+      },
+      "comboEscape": {
+        "secondMissed": true,
+        "damage": 12.5999755859375
+      },
+      "sword": {
+        "displacement": 0.29726481437683105,
+        "cooldown": 9,
+        "damage": 27
+      },
+      "ranged_sparta": {
+        "serverOwned": true,
+        "overlap": false,
+        "damage": 20.15997314453125
+      },
+      "spear": {
+        "displacement": 3.300523281097412,
+        "cooldown": 8,
+        "damage": 25.20001220703125
+      },
+      "purchase": {
+        "coinsSpent": 300,
+        "campPreserved": true,
+        "tiers": 2,
+        "livingPreserved": true,
+        "pendingRespawnPreserved": true
+      },
+      "ranged_vikings": {
+        "serverOwned": true,
+        "overlap": false,
+        "damage": 12.96002197265625
+      },
+      "dashWall": {
+        "displacement": 2.762136459350586,
+        "damage": 0
+      },
+      "ranged_rome": {
+        "serverOwned": true,
+        "overlap": false,
+        "damage": 20.15997314453125
+      },
+      "spinRewards": {
+        "kills": 3,
+        "friendlyProtected": true,
+        "overflowProtected": true,
+        "wallProtected": true,
+        "coins": 30
+      },
+      "dashBoundary": {
+        "inside": true,
+        "displacement": 3.9326698780059814
+      }
+    }
+  }
+}

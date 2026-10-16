@@ -8,14 +8,16 @@ local Ranged = require(Shared.RangedConfig)
 local Rules = require(script.Parent.CombatRules)
 local CombatService = {}
 
-function CombatService.new(world, registry, economy, publishEconomy)
+function CombatService.new(world, registry, economy, publishEconomy, clock)
 	local controller = {}
+	local now=clock or os.clock
 	local records, nextAttack = {}, {}
 	local rewarded = setmetatable({}, {__mode="k"})
 	local active = true
 	local arena = world.model.Battlefield
 	function controller:unregister(rig)
 		local record = records[rig]
+		if controller.skills then controller.skills:cancel(rig) end
 		if record and record.connection then record.connection:Disconnect() end
 		records[rig], nextAttack[rig] = nil, nil
 	end
@@ -92,32 +94,13 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		local hit = workspace:Raycast(origin,destination-origin,filter)
 		return hit == nil or hit.Instance:IsDescendantOf(target.rig)
 	end
-	function controller:hit(attackerRig, targetRig)
-		local attacker, target = self:actor(attackerRig), self:actor(targetRig)
-		if not attacker or not target or not self:canAct(attackerRig) then return {ok=false,reason="invalid_actor"} end
-		local ranged = attacker.kind == "ranged"
-		local reach = if ranged then Ranged.range else Warrior.attackRange
-		if not Rules.canDamage(attacker,target,arena,reach) or not self:visible(attacker,target) then
-			return {ok=false,reason="protected_or_blocked"}
-		end
-		local state = if attacker.neutral then nil else economy:get(attacker.ownerId)
-		if attacker.kind == "player" then
-			local tool = attackerRig:FindFirstChildOfClass("Tool")
-			if not tool or tool:GetAttribute("GeneratedBy") ~= "CivilizationEquipment"
-				or tool:GetAttribute("CivilizationId") ~= attacker.civilizationId
-				or tool:GetAttribute("WeaponLevel") ~= state.weaponLevel then return {ok=false,reason="not_equipped"} end
-		end
-		local time = os.clock()
-		if time < (nextAttack[attackerRig] or 0) then return {ok=false,reason="cooldown"} end
-		local damage = if attacker.neutral then Warrior.damage else Tracks.weapon[state.weaponLevel].damage
-		if ranged then damage = math.max(1,damage*Ranged.damageMultiplier) end
-		nextAttack[attackerRig] = time + (if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
+	local function applyDamage(attacker,target,damage)
 		local humanoid = target.humanoid
 		local before = humanoid.Health
 		humanoid:TakeDamage(damage)
 		local after = humanoid.Health
 		if after >= before then return {ok=false,reason="blocked_damage"} end
-		targetRig:SetAttribute("LastHitAt",workspace:GetServerTimeNow())
+		target.rig:SetAttribute("LastHitAt",workspace:GetServerTimeNow())
 		local killed = before > 0 and after <= 0
 		local reward
 		if killed and not rewarded[humanoid] then
@@ -133,13 +116,40 @@ function CombatService.new(world, registry, economy, publishEconomy)
 		end
 		return {ok=true,damage=before-after,killed=killed,reward=reward}
 	end
+	function controller:hit(attackerRig, targetRig)
+		if self.skills:busy(attackerRig) then return {ok=false,reason="busy"} end
+		local attacker, target = self:actor(attackerRig), self:actor(targetRig)
+		if not attacker or not target or not self:canAct(attackerRig) then return {ok=false,reason="invalid_actor"} end
+		local ranged = attacker.kind == "ranged"
+		local reach = if ranged then Ranged.range else Warrior.attackRange
+		if not Rules.canDamage(attacker,target,arena,reach) or not self:visible(attacker,target) then
+			return {ok=false,reason="protected_or_blocked"}
+		end
+		local state = if attacker.neutral then nil else economy:get(attacker.ownerId)
+		if attacker.kind == "player" then
+			local tool = attackerRig:FindFirstChildOfClass("Tool")
+			if not tool or tool:GetAttribute("GeneratedBy") ~= "CivilizationEquipment"
+				or tool:GetAttribute("CivilizationId") ~= attacker.civilizationId
+				or tool:GetAttribute("WeaponLevel") ~= state.weaponLevel then return {ok=false,reason="not_equipped"} end
+		end
+		local time = now()
+		if time < (nextAttack[attackerRig] or 0) then return {ok=false,reason="cooldown"} end
+		local damage = if attacker.neutral then Warrior.damage else Tracks.weapon[state.weaponLevel].damage
+		if ranged then damage = math.max(1,damage*Ranged.damageMultiplier) end
+		nextAttack[attackerRig] = time + (if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
+		self.skills:lockOrdinary(attackerRig,if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
+		return applyDamage(attacker,target,damage)
+	end
+
 	function controller:destroy()
 		active = false
+		self.skills:destroy()
 		local rigs = {}
 		for rig in records do table.insert(rigs,rig) end
 		for _, rig in rigs do self:unregister(rig) end
 		table.clear(rewarded)
 	end
+	controller.skills=require(script.Parent.WeaponSkillService).new(world,controller,economy,applyDamage,now)
 	return controller
 end
 

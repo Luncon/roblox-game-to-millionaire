@@ -20,7 +20,7 @@ Cross-server civilization matchmaking remains planned.
 
 ## What is saved
 
-The version-one profile stores these fourteen scalar fields for each started civilization:
+The version-one profile stores these fifteen scalar fields for each started civilization:
 
 | Field | Meaning | Accepted values |
 | --- | --- | --- |
@@ -38,6 +38,7 @@ The version-one profile stores these fourteen scalar fields for each started civ
 | `blacksmithLevel` | Weapon-price workshop | 0 or 1; owning it requires settlement 13 |
 | `armorerLevel` | Armor-price workshop | 0 or 1; owning it requires settlement 13 |
 | `storehouseLevel` | Reserve-capacity building | 0 or 1; owning it requires settlement 16 and Farm I |
+| `skillLevel` | Purchased weapon-family skill tier | Integer 0–5; positive tiers require Training Yard I and weapon level at least tier × 10 |
 
 Both building milestones retain `schemaVersion = 1` and the existing store/key.
 Only missing new fields receive defaults: building levels and reserve become
@@ -60,7 +61,7 @@ so a high settlement cannot accidentally admit unsupported barracks levels.
 An older four-level build cannot safely load newly saved high levels. Any rollback
 must retain compatible validation rather than clamp or reset stored progress.
 A pre-building or eleven-field writer could silently omit newer fields on its
-next save; rollback must retain all fourteen fields, expanded tier validation
+next save; rollback must retain all fifteen fields, expanded tier validation
 and capacity rules.
 
 Level-one barracks state is stored even before the building unlocks at settlement
@@ -85,6 +86,23 @@ Account revisions, click tokens, purchase cooldowns, farm clocks, avatar health 
 are excluded. [ProfileData](../src/server/ProfileData.luau) validates and copies
 the values; it rejects malformed and unsupported profiles instead of repairing
 them into defaults.
+
+## Weapon skill extension
+
+Weapon skills add one scalar, `skillLevel`, to the existing fourteen fields.
+Only a missing value defaults to zero; supplied malformed values, unsupported
+levels, missing training or insufficient weapon levels fail validation. All
+copies, economy snapshots and saves preserve fifteen fields under the existing
+version-one keys and scopes. Skills save separately for each civilization.
+Purchases preserve troop health and pending replacement deadlines. Player and
+owner/slot/family cooldowns are transient but survive resets/replacements and
+civilization switches within the same server; they are not restored across servers.
+
+Rollback must retain fifteen-field readers and writers, even when skills are
+disabled. A fourteen-field writer would silently discard purchased skills.
+Automated save/reload checks use the injected FakeProfileStore; this does not
+establish real Roblox storage restoration for the new field. See
+[weapon skill behavior](WEAPON_SKILLS.md) and [runtime evidence](PLAYTEST.md).
 
 ## Saving and session ownership
 

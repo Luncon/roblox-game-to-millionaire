@@ -16,6 +16,9 @@ commands.OnClientEvent:Connect(function(command)
 		return
 	end
 	local ok, result = pcall(function()
+		if command.action=="skillInput" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("WeaponSkillInput",10))()
+		end
 		if command.action=="tacticalObserve" then
 			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("TacticalCombatObservation",10))(command.options)
 		end

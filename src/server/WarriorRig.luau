@@ -7,6 +7,7 @@ local Ranged = require(ReplicatedStorage.Shared.RangedConfig)
 local Equipment = require(script.Parent.Equipment)
 local NPCModelTemplates = require(script.Parent.NPCModelTemplates)
 local TroopAppearance = require(script.Parent.TroopAppearance)
+local SkillPose = require(ReplicatedStorage.Shared.WeaponSkillPose)
 local WarriorRig = {}
 
 local function body(model: Model, name: string, size: Vector3, position: Vector3, color: Color3): Part
@@ -239,12 +240,23 @@ function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking:
 		flash.Adornee=rig;flash.Parent=rig
 	end
 	if flash then flash.Enabled=hit==true end
+	local family=rig:GetAttribute("WeaponSkillActive")
+	local skillStarted=rig:GetAttribute("WeaponSkillStartedAt")
+	local lean=0
+	if family and skillStarted then
+		local skill=SkillPose.sample(family,serverNow-skillStarted)
+		right,left,offset,twist,lean=skill.right,skill.left,skill.offset,skill.twist,skill.lean
+		-- NPC grips already aim the shaft forward. The player's extra arm lift
+		-- would turn it upright; retain the thrust translation and body motion.
+		if family=="spear" then right=Vector3.zero end
+		leftOffset=Vector3.zero
+	end
 	poseJoint(torso:FindFirstChild("Right Shoulder"),right,offset)
 	poseJoint(torso:FindFirstChild("Left Shoulder"),left,leftOffset)
 	poseJoint(torso:FindFirstChild("Right Hip"),Vector3.new(gait,0,0))
 	poseJoint(torso:FindFirstChild("Left Hip"),Vector3.new(-gait,0,0))
 	local root=rig:FindFirstChild("HumanoidRootPart")
-	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new(if hit then .12 else 0,if phase~="idle" then twist else 0,0))
+	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new((if hit then .12 else 0)+lean,if phase~="idle" or family then twist else 0,0))
 	poseJoint(torso:FindFirstChild("Neck"),Vector3.new(if hit then -.1 else 0,0,0))
 end
 

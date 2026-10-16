@@ -22,19 +22,20 @@ end
 function Motion.apply(rig,navigator,world,result,now)
 	Motion.publish(rig,result)
 	local humanoid,root=rig.Humanoid,rig.HumanoidRootPart
-	local speed=result.speed or 12
+	local skillActive=result.phase=="skill" or rig:GetAttribute("WeaponSkillActive")~=nil
+	local speed=if skillActive then 0 else result.speed or 12
 	if result.goal and result.direct and rig:GetAttribute("WarriorClass")~="ranged"
 		and (result.goal-root.Position).Magnitude<8 then speed=math.min(speed,6)end
 	humanoid.WalkSpeed=speed
 
-	local face=result.facing and (result.phase~="idle" or not result.goal or result.direct)
-	humanoid.AutoRotate=not face
+	local face=not skillActive and result.facing and (result.phase~="idle" or not result.goal or result.direct)
+	humanoid.AutoRotate=not (skillActive or face)
 	if face then
 		local point=Vector3.new(result.facing.X,root.Position.Y,result.facing.Z)
 		if (point-root.Position).Magnitude>.01 then root.CFrame=CFrame.lookAt(root.Position,point)end
 	end
 	-- Root facing changes cancel Humanoid MoveTo, so issue movement last.
-	if result.goal and result.phase=="idle" then
+	if not skillActive and result.goal and result.phase=="idle" then
 		if not result.direct or not navigator:walkCombat(result.goal,world)then
 			navigator:setGoal(result.goal);navigator:step(now)
 		end
