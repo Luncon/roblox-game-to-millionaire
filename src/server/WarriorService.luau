@@ -349,10 +349,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	heartbeat = RunService.Heartbeat:Connect(function(dt)
 		if not world.model:IsDescendantOf(workspace) then controller:destroy(); return end
 		local now = os.clock()
-		combat.skills:step()
+		local finishedSkill=combat.skills:step()
 		projectiles:step(dt)
 		elapsed += dt
-		if elapsed >= Config.thinkInterval then elapsed = 0; think(now) end
+		if finishedSkill or elapsed >= Config.thinkInterval then elapsed = 0; think(now) end
 		for _, owner in owners do
 			for _, slot in owner.slots do
 				if slot.rig then

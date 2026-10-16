@@ -10,7 +10,7 @@ Players need active weapon skills that make melee combat more expressive as thei
 - Confirmed: buy skill tiers I–V at weapon levels 10/20/30/40/50, requiring Training Camp I (the existing Training Yard I purchase). Tier prices are 100/200/350/550/800 coins, totaling 2,000 per civilization track.
 - Confirmed: show only the next eligible physical skill pad beside the training camp; purchases apply to matching living and replacement troops without healing or resetting cooldowns.
 - Confirmed: cooldowns are 8 seconds for dash, 12 for spin and 9 for double slash. Damage and bounded geometry follow design.md and the weapon-effects spec.
-- Confirmed: skills replace ordinary attacks during their animation/recovery, grant no invulnerability or stun, and spend cooldown on accepted activation even on a miss. NPCs activate automatically when appropriate; players have an accessible action control.
+- Confirmed: skills replace ordinary attacks during their active animation, with immediate startup and no recovery pause, grant no invulnerability or stun, and spend cooldown on accepted activation even on a miss. NPCs activate automatically when appropriate; players have an accessible action control.
 - Phase two: preserve the civilization-mounts specification as a future combat/transport contract. Do not implement mounts during phase one. Mount-specific tuning remains provisional until phase-two planning.
 - Deferred beyond this first skill milestone: civilization-specific specials, burning/slow effects, selectable palettes and ultimates. Bows, muskets, slings and crossbows receive no new skill yet; ranged axe/javelin wielders can use the corresponding close-range skill.
 

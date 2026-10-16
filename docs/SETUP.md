@@ -186,3 +186,26 @@ skill place. Build `.cache/solo-test.project.json` with Rojo, open the resulting
 place in the existing Studio window, and run one solo Play session. See
 [weapon skills](WEAPON_SKILLS.md) for the generated result attributes and the
 [playtest record](PLAYTEST.md) for checks actually executed.
+
+## Manual testing with 3,000 temporary coins
+
+Generate a separate manual test place with the existing Studio-only in-memory
+profile override:
+
+```sh
+npm run build:test-project -- --local-playtest
+```
+
+Build `.cache/local-playtest.project.json` with Rojo, then open that output place
+in the existing Studio window and press Play. For the installed Windows tool:
+
+```powershell
+& "C:\Users\smitl\Downloads\rojo-7.7.1-windows-x86_64\rojo.exe" build .cache\local-playtest.project.json -o build\local-playtest.rbxlx
+```
+
+Each civilization starts with **3,000 coins**; progress resets when Play stops.
+The HUD labels the session as temporary. This generated project replaces the
+production bootstrap with `tests/LocalPlaytest.server.luau`, injects only
+FakeProfileStore and excludes automated test runners. Use `--local-playtest` by
+itself. Normal `default.project.json` startup and existing saved balances are
+unchanged; use the normal project when returning to persistent-data testing.

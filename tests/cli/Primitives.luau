@@ -15,9 +15,17 @@ function mt.__div(a,b)return Vector3.new(a.X/b,a.Y/b,a.Z/b)end
 function mt.__unm(a)return Vector3.new(-a.X,-a.Y,-a.Z)end
 Vector3.zero=Vector3.new(0,0,0)
 local CFrame={}
+local cframeMt={}
 function CFrame.new(x,y,z)
 	local position=if type(x)=="table" then x else Vector3.new(x,y,z)
-	return {Position=position,LookVector=Vector3.new(0,0,-1)}
+	return setmetatable({Position=position,LookVector=Vector3.new(0,0,-1)},cframeMt)
+end
+-- Animation assertions check takeover/restoration only, never simulated rotation.
+function CFrame.Angles()return CFrame.new()end
+function cframeMt.__mul(a,b)return CFrame.new(a.Position+b.Position)end
+function cframeMt.__index(frame,key)
+	if key=="Rotation" then return CFrame.new() end
+	if key=="Inverse" then return function(self)return CFrame.new(-self.Position)end end
 end
 function CFrame.lookAt(origin,target)return {Position=origin,LookVector=(target-origin).Unit}end
 local Enum={HumanoidRigType={R6="R6",R15="R15"},RaycastFilterType={Exclude="Exclude"}}

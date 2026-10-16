@@ -20,9 +20,9 @@ Phase-one checklist only. Phase-two mounts remain specified but deferred; comple
 
 ## 4. Three independently playable skills
 
-- [ ] 4.1 Implement spear Dash Thrust and coordinated poses; verify 8-second cooldown, every tier multiplier, first-hostile contact, ten-stud cap, grounding, walls/slopes/boundaries, Hold prohibition and safe cancellation in isolated engine tests and a solo Studio run.
+- [ ] 4.1 Implement spear Dash Thrust and coordinated poses; verify 8-second cooldown, every tier multiplier, first-hostile contact, twelve-stud cap, grounding, walls/slopes/boundaries, Hold prohibition and safe cancellation in isolated engine tests and a solo Studio run.
 - [x] 4.2 Implement axe Whirlwind and spin animation; verify 12-second cooldown, per-tier damage, six-stud radius, nearest-three cap, per-life single contact and wall/friendly protection in engine fixtures and solo Studio.
-- [x] 4.3 Implement sword Double Slash and linked poses; verify 9-second cooldown, two contact multipliers, 0.35-second separation, one target life, second-hit escape/death/visibility checks and recovery action exclusion in engine fixtures and solo Studio.
+- [ ] 4.3 Implement sword Double Slash and linked poses; verify 9-second cooldown, two contact multipliers, 0.24-second separation, one target life, second-hit escape/death/visibility checks and active-animation action exclusion and immediate release in engine fixtures and solo Studio.
 - [ ] 4.4 Integrate eligible ranged javelin/axe NPC close-range skill decisions; verify normal projectile cadence at distance, no concurrent shot/skill, role damage multiplier and cancellation on Regroup in isolated engine tests. Document all three skill formulas and tactical rules in docs/ARMY.md.
 
 ## 5. Player controls and roster presentation
@@ -52,3 +52,25 @@ JSON evidence for exact coverage. Unchecked tasks retain remaining acceptance
 checks; native R success does not establish touch/gamepad input or multiplayer
 replication. Real storage and published clients remain unverified. Mount work
 remains deferred. Keyboard R is the user's confirmed player binding.
+
+## 7. Responsiveness and player-animation correction
+
+- [x] 7.1 Remove startup/recovery delays, tune dash to 12 studs/0.20s, spin to 0.35s and combo to 0.24s with broader opposing cuts; verify immediate contacts, exactly-once damage, cancellation, no stale late contacts, full dash distance and immediate ordinary-attack release in deterministic tests.
+- [x] 7.2 Override player animation Transforms after Animator evaluation with correct R6/R15 rest-joint axes; use server acceptance timing while attributes replicate, preserve joints/grips, restore ordinary animation immediately and verify deterministic takeover/cleanup cases.
+- [ ] 7.3 Run the updated isolated solo Studio skill harness: native R must produce matching visible frames and measured damage for each family; visually inspect stronger combo/spin and dash speed/distance, immediate movement/ordinary attacks and observer replication. Keep real stores isolated and report inaccessible checks.
+
+Task 4.3 is reopened because the approved combo timing changed; earlier Studio
+evidence covers the previous 0.35-second separation. Current tuning still needs
+new native Studio acceptance; mounts and prior unverified checks remain pending.
+
+## 8. Forward spear dash and manual test funding
+
+- [x] 8.1 Add a shared forward-driving spear pose with level spear alignment, hand extension, leg stance and head/arm compensation for players and NPCs; verify pose invariants and complete player-joint restore with deterministic tests, and prepare signed native alignment checks.
+- [x] 8.2 Add a short tapered tip trail to equipped clones with bounded lifetime and owned cleanup; prepare native creation/cleanup checks without modifying source models, grips or combat.
+- [x] 8.3 Add an explicit local-playtest launch mapping using the existing 3,000-coin temporary-profile bootstrap; validate fake-store-only mapping, excluded automation, mode guards and generated Rojo build.
+- [ ] 8.4 In one isolated solo Studio run, visually inspect the player/NPC forward spear, driving silhouette and directional trail; verify native alignment and cleanup plus 3,000 starting coins without touching saved profiles.
+
+## 9. Player animation lost during replication
+
+- [x] 9.1 Reproduce late-acknowledgement animation loss and fix it with immediate local prediction plus reliable server-approved visual starts; verify full late playback, no duplicate/restarted previews, rejection, death/reset/switch/cancellation and actor/civilization isolation in deterministic tests. Preserve server-only movement, combat locks, cooldowns and damage; update the native fixture to inspect rendered local pose timing.
+- [ ] 9.2 Run native player R6/R15 dash and other-family animation checks, including delayed messages and observer playback; verify forward spear alignment, immediate release and unchanged authoritative damage in one isolated Studio run.

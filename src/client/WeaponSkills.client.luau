@@ -4,11 +4,13 @@ local Players=game:GetService("Players")
 local Replicated=game:GetService("ReplicatedStorage")
 local Run=game:GetService("RunService")
 local Context=game:GetService("ContextActionService")
-local Config=require(Replicated.Shared.WeaponSkillConfig)
-local Pose=require(Replicated.Shared.WeaponSkillPose)
+local Shared=Replicated:WaitForChild("Shared")
+local Config=require(Shared:WaitForChild("WeaponSkillConfig"))
+local Animation=require(Shared:WaitForChild("WeaponSkillAnimation"))
+local Playback=require(Shared:WaitForChild("WeaponSkillPlayback"))
 local player=Players.LocalPlayer
-local remotes=Replicated:WaitForChild("CombatRemotes",20)
-local remote=if remotes then remotes:WaitForChild("Skill",10) else nil
+local remotes=Replicated:WaitForChild("CombatRemotes")
+local remote=remotes:WaitForChild("Skill")
 if not remote or not remote:IsA("RemoteEvent") then return end
 
 local gui=Instance.new("ScreenGui")
@@ -24,10 +26,24 @@ feedback.Position,feedback.Size=UDim2.new(1,-230,.52,36),UDim2.fromOffset(210,44
 feedback.BackgroundTransparency,feedback.TextColor3,feedback.TextSize=1,Color3.fromRGB(255,220,150),12
 feedback.TextWrapped,feedback.Text,feedback.Parent=true,"",gui
 local feedbackUntil,lastRequest=0,-math.huge
+local playback=Playback.new()
+local acceptedReadyAt={}
 local function activate()
 	if game:GetService("UserInputService"):GetFocusedTextBox() then return end
 	if os.clock()-lastRequest<.15 then return end
+	local rig=player.Character
+	local now=workspace:GetServerTimeNow()
+	if rig and playback:pending(rig,now) then return end
 	lastRequest=os.clock()
+	local hum=rig and rig:FindFirstChildOfClass("Humanoid")
+	local tool=rig and rig:FindFirstChildOfClass("Tool")
+	local family=if tool and tool:GetAttribute("GeneratedBy")=="CivilizationEquipment" then Config.family(tool:GetAttribute("WeaponKind")) else nil
+	local tier=player:GetAttribute("SkillLevel") or 0
+	local status=player:GetAttribute("ProgressStatus")
+	local readyAt=math.max(acceptedReadyAt[family] or 0,if rig then rig:GetAttribute("WeaponSkillReadyAt") or 0 else 0)
+	if family and hum and hum.Health>0 and tier>0 and (status=="ready" or status=="saving") and now>=readyAt then
+		playback:predict(rig,family,now)
+	end
 	remote:FireServer()
 end
 button.Activated:Connect(activate)
@@ -37,8 +53,17 @@ Context:BindAction("CivilizationWeaponSkill",function(_,state)
 	return Enum.ContextActionResult.Sink
 end,false,Enum.KeyCode.R,Enum.KeyCode.ButtonY)
 remote.OnClientEvent:Connect(function(result)
-	if result.ok then feedback.Text=""
+	if result.visual then
+		playback:accept(result,workspace:GetServerTimeNow())
+		if result.rig==player.Character then acceptedReadyAt[result.family]=math.max(acceptedReadyAt[result.family] or 0,result.readyAt or 0) end
+		return
+	end
+	if result.ok then
+		feedback.Text=""
+		playback:accept(result,workspace:GetServerTimeNow())
+		acceptedReadyAt[result.family]=math.max(acceptedReadyAt[result.family] or 0,result.readyAt or 0)
 	else
+		if player.Character then playback:reject(player.Character) end
 		feedback.Text=({skill_locked="Buy this skill beside the training camp.",cooldown="Skill is recharging.",busy="Finish the current attack first.",
 			protected="Skills work inside the battlefield.",not_equipped="Equip a spear, axe or sword first.",not_alive="Your fighter is not ready.",
 			rate_limited="Wait a moment."})[result.reason] or "Skill unavailable. Check your saved session."
@@ -46,38 +71,27 @@ remote.OnClientEvent:Connect(function(result)
 	feedbackUntil=os.clock()+2.5
 end)
 
--- Animate player R6/R15 joints locally for every observing client. NPC R6 poses
--- remain on the existing server animation path. Preserve concurrent external C0 edits.
-local joints={}
-local function restore(motor,record)
-	if motor.Parent and motor.C0==record.applied then motor.C0=record.base end
-end
+-- Render input prediction immediately, then reconcile the reliable server start.
+-- These local diagnostics describe rendered poses; combat never reads them.
+local animation=Animation.new()
+local visualRigs={}
 Run.PreSimulation:Connect(function()
+	local performances=playback:performances(Players:GetPlayers(),workspace:GetServerTimeNow())
 	local active={}
-	for _,owner in Players:GetPlayers() do
-		local rig=owner.Character
-		local family=rig and rig:GetAttribute("WeaponSkillActive")
-		local started=rig and rig:GetAttribute("WeaponSkillStartedAt")
-		if not family or not started then continue end
-		local sample=Pose.sample(family,workspace:GetServerTimeNow()-started)
-		for _,motor in rig:GetDescendants() do
-			if not motor:IsA("Motor6D") then continue end
-			local angles,offset
-			if motor.Name=="RightShoulder" or motor.Name=="Right Shoulder" then angles,offset=sample.right,sample.offset
-			elseif motor.Name=="LeftShoulder" or motor.Name=="Left Shoulder" then angles,offset=sample.left,Vector3.zero
-			elseif motor.Name=="Root" or motor.Name=="RootJoint" then angles,offset=Vector3.new(sample.lean,sample.twist,0),Vector3.zero
-			elseif motor.Name=="Waist" then angles,offset=Vector3.new(sample.lean*.5,0,0),Vector3.zero end
-			if not angles then continue end
-			active[motor]=true
-			local record=joints[motor]
-			if not record then record={base=motor.C0};joints[motor]=record
-			elseif motor.C0~=record.applied then record.base=motor.C0 end
-			local base=record.base
-			record.applied=CFrame.new(base.Position+offset)*CFrame.Angles(angles.X,angles.Y,angles.Z)*(base-base.Position)
-			motor.C0=record.applied
+	animation:step(performances)
+	for _,performance in performances do
+		local rig=performance.rig
+		active[rig]=true
+		rig:SetAttribute("WeaponSkillVisualFamily",performance.family)
+		rig:SetAttribute("WeaponSkillVisualElapsed",performance.elapsed)
+	end
+	for rig in visualRigs do
+		if not active[rig] then
+			rig:SetAttribute("WeaponSkillVisualFamily",nil)
+			rig:SetAttribute("WeaponSkillVisualElapsed",nil)
 		end
 	end
-	for motor,record in joints do if not active[motor] then restore(motor,record);joints[motor]=nil end end
+	visualRigs=active
 end)
 local elapsed=0
 Run.Heartbeat:Connect(function(dt)

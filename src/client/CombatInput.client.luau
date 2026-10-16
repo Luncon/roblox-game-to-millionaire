@@ -23,7 +23,8 @@ local function bindCharacter(character: Model)
 		boundTools[tool] = true
 		table.insert(connections,tool.Activated:Connect(function()
 			if tool:GetAttribute("GeneratedBy") ~= "CivilizationEquipment" then return end
-			if character:GetAttribute("WeaponSkillActive") then return end
+			local endsAt=character:GetAttribute("WeaponSkillEndsAt")
+			if character:GetAttribute("WeaponSkillActive") and (not endsAt or workspace:GetServerTimeNow()<endsAt) then return end
 			if player.Character ~= character or tool.Parent ~= character or os.clock()-lastSwing < 1 then return end
 			lastSwing = os.clock()
 			attack:FireServer()

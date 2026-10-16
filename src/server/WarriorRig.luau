@@ -243,21 +243,23 @@ function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking:
 	local family=rig:GetAttribute("WeaponSkillActive")
 	local skillStarted=rig:GetAttribute("WeaponSkillStartedAt")
 	local lean=0
+	local rightHip,leftHip=Vector3.new(gait,0,0),Vector3.new(-gait,0,0)
+	local neck=Vector3.new(if hit then -.1 else 0,0,0)
 	if family and skillStarted then
 		local skill=SkillPose.sample(family,serverNow-skillStarted)
 		right,left,offset,twist,lean=skill.right,skill.left,skill.offset,skill.twist,skill.lean
-		-- NPC grips already aim the shaft forward. The player's extra arm lift
-		-- would turn it upright; retain the thrust translation and body motion.
-		if family=="spear" then right=Vector3.zero end
+		if family=="spear" then
+			rightHip,leftHip,neck=skill.rightHip,skill.leftHip,skill.neck
+		end
 		leftOffset=Vector3.zero
 	end
 	poseJoint(torso:FindFirstChild("Right Shoulder"),right,offset)
 	poseJoint(torso:FindFirstChild("Left Shoulder"),left,leftOffset)
-	poseJoint(torso:FindFirstChild("Right Hip"),Vector3.new(gait,0,0))
-	poseJoint(torso:FindFirstChild("Left Hip"),Vector3.new(-gait,0,0))
+	poseJoint(torso:FindFirstChild("Right Hip"),rightHip)
+	poseJoint(torso:FindFirstChild("Left Hip"),leftHip)
 	local root=rig:FindFirstChild("HumanoidRootPart")
-	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new((if hit then .12 else 0)+lean,if phase~="idle" or family then twist else 0,0))
-	poseJoint(torso:FindFirstChild("Neck"),Vector3.new(if hit then -.1 else 0,0,0))
+	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new((if hit and family~="spear" then .12 else 0)+lean,if phase~="idle" or family then twist else 0,0))
+	poseJoint(torso:FindFirstChild("Neck"),neck)
 end
 
 return WarriorRig

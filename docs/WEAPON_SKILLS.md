@@ -1,6 +1,7 @@
 # Weapon-family skills
 
-Weapon skills are implemented and have passed solo Studio combat checks;
+Weapon skills are implemented. Their original tuning passed solo Studio combat checks;
+the October 16 responsiveness/player-animation correction requires a fresh Studio run;
 multiplayer, additional input devices and published-client checks remain pending. They apply to both players and owned troops
 using the actual equipped weapon family, independently of civilization.
 
@@ -22,9 +23,14 @@ pads are absent. Purchases use the usual physical prompt/touch/click validation.
 
 | Weapon family | Skill | Cooldown | Behavior |
 | --- | --- | ---: | --- |
-| Spear / javelin / pilum | Dash Thrust | 8 seconds | Grounded dash up to 10 studs; strike the first hostile in the forward path; stop at obstacles/battlefield bounds |
-| Axe | Whirlwind | 12 seconds | One spin; at most three visible hostiles within 6 studs, once each |
-| Sword | Double Slash | 9 seconds | Two contacts roughly 0.35 seconds apart against one target life; each must remain visible, in reach and in front |
+| Spear / javelin / pilum | Dash Thrust | 8 seconds | Immediate grounded dash up to 12 studs in 0.20 seconds; strike the first hostile in the forward path; stop at obstacles/battlefield bounds |
+| Axe | Whirlwind | 12 seconds | Immediate contact and a 0.35-second spin; at most three visible hostiles within 6 studs, once each |
+| Sword | Double Slash | 9 seconds | Immediate first contact and a second at 0.24 seconds, with broad opposing cuts against one target life; each must remain visible, in reach and in front |
+
+Dash Thrust uses a forward body lean, an extended spear hand and driving legs.
+The spear arm counters torso tilt to keep the tip level and pointed down the dash.
+A short tapered tip trail emphasizes travel; it adds no collision or gameplay force.
+These visual adjustments still require native Studio review.
 
 Sabres, katanas, rapiers, khopeshes, gladii, kilij and dao use the sword skill.
 Bow, musket, crossbow and sling roles do not receive a new skill yet. The Seneca
@@ -45,7 +51,16 @@ multiplier for ranged actors. At weapon 50, melee tier V deals 30.6 for a dash,
 Fractional damage is preserved. These are starting balance values, not measured
 proof of time-to-kill or live balance.
 
-Skills replace ordinary attacks during animation/recovery. They grant no stun,
+Skills replace ordinary attacks only during their active animation. There is no
+windup or separate recovery pause: movement and ordinary attacks resume at action
+completion. Network transit still applies to server-authorized player activation.
+Player R6/R15 poses override ordinary animation Transforms while active, preserve
+rest joints/grips, and start a cosmetic preview immediately on eligible input.
+Server-approved reliable starts also drive observer playback on a local clock,
+so the complete short pose can render even if the server action ended in transit.
+Acceptance never restarts an already played preview; rejection releases it.
+Visual timing does not change server movement, action locks, damage or cooldowns.
+A started cooldown alone does not prove that an animation or hit occurred. They grant no stun,
 invulnerability, healing or extra troop slots. Accepted activation spends cooldown
 even on a miss or later cancellation. Death, switch, Regroup and lost write authority
 cancel pending movement/contacts. Purchases never reset cooldowns. Player

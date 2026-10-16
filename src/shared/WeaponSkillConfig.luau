@@ -4,9 +4,9 @@ local Skills = {}
 local aliases = {spear="spear",javelin="spear",pilum="spear",axe="axe",sword="sword",sabre="sword",
 	katana="sword",rapier="sword",khopesh="sword",gladius="sword",kilij="sword",dao="sword"}
 Skills.families = table.freeze({
-	spear=table.freeze({name="Dash Thrust",cooldown=8,windup=.2,duration=1,range=10,targets=1}),
-	axe=table.freeze({name="Whirlwind",cooldown=12,windup=.25,duration=1.2,range=6,targets=3}),
-	sword=table.freeze({name="Double Slash",cooldown=9,windup=.2,duration=1.2,range=5,targets=1}),
+	spear=table.freeze({name="Dash Thrust",cooldown=8,windup=0,duration=.2,range=12,targets=1}),
+	axe=table.freeze({name="Whirlwind",cooldown=12,windup=0,duration=.35,range=6,targets=3}),
+	sword=table.freeze({name="Double Slash",cooldown=9,windup=0,duration=.24,range=5,targets=1}),
 })
 Skills.tiers = table.freeze({
 	table.freeze({name="I",unlock=10,cost=100,spear=1.3,axe=.8,sword=.65,second=.75}),

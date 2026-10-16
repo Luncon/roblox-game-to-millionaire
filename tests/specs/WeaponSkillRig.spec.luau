@@ -25,7 +25,7 @@ return function(module)
 				end
 			end
 			rig:SetAttribute("WeaponSkillActive",family)
-			rig:SetAttribute("WeaponSkillStartedAt",workspace:GetServerTimeNow()-(if family=="sword" then .17 else .3))
+			rig:SetAttribute("WeaponSkillStartedAt",workspace:GetServerTimeNow()-(if family=="sword" then .17 else .1))
 			Rig.animate(rig,1,false)
 			assert(shoulder.C0~=rest and shoulder:GetAttribute("RestC0")==rest)
 			for joint,original in grips do assert(joint.C0==original[1] and joint.C1==original[2])end
@@ -35,7 +35,7 @@ return function(module)
 		rig:Destroy();assert(ok,message);cases+=1
 	end
 	local catalog={};for _,civ in require(game.ReplicatedStorage.Shared.Civilizations)do catalog[civ.id]=civ end
-	for _,entry in {{id="sparta"},{id="maurya"},{id="ming"},{id="sparta",kind="ranged"},{id="rome",kind="ranged"}}do
+	for _,entry in {{id="sparta"},{id="persia"},{id="maurya"},{id="ming"},{id="sparta",kind="ranged"},{id="rome",kind="ranged"}}do
 		local rig=Rig.create(catalog[entry.id],CFrame.new(0,10000,0)*CFrame.Angles(0,.63,0),101,1,nil,entry.kind)
 		local ok,message=pcall(function()
 			local tool=assert(rig:FindFirstChildOfClass("Tool"))
@@ -50,19 +50,18 @@ return function(module)
 			local rest=shoulder:GetAttribute("RestC0") or shoulder.C0
 			rig.HumanoidRootPart.Anchored=true;rig.Parent=workspace
 			rig:SetAttribute("WeaponSkillActive","spear")
-			rig:SetAttribute("WeaponSkillStartedAt",workspace:GetServerTimeNow()-.3)
-			Rig.animate(rig,1,false)
-			game:GetService("RunService").Heartbeat:Wait()
-			game:GetService("RunService").Heartbeat:Wait()
-			local longest,length,axis=nil,0,nil
-			for _,part in tool:GetDescendants()do if part:IsA("BasePart")then
-				for _,choice in {{part.Size.X,part.CFrame.RightVector},{part.Size.Y,part.CFrame.UpVector},{part.Size.Z,part.CFrame.LookVector}}do
-					if choice[1]>length then longest,length,axis=part,choice[1],choice[2]end
-				end
-			end end
-			assert(longest and axis,"Spear skill fixture has no visible weapon geometry")
-			local forward=math.abs(axis:Dot(rig.HumanoidRootPart.CFrame.LookVector))
-			assert(forward>=.9,entry.id.." "..(entry.kind or "warrior").." spear skill points away from its dash: "..forward)
+			local handle=tool:FindFirstChild("WarriorHandle") or tool:FindFirstChild("Handle")
+			assert(handle,"Spear fixture has no handle")
+			for _,elapsed in {0,.04,.1,.18} do
+				rig:SetAttribute("WeaponSkillStartedAt",workspace:GetServerTimeNow()-elapsed)
+				rig:SetAttribute("LastHitAt",workspace:GetServerTimeNow())
+				Rig.animate(rig,1,false)
+				game:GetService("RunService").Heartbeat:Wait()
+				game:GetService("RunService").Heartbeat:Wait()
+				local forward=handle.CFrame.UpVector:Dot(rig.HumanoidRootPart.CFrame.LookVector)
+				assert(forward>=.98,entry.id.." "..(entry.kind or "warrior").." spear tip is not level and forward: "..forward)
+				assert(rig.Torso.CFrame.UpVector:Dot(rig.HumanoidRootPart.CFrame.LookVector)>.3,"NPC does not lean into the dash")
+			end
 			assert(tool.Grip==originalGrip and shoulder:GetAttribute("RestC0")==rest)
 			for joint,original in grips do assert(joint.C0==original.c0 and joint.C1==original.c1,"Spear skill replaced its equipment grip")end
 			rig:SetAttribute("WeaponSkillActive",nil);rig:SetAttribute("WeaponSkillStartedAt",nil)

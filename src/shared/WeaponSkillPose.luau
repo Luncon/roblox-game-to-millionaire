@@ -2,31 +2,38 @@
 
 -- Pose offsets only: no reparenting joints, replacing grips or modifying source rigs.
 local Pose={}
+local Config=require(script.Parent.WeaponSkillConfig)
 function Pose.sample(family: string,elapsed: number)
 	local right,left,twist,lean=Vector3.zero,Vector3.new(.3,0,-.1),0,0
 	local offset=Vector3.zero
+	local rightHip,leftHip,neck=nil,nil,nil
 	if family=="spear" then
-		local thrust=math.clamp((elapsed-.12)/.08,0,1)*(1-math.clamp((elapsed-.5)/.5,0,1))
-		right=Vector3.new(1.3,-.3,-.25)*thrust
-		left=Vector3.new(.7,.2,.3)*thrust
-		offset=Vector3.new(0,0,-.8)*thrust
-		twist,lean=-.25*thrust,.18*thrust
+		local progress=math.clamp(elapsed/Config.families.spear.duration,0,1)
+		local drive=math.sin(progress*math.pi)
+		-- Lean into -Z, drive the hand forward and counter-rotate the spear arm
+		-- so the standard forward grip stays level throughout the lunge.
+		lean=-.4-.12*drive
+		right=Vector3.new(-lean,0,0)
+		left=Vector3.new(1.05,.05,-.25)
+		offset=Vector3.new(0,.12,-.85-.3*drive)
+		rightHip=Vector3.new(.85+.12*drive,0,.06)
+		leftHip=Vector3.new(-.65-.12*drive,0,-.06)
+		neck=Vector3.new(-lean*.7,0,0)
 	elseif family=="axe" then
-		local spin=math.clamp((elapsed-.25)/.45,0,1)
-		local strength=math.clamp(elapsed/.2,0,1)*(1-math.clamp((elapsed-.7)/.5,0,1))
+		local spin=math.clamp(elapsed/Config.families.axe.duration,0,1)
+		local strength=1
 		right=Vector3.new(.6,0,1.4)*strength
 		left=Vector3.new(.5,0,-1.1)*strength
 		twist=math.pi*2*spin
 	else
-		local function stroke(start)
-			local p=math.clamp((elapsed-start)/.18,0,1)
-			return math.sin(p*math.pi)
-		end
-		local first,second=stroke(.08),stroke(.43)
-		right=Vector3.new(1.8,0,0)*(first+second)+Vector3.new(0,.8,.9)*(first-second)
-		left=Vector3.new(.4,.2,-.3)
-		twist=.55*(first-second)
+		local progress=math.clamp(elapsed/Config.families.sword.duration,0,1)
+		-- Two broad opposing cuts, with no idle pose before the first swing.
+		local sweep=if progress<.5 then 1-4*progress else 4*progress-3
+		right=Vector3.new(2.1,1.2*sweep,1.5*sweep)
+		left=Vector3.new(.8,-.3*sweep,-.6)
+		offset=Vector3.new(.25*sweep,0,-.25)
+		twist,lean=.9*sweep,.18
 	end
-	return {right=right,left=left,offset=offset,twist=twist,lean=lean}
+	return {right=right,left=left,offset=offset,twist=twist,lean=lean,rightHip=rightHip,leftHip=leftHip,neck=neck}
 end
 return table.freeze(Pose)

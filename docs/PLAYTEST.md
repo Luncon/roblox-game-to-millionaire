@@ -1378,3 +1378,138 @@ including the missing-only zero default for `skillLevel`.
   fixtures or generated worlds. Original template counts and the 147-descendant
   Workspace Farmer were preserved. Asset files and the original `.rbxl` binary
   remained unchanged.
+
+## Weapon skill responsiveness correction — October 16, 2026
+
+The user reported startup/recovery pauses, a slow/short dash, restrained sword
+animation and player cooldown starting without visible animation. This correction
+removes configured windup/recovery, changes dash travel to 12 studs over 0.20s,
+spin duration to 0.35s and slash separation/action duration to 0.24s. Damage and
+family cooldowns remain unchanged. NPC routing replans on the skill's completion
+heartbeat; local ordinary attacks use the action deadline instead of waiting for
+the active attribute to clear over the network.
+
+Player animation now overrides the ordinary Animator pose through
+[Motor6D.Transform](https://create.roblox.com/docs/reference/engine/classes/Motor6D)
+in PreSimulation, converting shared torso-space poses through each rest joint's
+rotation. It preserves C0/C1 and grips and restores ordinary animation immediately.
+The acceptance response carries the actor life and action timing for local
+playback while attributes replicate. This addresses the reported symptom but its
+native visual cause and the new appearance have **not** been confirmed in Studio.
+Client startup also waits for replicated skill modules/remotes without permanently
+abandoning the controls after a short timeout.
+
+Verification completed in WSL under pinned Node 24.21.0:
+
+- `npm run check:skills`: **93 standalone logic cases passed** using official
+  Luau 0.740 downloaded to `/tmp`; all storage is explicitly fake. New cases
+  cover immediate contacts, full dash travel, release at action completion,
+  cancellation, stalled-cycle suppression, ordinary attacks after the combo,
+  and animation takeover/restoration for both R6/R15 naming conventions.
+  CLI rotation doubles do not establish real joint-axis or visual correctness.
+- Two temporary mutations were caught: removing immediate activation processing
+  failed the startup regression, and removing Transform application failed the
+  animation takeover regression. Both production files were restored afterward.
+- Every Luau file under `src/` and `tests/` compiled successfully with
+  `luau-compile --null`.
+- `npm run check`: **18 items passed**, with no validation failures.
+- Production and isolated solo skill Rojo builds passed:
+  `build/weapon-skills-responsive.rbxlx` and
+  `build/weapon-skills-responsive-tests.rbxlx`.
+- The native R fixture now requires actual matching animated frames and unchanged
+  rest joints. The existing engine harness separately measures each family's
+  damage, contact protections and cooldowns. A started cooldown alone cannot
+  satisfy the new player-animation check.
+
+No Studio automation connector is available in this session, so **no new Studio
+run was performed**. Native player R6/R15 appearance, NPC animation/route resumption,
+dash collision/grounding at the new speed, immediate movement/normal attacks and
+observer replication remain pending. Stop Play, allow Rojo to sync the new shared
+animation module and both client scripts, then restart Play; editing a running
+client script is not acceptance evidence. Use one solo fake-store test place at
+a time. No player stores, source assets or original place files were modified.
+
+## Forward spear dash and 3,000-coin manual test build — October 16, 2026
+
+The spear pose now leans forward 0.40–0.52 radians, extends the hand along the
+thrust and uses a leading/trailing leg stance with counter-rotated gaze. The
+spear arm counter-rotates the torso tilt so the normalized forward grip remains
+level; R15 waist/elbow/wrist/ankle animation is held neutral during this pose.
+NPC hit-flinch tilt cannot deflect the spear while dashing. Grips and original
+models remain untouched. A short tapered Trail on the equipped tip emphasizes
+travel and is removed with its two owned attachments on completion/cancellation;
+it adds no BaseParts, collision, damage or physical force.
+
+The existing 3,000-coin temporary-profile seed is now wired into an explicit
+manual test project: `npm run build:test-project -- --local-playtest`.
+`build/local-playtest.rbxlx` contains that Studio-only bootstrap and FakeProfileStore
+without automated runners. Every civilization starts with 3,000 coins in this
+manual place; each Play session resets temporary progress. Production defaults
+and existing saved balances are unchanged. This build must be opened to use this
+manual mode; ordinary production Rojo sync does not enable it.
+
+Verification completed:
+
+- **94 standalone logic cases passed**, including a regression that failed on
+  the prior backward-leaning spear pose. The checks cover forward pose invariants
+  throughout the dash and all owned player-joint takeover/restoration. They do
+  not simulate native joint/weapon physics.
+- Luau compilation and strict OpenSpec validation passed (18 items).
+- Local-playtest mapping, fake-store injection, omitted automated clients/runners,
+  nine mixed-mode rejection guards and four existing launch modes passed checks.
+- Rojo built `build/spear-dash-game.rbxlx`, `build/spear-dash-tests.rbxlx` and
+  `build/local-playtest.rbxlx` successfully.
+- Native fixtures were strengthened to check signed forward tip alignment at
+  multiple NPC pose samples and player PostSimulation frames, including Persian
+  spear troops and overlapping NPC hit-flinch presentation. A native effect
+  fixture checks tip placement, absence of added parts and complete cleanup.
+
+No Studio run was available in this session. The new native fixtures, actual
+player R6/R15 and NPC spear alignment, driving silhouette, Trail appearance and
+cleanup, and visible 3,000-coin starting balance still require one isolated Studio
+Play run. Open the manual place in the existing Studio window after stopping any
+current Play session, or use the isolated skill place for automated checks. No
+real profiles or source assets were edited.
+
+## Player skill playback and late replication — October 16, 2026
+
+After the user reported that NPC dash poses work but player poses remain absent,
+a deterministic reproduction isolated an animation-loss case in the player
+renderer: both attributes and acknowledgement used the short server deadline
+as the visual cutoff. A spear start at time 10.0, ending at 10.2, produced zero
+player animation frames when its acknowledgement reached the client at 10.3.
+The previous acceptance fallback still used that expired cutoff.
+
+Player inputs now begin an eligible cosmetic preview immediately. Acknowledgement
+preserves that preview's local timeline rather than restarting or extending it.
+The server also sends reliable accepted visual-start messages to observing clients
+through the existing Skill RemoteEvent. An observer plays the full local duration
+even if the action finished on the server before its start arrived. Timestamp
+identity deduplicates acknowledgement/broadcast/attribute fallback, and rig life,
+civilization, death and observed cancellation release stale poses. Rejection
+releases a preview immediately. Cosmetic clocks never authorize movement, attack
+locks, cooldowns, damage or rewards; those remain server-owned.
+
+The native input fixture now measures the rendered local visual family/elapsed
+diagnostics and the applied joint Transform rather than requiring the server's
+short active attributes to still exist. It filters visual broadcasts from actual
+request responses and still checks spear alignment and final pose cleanup.
+
+Completed checks:
+
+- **102 standalone logic cases passed**, including eight playback cases for late
+  starts, input before acknowledgement, no late replay/duplicate, rejection and
+  life/civilization/cancellation isolation. The original expired-cutoff behavior
+  failed the new late-response regression. Temporarily reintroducing a server-time
+  cutoff also failed that regression; the mutation was restored.
+- Strict OpenSpec validation passed all 18 items; Luau compilation passed.
+- Rojo rebuilt `build/local-playtest.rbxlx` (3,000 temporary coins),
+  `build/player-skill-playback-tests.rbxlx` and
+  `build/player-skill-playback-game.rbxlx` successfully.
+
+No new Studio runtime check was possible without a Studio automation connector.
+The deterministic case establishes a timing defect; it does not prove that this
+was the only cause of the user's native symptom. Player R6/R15 appearance,
+physical spear alignment and delayed observer replication remain pending. Stop
+Play and reopen the rebuilt manual test place, or allow all new shared/client/server
+scripts to sync before restarting Play. Native results must be recorded separately.

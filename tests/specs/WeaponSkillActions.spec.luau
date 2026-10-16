@@ -53,20 +53,51 @@ return function()
 			table.insert(hits,{source=a.rig,target=b.rig,amount=amount,at=time})
 			b.humanoid.Health=math.max(0,b.humanoid.Health-amount);return {ok=true}
 		end,function()return time end,physics)
-		local function step(value)time=value;service:step()end
+		local function step(value)time=value;return service:step()end
 		return {service=service,combat=combat,state=state,source=source,target=target,actor=actor,victim=victim,
 			hits=hits,step=step,create=rig,physics=physics,values=values,arena=arena,clock=function()return time end}
 	end
 	local function run(civ,kind,fn,tier)
 		local f=fixture(civ,kind,tier);local ok,message=pcall(fn,f);f.service:destroy();assert(ok,message)
 	end
-	test("sword resolves each contact once and blocks ordinary activation during recovery",function()run("britain","warrior",function(f)
+	test("skills begin immediately and release movement at the final active frame",function()
+		for _,entry in {{"britain","sword",.24},{"vikings","axe",.35},{"sparta","spear",.2}} do run(entry[1],"warrior",function(f)
+			if entry[2]=="spear" then f.victim.root.CFrame=CFrame.new(0,3,-40) end
+			assert(f.service:activate(f.source,"advance",false).ok)
+			if entry[2]=="spear" then
+				f.step(.01);assert(f.actor.root.Position.Z<0,"Dash has startup lag")
+				for i=2,20 do f.step(i/100) end
+				assert(math.abs(f.actor.root.Position.Z+12)<.001,"Dash must travel twelve studs in .2 seconds")
+			else
+				assert(#f.hits==1,"Accepted skill must contact immediately")
+				f.step(entry[3]-.001);assert(f.service:busy(f.source))
+				assert(f.step(entry[3]),"NPC routing was not notified of the completed skill")
+				assert(#f.hits==(if entry[2]=="sword" then 2 else 1))
+			end
+			assert(not f.service:busy(f.source) and f.actor.humanoid.WalkSpeed==12 and f.actor.humanoid.AutoRotate)
+			assert(f.source.attributes.WeaponSkillActive==nil)
+		end)end
+	end)
+	test("cancelling a skill releases its ordinary lock without refunding cooldown",function()run("sparta","warrior",function(f)
+		assert(f.service:activate(f.source,"advance",false).ok)
+		f.service:cancel(f.source)
+		-- Same rig may change equipment family after cancellation.
+		f.actor.civilizationId="britain"
+		assert(f.service:activate(f.source,"advance",false).ok,"Canceled action left a recovery lock")
+	end)end)
+	test("an expired sword action cannot deliver its second slash after a stalled heartbeat",function()run("britain","warrior",function(f)
+		local result=f.service:activate(f.source,"advance",false)
+		assert(result.ok and result.rig==f.source and result.endsAt-result.startedAt<.241)
+		assert(#f.hits==1)
+		f.step(.5);assert(#f.hits==1 and not f.service:busy(f.source))
+	end)end)
+	test("sword resolves each contact once and releases ordinary attacks at the second slash",function()run("britain","warrior",function(f)
 		assert(f.service:activate(f.source,"advance",true).ok)
-		f.step(.19);assert(#f.hits==0)
-		f.step(.21);f.step(.3);assert(#f.hits==1)
-		f.step(.56);f.step(.8);assert(#f.hits==2)
+		assert(#f.hits==1)
+		f.step(.12);f.step(.23);assert(#f.hits==1 and f.service:busy(f.source))
+		f.step(.24);f.step(.25);assert(#f.hits==2)
 		assert(math.abs(f.hits[1].amount-15.3)<.0001 and math.abs(f.hits[2].amount-17.1)<.0001)
-		assert(f.service:busy(f.source) and not f.service:activate(f.source,"advance",true).ok)
+		assert(not f.service:busy(f.source) and not f.service:activate(f.source,"advance",true).ok)
 		f.step(1.21);assert(not f.service:busy(f.source) and f.actor.humanoid.WalkSpeed==12)
 		assert(f.service:activate(f.source,"advance",true).reason=="cooldown")
 	end)end)
@@ -78,7 +109,7 @@ return function()
 			elseif mutation=="blocked" then f.combat.clear=false
 			elseif mutation=="friendly" then f.victim.ownerId=1
 			else f.victim.root.CFrame=CFrame.new(251,3,0) end
-			f.step(.56);assert(#f.hits==1)
+			f.step(.24);assert(#f.hits==1)
 		end)end
 	end)
 	test("spin selects only nearest three visible hostiles and does not duplicate targets",function()run("vikings","warrior",function(f)
@@ -104,7 +135,7 @@ return function()
 			f.physics.blocked=obstacle=="wall";f.physics.floor=obstacle~="no_floor"
 			assert(f.service:activate(f.source,"advance",false).ok)
 			if obstacle=="stall" then f.step(.6) else for i=1,50 do f.step(i/100)end end
-			assert(f.source.attributes.WeaponSkillActive=="spear")
+			assert(f.source.attributes.WeaponSkillActive==nil)
 			assert(f.actor.root.CFrame.Position.Magnitude<14)
 			if obstacle~="clear" then assert((f.actor.root.CFrame.Position-Vector3.new(0,3,0)).Magnitude<.001)end
 			f.step(1.1);assert(not f.service:busy(f.source))
@@ -137,21 +168,21 @@ return function()
 			assert(f.service:activate(f.source,"advance",true).ok)
 			if mutation=="lease" then f.combat.writable=false elseif mutation=="death" then f.actor.humanoid.Health=0
 			elseif mutation=="switch" then f.actor.civilizationId="rome" else f.actor.root.CFrame=CFrame.new(251,3,0) end
-			f.step(.21);assert(#f.hits==0 and not f.service:busy(f.source))
+			f.step(.24);assert(#f.hits==1 and not f.service:busy(f.source))
 		end)end
 	end)
 	test("players must equip matching server-generated weapons and share the same skill rules",function()run("britain","player",function(f)
 		assert(f.service:activate(f.source,nil,false).reason=="not_equipped")
 		local attrs={GeneratedBy="CivilizationEquipment",CivilizationId="britain",WeaponLevel=50,WeaponKind="sword"}
-		f.source.tool={GetAttribute=function(_,name)return attrs[name]end}
+		f.source.tool={GetAttribute=function(_,name)return attrs[name]end,FindFirstChild=function()return nil end}
 		assert(f.service:activate(f.source,nil,false).ok);f.step(.21);assert(#f.hits==1)
-		attrs.CivilizationId="sparta";f.step(.56);assert(#f.hits==1 and not f.service:busy(f.source))
+		attrs.CivilizationId="sparta";f.step(.24);assert(#f.hits==1 and not f.service:busy(f.source))
 	end)end)
 	test("dash keeps troops server-owned and restores automatic ownership only for players",function()
 		for _,kind in {"warrior","player"} do run("sparta",kind,function(f)
 			if kind=="player" then
 				local attrs={GeneratedBy="CivilizationEquipment",CivilizationId="sparta",WeaponLevel=50,WeaponKind="spear"}
-				f.source.tool={GetAttribute=function(_,name)return attrs[name]end}
+				f.source.tool={GetAttribute=function(_,name)return attrs[name]end,FindFirstChild=function()return nil end}
 			end
 			local root=f.actor.root;root.Anchored=false;root.automatic=false
 			function root:SetNetworkOwner(owner)assert(owner==nil)end
@@ -180,8 +211,10 @@ return function()
 			assert(actual.skills:activate(f.source,"advance",true).ok)
 			assert(actual:hit(f.source,f.target).reason=="busy")
 			f.step(.21);actual.skills:step();assert(f.victim.humanoid.Health>0 and published==0)
-			f.step(.56);actual.skills:step();actual.skills:step()
+			f.step(.24);actual.skills:step();actual.skills:step()
 			assert(f.victim.humanoid.Health==0 and published==1 and economy:get(1).coins==10)
+			local nextVictim=f.create(3,"sparta","warrior",Vector3.new(1,3,-3),"next")
+			assert(actual:hit(f.source,nextVictim).ok,"Ordinary attack retained a skill recovery lock")
 		end)
 		actual:destroy();assert(ok,message)
 	end)end)

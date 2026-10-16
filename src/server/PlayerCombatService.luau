@@ -99,6 +99,12 @@ function PlayerCombatService.start(world, registry, economy, combat)
 	skill.Name,skill.Parent="Skill",remotes
 	controller.skillConnection=skill.OnServerEvent:Connect(function(player)
 		local result=controller:skill(player)
+		if result.ok then
+			-- Reliable starts survive short actions whose attributes can arrive
+			-- after the action has already ended. Cosmetics never authorize hits.
+			skill:FireAllClients({visual=true,rig=result.rig,civilizationId=result.civilizationId,family=result.family,startedAt=result.startedAt,
+				endsAt=result.endsAt,readyAt=result.readyAt})
+		end
 		if player.Parent==Players and result.reason~="rate_limited" then skill:FireClient(player,result) end
 	end)
 	controller.remotes = remotes

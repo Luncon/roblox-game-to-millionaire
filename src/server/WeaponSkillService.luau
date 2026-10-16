@@ -3,6 +3,7 @@
 -- Only CombatService supplies damage application. Clients never select damage or targets.
 local Shared=game:GetService("ReplicatedStorage").Shared
 local Config=require(Shared.WeaponSkillConfig)
+local DashTrail=require(Shared.SpearDashTrail)
 local Tracks=require(Shared.UpgradeTracks)
 local Ranged=require(Shared.RangedConfig)
 local Variants=require(Shared.WarriorConfig).variants
@@ -17,6 +18,7 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 	local worldConnection
 	local actions,deadlines,ordinary={}, {},setmetatable({}, {__mode="k"})
 	local arena=world.model.Battlefield
+	local advance
 	local function key(actor,family)
 		return tostring(actor.ownerId)..":"..(if actor.kind=="player" then "player" else actor.rig:GetAttribute("ArmySlot") or actor.kind)..":"..family
 	end
@@ -56,6 +58,8 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		local action=actions[rig]
 		if not action then return end
 		actions[rig]=nil
+		ordinary[rig]=nil
+		if action.clearTrail then action.clearTrail() end
 		local hum=rig:FindFirstChildOfClass("Humanoid")
 		if hum then
 			if hum.WalkSpeed==0 then hum.WalkSpeed=action.speed end
@@ -108,7 +112,7 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		if time<info.readyAt then return {ok=false,reason="cooldown"} end
 		if self:busy(rig) or time<(ordinary[rig] or 0) then return {ok=false,reason="busy"} end
 		local definition=Config.families[family]
-		local candidates=targets(actor,if family=="spear" then 14 else definition.range,family~="axe")
+		local candidates=targets(actor,if family=="spear" then definition.range+5 else definition.range,family~="axe")
 		if automatic and #candidates==0 then return {ok=false,reason="no_target"} end
 		local direction=Vector3.new(actor.root.CFrame.LookVector.X,0,actor.root.CFrame.LookVector.Z)
 		if direction.Magnitude<.01 then return {ok=false,reason="invalid_direction"} end
@@ -124,6 +128,7 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		actor.humanoid.WalkSpeed=0
 		actor.humanoid.AutoRotate=false
 		actor.humanoid:Move(Vector3.zero)
+		if family=="spear" then action.clearTrail=DashTrail.attach(rig) end
 		if family=="spear" and not actor.root.Anchored then
 			local taken=pcall(function() actor.root:SetNetworkOwner(nil) end)
 			-- Troops must remain server-owned after the dash. Only player
@@ -135,7 +140,8 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		rig:SetAttribute("WeaponSkillStartedAt",serverAt)
 		rig:SetAttribute("WeaponSkillEndsAt",serverAt+definition.duration)
 		self:refresh(rig)
-		return {ok=true,family=family,readyAt=serverAt+definition.cooldown}
+		advance(action,time)
+		return {ok=true,rig=rig,civilizationId=actor.civilizationId,family=family,startedAt=serverAt,endsAt=serverAt+definition.duration,readyAt=serverAt+definition.cooldown}
 	end
 	local function contact(action,victim,index,multiplier,reach,facing)
 		if not valid(action) then return false end
@@ -163,7 +169,8 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 			return chosen
 		end
 		-- A skipped movement frame stops safely; never catch up by teleporting.
-		local wanted=math.min(10,math.max(0,elapsed-.2)*(10/.3))
+		local definition=Config.families.spear
+		local wanted=math.min(definition.range,math.max(0,elapsed)*(definition.range/definition.duration))
 		local budget=math.min(wanted-action.distance,2)
 		while budget>.001 and not action.struck do
 			local foe=firstInPath()
@@ -197,36 +204,46 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 			if foe then contact(action,foe,1,action.tier.spear,5,true);action.struck=true end
 		end
 	end
-	function controller:step()
-		local time=now()
-		for rig,action in actions do
-			local elapsed=time-action.startedAt
-			if not valid(action) or elapsed>=Config.families[action.family].duration then self:cancel(rig);continue end
-			action.humanoid:Move(Vector3.zero);action.humanoid.Jump=false
-			if action.family=="spear" then
-				if elapsed>=.2 and elapsed<=.5 and time-action.lastAt<.15 then dash(action,elapsed) end
-			elseif action.family=="axe" then
-				if elapsed>=.25 and not action.struck then
-					action.struck=true
-					local actor=combat:actor(rig)
-					for index,victim in targets(actor,6,false) do
-						if index>3 then break end
-						contact(action,victim,1,action.tier.axe,6,false)
-					end
-				end
-			else
-				if elapsed>=.2 and not action.first then
-					action.first=true
-					action.firstAt=time
-					if action.target then contact(action,action.target,1,action.tier.sword,5,true) end
-				end
-				if elapsed>=.55 and not action.second and time>=(action.firstAt or time)+.35-.00001 then
-					action.second=true
-					if action.target then contact(action,action.target,2,action.tier.second,5,true) end
+	advance=function(action,time)
+		local rig=action.rig
+		local elapsed=time-action.startedAt
+		local definition=Config.families[action.family]
+		-- Never deliver contacts from an expired cycle after a stalled frame.
+		if not valid(action) or elapsed>definition.duration+.05 then controller:cancel(rig);return end
+		action.humanoid:Move(Vector3.zero);action.humanoid.Jump=false
+		if action.family=="spear" then
+			if time-action.lastAt>=.15 then controller:cancel(rig);return end
+			dash(action,elapsed)
+		elseif action.family=="axe" then
+			if not action.struck then
+				action.struck=true
+				local actor=combat:actor(rig)
+				for index,victim in targets(actor,6,false) do
+					if index>3 then break end
+					contact(action,victim,1,action.tier.axe,6,false)
 				end
 			end
-			action.lastAt=time
+		else
+			if not action.first then
+				action.first=true
+				if action.target then contact(action,action.target,1,action.tier.sword,5,true) end
+			end
+			if elapsed>=definition.duration and not action.second then
+				action.second=true
+				if action.target then contact(action,action.target,2,action.tier.second,5,true) end
+			end
 		end
+		action.lastAt=time
+		if elapsed>=definition.duration then controller:cancel(rig) end
+	end
+	function controller:step()
+		local time=now()
+		local finished=false
+		for rig,action in actions do
+			advance(action,time)
+			if not actions[rig] then finished=true end
+		end
+		return finished
 	end
 	function controller:plan(rig)
 		local action=actions[rig]

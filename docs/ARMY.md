@@ -200,7 +200,7 @@ Ranged spear/axe roles use the same skill at close range with their ordinary 0.8
 role damage multiplier. Hold prevents dashing; Regroup cancels pending skills.
 Neutral opponents and unsupported weapon families do not receive skills.
 
-Skills replace ordinary attacks during their animation and recovery, with no stun,
+Skills replace ordinary attacks only during their active animation, with immediate startup and no recovery pause, with no stun,
 invulnerability or healing. Source rigs, grips and clothing are preserved. The
 server validates every contact and consumes each victim-life kill reward once.
 See [the full damage/price tables and controls](WEAPON_SKILLS.md). Solo Studio
