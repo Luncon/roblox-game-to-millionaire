@@ -39,7 +39,10 @@ return function()
 				assert(building,"Purchased structure missing: "..name)
 				local visible=0
 				for _,item in building:GetDescendants() do
-					assert(not item:IsA("Humanoid"),"Passive infrastructure worker was registered as a combat Humanoid")
+					if item:IsA("Humanoid")then
+						assert(item.Parent:GetAttribute("PassiveWorker")==true and not item.EvaluateStateMachine and item.WalkSpeed==0,
+							"Infrastructure contains an active Humanoid")
+					end
 					if item:IsA("BasePart") then assert(item.Anchored);if item.Transparency<1 then visible+=1 end end
 				end
 				assert(visible>0,"Purchased infrastructure has no visible geometry")
@@ -127,7 +130,8 @@ return function()
 			require(game.ServerScriptService.Game.SettlementInfrastructure).animate(world.model,7)
 			for _,worker in farmers do
 				local point=plot.Foundation.CFrame:PointToObjectSpace(worker:GetPivot().Position)
-				assert(math.abs(math.abs(point.X)-54)<2.1 and math.abs(point.Z+167)<.1,
+				local expected=require(game.ServerScriptService.Game.FarmTenders).sample(1,7-worker:GetAttribute("TendingStartedAt"),worker:GetAttribute("WorkerIndex"))
+				assert(math.abs(point.X-expected.X)<.002 and math.abs(point.Z-expected.Z)<.002,
 					"Existing farmer snapped to an old world origin after moving its plot: "..tostring(point))
 				assert(worker.Parent==plot.Infrastructure.Farmland)
 			end

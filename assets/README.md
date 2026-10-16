@@ -1,5 +1,22 @@
 # Civilization models and cosmetics
 
+## Farmer template
+
+`farm-templates/farmer.rbxmx` is an exported clone of the user's
+`Workspace.Farmer` R15 rig (October 15, 2026), mapped to
+`ServerStorage.FarmTemplates.farmer`. The original stays untouched. Farm tenders
+preserve its mesh body, clothes and hat. Runtime clones remove imported Humanoids, scripts, physics and external
+references, then add a disabled Humanoid solely to render classic clothing.
+Every part remains anchored and
+nonblocking. Server poses animate the connected limbs along crop-row routines.
+This visual asset never controls farm production or combat.
+
+The XML export explicitly preserves the fifteen legacy MeshId URLs. Rojo 7.7.1
+can build them correctly, but its live plugin may leave read-only MeshContent
+empty on first insertion in this Studio version. If the hat/body become blocks,
+import the farmer `.rbxmx` into ServerStorage.FarmTemplates and restart Play;
+the focused rig test rejects missing body/hat mesh IDs.
+
 ## Custom melee templates
 
 Rojo maps `npc-templates/*.rbxm` to `ServerStorage.NPCTemplates`. These are exported copies of the five models the user placed in Studio:

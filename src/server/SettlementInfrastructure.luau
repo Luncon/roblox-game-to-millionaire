@@ -5,6 +5,7 @@ local Sites = require(Shared.SettlementSites)
 local Camp = require(Shared.TrainingCampConfig)
 local Development = require(Shared.SettlementDevelopment)
 local Districts = require(script.Parent.SettlementDistricts)
+local Tenders = require(script.Parent.FarmTenders)
 local Infrastructure = {}
 
 local function part(parent, name, size, frame, tint, material)
@@ -34,26 +35,6 @@ local function model(parent,name,civ)
 	return m
 end
 
-local function farmer(parent, frame, civ, index,plotFrame)
-	local rig=model(parent,"Farmer"..index,civ)
-	rig:SetAttribute("PassiveWorker",true)
-	rig:SetAttribute("TendingOrigin",plotFrame:ToObjectSpace(frame))
-	local skin=Color3.fromRGB(195,148,109)
-	local head=part(rig,"Head",Vector3.new(2,1,1),frame*CFrame.new(0,4.5,0),skin)
-	local mesh=Instance.new("SpecialMesh")
-	mesh.MeshType,mesh.Scale,mesh.Parent=Enum.MeshType.Head,Vector3.new(1.25,1.25,1.25),head
-	part(rig,"Torso",Vector3.new(2,2,1),frame*CFrame.new(0,3,0),civ.color,Enum.Material.Fabric)
-	for _,side in {-1,1}do
-		part(rig,if side<0 then "LeftArm" else "RightArm",Vector3.new(1,2,1),frame*CFrame.new(side*1.5,3,0),skin)
-		part(rig,if side<0 then "LeftLeg" else "RightLeg",Vector3.new(1,2,1),frame*CFrame.new(side*.5,1,0),Color3.fromRGB(99,77,51),Enum.Material.Fabric)
-	end
-	part(rig,"StrawHat",Vector3.new(3,.25,2.5),frame*CFrame.new(0,5.15,0),Color3.fromRGB(204,175,107))
-	part(rig,"HoeHandle",Vector3.new(.18,3,.18),frame*CFrame.new(1.5,2.1,-1)*CFrame.Angles(.5,0,0),Color3.fromRGB(120,85,47))
-	part(rig,"HoeBlade",Vector3.new(.9,.15,.6),frame*CFrame.new(1.5,.8,-1.7),Color3.fromRGB(120,124,128),Enum.Material.Metal)
-	rig.WorldPivot=frame
-	return rig
-end
-
 local function farmland(parent,frame,civ,workers,level)
 	local farm=model(parent,"Farmland",civ)
 	farm:SetAttribute("FarmLevel",level)
@@ -73,9 +54,7 @@ local function farmland(parent,frame,civ,workers,level)
 		end
 		for _,side in {-1,1}do part(farm,"FieldFence",Vector3.new(56,.5,.5),origin*CFrame.new(0,1.5,side*20),Color3.fromRGB(141,104,61)) end
 	end
-	farmer(farm,frame*CFrame.new(-54,-.7,-167),civ,1,frame)
-	if workers>0 then farmer(farm,frame*CFrame.new(54,-.7,-167),civ,2,frame) end
-	if workers>=2 then farmer(farm,frame*CFrame.new(-66,-.7,-179),civ,3,frame) end
+	for index=1,1+workers do Tenders.create(farm,frame,civ,index,level) end
 	part(farm,"CollectionCrate",Vector3.new(6,4,5),frame*CFrame.new(-24,1,-152),Color3.fromRGB(151,109,59))
 	label(farm,frame*CFrame.new(-24,4.2,-152),"FarmStatus","FARM I",civ.color)
 	farm:SetAttribute("WorkerCount",1+workers)
@@ -204,9 +183,7 @@ function Infrastructure.animate(modelRoot,now)
 		if not farm then continue end
 		for _,worker in farm:GetChildren()do
 			if worker:GetAttribute("PassiveWorker")==true then
-				local origin=plot.Foundation.CFrame*worker:GetAttribute("TendingOrigin")
-				-- Visual tending only: no pathfinding, combat actor or client physics.
-				worker:PivotTo(origin*CFrame.new(math.sin(now*.4)*2,0,0)*CFrame.Angles(0,math.sin(now*.5)*.2,math.sin(now*2)*.04))
+				Tenders.animate(worker,plot.Foundation.CFrame,now)
 			end
 		end
 	end

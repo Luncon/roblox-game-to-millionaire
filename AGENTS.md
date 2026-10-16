@@ -63,7 +63,10 @@ workshop/storage fields and unchanged version-one keys. Barracks V/VI require
 settlement 8/14, cost 200/300 and set future delays to 13/12.5 seconds; they
 preserve two barracks slots, pending deadlines and the optional camp slot.
 Rural fields reserve space outside the final plot
-and battlefield; passive tending workers have no Humanoids/combat registration.
+and battlefield; passive tending workers remain anchored and outside combat
+registration. The supplied R15 farmer uses a fresh disabled Humanoid only for
+classic clothing rendering (explicitly approved by the user); its state machine,
+autorotation and movement are disabled.
 Army Camp I adds one independent third slot; its saved melee/ranged selection
 applies only at next spawn and never resets health or pending respawn timers.
 Training unlocks server-guarded advance/hold/regroup, with server-chosen rally

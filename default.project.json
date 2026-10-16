@@ -23,6 +23,9 @@
       "NPCTemplates": {
         "$path": "assets/npc-templates"
       },
+      "FarmTemplates": {
+        "$path": "assets/farm-templates"
+      },
       "EquipmentTemplates": {
         "$path": "assets/equipment-templates"
       },

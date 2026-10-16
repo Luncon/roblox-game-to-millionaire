@@ -51,23 +51,35 @@ Workspace objects are preserved. Large existing objects may cover the prototype.
     troop identities, current health and pending timers are rebuilt for the session.
     Failed loads must block selection and progression rather than start fresh.
 15. Buy Training Yard I at level 5 and test Advance, Hold and Regroup. Hold should
-    stop pursuit; Regroup should walk troops home and remain selected until a new
-    order. Opening Change civ should hide the command panel behind the selector.
+    stop pursuit; Regroup should walk troops to the campfire yard on the plot's
+    left side, then slowly stroll and pause within that yard. Its purchase pad
+    is outside the main foundation beside the future site. Advance restores
+    normal walking speed; Hold stops a stroll. Opening Change civ should hide
+    the command panel behind the selector.
 16. At level 7 buy Farm I, then Worker Camp I at their rural sites. The reserve
     grows by one coin per five active seconds, or two with workers, up to 60.
-    Collect beside the farm; switching away or leaving must not earn offline coins.
+    Watch the supplied farmer walk through all five crop rows, pause to tend them
+    and turn back along the field edge. Worker Camp I adds a farmer in the other
+    field. Collect beside the farm; switching away or leaving must not earn offline coins.
 17. At level 10 buy Army Camp I. Choose its third troop's melee/ranged class in
     the army panel. A living troop should keep its health and class; the choice
     takes effect on its next replacement without resetting that death timer.
 18. At level 12 buy Farm II for 180 coins, then Worker Camp II for 140. Production
     should rise from two to three, then four reserved coins per five seconds;
-    three passive farmers should tend the improved fields.
+    three passive farmers should walk staggered seven-row routines with visible
+    limb motion and short tending pauses. Reserve ticks must preserve their identities.
 19. At level 13 buy the Blacksmith and Armorer for 150 coins each. Each discounts
     its own gear track by 5%, rounded upward; a base 42-coin upgrade becomes 40.
     Combat stats and the other track's price should remain unchanged.
 20. At level 16 buy Storehouse I for 140 coins. The reserve cap rises from 60 to
     180; buying while full must wait a fresh interval before producing above 60.
     Switch away and back to check separate building tiers and earned reserves.
+21. Visit the battlefield center in solo Play. Two gray neutral melee fighters
+    and one neutral archer provide shared opponents for every civilization.
+    Fight with your equipped weapon or let your troops advance. Each defeated
+    neutral replaces independently ten seconds after death; valid final hits
+    award the usual ten coins. They fight back inside the arena and return
+    toward their center positions when idle.
 
 The prototype has 13 choices, eight plots and independent saved civilization
 profiles. The generated map does not configure Roblox's server player limit;
@@ -82,9 +94,49 @@ weapon damage and armor tiers. See [prices and equipment](ECONOMY.md) and
 
 Keep only one Studio playtest open at a time. Solo checks cover progression,
 native controls, interface layout, imported NPC movement and one owner's troop
-lifecycle. Multiple connected owners, claim races and hostile player/NPC combat
-need their own focused multiplayer evidence; owner-interface doubles cannot
-replace connected players for the shared combat authority.
+lifecycle and neutral opponent combat. Multiple connected owners, claim races
+and combat between different owners need their own focused multiplayer evidence;
+owner-interface doubles cannot replace connected players for the shared combat
+authority.
+
+## Farmer routine verification — October 15, 2026
+
+The supplied R15 farmer keeps its mesh body, plaid clothes and brown hat. All
+**231 module checks across 42 suites passed**, including source immutability,
+unsafe descendant removal, appearance-only Humanoid settings, grounded articulated
+poses, continuous bounded routes for both tiers and all three worker indices,
+all thirteen civilizations, moved plots, reserve identity and release cleanup.
+Existing economy, profiles, army, combat and landscape checks also passed.
+
+The user approved a disabled Humanoid solely for classic clothing rendering.
+It has no state machine, autorotation or movement, and farmers remain outside
+combat registration. Visual comparison in Studio caught two issues that property
+checks alone missed: native classic clothing requires a Humanoid, and Rojo's
+live plugin left first-inserted MeshContent empty. The XML asset preserves all
+fifteen mesh URLs; native deserialization of both the asset and the Rojo-built
+model confirmed the body and hat IDs. The existing Studio template was imported
+from that XML without modifying the original Workspace rig.
+
+The final fake-store solo run passed **two live routine checks**: Farm I's one
+farmer visited all five rows in 95.27 seconds, and all three Farm II farmers
+visited all seven rows in 125.63 seconds. Normal Heartbeat animation retained
+worker identities across real reserve updates, kept roots within their fields,
+articulated limbs and excluded farmers from registered combat actors. Reserves
+reached 19 and the existing 60-coin cap respectively. Original appearance was
+visually checked against the supplied Workspace model. Production/test Rojo
+builds, native deserialization of the built farmer asset, strict OpenSpec
+validation (15 items) and diff whitespace checks passed.
+
+![Supplied farmer walking through improved crop rows](assets/farm-tenders/farmer-crop-routine.png)
+
+To repeat in an isolated test place, run
+`npm run build:test-project -- --solo --farmers`, build
+`.cache/solo-test.project.json` with Rojo, and press Play once. The runner injects
+an in-memory profile store, runs all module suites, then observes a full Farm I
+cycle and a full Farm II cycle using normal server Heartbeat updates. Inspect
+`FarmTenderVerificationPhase`, `FarmTenderUnitCases` and
+`FarmTenderVerificationResult` on the DataModel. No automated fixture opens
+player data. The original Workspace farmer and source templates stay unchanged.
 
 ## Neutral opponent verification — October 15, 2026
 

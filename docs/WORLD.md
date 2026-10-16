@@ -141,10 +141,16 @@ areas before generation. The 28-stud road remains clear through the fields.
 
 Farm II at settlement 12 increases each field from five to seven crop rows, adding irrigation details and
 greater production. Worker Camp I adds a second farmer to the initial one;
-Worker Camp II at 12 adds a third and requires Farm II. These are small
-anchored animated visual rigs without Humanoids, pathfinding, combat or network
-ownership overhead. Their tending positions follow the current foundation even
-after moving the world. Farming income, collection and saving are described in
+Worker Camp II at 12 adds a third and requires Farm II. Tenders use the supplied
+R15 farmer's body, clothing and hat. They walk at four studs per second through
+each crop row, pause for two seconds to tend it, turn at row ends and return
+along the field margin. The second tender works the other field; the third
+shares the first field with a staggered routine. Anchored server poses animate
+the limbs without pathfinding, collision or combat registration. A fresh disabled
+Humanoid renders the supplied classic clothes; it never drives movement or combat.
+Routes follow the current foundation even after moving or rotating the world.
+Reserve updates preserve the live farmers and their routine timing; rebuilds
+start fresh transient routines. Farming income, collection and saving are described in
 [economy](ECONOMY.md).
 
 Settlement 13 offers separate themed Blacksmith and Armorer buildings at local
