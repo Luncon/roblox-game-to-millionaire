@@ -1164,3 +1164,88 @@ multiplayer behavior remain unverified.
   all five NPC templates, nineteen equipment models and thirteen outfits
   remained. The original 147-descendant Farmer and its template mesh IDs were
   preserved. One original Studio window remained in Edit mode.
+
+
+## Settlement geometry — reproduction, October 15, 2026
+
+- Native inspection of an isolated Sparta level-12 settlement measured a
+  **one-stud gap** below processional pillars and dwelling podiums: their
+  foundation-local bottoms were 2 while the foundation top was 1.
+- Four independent native regressions failed before production edits: Sparta
+  supports, Japan's first tower tier, wide civic walls protruding through roofs,
+  and the Seneca grand longhouse intersecting the level-30 arena perimeter.
+- A separate pad regression reproduced the unsupported starter earning/upgrade
+  pads before their construction changed. Testing uses isolated geometry or
+  injected fake profiles, never player storage.
+- [Sparta level-12 before repair](assets/settlement-geometry/sparta12-before.png)
+  records the visible pillar gap.
+
+## Settlement geometry — verification, October 15, 2026
+
+- The full Studio module suite passed **275 cases across 47 suites**, including
+  the five focused geometry regressions and existing growth, identity, farming,
+  economy, asset-preservation and combat checks.
+- The native matrix passed **1,300 variants**: all thirteen civilizations at
+  all fifty levels, once translated and once translated/rotated. It inspected
+  **337,564 architectural parts**, **22,064 roof corners**, **33,096 native attic
+  volume samples**, and **29,822 visible pads and their support undersides**.
+  There were zero unsupported components, roof-volume failures, unintended
+  independent-building overlaps, obstructed spawns/exits, pad standing-room
+  failures or footprint violations. The largest settlement had **340 parts**,
+  below the 400-part settlement-only limit; infrastructure and landscape are
+  counted separately.
+- Both purchased and offered infrastructure states were inspected, including
+  both farm tiers and alternate worker offers. Pad supports have no input
+  handlers, preserve the full configured pad transform, and meet actual ground
+  independently of the pad they support. Original farmer routine and identity
+  assertions remain intact; their standalone fixture now supplies the Ground
+  and Foundation context used by production grounding.
+- **Sixteen native access cases passed** in the same solo fake-store session:
+  six existing touch/mouse/E gear and settlement purchase checks; Blacksmith,
+  Armorer and Storehouse purchases charging exactly 150, 150 and 140 coins;
+  and seven training-yard checks covering exterior purchase, real troop returns,
+  an 18-second walking/pause observation, Hold/Advance interruption, unchanged
+  health deficits/replacement deadlines and civilization switching. Three troops
+  returned in approximately 11.8 seconds. Side entrances at levels 20 and 50
+  were crossed in approximately 8.5 and 3.4 seconds in the seeded path fixtures.
+  Exact purchase-ledger tests isolate incidental combat rewards; these timings
+  describe the measured solo fixture rather than general performance.
+- The matrix uses Plot1 in two transformed worlds. Existing world/development
+  suites cover other plot locations. It covers eligible infrastructure and
+  offered-pad states rather than every saved-field combination; passive farmer
+  anatomy is excluded from its architectural contact graph. Native contacts
+  allow 0.05-stud joints, and roof probes sample actual engine volumes. This is
+  geometry evidence, not an eight-client performance test or a published
+  Roblox-client test.
+- Repeat the isolated fake-store geometry and access runner with
+  `npm run build:test-project -- --solo --geometry`, build the generated
+  `.cache/solo-test.project.json` with Rojo, and run one ordinary Studio Play
+  session. `SettlementGeometryMatrixEvidence` and
+  `SettlementGeometryVerificationResult` expose the counts and final outcome.
+
+Rendered inspection used the same isolated generated geometry after the native
+checks, with a temporary camera, daytime lighting and reduced fog. Sparta's
+pillars now meet physical bases; grand pitched roofs close their attic/ridge
+joins; the starter tower has a footing; and purchase pads meet their supports.
+
+| Sparta level 12 before | Sparta level 12 after |
+| --- | --- |
+| ![Unsupported pillar](assets/settlement-geometry/sparta12-before.png) | ![Supported pillar](assets/settlement-geometry/sparta12-after.png) |
+
+| Britain level 30 | Seneca level 30 |
+| --- | --- |
+| ![Brick hall roof](assets/settlement-geometry/britain30-roof.png) | ![Longhouse roof](assets/settlement-geometry/seneca30-roof.png) |
+
+| Japan level 1 | Rome level 16 pad |
+| --- | --- |
+| ![Supported starter tower](assets/settlement-geometry/japan1-tower.png) | ![Supported armorer pad](assets/settlement-geometry/rome16-pad.png) |
+
+Independent developer, tester and reviewer passes completed; the reviewer
+inspected all six captures and approved the final implementation and evidence.
+Strict OpenSpec validation passed all seventeen items. Production, geometry-solo
+and standard test Rojo builds passed. Normal startup and the inspection camera
+were restored in the original Studio window, in Edit mode: **51 managed sources
+matched exactly**, with no owned fixtures or generated test world remaining.
+The five NPC, nineteen equipment, thirteen outfit and one farmer template assets
+remained, as did the original 147-descendant Workspace Farmer. Asset files and the
+original `clash-of-civilizations.rbxl` binary were unchanged.
