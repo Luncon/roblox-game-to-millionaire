@@ -68,7 +68,12 @@ function Medical.new(world,combat,economy,isActive,clock,physics,visual)
   local time=now()
   if not a or shots[rig] or time<(deadlines[a.ownerId] or 0) then return false end
   local state=economy:get(a.ownerId)
-  local target=Rules.choose(a,actors,state,Config.range)
+  -- Rank only patients we can actually help; a blocked critical patient must
+  -- not prevent a visible wounded fighter from receiving bandages.
+  local target=Rules.choose(a,actors,state,Config.range,function(candidate)
+   local current=patient(a.ownerId,candidate.rig)
+   return current~=nil and current.humanoid==candidate.humanoid and combat:visible(a,current)
+  end)
   if not target or not combat:visible(a,target) then return false end
   -- Fresh registration/life checks immediately before launch.
   local current=patient(a.ownerId,target.rig)

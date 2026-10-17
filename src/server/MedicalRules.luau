@@ -16,13 +16,13 @@ end
 local function key(actor): string
  return tostring(actor.rig:GetAttribute("ArmySlot") or actor.kind)
 end
-function Medical.choose(source,actors,state,range)
+function Medical.choose(source,actors,state,range,eligible)
  local best,bestFraction,bestDeficit,bestDistance,bestKey=nil,math.huge,-1,math.huge,""
  for _,a in actors do
   if a.rig==source.rig or not Medical.patient(a,source.ownerId,state)
    or a.civilizationId~=source.civilizationId or a.plotId~=source.plotId then continue end
   local distance=(a.position-source.position).Magnitude
-  if distance>range then continue end
+  if distance>range or (eligible and not eligible(a)) then continue end
   local fraction=a.humanoid.Health/a.humanoid.MaxHealth
   local deficit=a.humanoid.MaxHealth-a.humanoid.Health
   local stable=key(a)

@@ -10,7 +10,7 @@ return function()
   local combat={}
   function combat:actor(rig)local a=actors[rig];return if a and a.humanoid.Health>0 then a else nil end
   function combat:canAct(rig)return writable and self:actor(rig)~=nil end
-  function combat:visible()return visible end
+  function combat:visible(_,target)return visible and not target.blocked end
   local economy={get=function(_,id)return states[id]end,canMutate=function()return writable end}
   local function actor(kind,owner,hp,x)
    local rig={attrs={},Name=kind};function rig:GetAttribute(k)return self.attrs[k]end;function rig:SetAttribute(k,v)self.attrs[k]=v end
@@ -42,6 +42,17 @@ return function()
   f.step(.1);f.step(.2);assert(f.target.humanoid.Health==62 and f.service:count()==0)
   assert(f.physics.calls>1 and f.physics.maxHeight>5 and f.created[1].destroyed)
   f.step(.21);assert(f.target.humanoid.Health==62 and not f.service:throw(f.source.rig,f.list()))
+ end)end)
+ test("a blocked critical patient does not starve a visible wounded troop",function()run(function(f)
+  f.target.humanoid.Health=10;f.target.blocked=true
+  local visible=f.create("ranged",1,50,10)
+  assert(f.service:throw(f.source.rig,{f.source,f.target,visible}))
+  assert(f.source.rig.attrs.BandageTargetPosition==visible.position)
+ end)end)
+ test("stale lowest-health candidates do not starve current registered patients",function()run(function(f)
+  local stale=f.create("warrior",1,1,8);f.actors[stale.rig]=nil
+  assert(f.service:throw(f.source.rig,{f.source,stale,f.target}))
+  assert(f.source.rig.attrs.BandageTargetPosition==f.target.position)
  end)end)
  test("blocked missed moving or expired bandages consume their launch cooldown",function()
   for _,mode in {"blocked","miss","moving","stalled"}do run(function(f)
