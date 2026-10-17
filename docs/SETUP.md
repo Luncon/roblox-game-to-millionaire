@@ -209,3 +209,41 @@ production bootstrap with `tests/LocalPlaytest.server.luau`, injects only
 FakeProfileStore and excludes automated test runners. Use `--local-playtest` by
 itself. Normal `default.project.json` startup and existing saved balances are
 unchanged; use the normal project when returning to persistent-data testing.
+
+Medical logic and isolated native checks:
+
+```bash
+LUAU_CLI=/tmp/weapon-skills-luau/luau npm run check:skills
+npm run build:test-project -- --solo --medical
+# Build .cache/solo-test.project.json with the installed Windows Rojo executable.
+# Open the resulting place in Studio and start one ordinary Play client.
+```
+
+The medical mode runs the module regressions and `tests/runtime/MedicalSupport.luau`
+using only injected FakeProfileStore. Watch `MedicalSupportVerificationPhase`,
+`MedicalSupportVerificationResult` and `MEDICAL_SUPPORT_RESULT`. The geometry
+matrix covers all eight plots, thirteen civilizations and levels 5–50 in a moved,
+rotated world and can take several minutes. This mode requires `--solo` and is
+exclusive with other test modes. The independent `--local-playtest` mode still
+starts every civilization with 3,000 temporary coins and resets when Play ends.
+Close the current Play session before starting another. Two-owner isolation and
+real StudioDevelopment restoration require separate sessions; these fake fixtures
+never read or write player storage.
+
+For the separate two-owner medical check, close solo Play first, generate the
+ordinary test project with `npm run build:test-project`, build
+`.cache/test.project.json` and open that fake-store place. From Studio's Assistant
+MCP Edit context, run:
+
+```lua
+local result = game:GetService("StudioTestService"):ExecuteMultiplayerTestAsync(
+    2, {suite="medical-support"})
+print(game:GetService("HttpService"):JSONEncode(result))
+```
+
+The test closes its two simulated clients/server with `EndTest`. Its observer
+checks actual replicated arm positions, bandage instances and Humanoid health.
+Before any isolated Play, inspect `Game.Bootstrap` and confirm it uses the supplied
+fake store. An automatic connection to a production Rojo server can replace that
+script after the test place opens; disconnect that sync or restore the matching
+repository test bootstrap in the owned test window before starting.

@@ -1513,3 +1513,73 @@ was the only cause of the user's native symptom. Player R6/R15 appearance,
 physical spear alignment and delayed observer replication remain pending. Stop
 Play and reopen the rebuilt manual test place, or allow all new shared/client/server
 scripts to sync before restarting Play. Native results must be recorded separately.
+
+## Hospital and medic implementation — 2026-10-16
+
+Branch: `feature/hospital-and-medics`. No published player storage was used.
+Windows Studio 0.743 opened generated local test places; bootstrap inspection
+confirmed the injected FakeProfileStore before each run. The WSL Codex profile
+now registers Studio's existing MCP launcher. A persistent stdio connection was
+needed to let Studio finish connecting; the original short connection probes
+could return an empty instance list before that happened.
+
+Completed isolated solo evidence:
+
+- 473 native module cases passed, including the hospital geometry matrix (eight
+  plots, thirteen civilization variants, levels 5–50, moved/rotated world),
+  existing combat/economy/profile/camp/geometry regressions, medic appearance and
+  immutable source/outfit checks. Landscape <=2,000 and settlement fixture
+  <=400 BasePart assertions passed.
+- All eight live medical scenarios passed. Hospital charged exactly 200 coins
+  (1,000 → 800), preserved the wounded fighter at 60 HP and retained its ranged
+  replacement deadline. Four-slot counts were correct.
+- During Hold, the fighter's health changed 50 → 62 while it dealt 18 damage to
+  the nearby opponent (1,000 → 982); an actual bandage was observed and the medic
+  remained at its held position. Direct medic attacks, damaging projectiles and
+  weapon skills rejected; healing awarded no coins.
+- Moving patients and a mid-flight wall left the patient at 40 HP and retained
+  the spent cooldown. Regroup removed all pending bandages without refunding it.
+- All four troops recovered to current MaxHealth in the yard. Recovery continued
+  after medic death; leaving the yard held the fighter at 55 HP. Medic replacement
+  waited its independent 15-second deadline, including a Barracks VI purchase
+  during that wait; the fighter and original deadline remained intact.
+- Hospital deployment reached the battlefield and retreated 16.015 studs from a
+  close threat within the 18-stud bound. All four troops physically returned to
+  the yard and healed while resting. Level-ten hospital deployment without Army
+  Camp also reached the army and returned. Civilization switching destroyed the
+  old medic and restored hospital ownership with a new rig.
+
+The first solo attempt exposed a test-helper assertion that assumed a level-one
+civilization had an army; the corrected run passed. Follow-up movement checks
+used actual unanchored rigs. This evidence does not establish earlier player
+weapon-animation acceptance, which retains its separate verification boundary.
+
+Standalone checks: 125 logic cases passed using explicit engine doubles; all
+190 repository/test Luau files compiled; all nineteen OpenSpec items validated.
+Production, medical solo, multiplayer and 3,000-coin manual test builds succeeded.
+Medical-mode guard checks rejected missing `--solo`, mixed modes and mixing with
+`--local-playtest`. Real StudioDevelopment hospital restoration remains unverified:
+these places have PlaceId 0, and no authorized published test experience was used.
+
+Focused two-owner evidence, after closing solo Play:
+
+- `ExecuteMultiplayerTestAsync(2, {suite="medical-support"})` passed all five
+  scenarios against injected fake profiles. Each client observed two medics,
+  visible bandage flights, four replicated healing events and rendered arm
+  displacement above 0.52 studs (0.525945 and 0.529300).
+- First bandages healed only their own patients (50 → 62 and 20 → 32) despite a
+  more wounded foreign patient in range. Currency stayed at 1,000 for each owner.
+  Both unanchored medics stayed within 0.05 studs under an actual Hold command.
+- A wounded troop remained at 50 HP in the other owner's yard and recovered to
+  55 in its own. Civilization switching destroyed the old medic and cancelled
+  its flight without affecting the other owner. A fake lease takeover blocked
+  further mutation and cancelled the second owner's pending bandage at 40 HP.
+- Fixture setup was corrected to measure Hold after actual commands and initial
+  physics settling, and to restage medics after their real Regroup walks before
+  testing in-flight cancellation. The final complete two-client run passed.
+- `EndTest` closed the simulated clients/server; the owned parent Studio window
+  was closed after verification. No other user's Studio window was modified.
+
+The implementation has seventeen of eighteen OpenSpec tasks complete. The only
+remaining task is separate real StudioDevelopment restoration in an authorized
+published test experience; fake-store round trips do not establish that result.

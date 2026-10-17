@@ -8,7 +8,7 @@ return function(context,player,round)
 	assert(service and service.profiles:isWritable(uid))
 	local Data=require(game.ServerScriptService.Game.ProfileData)
 	local fields=require(game.ReplicatedStorage.Shared.SettlementDevelopment).persistentFields
-	assert(#fields==15)
+	assert(#fields==16)
 	local cases,evidence=0,{}
 	local function waitFor(predicate,description,seconds)
 		local deadline=os.clock()+(seconds or 15)
@@ -120,7 +120,7 @@ return function(context,player,round)
 			assert(player:GetAttribute("TroopCapacity")==3 and player:GetAttribute("ArmyCount")==3,"Speed upgrades changed slot capacity")
 			evidence.respawnDelays={13,12.5}
 		end)
-		test("all fifteen fields save and restore independently without inactive farm income",function()
+		test("all sixteen fields save and restore independently without inactive farm income",function()
 			choose(originalCiv)
 			local saved=service.profiles:get(uid,fixtureCiv)
 			assert(service.profiles:save(uid).ok)
@@ -130,7 +130,7 @@ return function(context,player,round)
 			choose(fixtureCiv);equalState(current(),saved,"Restored civilization")
 			evidence.savedFields=#fields
 		end)
-		return {ok=true,cases=cases,evidence=evidence,message="One real client: native economic tiers, workshop discounts, storage, fifteen-field saves and real barracks timers against fake profiles"}
+		return {ok=true,cases=cases,evidence=evidence,message="One real client: native economic tiers, workshop discounts, storage, sixteen-field saves and real barracks timers against fake profiles"}
 	end)
 	local cleanupOk,cleanupError=pcall(function()
 		if service.registry:get(uid).civilizationId~=originalCiv then assert(service.select(player,originalCiv,true).ok) end

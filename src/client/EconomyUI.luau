@@ -61,8 +61,10 @@ function EconomyUI.start(screen: ScreenGui)
 		local units = "Warrior "..status(warrior-(if campClass=="warrior" then campCount else 0),"WarriorRespawnAt")
 		if tier.capacity == 2 then units ..= " · Ranged "..status(ranged-(if campClass=="ranged" then campCount else 0),"RangedRespawnAt") end
 		local capacity=player:GetAttribute("TroopCapacity") or tier.capacity
-		if capacity>2 then units..=" · Camp "..status(player:GetAttribute("CampCount") or 0,"CampRespawnAt") end
-		army.Text = string.format("Barracks %s · %d/%d troops · %gs respawn\n%s",tier.name,warrior+ranged,capacity,tier.respawnDelay,units)
+		if (player:GetAttribute("ArmyCampLevel") or 0)>0 then units..=" · Camp "..status(player:GetAttribute("CampCount") or 0,"CampRespawnAt") end
+		local medic=player:GetAttribute("MedicCount") or 0
+  if player:GetAttribute("HospitalLevel")==1 then units..=" · Medic "..status(medic,"MedicRespawnAt") end
+  army.Text = string.format("Barracks %s · %d/%d troops · fighters %gs respawn\n%s",tier.name,warrior+ranged+medic,capacity,tier.respawnDelay,units)
 	end
 
 	local function trackText(kind: string, level: number): string
@@ -149,10 +151,10 @@ function EconomyUI.start(screen: ScreenGui)
 	end
 	for _, attribute in { "Coins", "SettlementLevel", "WeaponLevel", "ArmorLevel", "BarracksUpgradeLevel", "EconomyRevision", "ProgressStatus", "ProgressError", "ProgressSavedAt",
 		"TrainingLevel","FarmLevel","WorkersLevel","ArmyCampLevel","FarmCoins","ExtraTroopClass",
-		"BlacksmithLevel","ArmorerLevel","StorehouseLevel" } do
+		"BlacksmithLevel","ArmorerLevel","StorehouseLevel","HospitalLevel" } do
 		player:GetAttributeChangedSignal(attribute):Connect(syncAttributes)
 	end
-	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","TroopCapacity" } do
+	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","TroopCapacity","MedicCount","MedicRespawnAt" } do
 		player:GetAttributeChangedSignal(attribute):Connect(renderArmy)
 	end
 	task.spawn(function()
@@ -193,6 +195,7 @@ function EconomyUI.start(screen: ScreenGui)
 					elseif result.action=="blacksmith" then "Blacksmith built! Weapon upgrades cost 5% less."
 					elseif result.action=="armorer" then "Armorer built! Armor upgrades cost 5% less."
 					elseif result.action=="storehouse" then "Storehouse built! Your farm can hold 180 coins."
+					elseif result.action=="hospital" then "Hospital built! Medic deployed; troops recover at the training yard."
 					elseif result.action=="armyCamp" then "Army camp built! Choose your third troop's class."
 					elseif result.action=="troopClass" then "Camp class saved for its next respawn."
 					elseif result.action == "upgrade" then "Settlement expanded!"

@@ -7,7 +7,7 @@ return function(context,player,round)
 	local Data=require(game.ServerScriptService.Game.ProfileData)
 	local Development=require(game.ReplicatedStorage.Shared.SettlementDevelopment)
 	local fields=Development.persistentFields
-	assert(#fields==15)
+	assert(#fields==16)
 	local cases,evidence=0,{purchases={}}
 	local function stage(name)game:SetAttribute("SettlementGeometryAccessPhase",name)end
 	local function choose(id)

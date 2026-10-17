@@ -16,6 +16,10 @@ local TrainingCamp = require(Shared.TrainingCampConfig)
 local TroopProjectile = require(script.Parent.TroopProjectile)
 local Encounter = require(script.Parent.CombatEncounter)
 local Motion = require(script.Parent.EncounterMotion)
+local MedicalConfig=require(Shared.MedicalConfig)
+local MedicalService=require(script.Parent.MedicalService)
+local MedicPlanner=require(script.Parent.MedicPlanner)
+local Topography=require(script.Parent.Topography)
 local WarriorService = {}
 local COLLISION_GROUP = "CivilizationWarriors"
 local ORDERS = {advance=true,hold=true,regroup=true}
@@ -29,6 +33,7 @@ function WarriorService.slotDefinitions(state)
 	if state.armyCampLevel == 1 then
 		table.insert(slots,{id="camp",kind=if state.extraTroopClass=="ranged" then "ranged" else "warrior"})
 	end
+	if state.hospitalLevel==1 then table.insert(slots,{id="medic",kind="medic"}) end
 	return slots
 end
 
@@ -41,7 +46,12 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	assert(troops and troops:IsA("Folder"), "Map must provide a Troops folder")
 	local combat = sharedCombat or CombatService.new(world, registry, economy)
 	local encounters=sharedEncounter or Encounter.new(world,combat)
-	local projectiles = TroopProjectile.new(world, combat, function(rig)
+	local medicine=MedicalService.new(world,combat,economy,function(rig)
+  local slot=rigSlots[rig]
+  local owner=if slot then owners[rig:GetAttribute("OwnerId")] else nil
+  return alive and slot~=nil and slot.rig==rig and slot.kind=="medic" and owner~=nil and owner.order~="regroup"
+ end)
+ local projectiles = TroopProjectile.new(world, combat, function(rig)
 		return alive and rigSlots[rig] ~= nil
 	end)
 	if not PhysicsService:IsCollisionGroupRegistered(COLLISION_GROUP) then PhysicsService:RegisterCollisionGroup(COLLISION_GROUP) end
@@ -50,7 +60,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	local function eligible(player: Player)
 		local claim, state = registry:get(player.UserId), economy:get(player.UserId)
 		if not alive or not world.model:IsDescendantOf(workspace) or troops.Parent ~= world.model
-			or player.Parent ~= Players or not claim or not state or state.level < Config.unlockLevel then return nil end
+			or player.Parent ~= Players or not claim or not state or not economy:canMutate(player.UserId) or state.level < Config.unlockLevel then return nil end
 		return claim, state
 	end
 	local function tier(state)
@@ -60,17 +70,20 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		local state = economy:get(owner.player.UserId)
 		if not state then return end
 		local warrior, ranged, camp = owner.slots.warrior, owner.slots.ranged, owner.slots.camp
-		local meleeCount, rangedCount = 0, 0
+		local meleeCount, rangedCount, medicCount = 0, 0, 0
 		for _, slot in owner.slots do
 			if slot.rig then
-				if slot.kind=="ranged" then rangedCount+=1 else meleeCount+=1 end
+				if slot.kind=="medic" then medicCount+=1 elseif slot.kind=="ranged" then rangedCount+=1 else meleeCount+=1 end
 			end
 		end
 		owner.player:SetAttribute("BarracksLevel", state.barracksLevel or 1)
 		owner.player:SetAttribute("WarriorCount", meleeCount)
 		owner.player:SetAttribute("RangedCount", rangedCount)
-		owner.player:SetAttribute("ArmyCount", meleeCount + rangedCount)
-		owner.player:SetAttribute("TroopCapacity", #WarriorService.slotDefinitions(state))
+		owner.player:SetAttribute("ArmyCount", meleeCount + rangedCount + medicCount)
+		owner.player:SetAttribute("MedicCount",medicCount)
+  owner.player:SetAttribute("MedicRespawnAt",if owner.slots.medic then owner.slots.medic.respawnAt else 0)
+  owner.player:SetAttribute("HospitalLevel",state.hospitalLevel or 0)
+  owner.player:SetAttribute("TroopCapacity", #WarriorService.slotDefinitions(state))
 		owner.player:SetAttribute("ArmyRespawnDelay", tier(state).respawnDelay)
 		owner.player:SetAttribute("WarriorRespawnAt", if warrior then warrior.respawnAt else 0)
 		owner.player:SetAttribute("RangedRespawnAt", if ranged then ranged.respawnAt else 0)
@@ -81,7 +94,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		owner.player:SetAttribute("ArmyOrder", owner.order)
 	end
 	local function clearAttributes(player: Player)
-		for _, name in {"BarracksLevel", "WarriorCount", "RangedCount", "ArmyCount", "TroopCapacity", "ArmyRespawnDelay", "WarriorRespawnAt", "RangedRespawnAt", "CampCount", "CampRespawnAt"} do
+		for _, name in {"BarracksLevel", "WarriorCount", "RangedCount", "ArmyCount", "TroopCapacity", "ArmyRespawnDelay", "WarriorRespawnAt", "RangedRespawnAt", "CampCount", "CampRespawnAt", "MedicCount", "MedicRespawnAt"} do
 			player:SetAttribute(name, 0)
 		end
 		player:SetAttribute("CampClass",nil)
@@ -94,7 +107,9 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		if slot.navigator then slot.navigator:destroy(); slot.navigator = nil end
 		slot.target = nil
 		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
+		slot.support=nil
 		if slot.rig then
+			medicine:forget(slot.rig)
 			projectiles:cancel(slot.rig)
 			encounters:forget(slot.rig)
 			combat:unregister(slot.rig)
@@ -115,7 +130,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	local function fallen(owner, slot, rig: Model)
 		if not current(owner, slot) or slot.rig ~= rig then return end
 		local state = economy:get(owner.player.UserId)
-		local delay = if state then tier(state).respawnDelay else Config.respawnDelay
+		local delay = if slot.id=="medic" then MedicalConfig.respawnDelay elseif state then tier(state).respawnDelay else Config.respawnDelay
 		disconnect(slot)
 		slot.rig = nil
 		slot.respawnAt = workspace:GetServerTimeNow() + delay
@@ -244,6 +259,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 			for _, slot in owner.slots do
 				slot.target=nil
 				slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
+				slot.support=nil
 				if slot.navigator then slot.navigator:stop() end
 				local rig=slot.rig
 				local troopRoot=rig and rig:FindFirstChild("HumanoidRootPart")
@@ -253,7 +269,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					Motion.clear(rig)
 					rig.Humanoid.WalkSpeed=Config.walkSpeed
 					rig:SetAttribute("RestPhase",nil)
-					if order=="regroup" then projectiles:cancel(rig) end
+					if order=="regroup" then projectiles:cancel(rig);medicine:cancel(rig) end
 					rig:SetAttribute("WarriorState",if order=="hold" then "Holding" elseif order=="regroup" then "Regrouping" else "Marching")
 				end
 			end
@@ -297,6 +313,9 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				if not rig then continue end
 				local attacker = combat:actor(rig)
 				if not attacker then fallen(owner, slot, rig); continue end
+    local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
+    medicine:recover(rig,frame)
+    if not combat:canAct(rig) then medicine:cancel(rig);slot.navigator:stop();continue end
 				if owner.order=="regroup" then
 					slot.rest=slot.rest or ArmyRest.new(slot.id)
 					local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
@@ -318,7 +337,38 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					continue
 				end
 				local claim=registry:get(ownerId)
-				local angle=(claim.plotId-1)*math.pi*2/world.plotCount
+    if slot.kind=="medic" then
+     local forward=arena.Position-frame.Position
+     forward=Vector3.new(forward.X,0,forward.Z).Unit
+     local home=arena.Position-forward*45+Vector3.new(0,3,0)
+     slot.support=slot.support or {}
+     local function safe(point,escaping)
+      local ground=world.model.Ground
+      local localPoint=ground.CFrame:PointToObjectSpace(point)
+      local p=ground.CFrame:PointToWorldSpace(Vector3.new(localPoint.X,.95+Topography.sampleHeight(localPoint.X,localPoint.Z)+3,localPoint.Z))
+      if not CombatRules.containsArena(arena,p) then return nil end
+      for _,other in actors do
+       if other.rig~=rig and math.abs(other.position.Y-p.Y)<4 and (other.position-p).Magnitude<3 then return nil end
+      end
+      local delta=p-attacker.position
+      if delta.Magnitude<=18 then
+       local filter=RaycastParams.new();filter.FilterType=Enum.RaycastFilterType.Exclude
+       filter.FilterDescendantsInstances={rig};filter.RespectCanCollide=true
+       if workspace:Blockcast(CFrame.new(attacker.position+Vector3.new(0,.5,0)),Vector3.new(1.6,3.6,1.6),delta,filter) then return nil end
+      end
+      return p
+     end
+     local plan=MedicPlanner.step(slot.support,attacker,actors,owner.order,home,forward,now,safe)
+     if not plan.goal and owner.order=="advance" and not plan.retreat and not CombatRules.containsArena(arena,attacker.position) then plan.goal=safe(home,false) end
+     Motion.apply(rig,slot.navigator,world,plan,now)
+     if not plan.retreat and medicine:throw(rig,actors) and not plan.goal then
+      local target=rig:GetAttribute("BandageTargetPosition")
+      local point=Vector3.new(target.X,attacker.position.Y,target.Z)
+      if (point-attacker.position).Magnitude>.01 then attacker.root.CFrame=CFrame.lookAt(attacker.position,point) end
+     end
+     continue
+    end
+    local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
 				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,
@@ -341,6 +391,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		local ids = {}
 		for ownerId in owners do table.insert(ids, ownerId) end
 		for _, ownerId in ids do self:release(ownerId) end
+		medicine:destroy()
 		projectiles:destroy()
 		if not sharedEncounter then encounters:destroy() end
 		if not sharedCombat then combat:destroy() end
@@ -350,6 +401,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		if not world.model:IsDescendantOf(workspace) then controller:destroy(); return end
 		local now = os.clock()
 		local finishedSkill=combat.skills:step()
+		medicine:step()
 		projectiles:step(dt)
 		elapsed += dt
 		if finishedSkill or elapsed >= Config.thinkInterval then elapsed = 0; think(now) end
@@ -358,7 +410,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				if slot.rig then
 					local root = slot.rig:FindFirstChild("HumanoidRootPart")
 					if slot.rig.Humanoid.Health>0 then
-						if owner.order~="regroup" then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
+						if owner.order~="regroup" and slot.kind~="medic" then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
 						WarriorRig.animate(slot.rig,now,root and root.AssemblyLinearVelocity.Magnitude>.5)
 					end
 				end

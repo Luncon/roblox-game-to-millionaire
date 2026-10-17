@@ -256,4 +256,4 @@ district lots and scenery reserve this access permanently. Terrain generation
 reserves the hospital, pad and access before sampling collision triangles.
 Construction uses the existing transformed-world height sampler. Native access,
 all-civilization footprint and part-budget checks are supplied in
-`HospitalGeometry.spec.luau` and await Studio execution.
+`HospitalGeometry.spec.luau` and have passed in the isolated native solo suite; see PLAYTEST.md for evidence.

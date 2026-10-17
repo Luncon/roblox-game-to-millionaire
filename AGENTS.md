@@ -58,8 +58,8 @@ rounding; never change their combat stats. Storehouse I at 16 requires a farm
 and raises reserve capacity from 60 to 180. Use storageCapacity(state) everywhere
 the cap matters. Farm/worker/storage purchases settle old-yield/old-capacity
 whole intervals then reset the clock; never bank full, offline or inactive time.
-Save all fifteen scalar fields, with missing-only zero defaults for the three
-workshop/storage fields and skillLevel, and unchanged version-one keys. Barracks V/VI require
+Save all sixteen scalar fields, with missing-only zero defaults for the three
+workshop/storage fields, skillLevel and hospitalLevel, and unchanged version-one keys. Barracks V/VI require
 settlement 8/14, cost 200/300 and set future delays to 13/12.5 seconds; they
 preserve two barracks slots, pending deadlines and the optional camp slot.
 Rural fields reserve space outside the final plot
@@ -113,3 +113,16 @@ collision; use its height sampler when grounding scenery. Final plots, radial
 troop roads and crossing reservations remain flat. Arena relief is capped at
 six studs inside the unchanged combat height band. Keep the complete landscape
 within 2,000 static BaseParts and preserve global Terrain/developer geometry.
+
+Hospital I requires settlement 10 and Training Yard I, costs 200, and adds an
+independent fourth medic slot with a fixed 15-second respawn. The hospital and
+its pad/access reserve a rear site through SettlementSites/Topography. Medics
+are targetable registered actors but must be rejected by all offensive dispatch.
+Advance keeps medics behind fighters with bounded threat avoidance; Hold remains
+stationary and permits fighter attacks plus medic healing. Regroup cancels
+bandages and uses distinct medic camp arrival index 6. MedicalService owns
+12-HP/45-stud/three-second bandages and hospital-gated five-HP/second yard recovery
+after two undamaged seconds. Fresh registered life/claim/authority checks are
+mandatory; no players, foreign troops, revival, offline healing or rewards.
+Medical clocks/health never save. See docs/ARMY.md and medical verification
+boundaries in docs/PLAYTEST.md; fake fixtures do not establish native gameplay.

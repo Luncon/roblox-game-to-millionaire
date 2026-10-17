@@ -35,7 +35,7 @@ health, classes, orders and pending deadlines survive these purchases. The HUD
 shows each available slot.
 
 Army Camp I is available at settlement 10 with Barracks IV or higher and costs 120 coins.
-It adds one independent reinforcement slot, bringing the army to three troops.
+It adds one independent reinforcement slot, bringing the fighting army to three troops; Hospital I can add a separate medic.
 Choose melee or ranged for this camp slot. The choice saves for each civilization
 and applies at its next spawn: a living troop retains its class and health, and
 changing the choice never resets a pending replacement countdown. The original
@@ -206,3 +206,44 @@ server validates every contact and consumes each victim-life kill reward once.
 See [the full damage/price tables and controls](WEAPON_SKILLS.md). Solo Studio
 checks passed; multiplayer, additional input-device and published-client checks
 remain pending. See [playtest evidence](PLAYTEST.md).
+
+## Hospital support and recovery
+
+Hospital I (settlement 10, Training Yard I, 200 coins) deploys one dedicated
+medic. It does not consume the Army Camp selection: barracks melee/ranged, camp
+reinforcement and hospital medic can coexist. `MedicCount` and
+`MedicRespawnAt` are separate; total army count includes support. The medic uses
+a fixed 15-second replacement wait. Barracks purchases retain existing deadlines.
+Owner armor applies while preserving missing health; weapon upgrades never scale
+healing. Medics use civilization outfits, the NPC palette/face and an original
+bandage satchel. They are targetable enemies but cannot attack or use skills.
+
+| Order | Fighters | Medic |
+| --- | --- | --- |
+| Advance | Existing engagement behavior | Prefer 12 studs behind living fighters; retreat before healing when enemies close within 12 studs, aiming for 18 studs of safety |
+| Hold | Stay in place; attack enemies already in reach | Stay in place; heal patients already within range |
+| Regroup | Return to the owned training camp and rest | Cancel field bandages, return to a separate camp arrival point and rest |
+
+Retreat bursts use the existing 18-stud/three-second bounds and checked routes;
+a blocked or exhausted retreat stops rather than starting an endless flee loop.
+With no fighters the medic heads to its owner-side battlefield support rally.
+Support planning does not reserve or redirect fighter engagement positions.
+
+Bandages restore up to 12 HP, have a 45-stud range and a three-second launch
+cooldown. Lowest health fraction wins, then greatest deficit, distance and stable
+slot identity. One visible arced flight per medic uses native sphere sweeps;
+obstacles, misses, replaced lives and expiry cannot heal. Launch spends cooldown
+including misses; cancellation, replacement and civilization switches preserve
+the owner's medic-slot deadline within the server. Regroup, death, departure,
+lost write authority and teardown cancel pending work. No self-bandaging, player,
+foreign-owner, neutral or passive worker healing occurs. No healing rewards or
+attack procs are awarded.
+
+Hospital ownership also enables five HP per second inside the owned training
+yard after two continuous undamaged seconds. Actual plot-local position and root
+height govern eligibility, independently of order and medic survival. Hold inside
+works; leaving, damage, full health, a stalled update or lost authority resets the
+wait. No offline, inactive or missed-frame healing accumulates. Healing clamps to
+current MaxHealth and never revives. Health bars and a brief green flash show
+successful healing; the `Recovering` attribute ends at full health. Deterministic and isolated native checks are recorded in PLAYTEST.md;
+two-owner replication and real-storage restoration are separate acceptance checks.
