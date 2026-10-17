@@ -1583,3 +1583,74 @@ Focused two-owner evidence, after closing solo Play:
 The implementation has seventeen of eighteen OpenSpec tasks complete. The only
 remaining task is separate real StudioDevelopment restoration in an authorized
 published test experience; fake-store round trips do not establish that result.
+
+## Hospital and medic acceptance follow-up — 2026-10-16
+
+The user requested continued implementation and verification of the complete
+feature. This pass used Windows Studio 0.743, ordinary solo Play followed by one
+focused two-owner test, and injected FakeProfileStore throughout. No published
+experience, StudioDevelopment record or Live record was accessed.
+
+- Reproduced a patient-selection defect: an obstructed critically wounded troop
+  stopped the medic from considering another visible patient. Filtering current
+  registration/life and visibility before health ranking fixes that starvation.
+  The new regression failed before the fix; 127 standalone cases then passed.
+  Inverting the eligibility filter was also detected by the suite and restored.
+- 475 module cases and all eleven solo medical scenarios passed. In the new
+  native obstacle case, the blocked warrior stayed at 10 HP while the visible
+  ranged troop healed 40 → 52. Existing hospital charge, four independent slots,
+  moving/blocked misses, retained cooldowns, Hold attacks/heals, full yard recovery,
+  civilization switching and level-10/50 deployment/return checks passed again.
+  The unanchored medic's measured retreat displacement was 10.081 studs, within
+  the existing 18-stud limit. All four troops physically returned to their yard.
+
+Four approximately 12-second native encounters measured healing without changing
+the initial tuning. The level-50 fighter and medic were held and anchored to
+isolate medical influence; native neutral melee opponents moved and attacked
+through the production encounter system. Other owned fighters were held away.
+The baseline medic was outside healing range; the comparison medic was in range.
+
+| Opponents | Medic in range | Damage taken | Actual healing | Fighter HP after 12s |
+| --- | --- | --- | --- | --- |
+| 1 | No | 120 | 0 | 20 |
+| 1 | Yes | 120 | 46 across four contacts | 66 |
+| 3 | No | 140 | 0 | 0 |
+| 3 | Yes | 180 | 40 across four contacts | 0 |
+
+Healing remained clamped and at most one bandage was active. These measurements
+show useful support in this fixture and continued vulnerability to concentrated
+attacks; they do not establish full-server balance. A separate native three-enemy
+encounter killed the non-retaliating medic naturally. Its HUD showed 3/4 troops
+and `Hospital · Medic 15s`; replacement respected that exact independent deadline,
+retained Hold and preserved all three fighter identities.
+
+UI follow-up reproduced a command panel extending above the short landscape
+viewport, then an overlap at a narrower size because Roblox's top inset reduces
+usable ScreenGui height. Hospital status now has its own line. Responsive commands
+and the skill button use separate space. In a fresh fake-store Play session, actual
+text-fit, containment, army-total and non-overlap checks passed at camera viewports
+1694.4 × 644.8 (desktop), 694.4 × 284 (short landscape), 554.4 × 354.4 (narrow),
+and 454.4 × 694.4 (portrait). Native compact clicks changed Camp to ranged and
+issued Regroup; the subsequent UI check passed. This is viewport/layout acceptance,
+not physical phone/controller input or renewed weapon-animation acceptance.
+
+Viewed screenshots: [desktop HUD](assets/hospital/desktop-hud.png),
+[short landscape](assets/hospital/compact-hud.png),
+[narrow HUD](assets/hospital/narrow-hud.png),
+[portrait HUD](assets/hospital/portrait-hud.png).
+
+After closing solo Play, all five focused two-owner scenarios passed again with
+the updated patient filtering. Both clients saw two medics, bandage flights, four
+healing events and rendered arm displacement of 0.527583/0.564348 studs. Ownership,
+stationary Hold, foreign-yard exclusion, switching and fake lease-loss cancellation
+remained intact. `EndTest` closed the simulated clients/server.
+
+Review covered authoritative purchase/profile paths, source/target lifecycle,
+healing bounds, backline/retreat/order integration, geometry, presentation and
+bounded per-medic work. No unresolved implementation finding remains from this
+pass. Luau compilation and strict specification checks passed; production, solo,
+two-owner and 3,000-coin manual builds were refreshed. Owned Studio windows were
+closed after verification. The only remaining tracked acceptance task is real
+hospital save/restart restoration in an identified authorized published test
+experience. The local places have PlaceId 0; fake-store evidence cannot complete
+that task.

@@ -231,7 +231,9 @@ Support planning does not reserve or redirect fighter engagement positions.
 
 Bandages restore up to 12 HP, have a 45-stud range and a three-second launch
 cooldown. Lowest health fraction wins, then greatest deficit, distance and stable
-slot identity. One visible arced flight per medic uses native sphere sweeps;
+slot identity among visible, currently registered patients. A blocked or obsolete
+critical patient cannot prevent healing another eligible troop. One visible arced
+flight per medic uses native sphere sweeps;
 obstacles, misses, replaced lives and expiry cannot heal. Launch spends cooldown
 including misses; cancellation, replacement and civilization switches preserve
 the owner's medic-slot deadline within the server. Regroup, death, departure,
@@ -247,3 +249,6 @@ wait. No offline, inactive or missed-frame healing accumulates. Healing clamps t
 current MaxHealth and never revives. Health bars and a brief green flash show
 successful healing; the `Recovering` attribute ends at full health. Deterministic and isolated native checks are recorded in PLAYTEST.md;
 two-owner replication and real-storage restoration are separate acceptance checks.
+The HUD identifies the hospital medic on its own line with its independent
+countdown. Short landscape layouts place army orders beside settlement status;
+narrow layouts retain space between status, commands and the skill button.

@@ -209,6 +209,30 @@ return function(context,player,round)
    waitFor(function()return Camp.contains(frame:PointToObjectSpace(medic.HumanoidRootPart.Position),1)end,"early medic return to yard",90)
    evidence.early={armyCampRequired=false,deployed=true,returned=true}
   end)
+  test("a wall-blocked critical patient does not prevent a visible native bandage hit",function()
+   choose("sparta");order("hold")
+   local slots=army().slots
+   freeze(slots.medic.rig,floorPoint(0,0));freeze(slots.warrior.rig,floorPoint(12,0))
+   freeze(slots.ranged.rig,floorPoint(0,14));freeze(slots.camp.rig,floorPoint(-30,0))
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   local wall=Instance.new("Part");wall.Name="MedicalPatientVisibilityFixture";wall.Size=Vector3.new(1,12,6)
+   wall.Anchored=true;wall.Position=floorPoint(6,0)+Vector3.new(0,2,0);wall.Parent=service.world.model;table.insert(extras,wall)
+   slots.warrior.rig.Humanoid.Health=10;slots.ranged.rig.Humanoid.Health=40
+   waitFor(function()return slots.ranged.rig.Humanoid.Health>=52 end,"visible lower-priority patient",6)
+   assert(slots.warrior.rig.Humanoid.Health==10)
+   evidence.visiblePatient={blockedHealth=10,visibleHealth=slots.ranged.rig.Humanoid.Health}
+   clearExtras()
+  end)
+  test("sustained native combat measures healing and natural independent medic replacement",function()
+   neutral=nil
+   evidence.combat=require(game.ServerStorage.RuntimeTests.MedicalCombat)(context,player,{
+    choose=choose,order=order,freeze=freeze,floorPoint=floorPoint,waitFor=waitFor,
+    inspectHUD=function()return round("medicalHUD",{},10)end,
+   })
+  end)
+  test("native four-slot hospital presentation fits the current viewport",function()
+   evidence.hud=round("medicalHUD",{},10)
+  end)
   return {ok=true,cases=cases,evidence=evidence,message="Fake-store solo native medical checks; two-owner, live storage and manual movement/animation acceptance are separate."}
  end)
  clearExtras()

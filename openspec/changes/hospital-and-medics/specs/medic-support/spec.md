@@ -63,6 +63,11 @@ A medic SHALL select a living damaged NPC troop belonging to the same owner and 
 - **THEN** only an eligible owned troop is selected
 - **AND** no ally across a different owner is healed
 
+#### Scenario: A critical patient is blocked
+- **WHEN** the lowest-health candidate is obstructed or no longer registered and another wounded owned troop is visible in range
+- **THEN** the medic selects the visible current patient according to the same health-priority rules
+- **AND** no bandage or cooldown is spent on the invalid candidate
+
 ### Requirement: Visible bounded bandages
 Each bandage SHALL visibly travel toward one selected patient and restore 12 health on one validated contact, with a three-second launch cooldown and 45-stud range. A medic SHALL have at most one pending bandage. Obstructed or missed throws SHALL expire without healing or retargeting another life.
 

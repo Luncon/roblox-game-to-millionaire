@@ -230,6 +230,13 @@ Close the current Play session before starting another. Two-owner isolation and
 real StudioDevelopment restoration require separate sessions; these fake fixtures
 never read or write player storage.
 
+The medical solo run also calls `MedicalCombat.luau`: four 12-second native
+encounters compare one/three opponents with the medic in/out of range, then
+observe an actual enemy kill and the medic's independent replacement.
+`ClientTests.MedicalHUD` checks rendered text, army totals, medic countdowns and
+overlap with command/skill controls. Run it in the Client context after resizing
+the owned test window; it never changes player attributes or balances.
+
 For the separate two-owner medical check, close solo Play first, generate the
 ordinary test project with `npm run build:test-project`, build
 `.cache/test.project.json` and open that fake-store place. From Studio's Assistant

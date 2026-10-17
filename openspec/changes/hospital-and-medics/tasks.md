@@ -1,6 +1,6 @@
 # Tasks
 
-Implementation and isolated fake-store/native verification are complete except separate published-storage restoration. Use fake stores for automated checks and keep one Studio playtest open at a time. Prototype tuning is recorded in proposal.md/design.md; hospital ownership adds a fourth independent slot, never a new Army Camp class choice.
+Initial implementation and isolated fake-store/native verification are complete except separate published-storage restoration. The follow-up acceptance pass checks visible patient selection, compact four-slot presentation and sustained combat. Use fake stores for automated checks and keep one Studio playtest open at a time. Prototype tuning is recorded in proposal.md/design.md; hospital ownership adds a fourth independent slot, never a new Army Camp class choice.
 
 ## 1. Hospital progression and saved ownership
 
@@ -40,6 +40,9 @@ Implementation and isolated fake-store/native verification are complete except s
 - [x] 7.2 Run one isolated solo Studio acceptance session for hospital purchase/access, four-slot deployment and separate respawns, visible bandage hits/misses, threat retreat, Hold attacks plus heals, Regroup and yard recovery through full health and civilization switching. Record measured health/cooldowns, geometry budgets, cleanup and unavailable checks without treating build/spec validation as gameplay acceptance.
 - [x] 7.3 After closing solo Play, run one focused two-owner Studio session for ownership/civilization isolation, replicated bandage/health presentation, foreign-yard rejection, life replacement and lease-loss cancellation; close owned test windows and record results separately from solo evidence.
 - [ ] 7.4 Separately verify real hospital restoration in an authorized published test experience using StudioDevelopment storage when available; keep automated fixtures fake-store-only and record actual restoration or the remaining verification boundary in docs/PLAYTEST.md without claiming fake-store checks prove real storage.
+- [x] 7.5 Prevent blocked or obsolete critically wounded candidates from starving visible valid patients; retain health-priority selection and prove the regression before the fix, then verify actual obstacle/health behavior in solo Studio.
+- [x] 7.6 Verify four-slot army and hospital-origin/countdown presentation at desktop and compact viewport sizes; fix clipped/overlapping status and command controls, and capture actual native UI bounds and screenshots.
+- [x] 7.7 Measure sustained single/multiple-opponent combat with a medic, including healing influence, threat response, damageability and independent replacement; review the complete feature and record evidence plus remaining boundaries without changing initial healing rates merely to make checks pass.
 
 ## Workflow follow-up
 
