@@ -61,7 +61,7 @@ return function(context,player,round)
    assert(m:GetAttribute("BandageReadyAt")==ready)
    evidence.proximity={radius=3,nearestHealth=72,fartherHealth=60,originalHealth=20,oneRecipient=true}
   end)
-  test("critical native fighter retreats heals and resumes without resetting skill cooldown",function()
+  test("critical native fighter closes a healing gap and releases support at forty percent",function()
    order("hold")
    local slots=army().slots;local m,p=slots.medic.rig,slots.warrior.rig
    for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
@@ -75,10 +75,10 @@ return function(context,player,round)
    p.Humanoid.Health=20
    waitFor(function()return p:GetAttribute("WarriorState")=="Seeking medic" end,"critical retreat selected",3)
    local initial=(p.HumanoidRootPart.Position-m.HumanoidRootPart.Position).Magnitude
-   waitFor(function()return (p.HumanoidRootPart.Position-m.HumanoidRootPart.Position).Magnitude<=22 end,"actual fighter reaches medic",12)
+   waitFor(function()return (p.HumanoidRootPart.Position-m.HumanoidRootPart.Position).Magnitude<=45 end,"actual fighter reaches healing range",12)
    assert(p:GetAttribute("CombatPhase")=="idle" and p:GetAttribute("WeaponSkillActive")==nil)
-   waitFor(function()return p.Humanoid.Health>=p.Humanoid.MaxHealth*.6 end,"critical fighter recovers sixty percent",25)
-   waitFor(function()return p:GetAttribute("WarriorState")~="Seeking medic" and p:GetAttribute("WarriorState")~="Recovering" end,"fighter resumes Advance",3)
+   waitFor(function()return p.Humanoid.Health>=p.Humanoid.MaxHealth*.4 end,"critical fighter recovers forty percent",25)
+   waitFor(function()return not p:GetAttribute("MedicalSupportActive") end,"fighter resumes Advance",3)
    assert(math.abs(p:GetAttribute("WeaponSkillReadyAt")-cooldown)<.05)
    evidence.recovery={initialDistance=initial,health=p.Humanoid.Health,maxHealth=p.Humanoid.MaxHealth,
     state=p:GetAttribute("WarriorState"),cooldownPreserved=true}
@@ -86,11 +86,38 @@ return function(context,player,round)
    p.Humanoid.Health=20;local held=p.HumanoidRootPart.Position;task.wait(.5)
    assert((held-p.HumanoidRootPart.Position).Magnitude<1 and p:GetAttribute("WarriorState")~="Seeking medic")
   end)
-  test("critical ranged recovery cancels an actual pending shot without damaging its target",function()
+  test("critical melee fights inside healing range and resumes outside pursuit at forty percent",function()
+   order("hold")
+   local slots=army().slots;local m,p=slots.medic.rig,slots.warrior.rig
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   freeze(m,center);freeze(p,center+Vector3.new(40,0,0));p.HumanoidRootPart.Anchored=false
+   freeze(slots.ranged.rig,center+Vector3.new(-70,0,0));freeze(slots.camp.rig,center+Vector3.new(-60,0,0))
+   local target=Rig.createNeutral(CFrame.new(floorPoint(center+Vector3.new(44,0,0))),"warrior")
+   target.Parent=folder;freeze(target,target.HumanoidRootPart.Position);target.Humanoid.MaxHealth=1000;target.Humanoid.Health=1000
+   assert(service.combat:registerNeutral(target,"warrior"));table.insert(extras,target)
+   order("advance");p.Humanoid.Health=20
+   waitFor(function()return p:GetAttribute("MedicalSupportActive") end,"critical support entry",2)
+   local before=target.Humanoid.Health
+   waitFor(function()return target.Humanoid.Health<before end,"new melee strike while already critical",3)
+   assert(p:GetAttribute("MedicalSupportActive") and p.Humanoid.Health<p.Humanoid.MaxHealth*.4)
+   freeze(target,center+Vector3.new(70,0,0))
+   local furthest=0
+   waitFor(function()
+    if p:GetAttribute("MedicalSupportActive") then
+     furthest=math.max(furthest,(p.HumanoidRootPart.Position-m.HumanoidRootPart.Position).Magnitude)
+    end
+    return p.Humanoid.Health>=p.Humanoid.MaxHealth*.4 and not p:GetAttribute("MedicalSupportActive")
+   end,"forty percent releases pursuit",12)
+   assert(furthest<=46,"Critical pursuit left medic range")
+   waitFor(function()return (p.HumanoidRootPart.Position-m.HumanoidRootPart.Position).Magnitude>50 end,"healed fighter may leave medic radius",6)
+   evidence.combatRange={damageWhileCritical=true,maxCriticalDistance=furthest,releasedAt=p.Humanoid.Health,canLeaveAfterRecovery=true}
+   service.combat:unregister(target);target:Destroy()
+  end)
+  test("critical ranged support retains an actual pending shot and can keep firing",function()
    order("hold")
    local slots=army().slots;local m,p=slots.medic.rig,slots.ranged.rig
    for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
-   freeze(m,center+Vector3.new(0,0,65));freeze(p,center)
+   freeze(m,center+Vector3.new(0,0,30));freeze(p,center)
    freeze(slots.warrior.rig,center+Vector3.new(-70,0,0));freeze(slots.camp.rig,center+Vector3.new(-60,0,0))
    local target=Rig.createNeutral(CFrame.new(floorPoint(center+Vector3.new(0,0,-40))),"warrior")
    target.Parent=folder;freeze(target,target.HumanoidRootPart.Position)
@@ -99,11 +126,42 @@ return function(context,player,round)
    waitFor(function()return #service.world.model.TroopProjectiles:GetChildren()>0 end,"actual ranged shot launch",5)
    p.Humanoid.Health=20;p.HumanoidRootPart.Anchored=false
    assert(service.command(player,"order","advance").ok)
-   waitFor(function()return p:GetAttribute("WarriorState")=="Seeking medic" end,"ranged recovery entry",2)
-   assert(#service.world.model.TroopProjectiles:GetChildren()==0)
-   task.wait(.5);assert(target.Humanoid.Health==health and p:GetAttribute("CombatPhase")=="idle")
-   evidence.ranged={pendingShotCancelled=true,targetHealth=health,retreating=true}
+   waitFor(function()return target.Humanoid.Health<health end,"pending critical shot contacts",2)
+   local first=target.Humanoid.Health
+   waitFor(function()return target.Humanoid.Health<first end,"critical ranged continues firing",4)
+   evidence.ranged={pendingShotRetained=true,continuedFiring=true,targetHealth=target.Humanoid.Health}
    service.combat:unregister(target);target:Destroy();p.Humanoid.Health=p.Humanoid.MaxHealth
+  end)
+  test("healthy medic marches behind one front fighter and switches when it dies",function()
+   order("hold")
+   local slots=army().slots;local m,front,nextFront=slots.medic.rig,slots.warrior.rig,slots.camp.rig
+   local claim=service.registry:get(player.UserId)
+   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
+   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   freeze(front,center+back*140);front.HumanoidRootPart.Anchored=false
+   freeze(m,center+back*166);m.HumanoidRootPart.Anchored=false
+   freeze(nextFront,center+back*310);freeze(slots.ranged.rig,center+back*350)
+   order("advance");task.wait(1)
+   local samples,moving,backsteps=0,0,0
+   local previous=m.HumanoidRootPart.Position
+   local began=previous
+   for _=1,50 do
+    task.wait(.1);samples+=1
+    local root=m.HumanoidRootPart
+    if root.AssemblyLinearVelocity.Magnitude>5 then moving+=1 end
+    if (root.Position-previous):Dot(back)>.3 then backsteps+=1 end
+    assert(m:GetAttribute("WarriorState")=="Following front troop")
+    previous=root.Position
+   end
+   assert((began-m.HumanoidRootPart.Position):Dot(back)>35 and moving/samples>=.8 and backsteps==0,"Healthy escort hesitated or reversed")
+   front.Humanoid.Health=0
+   local before=m.HumanoidRootPart.Position
+   waitFor(function()return (m.HumanoidRootPart.Position-before):Dot(back)>4 end,"medic selects next living front",4)
+   assert(m:GetAttribute("WarriorState")=="Following front troop")
+   evidence.escort={movingSamples=moving,samples=samples,backsteps=backsteps,nextFighterSelected=true}
+   order("hold")
+   waitFor(function()return army().slots.warrior.rig~=nil end,"actual front replacement",15)
   end)
   test("isolated native medic keeps retreating outside the arena and rejoins actual replacements",function()
    order("hold")
@@ -122,14 +180,14 @@ return function(context,player,round)
    order("advance")
    task.wait(5)
    local moved=(m.HumanoidRootPart.Position-start):Dot(homeward)
-   assert(moved>35 and m:GetAttribute("WarriorState")=="Withdrawing to reinforcements","Medic stopped at old retreat bound")
+   assert(moved>35 and m:GetAttribute("WarriorState")=="Returning to barracks","Medic stopped at old retreat bound")
    waitFor(function()return not CombatRules.containsArena(service.world.model.Battlefield,m.HumanoidRootPart.Position)end,"medic exits arena toward barracks",12)
    assert(Route.contains(foundation,center,m.HumanoidRootPart.Position),"Medic left its own approach corridor")
    waitFor(function()return army().slots.warrior.rig and army().slots.ranged.rig and army().slots.camp.rig end,"actual fresh fighter respawns",15)
    waitFor(function()
     local medic=m.HumanoidRootPart.Position
     for id,slot in army().slots do if id~="medic" and (slot.rig.HumanoidRootPart.Position-medic).Magnitude<=36 then
-     return m:GetAttribute("WarriorState")~="Withdrawing to reinforcements"
+     return m:GetAttribute("WarriorState")=="Following front troop"
     end end
     return false
    end,"withdrawal rejoins fresh troops",35)

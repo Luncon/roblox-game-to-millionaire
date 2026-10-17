@@ -110,7 +110,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		slot.target = nil
 		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 		slot.support=nil
-		slot.medicalRecovery,slot.recovering=nil,nil
+		slot.medicalRecovery=nil
 		if slot.rig then
 			medicine:forget(slot.rig)
 			projectiles:cancel(slot.rig)
@@ -263,12 +263,13 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				slot.target=nil
 				slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 				slot.support=nil
-				slot.medicalRecovery,slot.recovering=nil,nil
+				slot.medicalRecovery=nil
 				if slot.navigator then slot.navigator:stop() end
 				local rig=slot.rig
 				local troopRoot=rig and rig:FindFirstChild("HumanoidRootPart")
 				slot.holdPosition=if order=="hold" and troopRoot then troopRoot.Position else nil
 				if rig then
+     rig:SetAttribute("MedicalSupportActive",false)
 					encounters:cancel(rig)
 					Motion.clear(rig)
 					rig.Humanoid.WalkSpeed=Config.walkSpeed
@@ -321,7 +322,8 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
     medicine:recover(rig,frame)
     if not combat:canAct(rig) then
      medicine:cancel(rig);slot.navigator:stop()
-     slot.medicalRecovery,slot.recovering=nil,nil
+     slot.medicalRecovery=nil
+     rig:SetAttribute("MedicalSupportActive",false)
      continue
     end
 				if owner.order=="regroup" then
@@ -372,9 +374,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      local reinforcementHome=world:getBarracksSpawn(owner.plotId,"warrior","warrior").Position
      slot.support=slot.support or {}
      local plan=MedicPlanner.step(slot.support,attacker,actors,owner.order,home,forward,now,safe,economy:get(ownerId),
-      function(from,patient)return combat:visible(from,patient)end,reinforcementHome)
-     if not plan.goal and not plan.patient and owner.order=="advance" and not plan.retreat
-      and not CombatRules.containsArena(arena,attacker.position) then plan.goal=safe(home,false) end
+      function(from,patient)return combat:visible(from,patient)end,reinforcementHome,arena.Position)
      Motion.apply(rig,slot.navigator,world,plan,now)
      if not plan.retreat and medicine:throw(rig,actors) and not plan.goal then
       local target=rig:GetAttribute("BandageTargetPosition")
@@ -386,16 +386,11 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
     slot.medicalRecovery=slot.medicalRecovery or {}
     local recoveryPlan=MedicalRetreat.step(slot.medicalRecovery,attacker,actors,owner.order,economy:get(ownerId),safe,
      function(from,patient)return combat:visible(from,patient)end)
-    if recoveryPlan then
-     if not slot.recovering then encounters:cancel(rig);projectiles:cancel(rig);Motion.clear(rig) end
-     slot.recovering=true
-     Motion.apply(rig,slot.navigator,world,recoveryPlan,now)
-     continue
-    elseif slot.recovering then slot.recovering=nil;Motion.clear(rig) end
+    rig:SetAttribute("MedicalSupportActive",recoveryPlan~=nil)
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
-				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,
+				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,support=recoveryPlan,
 					cancelShots=function() projectiles:cancel(rig) end,
 					fire=function(target)
 						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
@@ -434,7 +429,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				if slot.rig then
 					local root = slot.rig:FindFirstChild("HumanoidRootPart")
 					if slot.rig.Humanoid.Health>0 then
-						if owner.order~="regroup" and slot.kind~="medic" and not slot.recovering then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
+						if owner.order~="regroup" and slot.kind~="medic" then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
 						WarriorRig.animate(slot.rig,now,root and root.AssemblyLinearVelocity.Magnitude>.5)
 					end
 				end

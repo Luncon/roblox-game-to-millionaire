@@ -27,12 +27,13 @@ Medics SHALL be valid enemy attack targets with the owner's current armor health
 - **AND** the medic does not retaliate or activate a weapon-family skill
 
 ### Requirement: Patient-first advance and retreat
-During Advance a medic SHALL prioritize wounded owned troops with safe visible healing positions. With no patient it SHALL fall back behind living fighters. Nearby hostiles SHALL trigger grounded avoidance. Supported retreat bursts SHALL remain bounded; isolated medics SHALL withdraw toward reinforcements. Movement SHALL respect terrain and obstacles without teleporting or pursuing enemies.
+During Advance a medic SHALL prioritize wounded owned troops with safe visible healing positions. With no patient it SHALL follow behind the living fighter closest to the battlefield center, immediately selecting the next fighter when that life ends. Nearby hostiles SHALL trigger grounded avoidance. Grounded threat avoidance SHALL remain bounded. No withdrawal latch or army average SHALL override patients or escort selection.
 
 #### Scenario: No troop needs healing
 - **WHEN** no owned patient can be helped
-- **THEN** the medic falls back approximately 12 studs behind living fighters
-- **AND** an unavailable backline position uses its safe owner-side rally
+- **THEN** the medic follows approximately 12 studs behind the current owned fighter closest to the battlefield center
+- **AND** healthy replacements behind that fighter do not pull it toward an army average
+- **AND** that fighter dying immediately selects the next living front fighter
 
 #### Scenario: A replacement is still returning
 - **WHEN** a healthy replacement is far behind while an owned fighter needs healing near the battlefield
@@ -50,18 +51,24 @@ During Advance a medic SHALL prioritize wounded owned troops with safe visible h
 - **AND** it resumes patient support or its backline fallback after the threat clears without resetting its healing cooldown
 
 #### Scenario: Fighters are absent
-- **WHEN** no owned fighter remains within 100 studs during Advance
-- **THEN** the medic continuously withdraws toward its nearest current fighter or its own barracks waiting area if all fighters are dead
-- **AND** it rejoins when a fighter is within 35 studs, without stopping after a three-second supported retreat burst
-- **AND** it does not move to enemies or enter another settlement seeking patients
+- **WHEN** all fighters are dead during Advance
+- **THEN** the medic returns toward its own barracks waiting area
+- **AND** the first respawned fighter becomes its escort anchor until a patient needs healing
+- **AND** owned approach routes and actual threats remain checked
 
 ### Requirement: Critical fighter recovery
-During Advance an owned melee or ranged fighter at or below 25% health SHALL withdraw toward a living owned medic's healing range and pause offensive actions until reaching 60% health. This SHALL preserve pending respawn and attack/skill cooldown deadlines. Hold SHALL remain stationary, and Regroup SHALL retain yard return. Missing medics, lost authority and new lives SHALL invalidate stale recovery state.
+During Advance an owned fighter at or below 20% health SHALL remain within a living owned medic's visible 45-stud healing range until reaching 40%. It SHALL retain ordinary melee/ranged attacks and pending contacts/shots. Only movement that leaves healing range SHALL be restricted. Hold SHALL remain stationary and Regroup SHALL retain yard return. Missing medics, lost authority and new lives SHALL invalidate stale recovery state.
 
-#### Scenario: Withdraw and recover
-- **WHEN** a fighter becomes critically wounded and its owner has a living hospital medic
-- **THEN** it cancels pending attacks, skills and shots and seeks a clear position within 20 studs of the medic
-- **AND** healing to 60% releases its temporary recovery state without changing the army's order
+#### Scenario: Fight within healing range
+- **WHEN** a critical fighter already has a visible medic within 45 studs
+- **THEN** it continues attacking and pursuing enemies only within that range
+- **AND** it does not retreat to 20 studs or wait defensively for healing
+- **AND** 40% health releases the movement restriction without changing cooldowns or the army order
+
+#### Scenario: Close a healing gap
+- **WHEN** a critical fighter is outside visible healing range
+- **THEN** it returns toward a safe visible position about 40 studs from the medic
+- **AND** pending validated contacts and launched shots retain their ordinary cadence
 
 ### Requirement: Stationary Hold support
 Hold SHALL stop all owned troop movement. Fighters SHALL retain their existing attacks against enemies already within valid attack range. The medic SHALL continue throwing bandages to valid patients already within healing range, without chasing patients, repositioning or pursuing enemies.

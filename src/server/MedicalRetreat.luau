@@ -21,8 +21,13 @@ function Recovery.step(record,fighter,actors,order,state,safe,visible)
  if not medic then record.active=nil;return nil end
  if fraction<=Config.criticalFraction then record.active=true end
  if not record.active then return nil end
- local plan={phase="idle",state="Seeking medic",speed=12,goal=nil,direct=false}
- if distance<=Config.recoveryDistance and visible(medic,fighter) then plan.state="Recovering";return plan end
+ local plan={medic=medic,goal=nil}
+ function plan.allows(point)
+  if (point-medic.position).Magnitude>Config.range then return false end
+  local patient=table.clone(fighter);patient.position=point
+  return visible(medic,patient)
+ end
+ if plan.allows(fighter.position) then return plan end
  local away=Tactics.away(fighter,medic)
  local bestDistance=math.huge
  for _,angle in {0,math.pi/4,-math.pi/4,math.pi/2,-math.pi/2,math.pi*3/4,-math.pi*3/4,math.pi}do
@@ -36,8 +41,7 @@ function Recovery.step(record,fighter,actors,order,state,safe,visible)
     and Tactics.flatDistance(point,enemy.position)<12 then clear=false;break end
   end
   if not clear then continue end
-  local patient=table.clone(fighter);patient.position=point
-  if not visible(medic,patient) then continue end
+  if not plan.allows(point) then continue end
   local d=Tactics.flatDistance(point,fighter.position)
   if d<bestDistance then bestDistance,plan.goal=d,point end
  end

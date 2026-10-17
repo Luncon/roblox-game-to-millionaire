@@ -1738,3 +1738,51 @@ Production, solo, multiplayer and temporary-coin manual Rojo builds passed.
 Review found no remaining implementation issue; actor snapshots are shared
 within a flight update, and no new client medical input or saved combat state
 was introduced.
+
+
+## Stable medic escort and active critical combat — 2026-10-17
+
+This follow-up replaces the preceding withdrawal latch/army centroid and
+25%/60% defensive recovery behavior. With no reachable patient, the medic now
+follows one living owned fighter closest to the battlefield center, then the next
+fighter when that life dies. All dead fighters send it toward barracks until a
+replacement is available. Critical fighters enter a visible 45-stud healing-range
+restriction at 20% health and leave it at 40%, retaining ordinary attacks.
+
+- Standalone logic passed 147 cases. New escort/threshold/range regressions failed
+  before the changes; mutations replacing the escort, restoring old thresholds
+  or forcing an extra inward retreat were caught.
+- The initial native combat regression reproduced pursuit outside healing range.
+  The focused fixed run passed 499 module cases and seven survival scenarios.
+  A separate native combat review passed 23 encounter cases, including one new
+  ranged-boundary check; removing that movement guard made the check fail.
+  All review models/modules were temporary and removed.
+- An unanchored healthy medic advanced with its front fighter in 50/50 velocity
+  samples, with zero backward steps, then physically turned toward the next
+  living fighter when the original died. Distant healthy replacements did not
+  change the escort anchor in the logic fixtures.
+- A critical melee fighter attacked while within healing range, stayed at most
+  40.001 studs from its medic while restricted, released the restriction at
+  56/140 HP (40%), and resumed pursuit beyond 50 studs. A second fighter closed
+  an actual 70.953-stud gap only to healing range and released at 56/140 without
+  refreshing its spent skill cooldown. Hold remained stationary.
+- A ranged fighter retained its actual in-flight javelin on entering critical
+  support, hit its target and fired again; the target fell from 100 to 71.2 HP.
+  The earlier defensive behavior's automatic shot cancellation is removed.
+- With all fighters dead, the medic moved 47.024 studs toward its barracks in five
+  seconds and followed real replacements. Owned-route bounds and proximity
+  bandage healing remained valid.
+
+Fixtures use FakeProfileStore only. The previous real-storage restoration
+boundary remains separate from these gameplay checks.
+
+A broader run completed all twelve earlier hospital runtime scenarios before the
+updated survival checks. Its new critical-hit fixture initially counted a Hold
+hit from before critical support activated; the fixture now waits for that state
+and then a subsequent hit. The final focused repeat passed 500 module cases and
+all seven updated survival scenarios, with 50/50 moving escort samples and no
+backsteps. No production change was needed for that fixture timing correction.
+Strict specifications passed 19/19, all 196 Luau files compiled, and production,
+solo and temporary-coin manual Rojo builds passed. Owned Play/window cleanup was
+completed. This follow-up did not rerun the separate two-owner isolation
+suite; its prior evidence remains in the preceding sections.

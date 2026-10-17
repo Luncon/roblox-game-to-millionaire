@@ -221,8 +221,9 @@ npm run build:test-project -- --solo --medical
 
 The medical mode runs the module regressions, `tests/runtime/MedicalSupport.luau`
 and `tests/runtime/MedicalSurvival.luau` using only injected FakeProfileStore.
-The survival checks cover proximity healing, critical fighter recovery and an
-isolated medic returning to actual replacements. For a focused repeat, set the
+The survival checks cover proximity healing, continuous front-fighter escort,
+critical attacks within healing range, 20%/40% recovery thresholds and an isolated
+medic returning to actual replacements. For a focused repeat, set the
 `MedicalSurvivalOnly` attribute on `ServerScriptService.SoloMedicalSupportTests`
 to true before Play; module regressions still run. Watch `MedicalSupportVerificationPhase`,
 `MedicalSupportVerificationResult` and `MEDICAL_SUPPORT_RESULT`. The geometry

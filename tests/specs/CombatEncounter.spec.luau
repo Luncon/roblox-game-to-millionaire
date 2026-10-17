@@ -48,6 +48,42 @@ return function(moduleOverride)
 		local f=fixture(kind);local ok,message=pcall(fn,f)
 		f.encounter:destroy();f.model:Destroy();assert(ok,message)
 	end
+	test("medical range limits retain ordinary melee contacts and forbid chasing outside",function()run(function(f)
+		f.options.order="advance"
+		f.options.support={allows=function(p)return p.X<=1 end}
+		local p=f.encounter:step(f.source,f.options,0)
+		assert(p.phase=="windup" and not p.goal)
+		f.encounter:advance(f.source,.21);assert(f.combat.hits==1)
+		f.target.HumanoidRootPart.Position=Vector3.new(20,10004,0)
+		p=f.encounter:step(f.source,f.options,1.01)
+		assert(not p.goal,"Critical troop chased outside healing range")
+	end)end)
+	test("medical return goals replace pursuit while retaining pending contacts and shots",function()
+		for _,kind in {"warrior","ranged"}do run(function(f)
+			f.encounter:step(f.source,f.options,0)
+			local goal=Vector3.new(-20,10004,0)
+			f.options.support={goal=goal,allows=function()return true end}
+			local p=f.encounter:step(f.source,f.options,.1)
+			assert(p.goal==goal)
+			f.encounter:advance(f.source,.36)
+			assert(if kind=="warrior" then f.combat.hits==1 else f.combat.shots==1)
+		end,kind)end
+	end)
+	test("critical melee can strike from the healing boundary without backing away",function()run(function(f)
+		f.target.HumanoidRootPart.Position=Vector3.new(.5,10004,0)
+		f.options.order="advance"
+		f.options.support={allows=function(p)return p.X<=-4 end}
+		local p=f.encounter:step(f.source,f.options,0)
+		assert(p.phase=="windup" and not p.goal,"Valid boundary strike became a defensive retreat")
+		f.encounter:advance(f.source,.21);assert(f.combat.hits==1)
+	end)end)
+	test("critical ranged pursuit cannot move beyond the medic boundary",function()run(function(f)
+		f.target.HumanoidRootPart.Position=Vector3.new(46,10004,0)
+		f.options.order="advance"
+		f.options.support={allows=function(p)return p.X<=1 end}
+		local p=f.encounter:step(f.source,f.options,0)
+		assert(p.target==f.target and not p.goal,"Critical archer pursued outside medic range")
+	end,"ranged")end)
 	test("melee damage waits for contact and occurs only once in a cycle",function()run(function(f)
 		local began=f.encounter:step(f.source,f.options,0)
 		assert(began.phase=="windup" and f.combat.hits==0 and began.goal==nil)

@@ -220,29 +220,37 @@ bandage satchel. They are targetable enemies but cannot attack or use skills.
 
 | Order | Fighters | Medic |
 | --- | --- | --- |
-| Advance | Engage normally; at 25% health seek a living medic and recover to 60% | Heal visible wounded troops in range, otherwise seek a safe healing position; fall back behind fighters when no patient can be helped; retreat first from close enemies |
+| Advance | Fight normally; at 20% health stay in medic healing range until 40% | Prioritize patients; otherwise follow the living fighter closest to the battlefield; avoid close threats |
 | Hold | Stay in place; attack enemies already in reach | Stay in place; heal patients already within range |
 | Regroup | Return to the owned training camp and rest | Cancel field bandages, return to a separate camp arrival point and rest |
 
-With fighters nearby, medic retreat bursts retain the 18-stud/three-second bounds
-and checked routes. With no owned fighter within 100 studs, the medic continuously
-withdraws toward the nearest fresh fighter or its own barracks waiting area. This
-withdrawal can leave the battlefield along its owned approach corridor and rejoins
-the army within 35 studs; it does not stop at the supported burst timeout.
-Support planning does not reserve fighter engagement positions. During Advance,
-a fighter at or below 25% health seeks a safe visible position within 20 studs of
-a living owned medic. It pauses attacks until reaching 60% health. Entry cancels
-pending attacks, skills and shots while preserving cooldowns. Losing the medic,
-changing orders or spawning a new life clears that temporary recovery state.
-Hold remains stationary and Regroup retains yard return.
+When healthy support is needed, the medic follows approximately 12 studs behind
+one living owned fighter: the one closest to the battlefield center. It chooses
+the next fighter as soon as that life dies. Healthy replacements elsewhere do not
+pull it toward an army average. With no living fighters it returns toward its own
+barracks; the first respawned fighter becomes its escort anchor. It uses owned
+approach routes and short direct following legs near the front, retaining normal
+marching speed. Actual nearby threats still trigger checked avoidance; there is
+no separate distance-triggered withdrawal latch.
+
+During Advance a fighter at or below 20% health keeps a living owned medic within
+visible 45-stud healing range until reaching 40% health. It continues ordinary
+melee/ranged attacks and can pursue inside that radius. It closes toward a safe
+position about 40 studs from the medic only when outside range or sight. It does
+not retreat farther when already in range or wait defensively for heals. Pending
+contacts, launched shots and cooldowns retain their ordinary behavior. Automatic
+spear dashes pause while range-limited; stationary skills remain available.
+Missing medics, changed orders, lost authority and new lives clear support state.
+Hold stays stationary and Regroup retains yard return.
 Patient support takes priority over the army's average position, so healthy
 replacements returning from the settlement do not pull the medic away from the
 wounded front. A visible patient within 45 studs lets the medic stay and heal.
 Otherwise it approaches a visible healing position about 28 studs from a wounded
 patient, avoiding endpoints within 18 studs of enemies and approach legs passing
 within 12 studs. It rechecks health and life identity each update. With no eligible
-patient it falls back roughly 12 studs behind the living fighters, or to its safe
-support rally if that position is unavailable.
+patient it follows the current front fighter, or its barracks route while all
+fighters await replacement. Blocked following routes retry without selecting an
+unrelated rally or an army average.
 
 Bandages restore up to 12 HP, have a 45-stud range and a three-second launch
 cooldown. Lowest health fraction wins, then greatest deficit, distance and stable

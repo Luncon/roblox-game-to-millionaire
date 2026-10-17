@@ -98,6 +98,8 @@ function CombatEncounter.new(world,combat)
 		return true
 	end
 	local function free(point,attacker,target,actors,escaping): boolean
+  local support=records[attacker.rig] and records[attacker.rig].support
+  if support and not support.allows(point) then return false end
 		if not Rules.containsArena(arena,point) then return false end
 		if Tactics.flatDistance(point,attacker.position)<=Tuning.closeDistance and not clearRoute(point,attacker,escaping) then return false end
 		for _,other in actors do
@@ -161,9 +163,25 @@ function CombatEncounter.new(world,combat)
 		local record=records[rig]
 		if not record then record={rig=rig,nextAttackAt=0};records[rig]=record end
 		record.lastNow=now
+  record.support=options.support
+  local function supportMovement()
+   local support,plan=record.support,record.plan
+   if not support or not plan then return end
+   if support.goal then
+    plan.goal,plan.state,plan.speed=support.goal,"Seeking medic",Warrior.walkSpeed
+    plan.direct=Tactics.flatDistance(plan.goal,attacker.position)<=Tuning.closeDistance
+    record.reservation=nil
+   elseif plan.goal and not support.allows(plan.goal) then
+    plan.goal=nil;record.reservation=nil
+   end
+  end
+  local function finishPlan()
+   supportMovement()
+   return pose(record,now,false)
+  end
 		if record.order~=options.order then self:cancel(rig);record.order=options.order end
-		if options.order=="regroup" or not permitted(rig) then self:cancel(rig);return pose(record,now,false) end
-		if combat.skills and combat.skills:busy(rig) then return pose(record,now,false) end
+		if options.order=="regroup" or not permitted(rig) then record.support=nil;self:cancel(rig);return finishPlan() end
+		if combat.skills and combat.skills:busy(rig) then return finishPlan() end
 		local actors,occupancy={},{}
 		actorsByRig={}
 		for _,actor in options.actors or combat:actors() do
@@ -193,15 +211,15 @@ function CombatEncounter.new(world,combat)
 		local plan={goal=nil,facing=if target then target.position else nil,direct=false,speed=Warrior.walkSpeed,state="Fighting"}
 		record.plan=plan
 		if combat.skills and not record.action and now>=record.nextAttackAt and target then
-			local result=combat.skills:activate(rig,options.order,true)
+			local result=combat.skills:activate(rig,if record.support then "hold" else options.order,true)
 			if result.ok then
 				if options.cancelShots then options.cancelShots() end
 				record.reservation=nil
-				return pose(record,now,false)
+				return finishPlan()
 			end
 			-- A ready skill waits for the previous normal contact's cooldown.
 			-- Otherwise beginning another windup here can starve it forever.
-			if result.reason=="busy" then return pose(record,now,false) end
+			if result.reason=="busy" then return finishPlan() end
 		end
 		local ranged=attacker.kind=="ranged"
 		local pressure,pressureDistance=nil,math.huge
@@ -235,7 +253,7 @@ function CombatEncounter.new(world,combat)
 					record.reservation={target=rig,point=point,waiting=true}
 					plan.goal,plan.direct,plan.state=point,true,"Separating"
 					plan.speed=if ranged then Tuning.retreatSpeed else Warrior.walkSpeed
-					return pose(record,now,false)
+					return finishPlan()
 				end
 			end
 		end
@@ -243,9 +261,9 @@ function CombatEncounter.new(world,combat)
 			record.reservation=nil
 			plan.goal=if options.order=="hold" then nil else options.homeGoal
 			plan.state=if options.order=="hold" then "Holding" elseif Rules.containsArena(arena,attacker.position) then "Guarding" else "Marching"
-			return pose(record,now,false)
+			return finishPlan()
 		end
-		if record.action and now<record.action.startedAt+duration(record.action.kind) then return pose(record,now,false) end
+		if record.action and now<record.action.startedAt+duration(record.action.kind) then return finishPlan() end
 		record.action=nil
 		local reach=if ranged then Ranged.range else Warrior.attackRange
 		local distance=(target.position-attacker.position).Magnitude
@@ -287,6 +305,9 @@ function CombatEncounter.new(world,combat)
 				for _,other in actors do
 					if other.rig~=rig and Tactics.flatDistance(other.position,attacker.position)<Tuning.minimumSeparation then crowded=true;break end
 				end
+				-- An in-range fighter can strike from its current position even when
+				-- the preferred four-stud approach points exceed the medic boundary.
+				if record.support and canStrike and not crowded then point,waiting=attacker.position,false end
 				if not canStrike or crowded or waiting then plan.goal=point end
 				if waiting or not point then plan.state="Waiting";canStrike=false end
 			end
@@ -296,13 +317,14 @@ function CombatEncounter.new(world,combat)
 			record.reservation=if plan.goal then {target=target.rig,point=plan.goal,waiting=true} else nil
 		end
 		plan.direct=plan.goal~=nil and Tactics.flatDistance(plan.goal,attacker.position)<=Tuning.closeDistance
+		supportMovement()
 		if not plan.goal and canStrike and not moving(attacker) and now>=record.nextAttackAt then
 			local kind=if ranged then "ranged" else "warrior"
 			if combat.skills then combat.skills:lockOrdinary(rig,if ranged then Ranged.attackCooldown else Warrior.attackCooldown) end
 			record.action={target=target.rig,kind=kind,startedAt=now,serverAt=workspace:GetServerTimeNow(),fire=options.fire,resolved=false}
 			record.nextAttackAt=now+(if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
 		end
-		return pose(record,now,false)
+		return finishPlan()
 	end
 
 	function controller:advance(rig,now)

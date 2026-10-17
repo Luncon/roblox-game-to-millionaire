@@ -47,3 +47,5 @@ Extend SettlementDevelopment/SettlementSites, ProfileData/Economy and every snap
 CombatService must register medics as damageable owned actors while explicitly excluding them from ordinary attacks and weapon skills. Healing needs its own server-only validated path; neither client health/targets nor the hostile-only damage API can authorize it. HUD counts/status gain a medic slot and Hospital readiness without changing the camp class enum.
 
 All support state, targets, projectiles, live health and recovery clocks are transient. Runtime acceptance requires one isolated solo Studio session, native visual/path/health checks and a focused two-owner isolation check; specification validation and Rojo builds are separate evidence. No gameplay is implemented by this proposal.
+
+Medic escort now follows one current front fighter rather than the army average or a withdrawal latch. Critical support restricts movement outside healing range while retaining normal attacks, with 20%/40% thresholds.

@@ -48,6 +48,9 @@ Initial implementation and isolated fake-store/native verification are complete 
 - [x] 7.10 Let critically wounded owned fighters withdraw to a living medic during Advance, starting at 25% health and resuming ordinary combat at 60%; cancel pending attacks/skills/shots without resetting cooldowns, handle missing/dead/replaced medics and preserve Hold/Regroup/life/authority isolation. Verify actual movement and healing in Studio.
 - [x] 7.11 Give each visible bandage a three-stud proximity contact that heals one nearest eligible troop once; preserve walls, source range, owner/civilization and original-life guards, cooldowns and bounded flight. Prove near-moving hits, nearest-only selection, distant misses, obstruction and stale-life rejection in logic and native tests.
 
+- [x] 7.12 Replace centroid/distance-latched medic fallback with following the living owned fighter closest to the battlefield center; patients retain priority, death selects the next fighter and no fighters returns toward barracks until the first respawn. Verify steady native marching, retargets, owned routes and danger avoidance.
+- [x] 7.13 Change critical support to 20% entry/40% release and restrict only movement outside visible 45-stud medic range; preserve ordinary melee/ranged attacks, pending contacts/shots and cooldowns. Verify native attacks while wounded, range-bound pursuit, gap closing, threshold release and command/life/authority guards.
+
 ## Workflow follow-up
 
 - Review the complete medical implementation and its evidence before syncing/archiving its implemented capabilities. Keep unverified acceptance tasks unchecked.
