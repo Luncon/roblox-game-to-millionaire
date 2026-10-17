@@ -54,6 +54,21 @@ Before adding the rural reservations, the complete landscape measured **1,929 st
 2,000-part limit. That includes terrain collision, vegetation, water, bridges
 and cover. Part counts are geometry measurements, not frame-rate guarantees.
 
+Troop navigation assigns the shallow river a finite traversal cost of 40
+(ordinary ground costs 1), including a small bank margin. Invisible,
+noncolliding regions follow the generated river. Near bridges, six-stud cells
+are omitted only when their whole footprint lies safely on a deck; this keeps
+a cheap dry corridor without relying on overlapping modifier priority. Short
+combat steering rejects river shortcuts and includes bridge decks in its
+support checks. A unit displaced into water can still move onto dry ground.
+The same navigator serves fighters, medics and neutral opponents; army orders
+and combat authority are unchanged. See [PLAYTEST.md](PLAYTEST.md) for measured
+native traversal results.
+Roblox requires these modifier parts to remain queryable; their one-stud height
+stays below normal combat and bandage flight paths.
+With the current infrastructure reservations and 71 navigation regions, the
+complete landscape measures 1,892 static BaseParts.
+
 The terrain accounts for 1,472 of those parts. A ten-stud sampling scan measured
 a highest battlefield point of approximately 3.93 studs and an outer ridge point
 of 46.72 studs; the six-stud field bound remains the design limit. A real NPC

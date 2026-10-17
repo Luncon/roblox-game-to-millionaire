@@ -11,3 +11,7 @@
 - [x] 2.1 Verify actual melee/ranged navigation from different settlement sizes, real slope traversal and projectile impacts/protected-target checks in one Studio Play; record exact fixture scope and remaining multiplayer/hardware limits.
 - [x] 2.2 Run relevant full module/native solo regressions, production/test Rojo builds and strict OpenSpec validation; resolve independent review findings and verify unique fake test bootstraps.
 - [x] 2.3 Save playtest evidence and new terrain illustrations; stop Play, remove owned test fixtures, restore exact normal startup and verify only one Studio window remains.
+
+## 3. Bridge navigation regression
+
+- [x] 3.1 Make shared troop navigation prefer dry crossings over shallow river shortcuts, guard local combat steering, and verify physical bridge approaches in both directions with fake storage in Studio; record results and preserve the landscape budget and army commands.

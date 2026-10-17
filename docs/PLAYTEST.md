@@ -1846,3 +1846,39 @@ resetting it. These changes preserve the tested gameplay requirements.
 Production and manual builds were refreshed. Two-owner and real-storage checks
 were not rerun for this movement-only follow-up; previous evidence and the
 outstanding real-storage boundary remain separately recorded.
+
+## River and bridge navigation — October 17, 2026
+
+The initial native regression reproduced direct combat steering accepting a
+river shortcut. A native path experiment also confirmed that non-queryable
+modifier parts were ignored; enabling queries produced a dry bridge route.
+The final regions remain one stud high, below normal attack and bandage paths,
+and omit whole dry cells on bridge decks to avoid modifier overlap priority.
+
+The isolated fake-store solo navigation place passed **510 native module checks**
+and **six actual Humanoid traversals** in a translated, rotated world. Each
+walker started 24 studs to the side of its bridge, used the deck, reached the
+opposite dry bank, remained server-owned and kept full health. Every Heartbeat
+checked for water entry and discontinuous movement. Fixtures use dry endpoints
+far enough beyond the diagonal crossings to account for the lateral offset.
+
+| Crossing plot | Rig | Toward opposite bank | Return direction |
+| --- | --- | --- | --- |
+| 1 | Melee | 11.23 seconds | 11.13 seconds |
+| 2 | Ranged | 13.13 seconds | 12.00 seconds |
+| 8 | Medic | 12.00 seconds | 11.97 seconds |
+
+Focused module checks cover river entry and cross-river shortcuts, escape from
+water, local steering on every deck, transformed water checks and unobstructed
+bandage-sized spherecasts above the queryable regions. The landscape measured
+**1,892 static BaseParts**, including 71 navigation regions, below the 2,000 cap.
+Standalone logic passed 146 cases and strict OpenSpec validation passed 19 items.
+Production and test Rojo builds also passed. These checks do not establish
+multi-owner crowd behavior or published-client performance.
+
+To repeat, run `npm run build:test-project -- --solo --navigation`, build
+`.cache/solo-test.project.json` with Rojo, and open that output in one ordinary
+Studio Play session after stopping other playtests. The generated project
+injects FakeProfileStore and runs `SoloBridgeNavigationTests`. Read
+`BridgeNavigationVerificationPhase` and `BridgeNavigationVerificationResult`
+on the DataModel for progress and structured results. No player storage is used.

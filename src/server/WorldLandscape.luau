@@ -2,6 +2,7 @@
 
 local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
 local Topography = require(script.Parent.Topography)
+local WaterNavigation = require(script.Parent.WaterNavigation)
 local Landscape = {
 	sampleHeight=Topography.sampleHeight, sampleNormal=Topography.sampleNormal,
 	biomeAt=Topography.biomeAt, isReserved=Topography.isReserved,
@@ -113,6 +114,8 @@ function Landscape.build(world: Model): Folder
 			part(bridge,"Rail",Vector3.new(1,2,crossing.length),frame*CFrame.new(side*(crossing.width/2+.5),1.3,0),Color3.fromRGB(91,73,49),Enum.Material.Wood,false)
 		end
 	end
+
+	WaterNavigation.build(waterways)
 
 	local features=Instance.new("Folder")
 	features.Name,features.Parent="BattlefieldFeatures",root

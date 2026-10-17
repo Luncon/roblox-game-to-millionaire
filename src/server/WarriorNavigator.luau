@@ -3,6 +3,7 @@
 local PathfindingService = game:GetService("PathfindingService")
 local Rules = require(script.Parent.CombatRules)
 local Tuning = require(game.ReplicatedStorage.Shared.TacticalCombatConfig)
+local WaterNavigation = require(script.Parent.WaterNavigation)
 local WarriorNavigator = {}
 
 local function flatDistance(a: Vector3, b: Vector3): number
@@ -70,11 +71,13 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean)
 		local arena=world.model.Battlefield
 		local distance=flatDistance(root.Position,position)
 		if distance>Tuning.closeDistance or not Rules.containsArena(arena,position) then return false end
+		if not WaterNavigation.allowsDirect(world.model,root.Position,position) then return false end
 		local terrain=RaycastParams.new()
 		terrain.FilterType=Enum.RaycastFilterType.Include
 		local surfaces={world.model.Ground,workspace.Terrain}
 		local landscape=world.model:FindFirstChild("Landscape")
 		if landscape and landscape:FindFirstChild("TerrainSurface") then table.insert(surfaces,landscape.TerrainSurface) end
+		if landscape and landscape:FindFirstChild("Waterways") then table.insert(surfaces,landscape.Waterways) end
 		terrain.FilterDescendantsInstances=surfaces
 		terrain.RespectCanCollide=true
 		local function support(point)
@@ -117,6 +120,7 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean)
 		task.spawn(function()
 			local candidate = PathfindingService:CreatePath({
 				AgentRadius = 2, AgentHeight = 5, AgentCanJump = true, WaypointSpacing = 4,
+				Costs = WaterNavigation.costs,
 			})
 			local ok = pcall(function() candidate:ComputeAsync(start, destination) end)
 			if pending == token then pending = nil end

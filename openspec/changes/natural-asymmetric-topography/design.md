@@ -39,6 +39,13 @@ introduce terrain editing tools, swimming requirements or client terrain authori
 - Irregular biome boundaries and terrain-following props replace circular patch
   decals. Water follows a winding lowland with dry crossings aligned to affected
   approaches; no mandatory swimming or deep-water navigation is added.
+- Shared troop paths assign the cosmetic shallow river a finite cost of 40.
+  Owned invisible noncolliding modifier regions cover water and a small bank
+  margin, with whole dry six-stud cells removed around bridge decks so overlaps
+  cannot penalize the crossing. Short combat steering rejects water shortcuts,
+  allows exits for displaced units, and raycasts bridge decks as supported ground.
+  Verify real offset approaches to every bridge in both directions, including
+  transformed worlds, while retaining the 2,000-part landscape budget.
 - Keep landscape geometry at or below 2,000 static BaseParts; target fewer where
   practical. Reuse fixed coarse sampling rather than one Part per stud. Inspect
   silhouettes and traversal before accepting a visually flat or expensive mesh.
