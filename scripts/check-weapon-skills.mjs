@@ -17,7 +17,7 @@ const modules = [
   'tests/specs/Economy.spec.luau', 'tests/specs/EconomyPersistence.spec.luau',
   'tests/specs/EconomyProgression.spec.luau', 'tests/specs/ProfileData.spec.luau',
   'tests/specs/ProfileGrowth.spec.luau', 'tests/specs/EconomyExpansion.spec.luau',
-  'tests/specs/SettlementDevelopment.spec.luau',
+  'tests/specs/SettlementDevelopment.spec.luau', 'tests/specs/HospitalProgression.spec.luau',
 ];
 const identifiers = new Map(modules.map(file => [file, file.replace(/\.luau$/, '').replaceAll('/', '.') ]));
 let source = `local primitives=(function()\n${fs.readFileSync('tests/cli/Primitives.luau', 'utf8')}\nend)()\n`;

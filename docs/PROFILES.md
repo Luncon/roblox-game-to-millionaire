@@ -181,3 +181,11 @@ and barracks I, including its tier-one equipment and one melee troop. The longer
 partial interaction coverage, not a completed 55-click run. See
 [playtest records](PLAYTEST.md) for the detailed evidence. This verifies Studio
 development storage, not live-scope or published Roblox-client restoration.
+
+Hospital ownership adds the sixteenth scalar, `hospitalLevel` (0 or 1). Only a
+missing value defaults to zero; supplied malformed values or Hospital I without
+settlement 10 and Training Yard I reject the record. The existing version-one
+keys, store names and scopes remain unchanged. All original fifteen fields are
+preserved. Bandage flights, recovery clocks, cooldowns and troop health are never
+saved. A rollback must retain a hospital-field-aware profile writer even when
+medical deployment is disabled; an older writer would discard the purchase.

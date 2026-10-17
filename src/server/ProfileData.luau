@@ -7,7 +7,7 @@ local ProfileData = {}
 
 export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number,
 	trainingLevel: number, farmLevel: number, workersLevel: number, armyCampLevel: number, farmCoins: number, extraTroopClass: string,
-	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number }
+	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number, hospitalLevel: number }
 export type Profile = {
 	schemaVersion: number,
 	civilizations: { [string]: State },
@@ -29,7 +29,7 @@ end
 function ProfileData.defaultState(): State
 	return { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1,
 		trainingLevel=0,farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
-		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0 }
+		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0,hospitalLevel=0 }
 end
 
 function ProfileData.copyState(value: any): State?
@@ -50,6 +50,7 @@ function ProfileData.copyState(value: any): State?
 		if not integer(level,0,building.maxLevel) or (level>0 and value.level<building.tiers[level].unlock) then return nil end
 		copied[building.field]=level
 	end
+	if copied.hospitalLevel==1 and copied.trainingLevel~=1 then return nil end
 	if copied.workersLevel>copied.farmLevel then return nil end
 	if copied.armyCampLevel==1 and copied.barracksLevel<4 then return nil end
 	if copied.storehouseLevel==1 and copied.farmLevel<1 then return nil end

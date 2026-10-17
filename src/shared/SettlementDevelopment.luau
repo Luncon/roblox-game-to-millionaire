@@ -5,11 +5,12 @@ local Skills=require(script.Parent.WeaponSkillConfig)
 local Development={}
 Development.fields=table.freeze({settlement="level",weapon="weaponLevel",armor="armorLevel",barracks="barracksLevel",
 	training="trainingLevel",farm="farmLevel",workers="workersLevel",armyCamp="armyCampLevel",
-	blacksmith="blacksmithLevel",armorer="armorerLevel",storehouse="storehouseLevel",skill="skillLevel"})
+	blacksmith="blacksmithLevel",armorer="armorerLevel",storehouse="storehouseLevel",skill="skillLevel",hospital="hospitalLevel"})
 Development.persistentFields=table.freeze({"coins","level","weaponLevel","armorLevel","barracksLevel",
 	"trainingLevel","farmLevel","workersLevel","armyCampLevel","farmCoins","extraTroopClass",
-	"blacksmithLevel","armorerLevel","storehouseLevel","skillLevel"})
+	"blacksmithLevel","armorerLevel","storehouseLevel","skillLevel","hospitalLevel"})
 local buildings={
+	hospital={field="hospitalLevel",title="Hospital",tiers={{unlock=10,cost=200}}},
 	training={field="trainingLevel",title="Training Yard",tiers={{unlock=5,cost=50}}},
 	farm={field="farmLevel",title="Farm",tiers={{unlock=7,cost=80},{unlock=12,cost=180}}},
 	workers={field="workersLevel",title="Worker Camp",tiers={{unlock=7,cost=60},{unlock=12,cost=140}}},
@@ -61,6 +62,7 @@ function Development.offer(state,track: string)
 	if track=="workers" and nextLevel and (state.farmLevel or 0)<nextLevel then
 		table.insert(missing,if nextLevel==2 then "Farm II" else "Farm I")
 	end
+	if track=="hospital" and state.trainingLevel~=1 then table.insert(missing,"Training Yard I") end
 	if track=="storehouse" and (state.farmLevel or 0)<1 then table.insert(missing,"Farm I") end
 	if track=="armyCamp" and (state.barracksLevel or 1)<4 then table.insert(missing,"Barracks IV") end
 	if track=="settlement" and current==9 then
@@ -79,6 +81,6 @@ function Development.storageCapacity(state): number
 	return if state.storehouseLevel==1 then 180 else Development.farmCapacity
 end
 function Development.armyCapacity(state): number
-	return Tracks.barracks[state.barracksLevel or 1].capacity+(state.armyCampLevel or 0)
+	return Tracks.barracks[state.barracksLevel or 1].capacity+(state.armyCampLevel or 0)+(state.hospitalLevel or 0)
 end
 return table.freeze(Development)

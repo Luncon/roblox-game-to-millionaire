@@ -143,7 +143,7 @@ function EconomyUI.start(screen: ScreenGui)
 			workersLevel=player:GetAttribute("WorkersLevel"),armyCampLevel=player:GetAttribute("ArmyCampLevel"),
 			farmCoins=player:GetAttribute("FarmCoins"),extraTroopClass=player:GetAttribute("ExtraTroopClass"),
 			blacksmithLevel=player:GetAttribute("BlacksmithLevel"),armorerLevel=player:GetAttribute("ArmorerLevel"),
-			storehouseLevel=player:GetAttribute("StorehouseLevel"),
+			storehouseLevel=player:GetAttribute("StorehouseLevel"),hospitalLevel=player:GetAttribute("HospitalLevel"),
 			revision = player:GetAttribute("EconomyRevision") })
 		render()
 	end

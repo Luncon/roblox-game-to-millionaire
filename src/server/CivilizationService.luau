@@ -106,7 +106,7 @@ function CivilizationService.start(options: any?)
 				ArmorLevel="armorLevel",BarracksUpgradeLevel="barracksLevel",EconomyRevision="revision",
 				TrainingLevel="trainingLevel",FarmLevel="farmLevel",WorkersLevel="workersLevel",ArmyCampLevel="armyCampLevel",
 				BlacksmithLevel="blacksmithLevel",ArmorerLevel="armorerLevel",StorehouseLevel="storehouseLevel",
-				FarmCoins="farmCoins",ExtraTroopClass="extraTroopClass",SkillLevel="skillLevel"} do
+				FarmCoins="farmCoins",ExtraTroopClass="extraTroopClass",SkillLevel="skillLevel",HospitalLevel="hospitalLevel"} do
 				player:SetAttribute(attribute,state[field])
 			end
 			local stats = player:FindFirstChild("leaderstats")
@@ -116,7 +116,7 @@ function CivilizationService.start(options: any?)
 			if coins:IsA("IntValue") then coins.Value=state.coins end
 		end
 		if result.ok and (action=="claim" or action=="switch" or action=="upgrade" or action=="weapon" or action=="armor" or action=="barracks"
-			or action=="training" or action=="armyCamp" or action=="troopClass" or action=="skill") then
+			or action=="hospital" or action=="training" or action=="armyCamp" or action=="troopClass" or action=="skill") then
 			if army then
 				if action=="skill" then army:refreshSkills(player) else army:refresh(player) end
 			end
