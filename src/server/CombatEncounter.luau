@@ -7,6 +7,7 @@ local Ranged=require(Shared.RangedConfig)
 local Rules=require(script.Parent.CombatRules)
 local Tactics=require(script.Parent.CombatTactics)
 local Topography=require(script.Parent.Topography)
+local Footwork=require(script.Parent.TroopFootwork)
 local CombatEncounter={}
 
 -- One instance coordinates both NPC services. Planning runs at think frequency;
@@ -60,6 +61,7 @@ function CombatEncounter.new(world,combat)
 		local record=records[rig]
 		if not record then return end
 		record.action,record.reservation,record.target,record.retreatOrigin,record.retreatStartedAt=nil,nil,nil,nil,nil
+		record.footwork=nil
 		record.plan={goal=nil,state="Holding",direct=false,speed=Warrior.walkSpeed}
 		pose(record,record.lastNow or 0,false)
 	end
@@ -166,7 +168,9 @@ function CombatEncounter.new(world,combat)
   record.support=options.support
   local function supportMovement()
    local support,plan=record.support,record.plan
-   if not support or not plan then return end
+   if not plan then return end
+   plan.allowsDetour=if support and not support.goal then support.allows else nil
+   if not support then return end
    if support.goal then
     plan.goal,plan.state,plan.speed=support.goal,"Seeking medic",Warrior.walkSpeed
     plan.direct=Tactics.flatDistance(plan.goal,attacker.position)<=Tuning.closeDistance
@@ -261,9 +265,37 @@ function CombatEncounter.new(world,combat)
 			record.reservation=nil
 			plan.goal=if options.order=="hold" then nil else options.homeGoal
 			plan.state=if options.order=="hold" then "Holding" elseif Rules.containsArena(arena,attacker.position) then "Guarding" else "Marching"
+			if options.order~="hold" and options.homeGoal and Rules.containsArena(arena,attacker.position)
+				and Tactics.flatDistance(attacker.position,options.homeGoal)<3.5 then
+				record.footwork=record.footwork or {}
+				plan.goal=Footwork.idle(record.footwork,attacker,options.homeGoal,now,function(point)
+					local p=ground(point,attacker)
+					return if free(p,attacker,attacker,actors) then p else nil
+				end)
+				plan.direct,plan.speed=true,3
+			end
 			return finishPlan()
 		end
-		if record.action and now<record.action.startedAt+duration(record.action.kind) then return finishPlan() end
+		if record.action and now<record.action.startedAt+duration(record.action.kind) then
+			local action=record.action
+			local phase=Tactics.attackPhase(action.startedAt,now,action.kind)
+			if phase=="recovery" and action.resolved and options.order~="hold"
+				and (not ranged or pressureDistance>=Tuning.retreatSafe) then
+				record.footwork=record.footwork or {}
+				local deadline=action.startedAt+duration(action.kind)
+				plan.goal=Footwork.combat(record.footwork,attacker,target,now,deadline,function(point)
+					local p=ground(point,attacker)
+					if not free(p,attacker,target,actors) or not combat:visible({rig=rig,position=p},target) then return nil end
+					if not ranged and (p-target.position).Magnitude>Warrior.attackRange then return nil end
+					return p
+				end)
+				if plan.goal then
+					plan.direct,plan.footwork,plan.speed=true,true,if ranged then 5 else 4
+					record.reservation={target=target.rig,point=plan.goal,waiting=true}
+				end
+			end
+			return finishPlan()
+		end
 		record.action=nil
 		local reach=if ranged then Ranged.range else Warrior.attackRange
 		local distance=(target.position-attacker.position).Magnitude

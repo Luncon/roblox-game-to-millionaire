@@ -40,7 +40,7 @@ NPC attacks SHALL visibly wind up, make one contact attempt and recover. The ser
 - **THEN** it applies at most one normal damage event, or releases one normal nonhoming projectile, and observes the existing attack cooldown
 
 ### Requirement: Ranged positioning
-Advancing ranged troops SHALL hold a useful firing distance, make bounded slower retreats from close melee threats and seek a nearby clear firing line when obstructed. Aiming and firing SHALL commit the troop to a stationary attack cycle.
+Advancing ranged troops SHALL hold a useful firing distance, make bounded slower retreats from close melee threats and seek a nearby clear firing line when obstructed. Aiming and release SHALL stay stationary; recovery MAY permit guarded optional strafing before the next shot.
 
 #### Scenario: Melee approaches an archer
 - **WHEN** an advancing enemy gets dangerously close
@@ -67,3 +67,21 @@ Hold SHALL keep its position, and Regroup SHALL cancel pending NPC contacts and 
 #### Scenario: Switch or lose authority
 - **WHEN** an owner switches civilization, disconnects or loses writable progress during an encounter
 - **THEN** stale pending actions cannot damage targets or generate kill rewards and their reservations are released
+
+### Requirement: Shared troop spacing in travel and camp
+Owned and neutral troops SHALL avoid sustained crowding with allied and enemy troop bodies during Advance, Regroup and camp rest. They SHALL walk, sidestep or yield without pushing or teleporting. Held actors SHALL remain stationary obstacles. Traffic waits SHALL NOT trigger stuck-recovery jumps. Camp destinations and paths SHALL respect other troops, yard bounds and the fire.
+
+#### Scenario: Bridge traffic and camp arrivals
+- **WHEN** opposing troops cross a bridge or four owned troops return to camp together
+- **THEN** local passing and intentional yielding permit progress without sustained body overlap, water shortcuts or blocked camp entrances
+
+### Requirement: Varied idle and recovery footwork
+Troops SHALL use occasional small idle movements and varied recovery steps: ranged strafing and melee arcs or distance adjustments within reach. Footwork SHALL respect spacing, geometry and medical bounds, yielding to attacks, skills and orders without changing contacts or cooldowns. Windup, contact and Hold SHALL stay planted.
+
+#### Scenario: Observe a duel and ranged firing
+- **WHEN** unanchored combatants exchange attacks
+- **THEN** recovery steps vary in timing and direction while actual damage and projectile release continue through the existing validated contacts
+
+#### Scenario: Idle and Hold
+- **WHEN** troops reach their rally or receive Hold
+- **THEN** idle movements stay near the rally and Hold keeps root positions fixed

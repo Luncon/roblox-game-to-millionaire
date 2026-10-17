@@ -1947,3 +1947,56 @@ The user explicitly authorized a separate Studio window while their playtest
 continued. Verification used only the owned fake-store window; no fixtures were
 installed in the user's playtest, which stayed open. Existing real-storage and published-client
 acceptance boundaries remain separate.
+
+
+## Troop footwork and shared crowd spacing — October 17, 2026
+
+Implemented small rally shuffles, standing weight shifts, ranged recovery
+strafes and short melee recovery arcs/pressure/yield steps with varied pauses.
+Owned and neutral troops share body avoidance during Advance, Regroup and camp
+walks. They use grounded dry detours or yield without triggering the stuck-jump
+watchdog. Hold, windup/contact and skills keep movement priority. Crowd detours
+carry the medic's forward/enemy-clearance rules and the critical fighter's
+healing boundary; ordinary path waypoints keep their existing routing behavior.
+
+The isolated FakeProfileStore solo combat run passed **539 native module
+checks, four existing combat scenarios and six new movement scenarios**.
+Four opposing walkers crossed a bridge in **10.65 seconds** at the production
+0.2-second think rate; sampling rejected water shortcuts, teleports, stuck jumps
+while yielding and sustained root overlap. Three initially coincident walkers
+separated by walking and reached independent destinations. Idle movement covered
+**1.26 studs** in ten seconds while staying near rally; Hold stopped root drift.
+An unanchored melee duel recorded **19 moving recovery samples**, with both
+fighters taking damage (**1000→910 / 1000→920 HP**). Ranged firing recorded
+**eight moving recovery samples**, **2.60 studs** of displacement and actual
+projectile damage (**1000→968 HP**).
+
+Four owned troops, including the medic, reached camp through separate staggered
+entry points; all four native paths succeeded, and ten seconds of yard sampling
+recorded **zero time below two-stud root separation**. Initial outer lanes failed
+at the wall gate/native navmesh; the final points stay in the reachable approach.
+The existing six-NPC fight recorded **40 validated contacts matching 40 damage
+events**, **3.50-stud minimum root separation** and no sustained torso overlap.
+Held attacks, a moving-target miss, bounded ranged retreat and Regroup
+cancellation also passed.
+
+The separate medical survival run passed **539 native module checks and all ten
+scenarios**. Healing continued during movement, critical melee/ranged attacks
+and pending shots remained active, actual replacements did not pull the medic
+back, and movement resumed with troops still outside the field. A chased medic
+moved **13.50 studs toward the wounded ally** and **13.50 studs away from the
+pursuer**, maintained at least **8.00 studs** clearance and healed **40→52 HP**.
+
+Standalone checks passed **172 cases**. Focused navigator regressions exercise
+actual crowd replacement under medical movement predicates, including retained
+detours and yielding when none is allowed. Removing the forward predicate from
+a temporary bundled fixture made the regression fail. A separate code review
+caught the original missing medical predicate; it was corrected and re-reviewed.
+Strict OpenSpec validation passed all **19 items** and all **204 Luau files**
+compiled. Production, combat-test, medical-test and the 3,000-coin local manual
+builds were refreshed. No profile, combat-stat or economy fields changed.
+
+Verification used only the owned fake-store Studio window under the user's
+permission for a separate window. Published-client, two-owner replication and
+real-storage acceptance were not rerun. Soft avoidance reduces sustained body
+crowding; it does not guarantee that all noncolliding meshes never intersect.

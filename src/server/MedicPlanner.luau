@@ -31,6 +31,23 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe,inside
    end
   end
  end
+ -- Navigation reuses the same movement policy for short crowd detours.
+ local function clearance(point,escaping)
+  local leg=Vector3.new(point.X-medic.position.X,0,point.Z-medic.position.Z)
+  if not escaping and leg.Magnitude>Tuning.closeDistance then leg=leg.Unit*Tuning.closeDistance end
+  local gap=math.huge
+  for _,enemy in enemies do
+   gap=math.min(gap,Tactics.flatDistance(point,enemy.position))
+   local d=Vector3.new(enemy.position.X-medic.position.X,0,enemy.position.Z-medic.position.Z)
+   local t=if leg.Magnitude>.01 then math.clamp(d:Dot(leg)/leg:Dot(leg),0,1) else 0
+   local floor=if escaping then math.min(d.Magnitude,Config.avoidRange)-.01 else Config.avoidRange
+   if (d-leg*t).Magnitude<floor then return false,gap end
+  end
+  return true,gap
+ end
+ plan.allowsDetour=function(point)
+  return (point-medic.position):Dot(forward)>=-.01 and clearance(point,false)
+ end
  local function setGoal(p)
   if p and Tactics.flatDistance(p,medic.position)>2 then
    plan.goal=p;plan.direct=Tactics.flatDistance(p,medic.position)<=Tuning.closeDistance
@@ -43,15 +60,7 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe,inside
   for _,angle in angles do
    local p=safe(medic.position+Vector3.new(math.cos(angle),0,math.sin(angle))*Config.avoidStep,true,true)
    if not p then continue end
-   local gap=math.huge
-   local leg=Vector3.new(p.X-medic.position.X,0,p.Z-medic.position.Z)
-   local clear=true
-   for _,enemy in enemies do
-    gap=math.min(gap,Tactics.flatDistance(p,enemy.position))
-    local d=Vector3.new(enemy.position.X-medic.position.X,0,enemy.position.Z-medic.position.Z)
-    local t=if leg.Magnitude>.01 then math.clamp(d:Dot(leg)/leg:Dot(leg),0,1) else 0
-    if (d-leg*t).Magnitude<math.min(d.Magnitude,Config.avoidRange)-.01 then clear=false;break end
-   end
+   local clear,gap=clearance(p,true)
    if not clear or gap<=nearest+.01 then continue end
    bestGap=math.max(bestGap,gap)
    table.insert(candidates,{point=p,gap=gap})
@@ -68,6 +77,10 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe,inside
     bestDistance,chosenGap=distance,candidate.gap;plan.goal=candidate.point
    end
   end
+  plan.allowsDetour=function(point)
+   local clear,gap=clearance(point,true)
+   return clear and gap>nearest+.01 and safe(point,true,true)~=nil
+  end
   setGoal(plan.goal)
   return plan
  end
@@ -80,22 +93,12 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe,inside
  local backward=Vector3.new(delta.X,0,delta.Z):Dot(forward)
  if backward<0 then desired-=forward*backward end
  if Tactics.flatDistance(desired,medic.position)<=Config.supportSpacing then return plan end
- local function clear(point)
-  local leg=Vector3.new(point.X-medic.position.X,0,point.Z-medic.position.Z)
-  if leg.Magnitude>Tuning.closeDistance then leg=leg.Unit*Tuning.closeDistance end
-  for _,enemy in enemies do
-   local d=Vector3.new(enemy.position.X-medic.position.X,0,enemy.position.Z-medic.position.Z)
-   local t=if leg.Magnitude>.01 then math.clamp(d:Dot(leg)/leg:Dot(leg),0,1) else 0
-   if (d-leg*t).Magnitude<Config.avoidRange then return false end
-  end
-  return true
- end
  local bestDistance=math.huge
  local bestCoverage=-1
  local function consider(point)
   if (point-medic.position):Dot(forward)<-.01 then return end
   local p=safe(point,false,false)
-  if not p or not clear(p) then return end
+  if not p or not clearance(p,false) then return end
   local distance=Tactics.flatDistance(p,medic.position)
   local coverage=0
   if onField then

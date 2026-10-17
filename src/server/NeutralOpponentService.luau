@@ -57,7 +57,7 @@ function NeutralOpponentService.start(world,combat,configuration: any?,sharedEnc
 		rig.Parent=folder
 		rig.HumanoidRootPart:SetNetworkOwner(nil)
 		assert(combat:registerNeutral(rig,slot.kind),"Neutral combat registration failed")
-		slot.navigator=Navigator.new(rig,function() return active and slot.rig==rig end)
+		slot.navigator=Navigator.new(rig,function() return active and slot.rig==rig end,world)
 		slot.deathConnection=rig.Humanoid.Died:Connect(function() fallen(slot,rig) end)
 		slot.destroyConnection=rig.Destroying:Connect(function() fallen(slot,rig) end)
 	end

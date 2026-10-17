@@ -7,6 +7,7 @@ NPCs currently converge on enemy roots, overlap and exchange immediate damage wh
 ## What Changes
 
 - Both owned and neutral troops use distinct melee approach positions, nearby separation and overflow handling around crowded targets.
+- Shared soft spacing also covers Advance travel, Regroup and direct camp walking. Idle troops make small anchored shuffles; ranged and melee troops use varied recovery footwork without changing attack timing. Holds keep fixed root positions.
 - Attacks visibly wind up, strike and recover. Damage or projectile release occurs at contact after fresh server validation, with weapon-family poses, a short hit reaction and impact feedback.
 - Ranged troops maintain a firing distance, use bounded retreats when threatened and sidestep obstructed firing lines. Shooting requires a stationary commitment.
 - Troops retain valid targets, prefer open approaches and respond to enemies threatening friendly ranged troops.

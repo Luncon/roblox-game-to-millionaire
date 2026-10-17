@@ -42,7 +42,8 @@ local ok,result=pcall(function()
 		assert(response.executed,tostring(response.result));assert(response.result.ok,"Native client action failed: "..name)
 		return response.result
 	end
-	evidence.runtime=require(game.ServerStorage.RuntimeTests.TacticalCombat)(context,player,round)
+	evidence.runtime=if script:GetAttribute("FootworkOnly") then {ok=true,cases=0} else require(game.ServerStorage.RuntimeTests.TacticalCombat)(context,player,round)
+	evidence.movement=require(game.ServerStorage.RuntimeTests.TroopMovement)(context,player,round)
 	return evidence.runtime
 end)
 stage(if ok then "Complete" else "Failed")

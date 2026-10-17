@@ -142,13 +142,31 @@ crowding and favor threats close to friendly ranged troops when choosing an
 opponent. Pathfinding handles travel; supported, obstacle-checked local steps
 handle nearby encounters.
 
+All owned and neutral navigators share soft spacing during Advance, Regroup,
+combat steps and camp strolls. They look ahead for allied and enemy bodies,
+choose checked passing steps or yield in place; held troops remain obstacles.
+A yield does not trigger the stuck-jump watchdog. Detours preserve terrain,
+water and obstacle checks. Four staggered camp arrival points fit through the
+training gate; inside, detours stay in the yard and clear of the fire.
+Noncolliding bodies can still briefly intersect during changing traffic.
+
+Without a target, fighters occasionally shuffle one or two studs around their
+rally point and shift their weight while standing. After contact, melee fighters
+sometimes take short arcs or diagonal pressure/yield steps, with varied pauses
+and directions, keeping a 3.5–4.5 stud distance from the opponent. These optional
+steps run at speed 4 and end before the next windup. Windup, contact, weapon
+skills and Hold stay planted. Contacts, damage and attack cooldowns are unchanged.
+Medical range limits still constrain fighter footwork; medic healing and enemy
+avoidance retain priority over optional movement.
+
 Ranged troops prefer a 22–35 stud firing distance. Hostile melee inside 12 studs
 triggers slower backward or diagonal steps, with sideways alternatives at the
 arena edge, stopping when safe at 18 studs or
 after an 18-stud/three-second retreat episode. Changing firing targets cannot
 renew that episode. Blocked shots prompt short sideways searches for a clear
-line of sight. Ranged troops remain catchable and commit to standing still while
-aiming, releasing and recovering. Hold permits stationary attacks only.
+line of sight. Ranged troops remain catchable and stand still while aiming
+and releasing. Between shots they sometimes take short lateral steps at speed
+5, with pauses and changes of direction. Hold permits stationary attacks only.
 
 Melee cycles wind up for 0.2 seconds, contact for 0.15 and recover for 0.65.
 Ranged cycles use 0.35/0.15/1.5 seconds. The weapon reaches its strike pose at

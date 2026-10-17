@@ -172,7 +172,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		root:SetNetworkOwner(nil)
 		humanoid.WalkSpeed = Config.walkSpeed
 		combat:register(rig, owner.player.UserId, slot.kind)
-		slot.navigator = WarriorNavigator.new(rig, function() return current(owner, slot) and slot.rig == rig end)
+		slot.navigator = WarriorNavigator.new(rig, function() return current(owner, slot) and slot.rig == rig end,world)
 		slot.holdPosition=if owner.order=="hold" then root.Position else nil
 		if owner.order=="hold" then slot.navigator:stop() end
 		slot.deathConnection = humanoid.Died:Connect(function() fallen(owner, slot, rig) end)
@@ -333,13 +333,14 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					attacker.humanoid.WalkSpeed=speed
 					if goal~=slot.restGoal or frame~=slot.restFrame or direct~=slot.restDirect then
 						if not goal then slot.navigator:stop()
-						elseif direct then slot.navigator:walkDirect(frame:PointToWorldSpace(goal))
-						else slot.navigator:setGoal(frame:PointToWorldSpace(goal)) end
+						elseif not direct then slot.navigator:setGoal(frame:PointToWorldSpace(goal)) end
 						slot.restGoal=goal
 						slot.restFrame=frame
 						slot.restDirect=direct
 					end
-					if goal and not direct then slot.navigator:step(now) end
+					if goal then
+						if direct then slot.navigator:walkDirect(frame:PointToWorldSpace(goal)) else slot.navigator:step(now) end
+					end
 					rig:SetAttribute("WarriorState",if arrived then "Regrouped" else "Regrouping")
 					rig:SetAttribute("RestPhase",slot.rest.phase)
 					continue

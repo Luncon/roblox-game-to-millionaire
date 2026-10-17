@@ -96,7 +96,11 @@ ProfileService uses `CivilizationProfilesV1` with `StudioDevelopment` in Studio
 and `Live` in Roblox servers. Automated tests must inject their fake store; never
 run regression fixtures against player data. Real storage verification is separate
 from fake-store checks. NPC combat shares server-owned target selection, engagement reservations, local
-separation and bounded ranged retreats across both troop services. Windup/contact/
+separation and bounded ranged retreats across both troop services. Shared soft
+spacing also covers Advance, Regroup and camp walks; detours retain medic movement
+and healing-range constraints. Idle shuffles and optional recovery footwork yield
+to planted windup/contact, skills and Hold; intentional traffic waits never trigger
+stuck jumps. Windup/contact/
 recovery drives exactly-once validated strikes and weapon-family R6 poses; preserve
 source joints, equipment grips and distinct imported/neutral/fallback bow bases.
 Hold remains stationary; Regroup cancels pending contacts and shots. Weapon-family

@@ -35,9 +35,9 @@ function Motion.apply(rig,navigator,world,result,now)
 		if (point-root.Position).Magnitude>.01 then root.CFrame=CFrame.lookAt(root.Position,point)end
 	end
 	-- Root facing changes cancel Humanoid MoveTo, so issue movement last.
-	if not skillActive and result.goal and result.phase=="idle" then
-		if not result.direct or not navigator:walkCombat(result.goal,world)then
-			navigator:setGoal(result.goal);navigator:step(now)
+	if not skillActive and result.goal and (result.phase=="idle" or (result.phase=="recovery" and result.footwork)) then
+		if not result.direct or not navigator:walkCombat(result.goal,world,result.allowsDetour)then
+			navigator:setGoal(result.goal,result.allowsDetour);navigator:step(now)
 		end
 	else navigator:stop()end
 end

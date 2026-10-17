@@ -53,6 +53,7 @@ return function(moduleOverride)
 		f.options.support={allows=function(p)return p.X<=1 end}
 		local p=f.encounter:step(f.source,f.options,0)
 		assert(p.phase=="windup" and not p.goal)
+		assert(p.allowsDetour==f.options.support.allows,"Healing boundary did not reach crowd steering")
 		f.encounter:advance(f.source,.21);assert(f.combat.hits==1)
 		f.target.HumanoidRootPart.Position=Vector3.new(20,10004,0)
 		p=f.encounter:step(f.source,f.options,1.01)
@@ -64,7 +65,7 @@ return function(moduleOverride)
 			local goal=Vector3.new(-20,10004,0)
 			f.options.support={goal=goal,allows=function()return true end}
 			local p=f.encounter:step(f.source,f.options,.1)
-			assert(p.goal==goal)
+			assert(p.goal==goal and not p.allowsDetour,"Return path inherited an in-range restriction")
 			f.encounter:advance(f.source,.36)
 			assert(if kind=="warrior" then f.combat.hits==1 else f.combat.shots==1)
 		end,kind)end
@@ -316,5 +317,24 @@ return function(moduleOverride)
 		f.encounter:forget(f.source);f.encounter:advance(f.source,1.21)
 		assert(f.combat.hits==0 and f.encounter:get(f.source)==nil)
 	end)end)
+	for _,kind in {"warrior","ranged"} do
+		test(kind.." recovery permits varied safe steps without repeating contacts",function()run(function(f)
+			f.options.order="advance"
+			f.target.Humanoid.MaxHealth=10000;f.target.Humanoid.Health=10000
+			if kind=="ranged" then f.target.HumanoidRootPart.Position=Vector3.new(24,10004,0) end
+			local moved=0
+			for cycle=1,20 do
+				local now=cycle*3
+				assert(f.encounter:step(f.source,f.options,now).phase=="windup")
+				f.encounter:advance(f.source,now+.51)
+				local contacts=f.combat.hits+f.combat.shots
+				local p=f.encounter:step(f.source,f.options,now+.52)
+				if p.goal then assert(p.phase=="recovery" and p.footwork);moved+=1 end
+				f.encounter:advance(f.source,now+.7)
+				assert(f.combat.hits+f.combat.shots==contacts)
+			end
+			assert(moved>2,"Recovery never selected a footstep")
+		end,kind)end)
+	end
 	return cases
 end

@@ -23,6 +23,13 @@ function Camp.point(index: number): Vector3
 	return Camp.center+Vector3.new(math.cos(angle)*Camp.ringRadius,2.15,math.sin(angle)*Camp.ringRadius)
 end
 
+function Camp.entryPoint(index: number): Vector3
+	-- Stagger four body-width destinations within the gate's clear navmesh.
+	local inner=index==2 or index==6
+	local lower=index==1 or index==6
+	return Camp.center+Vector3.new(if inner then 5 else 9,2.15,if lower then -3 else 3)
+end
+
 function Camp.contains(position: Vector3,margin: number?): boolean
 	local half=Camp.size.X/2-(margin or 0)
 	return math.abs(position.X-Camp.center.X)<=half+.01 and math.abs(position.Z-Camp.center.Z)<=half+.01

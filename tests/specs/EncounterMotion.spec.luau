@@ -50,5 +50,23 @@ return function(module)
 		Motion.apply(rig,navigator,{}, {phase="idle",goal=root.Position+Vector3.new(5,0,0),direct=true,speed=12},1)
 		assert(humanoid.WalkSpeed==12 and navigator.directs==1)
 	end)
+	test("only explicitly authorized recovery footwork can move during an attack",function(rig,root,humanoid,navigator)
+		local goal=root.Position+Vector3.new(0,0,2)
+		for _,phase in {"windup","contact"} do
+			Motion.apply(rig,navigator,{}, {phase=phase,goal=goal,footwork=true,direct=true,speed=4},1)
+		end
+		assert(navigator.directs==0 and navigator.stops==2)
+		Motion.apply(rig,navigator,{}, {phase="recovery",goal=goal,footwork=true,direct=true,speed=4},1)
+		assert(navigator.directs==1 and humanoid.WalkSpeed==4)
+	end)
+	test("movement restrictions reach direct and path crowd steering",function(rig,root,humanoid,navigator)
+		local policy=function(p)return p.X<=10 end
+		function navigator:walkCombat(goal,world,predicate)self.policy=predicate;return false end
+		function navigator:setGoal(goal,predicate)self.routePolicy=predicate end
+		Motion.apply(rig,navigator,{}, {phase="idle",goal=root.Position+Vector3.new(2,0,0),direct=true,allowsDetour=policy},1)
+		assert(navigator.policy==policy and navigator.routePolicy==policy)
+		Motion.apply(rig,navigator,{}, {phase="idle",goal=root.Position+Vector3.new(20,0,0)},2)
+		assert(navigator.routePolicy==nil,"Old medical policy leaked into a new plan")
+	end)
 	return cases
 end

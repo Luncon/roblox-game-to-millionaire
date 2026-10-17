@@ -15,6 +15,23 @@ return function()
 		assert(not nav:walkCombat(Vector3.new(7,4,0),world),"Direct combat movement passed through a wall")
 		wall:Destroy()
 		assert(not nav:walkCombat(Vector3.new(900,4,0),world),"Combat steering left the arena or accepted a long path")
+		-- Exercise actual navigator replacement, including retained detours.
+		nav:destroy();nav=Navigator.new(rig,function()return true end,world)
+		local other=Rig.createNeutral(CFrame.new(1.8,4,0),"warrior");other.Parent=world.model.Troops
+		local otherNav=Navigator.new(other,function()return true end,world)
+		assert(nav:walkCombat(Vector3.new(5,4,0),world))
+		assert(rig.Humanoid.WalkToPoint.X<-.5,"Fixture did not exercise overlap escape")
+		assert(nav:walkCombat(Vector3.new(5,4,0),world,function(p)return p.X>=-.01 end))
+		assert(rig.Humanoid.WalkToPoint.X>=-.01,"Crowd detour backtracked against medic policy")
+		nav:stop()
+		other:PivotTo(CFrame.new(-1.8,4,0))
+		assert(nav:walkCombat(Vector3.new(0,4,5),world,function(p)return p.X<=.01 end))
+		assert(rig.Humanoid.WalkToPoint.X<=.01,"Crowd detour left the healing boundary")
+		other:PivotTo(CFrame.new(1.8,4,0))
+		nav:walkCombat(Vector3.new(5,4,0),world,function()return false end)
+		assert(rig:GetAttribute("NavigationStatus")=="Yielding to troops" and not rig.Humanoid.Jump)
+		otherNav:destroy();other:Destroy()
+
 		nav:stop()
 		local river=world.model.Landscape.Waterways.ShallowRiver
 		local water
@@ -42,7 +59,7 @@ return function()
 		world.model:PivotTo(transform*world.model:GetPivot())
 		assert(not Water.allowsDirect(world.model,transform:PointToWorldSpace(dryStart),transform:PointToWorldSpace(centre)),"Transformed river lost its water guard")
 		nav:stop()
-		return 14
+		return 17
 	end)
 	nav:destroy();folder:Destroy();assert(ok,result);return result
 end

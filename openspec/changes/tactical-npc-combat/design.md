@@ -8,7 +8,7 @@ See proposal.md. Owned and neutral services independently pick nearest actors ev
 
 **Goals:** Coordinate one encounter model across both NPC services, make close movement and strike timing reliable, preserve combat authority and render convincing weapon motion on existing art.
 
-**Non-Goals:** New stats, hard NPC collision, teleporting separation, navigation changes outside necessary close combat, new client attack authority, profile fields, capture objectives or formation bonuses.
+**Non-Goals:** New stats, hard NPC collision, teleporting separation, new client attack authority, profile fields, capture objectives or formation bonuses.
 
 ## Decisions
 
@@ -20,6 +20,9 @@ See proposal.md. Owned and neutral services independently pick nearest actors ev
 - Damage still flows only through CombatService.hit, and projectiles still use TroopProjectile.fire/step. At contact re-read both actors and validate profile-write authority, hostility, arena, range and line of sight. An attack consumes its cadence even if missed/cancelled, preventing order spam from bypassing waits. Existing 1-second melee and 2-second ranged cooldown floors remain. A successful contact updates accepted-hit evidence for visual reactions.
 - Use torso-space procedural R6 weapon-family poses while preserving RestC0. Replicate C0 as the current system does. Implement spear/javelin thrust, sword slash, axe chop, bow draw/release and firearm/crossbow aim/reload. Hit feedback is brief cosmetic recoil/flash and a vetted inert sound if available. Marketplace permission was granted, but no compatible permission-verified animation library was found; importing unrelated gameplay scripts is unnecessary.
 - No saves or economy schema changes. Transient target/reservation/phase state is removed on death, despawn, order changes, claim switches and teardown. Selection/lease/reward authority remains on the server.
+
+- Shared CrowdMovement registers each owned/neutral navigator in its generated world. Short prospective legs include all live neighboring troops, regardless of hostility or orders, with height separation, velocity prediction and stable passing direction. Nearby shared destinations yield by distance/stable identity. Detour-only movement predicates preserve medic forward/enemy clearance and in-range fighter support without constraining ordinary path waypoints. Grounded deviations keep water/obstacle checks; camp detours stay inside the yard and outside the fire. Yielding resets the progress watchdog without jumping. Held troops remain obstacles and never move themselves. Direct camp legs refresh at think frequency and use four staggered reachable entry points inside the reserved wall gate.
+- TroopFootwork retains finite goals with deterministic per-life variation in distances, pauses and directions. Idle shuffles stay within 3.5 studs of the assigned rally. After contact, melee take small 3.5–4.5 stud radius arc/pressure/yield adjustments; ranged take 2–3.2 stud lateral steps. Stop optional steps before recovery ends. Windup/contact, skills, Hold and Regroup override footwork; ordinary contacts/cooldowns stay unchanged. Shared reservations and medical support bounds validate every combat step. R6 hip poses follow lateral velocity; idle weight shifts never move the root.
 
 ## Risks / Trade-offs
 

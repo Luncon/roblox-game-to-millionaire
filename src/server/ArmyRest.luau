@@ -29,7 +29,7 @@ function Rest.step(state,position: Vector3,now: number): (Vector3?,number,boolea
 		-- Enter through the clear approach first. Short walks inside the reserved
 		-- yard use native MoveTo rather than asking the world navmesh to resolve
 		-- every point around decorative geometry.
-		if not Camp.contains(position,2) then return Camp.point(Camp.entryIndex),Warrior.walkSpeed,false end
+		if not Camp.contains(position,2) then return Camp.entryPoint(state.index),Warrior.walkSpeed,false end
 		if not arrived then return goal,Warrior.walkSpeed,false end
 		pause(state,now)
 	elseif state.phase=="walking" then

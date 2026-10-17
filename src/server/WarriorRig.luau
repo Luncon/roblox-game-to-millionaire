@@ -263,6 +263,17 @@ function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking:
 	local skillStarted=rig:GetAttribute("WeaponSkillStartedAt")
 	local lean=0
 	local rightHip,leftHip=Vector3.new(gait,0,0),Vector3.new(-gait,0,0)
+	if moving then
+		local root=rig:FindFirstChild("HumanoidRootPart")
+		local velocity=if root then root.CFrame:VectorToObjectSpace(root.AssemblyLinearVelocity) else Vector3.zero
+		local speed=Vector3.new(velocity.X,0,velocity.Z).Magnitude
+		local side=if speed>.1 then velocity.X/speed else 0
+		rightHip=Vector3.new(gait*(1-math.abs(side)*.7),0,-gait*side)
+		leftHip=-rightHip
+	elseif phase=="idle" then
+		local sway=math.sin(now*.9+(rig:GetAttribute("OwnerId") or 0)%11)*.025
+		twist+=sway;lean=.01*math.cos(now*.9);rightHip=Vector3.new(sway,0,.02);leftHip=Vector3.new(-sway,0,-.02)
+	end
 	local neck=Vector3.new(if hit then -.1 else 0,0,0)
 	if family and skillStarted then
 		local skill=SkillPose.sample(family,serverNow-skillStarted)
@@ -277,7 +288,7 @@ function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking:
 	poseJoint(torso:FindFirstChild("Right Hip"),rightHip)
 	poseJoint(torso:FindFirstChild("Left Hip"),leftHip)
 	local root=rig:FindFirstChild("HumanoidRootPart")
-	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new((if hit and family~="spear" then .12 else 0)+lean,if phase~="idle" or family then twist else 0,0))
+	poseJoint(root and root:FindFirstChild("RootJoint"),Vector3.new((if hit and family~="spear" then .12 else 0)+lean,if phase~="idle" or family or not moving then twist else 0,0))
 	poseJoint(torso:FindFirstChild("Neck"),neck)
 end
 
