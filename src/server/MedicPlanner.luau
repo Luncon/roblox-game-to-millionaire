@@ -9,12 +9,14 @@ local angles={0,math.pi/4,-math.pi/4,math.pi/2,-math.pi/2,math.pi*3/4,-math.pi*3
 
 -- Only actual enemies can justify a backward step. No escort, retreat clock,
 -- reinforcement destination or patient-chasing state participates in movement.
+-- While escaping, wounded allies provide a small bounded directional preference.
 function Planner.step(medic,actors,order,battlefield,forward,onField,safe,insideBattlefield: (Vector3) -> boolean)
  local plan={phase="idle",state="Supporting troops",speed=12,goal=nil,direct=false}
  if order=="hold" then plan.state="Holding";return plan end
  if order=="regroup" then plan.state="Regrouping";return plan end
  local center,count=Vector3.zero,0
  local fighters={}
+ local patients={}
  local enemies={}
  local nearest=math.huge
  for _,a in actors do
@@ -24,6 +26,9 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe,inside
    and a.ownerId==medic.ownerId and a.civilizationId==medic.civilizationId and a.plotId==medic.plotId
    and (a.kind=="warrior" or a.kind=="ranged") and insideBattlefield(a.position) then
    center+=a.position;count+=1;table.insert(fighters,a)
+   if a.humanoid.Health<a.humanoid.MaxHealth then
+    table.insert(patients,a)
+   end
   end
  end
  local function setGoal(p)
@@ -33,13 +38,35 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe,inside
  end
  if nearest<Config.avoidRange then
   plan.state,plan.avoiding="Avoiding enemies",true
-  local best=nearest
+  local bestGap=nearest
+  local candidates={}
   for _,angle in angles do
    local p=safe(medic.position+Vector3.new(math.cos(angle),0,math.sin(angle))*Config.avoidStep,true,true)
    if not p then continue end
    local gap=math.huge
-   for _,enemy in enemies do gap=math.min(gap,Tactics.flatDistance(p,enemy.position)) end
-   if gap>best+.01 then best=gap;plan.goal=p end
+   local leg=Vector3.new(p.X-medic.position.X,0,p.Z-medic.position.Z)
+   local clear=true
+   for _,enemy in enemies do
+    gap=math.min(gap,Tactics.flatDistance(p,enemy.position))
+    local d=Vector3.new(enemy.position.X-medic.position.X,0,enemy.position.Z-medic.position.Z)
+    local t=if leg.Magnitude>.01 then math.clamp(d:Dot(leg)/leg:Dot(leg),0,1) else 0
+    if (d-leg*t).Magnitude<math.min(d.Magnitude,Config.avoidRange)-.01 then clear=false;break end
+   end
+   if not clear or gap<=nearest+.01 then continue end
+   bestGap=math.max(bestGap,gap)
+   table.insert(candidates,{point=p,gap=gap})
+  end
+  -- Give up at most two studs of the best escape's clearance to bend toward
+  -- a wounded ally. Even a first step farther from that ally can start a loop.
+  local leeway=if #patients>0 then Config.avoidPatientLeeway else 0
+  local bestDistance,chosenGap=math.huge,-math.huge
+  for _,candidate in candidates do
+   if candidate.gap<bestGap-leeway-.01 then continue end
+   local distance=if #patients>0 then math.huge else 0
+   for _,patient in patients do distance=math.min(distance,Tactics.flatDistance(candidate.point,patient.position)) end
+   if distance<bestDistance-.01 or (math.abs(distance-bestDistance)<=.01 and candidate.gap>chosenGap+.01) then
+    bestDistance,chosenGap=distance,candidate.gap;plan.goal=candidate.point
+   end
   end
   setGoal(plan.goal)
   return plan

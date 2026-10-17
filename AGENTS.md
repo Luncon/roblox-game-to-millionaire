@@ -123,7 +123,10 @@ fighter average without backtracking. Only fighters inside the battlefield affec
 positioning/coverage; outside replacements never block Advance. With none on the
 field, retain the forward battlefield destination. Healing runs independently while moving;
 only actual enemy avoidance or Regroup allows backward travel. Do not restore
-escort, patient-chase, timed retreat or barracks fallback logic. Hold remains
+escort, patient-chase, timed retreat or barracks fallback logic.
+During real enemy avoidance, slightly prefer routes toward wounded allies already
+on the field, within two studs of best endpoint clearance. Check enemy clearance
+along the full step; healthy, outside, foreign or stale fighters cannot attract it. Hold remains
 stationary and permits fighter attacks plus medic healing. Regroup cancels
 bandages and uses distinct medic camp arrival index 6. MedicalService owns
 12-HP/45-stud/three-second bandages and hospital-gated five-HP/second yard recovery

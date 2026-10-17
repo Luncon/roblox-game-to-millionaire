@@ -54,6 +54,12 @@ During Advance a medic SHALL head directly to the battlefield, then position aro
 - **THEN** grounded checked enemy avoidance may move it backward
 - **AND** avoidance has no three-second timeout and does not immediately walk back into the same danger
 
+#### Scenario: Wounded allies during pursuit
+- **WHEN** a hostile chases the medic while wounded owned fighters are on the battlefield
+- **THEN** the medic slightly prefers escape routes toward those fighters among similarly safe alternatives, including the start of a curved route around the pursuer
+- **AND** the complete escape leg preserves enemy clearance, its endpoint increases nearest-enemy distance, and wounded attraction cannot override blocked routes
+- **AND** healthy, foreign, dead, obsolete and outside fighters do not attract the escape, while healing continues independently
+
 ### Requirement: Critical fighter recovery
 During Advance an owned fighter at or below 20% health SHALL remain within a living owned medic's visible 45-stud healing range until reaching 40%. It SHALL retain ordinary melee/ranged attacks and pending contacts/shots. Only movement that leaves healing range SHALL be restricted. Hold SHALL remain stationary and Regroup SHALL retain yard return. Missing medics, lost authority and new lives SHALL invalidate stale recovery state.
 

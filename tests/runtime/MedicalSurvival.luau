@@ -259,6 +259,37 @@ return function(context,player,round)
    evidence.fieldArrivals={advanceAfterEscape=resumed,advanceWithOneOutside=(partial-m.HumanoidRootPart.Position):Dot(back),sameMedicLife=army().slots.medic.rig==m}
    order("hold")
   end)
+  test("a chased medic bends toward wounded allies and keeps throwing bandages",function()
+   order("hold")
+   local slots=army().slots;local m,p=slots.medic.rig,slots.warrior.rig
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   local origin=center+Vector3.new(-100,0,-80)
+   freeze(m,origin);m.HumanoidRootPart.Anchored=false
+   freeze(p,origin+Vector3.new(35,0,0))
+   freeze(slots.ranged.rig,center+Vector3.new(0,0,350))
+   freeze(slots.camp.rig,center+Vector3.new(0,0,400))
+   local threat=Rig.createNeutral(CFrame.new(floorPoint(origin+Vector3.new(0,0,-8))),"warrior")
+   threat.Parent=folder;freeze(threat,threat.HumanoidRootPart.Position)
+   assert(service.combat:registerNeutral(threat,"warrior"));table.insert(extras,threat)
+   waitFor(function()return workspace:GetServerTimeNow()>=(m:GetAttribute("BandageReadyAt") or 0)
+    and #service.world.model.MedicalBandages:GetChildren()==0 end,"ready bandage for pursuit",4)
+   local start=m.HumanoidRootPart.Position
+   order("advance")
+   p.Humanoid.Health=40
+   local began=os.clock();local minimumGap=math.huge
+   repeat
+    -- A moving hostile keeps the medic in avoidance throughout the observation.
+    minimumGap=math.min(minimumGap,(m.HumanoidRootPart.Position-threat.HumanoidRootPart.Position).Magnitude)
+    freeze(threat,m.HumanoidRootPart.Position+Vector3.new(0,0,-8))
+    task.wait(.05)
+   until os.clock()-began>=1.8
+   local movement=m.HumanoidRootPart.Position-start
+   assert(movement.X>6 and movement.Z>6,"Medic did not bend its escape toward the wounded ally")
+   assert(m:GetAttribute("WarriorState")=="Avoiding enemies" and minimumGap>=7)
+   waitFor(function()return p.Humanoid.Health>=52 end,"bandage heals during enemy pursuit",2)
+   evidence.patientEscape={towardPatient=movement.X,awayFromEnemy=movement.Z,patientHealth=p.Humanoid.Health,minimumGap=minimumGap}
+   service.combat:unregister(threat);threat:Destroy();order("hold")
+  end)
   test("medical homeward corridors remain bounded for all rotated plots",function()
    for _,plot in service.world.model.Plots:GetChildren()do
     local f=plot.Foundation;local frame=f.CFrame

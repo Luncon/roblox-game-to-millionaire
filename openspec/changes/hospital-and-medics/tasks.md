@@ -55,6 +55,8 @@ Initial implementation and isolated fake-store/native verification are complete 
 
 - [x] 7.15 Exclude fighters outside the battlefield from medic positioning and coverage; retain the battlefield Advance destination when no fighters are on the field. Reproduce staggered-respawn stalls and verify native movement after danger clears while replacements are still outside, with independent healing and unchanged orders/authority.
 
+- [x] 7.16 Add a small bounded wounded-ally preference during enemy avoidance, preserving increasing enemy separation and safe escape legs. Exclude healthy, outside, foreign and stale fighters; verify native pursuit bends toward a wounded ally while healing continues, without changing ordinary Advance, Hold, Regroup or healing authority.
+
 ## Workflow follow-up
 
 - Review the complete medical implementation and its evidence before syncing/archiving its implemented capabilities. Keep unverified acceptance tasks unchecked.

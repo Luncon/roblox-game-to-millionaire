@@ -248,6 +248,13 @@ studs prompt checked 10-stud avoidance steps that increase the distance to the
 nearest threat. There is no retreat episode, origin, duration or three-second
 stop. The next normal movement leg also checks enemy clearance, preventing an
 immediate return into the same danger. Hold remains stationary.
+While fleeing, the medic slightly favors routes toward wounded owned fighters
+already on the battlefield. It can start curving around a pursuer even when the
+first step cannot bring it closer to those allies. The preference permits at
+most two studs less endpoint clearance than the safest available route; the
+whole leg must still avoid moving closer to an already-near enemy or entering
+the 18-stud band of a farther enemy. With no eligible wounded allies it chooses
+the route with the most clearance. Bandages continue during the escape.
 
 During Advance a fighter at or below 20% health keeps a living owned medic within
 visible 45-stud healing range until reaching 40% health. It continues ordinary

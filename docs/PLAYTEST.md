@@ -1913,3 +1913,37 @@ All 199 Luau files compiled, strict specifications passed 19 items, and
 production, medical-test and 3,000-coin manual Rojo builds passed. No two-owner,
 published-client or real-storage acceptance was rerun for this movement fix;
 the existing separate restoration boundary remains unchanged.
+
+## Wounded-ally preference during medic escape — October 17, 2026
+
+The former maximum-clearance choice sent a threatened medic directly away
+without considering wounded fighters. Focused regressions reproduced both a
+missed turn toward a patient beside the medic and the inability to start
+curving toward patients behind the pursuer. Escape now finds valid routes that
+increase nearest-enemy endpoint separation and preserve clearance along the
+leg. Among routes within two studs of the best endpoint clearance, it chooses
+the one nearest a wounded owned on-field fighter. With no qualifying patients,
+it retains maximum clearance. Healthy, foreign, dead, stale and outside
+fighters cannot pull its escape route; normal Advance positioning is unchanged.
+
+The isolated FakeProfileStore solo survival run passed **520 native module
+checks and all ten medical scenarios**. A moving registered hostile stayed
+behind the unanchored medic during a 1.8-second observation. The medic bent
+**12.72 studs toward the wounded ally** and **12.72 studs away along the pursuit
+axis**, maintained at least **8.00 studs** measured separation and stayed in
+`Avoiding enemies`. Its bandage healed the patient **40→52 HP** during pursuit.
+The hostile's position was controlled by the fixture; this verifies real medic
+movement/healing under a moving threat, not a complete multi-army balance test.
+
+Existing deployment, on-field averages, actual replacements, resumption with
+outside reinforcements, continuous threat avoidance, critical melee/ranged
+attacks, preserved pending shots and near-miss bandages also passed. Standalone
+logic passed **156 cases**, including patients behind attackers, blocked escape
+directions and a second enemy covering the patient-side corridor. Mutations
+removing the patient preference, whole-leg clearance guard or healthy-patient
+exclusion were caught. Healing rates, cooldowns and saves are unchanged.
+
+The user explicitly authorized a separate Studio window while their playtest
+continued. Verification used only the owned fake-store window; no fixtures were
+installed in the user's playtest, which stayed open. Existing real-storage and published-client
+acceptance boundaries remain separate.
