@@ -166,6 +166,7 @@ for x=-extent,extent,22 do
 		local early=(x==44 and z>=-44 and z<=44) or (x==-44 and z>=-22 and z<=22)
 		local wings=math.abs(math.abs(x)-66)<18 and math.abs(z+68)<20
 		local infrastructure=Camp.blocksApproach(x,z,14)
+			or (math.abs(x)<Sites.hospitalAccessHalfWidth+14 and z+14>=Sites.hospitalAccessStart)
 		for _,site in {Sites.blacksmith,Sites.armorer,Sites.storehouse}do
 			-- Keep the forecourt clear after construction and later district growth.
 			if math.abs(x-site.X)<20 and math.abs(z-site.Z-10)<24 then infrastructure=true;break end

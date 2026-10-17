@@ -1,6 +1,7 @@
 --!strict
 
 local Camp = require(script.Parent.TrainingCampConfig)
+local Sites = require(script.Parent.SettlementSites)
 local definitions = {
 	{action="earn",name="CoinButton",track="earn",x=-12,z=14,stage=1},
 	{action="upgrade",name="UpgradeButton",track="settlement",x=12,z=14,stage=1},
@@ -15,6 +16,7 @@ local definitions = {
 	{action="barracks4",name="Barracks4Button",track="barracks",tier=4,x=-24,z=-16,stage=4},
 	{action="barracks5",name="Barracks5Button",track="barracks",tier=5,x=-24,z=-16,stage=8},
 	{action="barracks6",name="Barracks6Button",track="barracks",tier=6,x=-24,z=-16,stage=14},
+	{action="hospital",name="HospitalButton",track="hospital",x=Sites.hospitalPad.X,y=Sites.hospitalPad.Y,z=Sites.hospitalPad.Z,stage=10},
 	{action="training",name="TrainingButton",track="training",x=Camp.pad.X,y=Camp.pad.Y,z=Camp.pad.Z,stage=5},
 	{action="skill",name="SkillButton",track="skill",x=Camp.pad.X+12,y=Camp.pad.Y,z=Camp.pad.Z,stage=10},
 	{action="farm",name="FarmButton",track="farm",x=-48,y=-.3,z=-145,stage=7},

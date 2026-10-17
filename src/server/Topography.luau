@@ -52,7 +52,16 @@ end
 for id=1,Layout.plotCount do
 	local frame=Layout.plotFrame(id)
 	rectangle(frame.X,frame.Z,frame.RightVector.X,frame.RightVector.Z,Layout.maxPlotSize/2,Layout.maxPlotSize/2,"plot")
-	local camp=frame:PointToWorldSpace(Camp.center+Vector3.new(0,0,6))
+	for _,reservation in {
+  {site=Sites.hospital,hx=Sites.hospitalHalfSize.X,hz=Sites.hospitalHalfSize.Z,kind="hospital"},
+  {site=Sites.hospitalPad,hx=8,hz=8,kind="hospital_control"},
+  {site=Vector3.new(0,0,(Sites.hospitalAccessStart+Sites.hospital.Z)/2),hx=Sites.hospitalAccessHalfWidth,
+   hz=(Sites.hospital.Z-Sites.hospitalAccessStart)/2,kind="hospital_access"},
+ } do
+  local p=frame:PointToWorldSpace(reservation.site)
+  rectangle(p.X,p.Z,frame.RightVector.X,frame.RightVector.Z,reservation.hx,reservation.hz,reservation.kind)
+ end
+ local camp=frame:PointToWorldSpace(Camp.center+Vector3.new(0,0,6))
 	rectangle(camp.X,camp.Z,frame.RightVector.X,frame.RightVector.Z,Camp.size.X/2+6,Camp.size.Z/2+18,"training_camp")
 	local approach=frame:PointToWorldSpace(Vector3.new((Camp.center.X+Camp.approachInnerX)/2,0,Camp.center.Z))
 	rectangle(approach.X,approach.Z,frame.RightVector.X,frame.RightVector.Z,

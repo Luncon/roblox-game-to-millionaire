@@ -129,9 +129,9 @@ function Infrastructure.sync(plot,frame,civ,state)
 	local folder=plot:FindFirstChild("Infrastructure")
 	if not folder then folder=Instance.new("Folder");folder.Name="Infrastructure";folder.Parent=plot end
 	if not civ or not state then folder:ClearAllChildren();folder:SetAttribute("BuildKey",nil);return end
-	local key=string.format("%s:%d:%d:%d:%d:%d:%d:%d:%d",civ.id,if state.level>=2 then 1 else 0,
+	local key=string.format("%s:%d:%d:%d:%d:%d:%d:%d:%d:%d",civ.id,if state.level>=2 then 1 else 0,
 		state.trainingLevel or 0,state.farmLevel or 0,state.workersLevel or 0,state.armyCampLevel or 0,
-		state.blacksmithLevel or 0,state.armorerLevel or 0,state.storehouseLevel or 0)
+		state.blacksmithLevel or 0,state.armorerLevel or 0,state.storehouseLevel or 0,state.hospitalLevel or 0)
 	if folder:GetAttribute("BuildKey")~=key or folder:GetAttribute("BuildFrame")~=frame then
 		folder:ClearAllChildren()
 		if state.level>=2 then
@@ -141,7 +141,17 @@ function Infrastructure.sync(plot,frame,civ,state)
 		if (state.trainingLevel or 0)>0 then
 			trainingYard(folder,frame,civ)
 		end
-		if (state.armyCampLevel or 0)>0 then
+		if state.hospitalLevel==1 then
+   local groundY=exteriorY(plot,frame,Sites.hospital)
+   local origin=frame*CFrame.new(Sites.hospital+Vector3.new(0,groundY-1,0))*CFrame.Angles(0,math.pi,0)
+   local hospital=Districts.house(folder,origin,civ,12,"Hospital")
+   hospital:SetAttribute("HospitalLevel",1)
+   facadeLabel(hospital,hospital,"HospitalLabel","HOSPITAL I\nMEDIC + YARD RECOVERY",civ.color,2)
+   part(hospital,"BandageSupplies",Vector3.new(2,1,2),origin*CFrame.new(4,2.5,8),Color3.fromRGB(238,226,198),Enum.Material.Fabric)
+   local length=Sites.hospitalSpawn.Z-Sites.hospitalAccessStart
+   part(folder,"HospitalApproach",Vector3.new(8,.1,length),frame*CFrame.new(0,groundY+.05,Sites.hospitalAccessStart+length/2),Color3.fromRGB(151,131,94),Enum.Material.Ground)
+  end
+  if (state.armyCampLevel or 0)>0 then
 			Districts.house(folder,frame*CFrame.new(Sites.armyCamp),civ,12,"ArmyCamp")
 			facadeLabel(folder.ArmyCamp,folder.ArmyCamp,"CampLabel","ARMY CAMP I",civ.color)
 		end
@@ -185,7 +195,12 @@ function Infrastructure.sync(plot,frame,civ,state)
 		end
 		folder:SetAttribute("BuildKey",key);folder:SetAttribute("BuildFrame",frame)
 	end
-	local farm=folder:FindFirstChild("Farmland")
+	local yard=folder:FindFirstChild("TrainingYard")
+ if yard then
+  yard.TrainingLabel:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text=
+   if state.hospitalLevel==1 then "TRAINING CAMP I\nREST 2s: +5 HP/s" else "TRAINING CAMP I\nHOSPITAL UNLOCKS RECOVERY"
+ end
+ local farm=folder:FindFirstChild("Farmland")
 	if farm then
 		local board=farm.FarmStatus:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel")
 		board.Text=string.format("FARM %s · %d/%d COINS\n+%d EVERY %ds",if state.farmLevel>=2 then "II" else "I",

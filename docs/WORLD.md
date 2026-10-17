@@ -246,3 +246,14 @@ levels 2/25/50. Separate ranged fixtures walked from levels 25 and 50 to points
 inside the field in about 28.6 seconds and verified actual projectile impacts.
 The latter use simulated owner identities; neither those timings nor the
 overview prove connected multi-owner combat or hardware frame rates.
+
+Hospital I uses plot-local center `(0,0,146)`, behind the final 256-stud
+foundation, with its facade toward the settlement. The shared reservation is
+28 by 24 studs; the civilization-themed building is smaller. Its purchase pad
+is at `(24,-.3,140)` and the medic deploys at `(0,2.15,132)` outside the entrance.
+An eight-stud corridor from local rear Z=56 uses the existing rear courtyard gate;
+district lots and scenery reserve this access permanently. Terrain generation
+reserves the hospital, pad and access before sampling collision triangles.
+Construction uses the existing transformed-world height sampler. Native access,
+all-civilization footprint and part-budget checks are supplied in
+`HospitalGeometry.spec.luau` and await Studio execution.

@@ -9,6 +9,7 @@ local Layout = require(game:GetService("ReplicatedStorage").Shared.WorldConfig)
 local Landscape = require(script.Parent.WorldLandscape)
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local Infrastructure = require(script.Parent.SettlementInfrastructure)
+local Sites = require(game:GetService("ReplicatedStorage").Shared.SettlementSites)
 local Camp = require(game:GetService("ReplicatedStorage").Shared.TrainingCampConfig)
 local Topography = require(script.Parent.Topography)
 local PLOT_COUNT = Layout.plotCount
@@ -190,7 +191,7 @@ function BattlefieldMap.build(parent: Instance)
 	function world:getBarracksSpawn(plotId: number, kind: string?, slotId: string?): CFrame
 		local plot = plots:FindFirstChild("Plot" .. plotId)
 		assert(plot, "Unknown barracks plot")
-		return (plot.Foundation :: BasePart).CFrame * (if slotId=="camp" then CFrame.new(-36,5,-16)
+		return (plot.Foundation :: BasePart).CFrame * (if slotId=="medic" then CFrame.new(Sites.hospitalSpawn) elseif slotId=="camp" then CFrame.new(-36,5,-16)
 			else CFrame.new(if kind == "ranged" then -28 else -24, 5, -11))
 	end
 

@@ -14,7 +14,7 @@ local Camp={
 }
 
 function Camp.arrivalIndex(slotId: string?): number
-	return if slotId=="ranged" then 2 elseif slotId=="camp" then 8 else 1
+	return if slotId=="medic" then 6 elseif slotId=="ranged" then 2 elseif slotId=="camp" then 8 else 1
 end
 
 function Camp.point(index: number): Vector3
