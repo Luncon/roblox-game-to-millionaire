@@ -1,0 +1,79 @@
+return function()
+ local Game=game.ServerScriptService.Game
+ local Rules=require(Game.MedicalRules)
+ local Recovery=require(Game.YardRecovery)
+ local Planner=require(Game.MedicPlanner)
+ local Camp=require(game.ReplicatedStorage.Shared.TrainingCampConfig)
+ local n=0
+ local function test(name,fn)fn();n+=1;print("PASS: "..name)end
+ local function actor(kind,owner,hp,x,z)
+  local rig={Name=kind,GetAttribute=function(_,key)return if key=="ArmySlot" then kind else nil end}
+  return {rig=rig,humanoid={Health=hp or 50,MaxHealth=100},kind=kind or "warrior",ownerId=owner or 1,civilizationId="sparta",plotId=1,alive=true,claimed=true,position=Vector3.new(x or 0,2.15,z or 0)}
+ end
+ local state={hospitalLevel=1,trainingLevel=1}
+ test("medical eligibility excludes foreign players workers dead full and stale claim",function()
+  local a=actor("warrior");assert(Rules.patient(a,1,state))
+  for _,kind in {"player","farmer","unknown"}do local b=actor(kind);assert(not Rules.patient(b,1,state))end
+  assert(not Rules.patient(actor("warrior",2),1,state));assert(not Rules.patient(actor("warrior",1,0),1,state));assert(not Rules.patient(actor("warrior",1,100),1,state))
+  assert(not Rules.patient(a,1,{hospitalLevel=0}));a.neutral=true;assert(not Rules.patient(a,1,state))
+ end)
+ test("healing clamps simultaneous ticks and rejects dead or replaced life",function()
+  local a=actor("warrior",1,98);assert(Rules.apply(a,a.humanoid,12)==2);assert(Rules.apply(a,a.humanoid,5)==0)
+  a.humanoid.Health=0;assert(Rules.apply(a,a.humanoid,12)==0)
+  a.humanoid.Health=50;assert(Rules.apply(a,{},12)==0 and a.humanoid.Health==50)
+ end)
+ test("patient ranking uses fraction deficit distance stable slot and excludes self",function()
+  local source=actor("medic");local a,b=actor("warrior",1,30,10),actor("ranged",1,40,2)
+  assert(Rules.choose(source,{source,b,a},state,45)==a)
+  a.humanoid.Health=40;assert(Rules.choose(source,{a,b},state,45)==b)
+  a.position=b.position;assert(Rules.choose(source,{a,b},state,45)==b)
+  b.humanoid.MaxHealth=200;b.humanoid.Health=80;assert(Rules.choose(source,{a,b},state,45)==b)
+  a.position=Vector3.new(100,0,0);b.humanoid.Health=200;assert(not Rules.choose(source,{source,a,b},state,45))
+ end)
+ test("yard first tick waits two undamaged seconds then one per second without catchup",function()
+  local h={Health=50,MaxHealth=100};local r={}
+  assert(not Recovery.step(r,h,true,0,nil));assert(not Recovery.step(r,h,true,1,nil))
+  assert(Recovery.step(r,h,true,2,nil));assert(not Recovery.step(r,h,true,2.2,nil))
+  assert(Recovery.step(r,h,true,3,nil));assert(not Recovery.step(r,h,true,20,nil))
+  assert(not Recovery.step(r,h,true,21,nil));assert(Recovery.step(r,h,true,22,nil))
+ end)
+ test("yard clocks reset on leave damage authority full health and new life",function()
+  local h={Health=50,MaxHealth=100};local r={}
+  Recovery.step(r,h,true,0,nil);Recovery.step(r,h,true,1,nil);h.Health=40
+  assert(not Recovery.step(r,h,true,2,nil));assert(not Recovery.step(r,h,true,3,nil));assert(Recovery.step(r,h,true,4,nil))
+  Recovery.step(r,h,false,4.1,nil);assert(not Recovery.step(r,h,true,5,nil))
+  h.Health=100;assert(not Recovery.step(r,h,true,6,nil));h.Health=90;assert(not Recovery.step(r,h,true,7,nil))
+  assert(not Recovery.step(r,{Health=40,MaxHealth=100},true,8,nil))
+ end)
+ test("physical yard rejects outside margin and airborne positions and uses medic ring six",function()
+  assert(Recovery.contains(Camp.center+Vector3.new(0,2.15,9)))
+  assert(not Recovery.contains(Camp.center+Vector3.new(14,2.15,0)))
+  assert(not Recovery.contains(Camp.center+Vector3.new(0,12,0)))
+  assert(Camp.arrivalIndex("medic")==6 and Camp.arrivalIndex("camp")==8)
+ end)
+ test("Advance stands twelve behind fighters while Hold remains stationary",function()
+  local m=actor("medic",1,80,0,20);local f=actor("warrior",1,80,0,0);local enemy=actor("warrior",2,80,0,-20)
+  local plan=Planner.step({},m,{m,f,enemy},"advance",Vector3.new(0,2,45),Vector3.new(0,0,-1),0,function(p)return p end)
+  assert(math.abs(plan.goal.Z-12)<.001)
+  plan=Planner.step({},m,{m,enemy},"hold",Vector3.zero,Vector3.new(0,0,-1),0,function(p)return p end)
+  assert(plan.goal==nil and not plan.retreat)
+ end)
+ test("medic retreat is threat first bounded and cannot restart until safe",function()
+  local m=actor("medic",1,80,0,0);local e=actor("warrior",2,80,0,-8);local record={}
+  local safe=function(p)return p end
+  local p=Planner.step(record,m,{m,e},"advance",Vector3.new(0,2,45),Vector3.new(0,0,-1),0,safe)
+  assert(p.retreat and p.goal.Z>0 and (p.goal-m.position).Magnitude<=18)
+  p=Planner.step(record,m,{m,e},"advance",Vector3.zero,Vector3.new(0,0,-1),4,safe)
+  assert(p.retreat and not p.goal)
+  p=Planner.step(record,m,{m,e},"advance",Vector3.zero,Vector3.new(0,0,-1),5,safe);assert(not p.goal)
+  e.position=Vector3.new(0,2,-30);p=Planner.step(record,m,{m,e},"advance",Vector3.new(0,2,45),Vector3.new(0,0,-1),6,safe);assert(not p.retreat)
+ end)
+ test("support rally works with no fighters and rejected routes never produce movement",function()
+  local m=actor("medic");local home=Vector3.new(0,2.15,45)
+  local plan=Planner.step({},m,{m},"advance",home,Vector3.new(0,0,-1),0,function(p)return p end)
+  assert(plan.goal==home)
+  plan=Planner.step({},m,{m},"advance",home,Vector3.new(0,0,-1),0,function()return nil end)
+  assert(not plan.goal)
+ end)
+ return n
+end

@@ -36,11 +36,15 @@ return function()
 		test("all civilization troop classes retain their skin face and head meshes through upgrades without mutating sources",function()
 			assert(type(Appearance.apply)=="function" and Appearance.faceTexture==faceTexture)
 			local snapshots={}
-			for _,id in {"sparta","britain","japan","seneca","maurya"} do
-				local source=game.ServerStorage.NPCTemplates[id]
+   local sources={}
+   for _,folder in {game.ServerStorage.NPCTemplates,game.ServerStorage.OutfitTemplates}do
+    for _,source in folder:GetChildren()do if source:IsA("Model")then table.insert(sources,source)end end
+   end
+   for _,source in sources do
 				local record={count=#source:GetDescendants(),pivot=source:GetPivot(),fields={}}
 				for _,item in source:GetDescendants() do
-					if item:IsA("BasePart") then record.fields[item]={Color=item.Color,CFrame=item.CFrame}
+					if item:IsA("Motor6D")then record.fields[item]={C0=item.C0,C1=item.C1,Part0=item.Part0,Part1=item.Part1}
+					elseif item:IsA("BasePart") then record.fields[item]={Color=item.Color,CFrame=item.CFrame}
 					elseif item:IsA("SpecialMesh") then record.fields[item]={Scale=item.Scale,MeshType=item.MeshType,MeshId=item.MeshId,TextureId=item.TextureId}
 					elseif item:IsA("Decal") then record.fields[item]={Face=item.Face,Texture=item.Texture}
 					elseif item:IsA("Shirt") then record.fields[item]={ShirtTemplate=item.ShirtTemplate,Color3=item.Color3}
@@ -53,19 +57,22 @@ return function()
 				snapshots[source]=record
 			end
 			for _,civ in catalog do
-				for _,kind in {"warrior","ranged"} do
+				for _,kind in {"warrior","ranged","medic"} do
 					local rig=keep(Rig.create(civ,CFrame.new(200,10000,-300)*CFrame.Angles(0,.8,0),101,1,nil,kind))
 					assert(rig.Parent==nil)
 					assertAppearance(rig,civ)
 					local head=rig.Head;local mesh=head:FindFirstChildOfClass("SpecialMesh")
 					assert(mesh and mesh.MeshType==Enum.MeshType.Head)
 					local scale=mesh.Scale
-					for _,level in {25,50} do
+     rig.Humanoid.Health=rig.Humanoid.MaxHealth-20
+     if kind=="medic" then assert(not rig:FindFirstChildOfClass("Tool") and rig.CivilizationArmor:FindFirstChild("BandageSatchel") and rig:GetAttribute("CustomMeleeModel")~=true)end
+     for _,level in {25,50} do
 						Rig.update(rig,civ,{weaponLevel=level,armorLevel=level})
 						assertAppearance(rig,civ)
 						assert(rig.Head==head and mesh.Parent==head and mesh.Scale==scale,"Troop appearance replaced or reshaped a normal head")
 						assert(math.abs(rig.Humanoid.MaxHealth-Tracks.armor[level].health)<.002)
-						local damage=Tracks.weapon[level].damage*(if kind=="ranged" then Ranged.damageMultiplier else 1)
+						assert(math.abs(rig.Humanoid.MaxHealth-rig.Humanoid.Health-20)<.002)
+						local damage=if kind=="medic" then 0 else Tracks.weapon[level].damage*(if kind=="ranged" then Ranged.damageMultiplier else 1)
 						assert(rig:GetAttribute("WarriorDamage")==damage,"Skin/face appearance changed combat damage")
 					end
 				end
@@ -80,7 +87,7 @@ return function()
 		end)
 		test("same-tier refresh reasserts troop skin and canonical face after foreign changes without healing or duplicates",function()
 			for _,civ in catalog do
-				for _,kind in {"warrior","ranged"} do
+				for _,kind in {"warrior","ranged","medic"} do
 					local state={weaponLevel=25,armorLevel=25}
 					local rig=keep(Rig.create(civ,CFrame.new(),101,1,state,kind))
 					local head,mesh=rig.Head,rig.Head:FindFirstChildOfClass("SpecialMesh")

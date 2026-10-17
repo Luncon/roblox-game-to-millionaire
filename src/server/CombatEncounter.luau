@@ -18,7 +18,8 @@ function CombatEncounter.new(world,combat)
 	local active=true
 	local arena=world.model.Battlefield
 	local function permitted(rig): boolean
-		return combat:actor(rig)~=nil and (type(combat.canAct)~="function" or combat:canAct(rig))
+		local actor=combat:actor(rig)
+		return actor~=nil and actor.kind~="medic" and (type(combat.canAct)~="function" or combat:canAct(rig))
 	end
 	local function duration(kind): number
 		local phases=Tuning.phases[kind]
@@ -207,7 +208,7 @@ function CombatEncounter.new(world,combat)
 		if ranged then
 			for _,other in actors do
 				local separation=Tactics.flatDistance(attacker.position,other.position)
-				if other.kind~="ranged" and Rules.hostile(attacker,other) and separation<pressureDistance then
+				if other.kind~="ranged" and other.kind~="medic" and Rules.hostile(attacker,other) and separation<pressureDistance then
 					pressure,pressureDistance=other,separation
 				end
 			end

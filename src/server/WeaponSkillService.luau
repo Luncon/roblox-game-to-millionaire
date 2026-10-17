@@ -37,7 +37,7 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 	function controller:info(rig)
 		if not alive then return nil end
 		local actor=combat:actor(rig)
-		if not actor or actor.neutral then return nil end
+		if not actor or actor.neutral or actor.kind=="medic" then return nil end
 		local state=economy:get(actor.ownerId)
 		if not state then return nil end
 		local family=equipped(actor,state)

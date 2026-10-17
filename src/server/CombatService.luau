@@ -23,7 +23,7 @@ function CombatService.new(world, registry, economy, publishEconomy, clock)
 	end
 	function controller:register(rig, ownerId, kind)
 		if not active or typeof(rig) ~= "Instance" or not rig:IsA("Model") then return false end
-		if kind ~= "player" and kind ~= "warrior" and kind ~= "ranged" then return false end
+		if kind ~= "player" and kind ~= "warrior" and kind ~= "ranged" and kind ~= "medic" then return false end
 		local claim = registry:get(ownerId)
 		if not claim then return false end
 		local existing = records[rig]
@@ -119,7 +119,7 @@ function CombatService.new(world, registry, economy, publishEconomy, clock)
 	function controller:hit(attackerRig, targetRig)
 		if self.skills:busy(attackerRig) then return {ok=false,reason="busy"} end
 		local attacker, target = self:actor(attackerRig), self:actor(targetRig)
-		if not attacker or not target or not self:canAct(attackerRig) then return {ok=false,reason="invalid_actor"} end
+		if not attacker or attacker.kind=="medic" or not target or not self:canAct(attackerRig) then return {ok=false,reason="invalid_actor"} end
 		local ranged = attacker.kind == "ranged"
 		local reach = if ranged then Ranged.range else Warrior.attackRange
 		if not Rules.canDamage(attacker,target,arena,reach) or not self:visible(attacker,target) then

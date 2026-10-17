@@ -60,7 +60,13 @@ return function()
 	local function run(civ,kind,fn,tier)
 		local f=fixture(civ,kind,tier);local ok,message=pcall(fn,f);f.service:destroy();assert(ok,message)
 	end
-	test("skills begin immediately and release movement at the final active frame",function()
+	test("medics cannot activate weapon skills even with maximum owner upgrades",function()
+  run("sparta","medic",function(f)
+   assert(f.service:info(f.source)==nil)
+   assert(not f.service:activate(f.source,"advance",true).ok and #f.hits==0)
+  end)
+ end)
+ test("skills begin immediately and release movement at the final active frame",function()
 		for _,entry in {{"britain","sword",.24},{"vikings","axe",.35},{"sparta","spear",.2}} do run(entry[1],"warrior",function(f)
 			if entry[2]=="spear" then f.victim.root.CFrame=CFrame.new(0,3,-40) end
 			assert(f.service:activate(f.source,"advance",false).ok)
@@ -218,5 +224,27 @@ return function()
 		end)
 		actual:destroy();assert(ok,message)
 	end)end)
-	return count
+ test("medics remain damageable for one kill reward while their own ordinary attacks reject",function()run("britain","warrior",function(f)
+  local Combat=require(game.ServerScriptService.Game.CombatService)
+  local Economy=require(game.ServerScriptService.Game.Economy)
+  local economy=Economy.new(f.clock);assert(economy:open(1,f.state))
+  local registry={get=function(_,id)return if id==1 then {civilizationId="britain",plotId=1} else nil end}
+  local published=0
+  local actual=Combat.new({model={Battlefield=f.arena}},registry,economy,function(_,result,action)assert(action=="kill" and result.ok);published+=1 end,f.clock)
+  actual.actor=function(_,rig)return f.combat:actor(rig)end
+  actual.actors=function()return f.combat:actors()end
+  actual.visible=function()return true end
+  f.actor.player={Parent=game:GetService("Players")};f.victim.kind="medic";f.victim.humanoid.Health=18
+  local ok,msg=pcall(function()
+   assert(actual:hit(f.source,f.target).killed)
+   assert(not actual:hit(f.source,f.target).ok and published==1 and economy:get(1).coins==10)
+   f.actor.kind="medic"
+   local nextTarget=f.create(3,"sparta","warrior",Vector3.new(1,3,-3),"other")
+   assert(actual:hit(f.source,nextTarget).reason=="invalid_actor")
+   assert(not actual.skills:activate(f.source,"advance",true).ok)
+   assert(published==1 and economy:get(1).coins==10)
+  end)
+  actual:destroy();assert(ok,msg)
+ end)end)
+ return count
 end

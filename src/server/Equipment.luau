@@ -183,7 +183,13 @@ local function applyCharacter(character: Model?, backpack: Instance?, civilizati
 		end
 	end
 
-	local tool = Instance.new("Tool")
+	if role=="medic" then
+  piece(armor,torso,"BandageSatchel",Vector3.new(.9,.8,.45),CFrame.new(-1,-.65,-.7),Color3.fromRGB(140,104,64),Enum.Material.Fabric)
+  piece(armor,torso,"SatchelFlap",Vector3.new(.95,.2,.5),CFrame.new(-1,-.2,-.7),Color3.fromRGB(238,226,198),Enum.Material.Fabric)
+  piece(armor,torso,"BandageRoll",Vector3.new(.55,.4,.4),CFrame.new(-1,-.05,-.7),Color3.fromRGB(246,238,212),Enum.Material.Fabric)
+  return true
+ end
+ local tool = Instance.new("Tool")
 	-- NPC weapons use one explicit grip. Omitting the reserved Handle name
 	-- prevents Humanoid from adding a competing automatic RightGrip weld.
 	tool.RequiresHandle = not warrior

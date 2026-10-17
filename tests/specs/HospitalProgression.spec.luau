@@ -18,6 +18,7 @@ return function()
   assert(D.offer(before,"hospital").available and D.armyCapacity(before)==1)
   local r=e:upgrade(1,0,"hospital");assert(r.ok and r.state.coins==800 and r.state.hospitalLevel==1)
   assert(r.state.armyCampLevel==0 and D.armyCapacity(r.state)==2)
+  assert(e:selectTroop(1,"medic").reason=="invalid")
   assert(e:upgrade(1,0,"hospital").reason=="stale_level")
   assert(not D.offer(e:get(1),"hospital").available)
   for _,field in D.persistentFields do if field~="coins" and field~="hospitalLevel" then assert(before[field]==r.state[field]) end end

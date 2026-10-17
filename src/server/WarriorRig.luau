@@ -71,7 +71,7 @@ function WarriorRig.update(rig: Model, civilization, state)
 	end
 	local damage = Tracks.weapon[weaponLevel].damage
 	if kind == "ranged" then damage = math.max(1,damage*Ranged.damageMultiplier) end
-	rig:SetAttribute("WarriorDamage", damage)
+	rig:SetAttribute("WarriorDamage", if kind=="medic" then 0 else damage)
 	for _, child in rig:GetChildren() do
 		if child:IsA("Tool") then child:SetAttribute("WarriorClass", kind) end
 	end
@@ -86,12 +86,12 @@ end
 
 function WarriorRig.create(civilization, spawnFrame: CFrame, ownerId: number, plotId: number, state: any?, kind: string?): Model
 	local troopClass = kind or "warrior"
-	assert(troopClass == "warrior" or troopClass == "ranged","Unknown troop class")
+	assert(troopClass == "warrior" or troopClass == "ranged" or troopClass == "medic","Unknown troop class")
 	local variant = (if troopClass == "ranged" then Ranged else Config).variants[civilization.id]
 	assert(variant, "Unknown warrior civilization")
 	local custom = if troopClass == "warrior" then NPCModelTemplates.clone(civilization.id) else nil
 	local rig = custom or Instance.new("Model")
-	rig.Name = variant.name
+	rig.Name = if troopClass=="medic" then civilization.name.." Medic" else variant.name
 	rig:SetAttribute("OwnerId", ownerId)
 	rig:SetAttribute("CivilizationId", civilization.id)
 	rig:SetAttribute("PlotId", plotId)
@@ -101,7 +101,7 @@ function WarriorRig.create(civilization, spawnFrame: CFrame, ownerId: number, pl
 	local humanoid = rig:FindFirstChildOfClass("Humanoid") or Instance.new("Humanoid")
 	humanoid.MaxHealth, humanoid.Health = 100, 100
 	humanoid.WalkSpeed, humanoid.HipHeight = Config.walkSpeed, 0
-	humanoid.DisplayName = variant.name
+	humanoid.DisplayName = rig.Name
 	humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOn
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
 	humanoid.NameDisplayDistance, humanoid.HealthDisplayDistance = 70, 70
@@ -169,6 +169,7 @@ local bows={
 }
 
 function WarriorRig.combatStyle(rig): string
+	if rig:GetAttribute("WarriorClass")=="medic" then return "throw" end
 	local ranged=rig:GetAttribute("WarriorClass")=="ranged"
 	local civilization=rig:GetAttribute("CivilizationId")
 	local variant=(if ranged then Ranged else Config).variants[civilization]
@@ -230,7 +231,25 @@ function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking:
 		offset+=Vector3.new(0,.3,-.2)
 		left=Vector3.new(.9,0,1.1);leftOffset=Vector3.new(.4,0,-.35)
 	elseif not engaged then left=Vector3.new(gait,0,0)end
-	local hitAt=rig:GetAttribute("LastHitAt")
+	if rig:GetAttribute("WarriorClass")=="medic" then
+  local thrown=rig:GetAttribute("BandageThrownAt")
+  local t=if thrown then serverNow-thrown else 10
+  if t>=0 and t<.4 then
+   right=Vector3.new(2.6*(1-t/.4),-.2,.15)
+   left=Vector3.new(.5,0,-.25)
+  end
+ end
+ local healedAt=rig:GetAttribute("LastHealAt")
+ local healing=healedAt and serverNow-healedAt>=0 and serverNow-healedAt<.5
+ local healFlash=rig:FindFirstChild("MedicalHealFlash")
+ if healing and not healFlash then
+  healFlash=Instance.new("Highlight");healFlash.Name="MedicalHealFlash"
+  healFlash.FillColor=Color3.fromRGB(112,236,160);healFlash.FillTransparency=.65
+  healFlash.OutlineTransparency=1;healFlash.DepthMode=Enum.HighlightDepthMode.Occluded
+  healFlash.Adornee=rig;healFlash.Parent=rig
+ end
+ if healFlash then healFlash.Enabled=healing==true end
+ local hitAt=rig:GetAttribute("LastHitAt")
 	local hit=hitAt and serverNow-hitAt>=0 and serverNow-hitAt<.18
 	local flash=rig:FindFirstChild("CombatHitFlash")
 	if hit and not flash then
