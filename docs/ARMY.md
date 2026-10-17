@@ -225,8 +225,10 @@ bandage satchel. They are targetable enemies but cannot attack or use skills.
 | Regroup | Return to the owned training camp and rest | Cancel field bandages, return to a separate camp arrival point and rest |
 
 The medic heads directly to the battlefield during Advance. Once inside it,
-support positioning uses the average of every living owned melee/ranged troop
-in the active civilization and plot. Clear positions near that average favor
+support positioning uses the average of living owned melee/ranged troops already
+inside the battlefield, in the active civilization and plot. Troops still
+outside do not affect that average or its healing-coverage scoring. Each joins
+the average as it arrives, without waiting for other replacements. Clear positions near that average favor
 covering more fighters within the 45-stud bandage radius before minimizing
 travel. It does not follow a single escort or choose a new movement goal for every injured patient. Bandage
 selection runs independently, so casts do not stop travel or repeatedly turn a
@@ -236,7 +238,9 @@ Ordinary support goals stay level with or ahead of the medic along its owner's
 approach to the battlefield. Rearward troop averages, deaths, missing patients
 and fresh replacements cannot send it back to barracks. A rearward average can
 be approached laterally; otherwise the medic holds its current field position.
-With no surviving fighters it continues toward the battlefield if still ahead.
+With no fighters on the battlefield it continues toward the battlefield center
+if still ahead, even while living replacements approach from outside. Healing
+eligibility remains independent and can include approaching troops in range.
 Widely separated troops cannot all remain in healing range under this rule.
 
 Only an actual enemy or Regroup may cause backward travel. Enemies within 18

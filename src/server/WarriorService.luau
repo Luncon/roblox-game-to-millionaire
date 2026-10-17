@@ -369,7 +369,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      local forward=arena.Position-frame.Position
      forward=Vector3.new(forward.X,0,forward.Z).Unit
      local plan=MedicPlanner.step(attacker,actors,owner.order,arena.Position,forward,
-      CombatRules.containsArena(arena,attacker.position),safe)
+      CombatRules.containsArena(arena,attacker.position),safe,function(point)return CombatRules.containsArena(arena,point)end)
      Motion.apply(rig,slot.navigator,world,plan,now)
      if medicine:throw(rig,actors) and not plan.goal then
       local target=rig:GetAttribute("BandageTargetPosition")

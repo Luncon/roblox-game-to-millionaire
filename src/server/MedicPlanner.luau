@@ -9,7 +9,7 @@ local angles={0,math.pi/4,-math.pi/4,math.pi/2,-math.pi/2,math.pi*3/4,-math.pi*3
 
 -- Only actual enemies can justify a backward step. No escort, retreat clock,
 -- reinforcement destination or patient-chasing state participates in movement.
-function Planner.step(medic,actors,order,battlefield,forward,onField,safe)
+function Planner.step(medic,actors,order,battlefield,forward,onField,safe,insideBattlefield: (Vector3) -> boolean)
  local plan={phase="idle",state="Supporting troops",speed=12,goal=nil,direct=false}
  if order=="hold" then plan.state="Holding";return plan end
  if order=="regroup" then plan.state="Regrouping";return plan end
@@ -22,7 +22,7 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe)
    table.insert(enemies,a);nearest=math.min(nearest,Tactics.flatDistance(a.position,medic.position))
   elseif a.rig~=medic.rig and a.alive and a.claimed and not a.neutral and a.humanoid and a.humanoid.Health>0
    and a.ownerId==medic.ownerId and a.civilizationId==medic.civilizationId and a.plotId==medic.plotId
-   and (a.kind=="warrior" or a.kind=="ranged") then
+   and (a.kind=="warrior" or a.kind=="ranged") and insideBattlefield(a.position) then
    center+=a.position;count+=1;table.insert(fighters,a)
   end
  end
@@ -45,8 +45,8 @@ function Planner.step(medic,actors,order,battlefield,forward,onField,safe)
   return plan
  end
  local desired=battlefield
- if onField then
-  if count>0 then center/=count;plan.centroid=center;desired=center end
+ if onField and count>0 then
+  center/=count;plan.centroid=center;desired=center
  else plan.state="Advancing to battlefield" end
  -- Project any rearward centroid onto the medic's current advance plane.
  local delta=desired-medic.position

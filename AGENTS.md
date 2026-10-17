@@ -119,7 +119,9 @@ independent fourth medic slot with a fixed 15-second respawn. The hospital and
 its pad/access reserve a rear site through SettlementSites/Topography. Medics
 are targetable registered actors but must be rejected by all offensive dispatch.
 Advance sends medics directly to the battlefield, then toward the living owned
-fighter average without backtracking. Healing runs independently while moving;
+fighter average without backtracking. Only fighters inside the battlefield affect
+positioning/coverage; outside replacements never block Advance. With none on the
+field, retain the forward battlefield destination. Healing runs independently while moving;
 only actual enemy avoidance or Regroup allows backward travel. Do not restore
 escort, patient-chase, timed retreat or barracks fallback logic. Hold remains
 stationary and permits fighter attacks plus medic healing. Regroup cancels

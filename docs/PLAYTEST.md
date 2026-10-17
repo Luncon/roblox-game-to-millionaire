@@ -1882,3 +1882,34 @@ Studio Play session after stopping other playtests. The generated project
 injects FakeProfileStore and runs `SoloBridgeNavigationTests`. Read
 `BridgeNavigationVerificationPhase` and `BridgeNavigationVerificationResult`
 on the DataModel for progress and structured results. No player storage is used.
+
+## Medic positioning during staggered arrivals — October 17, 2026
+
+The regression reproduced a field medic losing its movement goal when a living
+replacement outside the battlefield pulled the troop average backward. The
+no-backtracking projection flattened that target to the medic's current position.
+Positioning and coverage now include only living owned fighters inside the
+canonical combat bounds. With none there, the existing forward battlefield
+destination remains active. Bandage eligibility still includes approaching
+troops in range; no movement, healing or respawn state is saved.
+
+The isolated FakeProfileStore medical survival run passed **513 native module
+checks and all nine native scenarios**. After actual enemy avoidance ended,
+the same unanchored medic advanced **18.05 studs** while all three fighters
+remained outside the battlefield. With two fighters on the field and the third
+still outside, it advanced **18.06 studs** toward support; each check completed
+as soon as movement exceeded 18 studs. No replacement arrival was required.
+Existing deployment remained moving in 30/30 samples without backsteps, healed
+an approaching patient 20→32 while moving, and reached within 11.79 studs of the
+on-field fighter average. Actual deaths/replacements, continued enemy avoidance,
+critical melee/ranged attacks, pending shots, threshold release and near-miss
+bandages also passed.
+
+Standalone logic passed **149 cases**, including individual arrivals, an empty
+field with living outside replacements, one remaining outside fighter and
+resumption after danger clears. Removing the field filter or replacing the
+empty-field destination with the medic position made the regressions fail.
+All 199 Luau files compiled, strict specifications passed 19 items, and
+production, medical-test and 3,000-coin manual Rojo builds passed. No two-owner,
+published-client or real-storage acceptance was rerun for this movement fix;
+the existing separate restoration boundary remains unchanged.

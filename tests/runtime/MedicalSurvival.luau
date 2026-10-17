@@ -224,6 +224,41 @@ return function(context,player,round)
    evidence.avoidance={movement=movement,afterThreeSeconds=late,stoppedWhenThreatCleared=true}
    order("hold")
   end)
+  test("medic resumes after danger clears without waiting for outside replacements",function()
+   order("hold")
+   local slots=army().slots;local m=slots.medic.rig
+   local claim=service.registry:get(player.UserId)
+   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
+   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   freeze(m,center+back*180);m.HumanoidRootPart.Anchored=false
+   freeze(slots.warrior.rig,center+back*330)
+   freeze(slots.ranged.rig,center+back*400);freeze(slots.camp.rig,center+back*510)
+   local threat=Rig.createNeutral(CFrame.new(floorPoint(m.HumanoidRootPart.Position-back*8)),"warrior")
+   threat.Parent=folder;freeze(threat,threat.HumanoidRootPart.Position)
+   assert(service.combat:registerNeutral(threat,"warrior"));table.insert(extras,threat)
+   local start=m.HumanoidRootPart.Position
+   order("advance")
+   waitFor(function()return (m.HumanoidRootPart.Position-start):Dot(back)>5 end,"actual enemy escape",5)
+   service.combat:unregister(threat);threat:Destroy()
+   waitFor(function()return m:GetAttribute("WarriorState")~="Avoiding enemies" end,"cleared threat plan",2)
+   local cleared=m.HumanoidRootPart.Position
+   waitFor(function()return (cleared-m.HumanoidRootPart.Position):Dot(back)>18 end,"Advance with every fighter still outside",6)
+   local resumed=(cleared-m.HumanoidRootPart.Position):Dot(back)
+   for id,slot in slots do if id~="medic" then
+    assert(not CombatRules.containsArena(service.world.model.Battlefield,slot.rig.HumanoidRootPart.Position))
+   end end
+   -- Two fighters arrive; one replacement remains far outside the field.
+   order("hold")
+   freeze(m,center+back*180);m.HumanoidRootPart.Anchored=false
+   freeze(slots.warrior.rig,center+back*80);freeze(slots.ranged.rig,center+back*100)
+   local partial=m.HumanoidRootPart.Position
+   order("advance")
+   waitFor(function()return (partial-m.HumanoidRootPart.Position):Dot(back)>18 end,"support while one replacement remains outside",6)
+   assert(not CombatRules.containsArena(service.world.model.Battlefield,slots.camp.rig.HumanoidRootPart.Position))
+   evidence.fieldArrivals={advanceAfterEscape=resumed,advanceWithOneOutside=(partial-m.HumanoidRootPart.Position):Dot(back),sameMedicLife=army().slots.medic.rig==m}
+   order("hold")
+  end)
   test("medical homeward corridors remain bounded for all rotated plots",function()
    for _,plot in service.world.model.Plots:GetChildren()do
     local f=plot.Foundation;local frame=f.CFrame

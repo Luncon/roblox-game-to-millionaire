@@ -53,6 +53,8 @@ Initial implementation and isolated fake-store/native verification are complete 
 
 - [x] 7.14 Replace medic movement with direct battlefield deployment and live owned fighter-average support; remove escort, patient chase, isolation/barracks fallback and timed retreat state. Allow backward movement only for real enemy avoidance or Regroup, heal independently while moving, and verify actual deployment, centroid movement, deaths/respawns without backtracking, continuous avoidance, Hold/Regroup and existing critical-fighter combat in Studio.
 
+- [x] 7.15 Exclude fighters outside the battlefield from medic positioning and coverage; retain the battlefield Advance destination when no fighters are on the field. Reproduce staggered-respawn stalls and verify native movement after danger clears while replacements are still outside, with independent healing and unchanged orders/authority.
+
 ## Workflow follow-up
 
 - Review the complete medical implementation and its evidence before syncing/archiving its implemented capabilities. Keep unverified acceptance tasks unchecked.

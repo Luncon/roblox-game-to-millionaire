@@ -27,7 +27,7 @@ Medics SHALL be valid enemy attack targets with the owner's current armor health
 - **AND** the medic does not retaliate or activate a weapon-family skill
 
 ### Requirement: Battlefield advance and troop-average support
-During Advance a medic SHALL head directly to the battlefield, then position around the average of all living owned fighters. Bandages SHALL prioritize injured eligible troops independently of movement. It SHALL NOT backtrack for patients, respawns, missing fighters or support positioning. Only actual enemy avoidance or Regroup SHALL permit backtracking. Hold SHALL remain stationary.
+During Advance a medic SHALL head directly to the battlefield, then position around the average of living owned fighters already inside the battlefield. Bandages SHALL prioritize injured eligible troops independently of movement. It SHALL NOT backtrack for patients, respawns, missing fighters or support positioning. Only actual enemy avoidance or Regroup SHALL permit backtracking. Hold SHALL remain stationary.
 
 #### Scenario: Deployment and healing
 - **WHEN** Advance starts outside the battlefield with injured troops nearby or behind
@@ -35,13 +35,19 @@ During Advance a medic SHALL head directly to the battlefield, then position aro
 
 #### Scenario: Troop average on the battlefield
 - **WHEN** the medic reaches the battlefield
-- **THEN** its support position uses every current living owned melee/ranged troop, excluding players, foreign owners, obsolete lives and itself
+- **THEN** its support position uses current living owned melee/ranged troops inside the battlefield, excluding outside troops, players, foreign owners, obsolete lives and itself
 - **AND** it prefers clear positions covering more fighters within healing range, without chasing one escort or switching movement targets for individual patients
 
 #### Scenario: Deaths and rearward respawns
-- **WHEN** fighters die or fresh replacements behind the medic shift their average rearward
+- **WHEN** fighters die or fresh replacements spawn behind the medic
 - **THEN** the medic stays on the battlefield or moves laterally/forward without returning to barracks
 - **AND** no isolation check, retreat duration or missing-patient fallback can command a retreat
+
+#### Scenario: Replacements have not reached the battlefield
+- **WHEN** the medic has cleared danger and owned replacements are still outside the battlefield
+- **THEN** it retains its forward battlefield destination if no fighters have arrived, without waiting for replacements
+- **AND** each arriving fighter joins the support average individually, while remaining outside troops do not prevent support movement
+- **AND** eligible approaching troops can still receive bandages within healing range
 
 #### Scenario: Real enemies
 - **WHEN** a hostile threatens the medic or blocks its next supported movement leg
