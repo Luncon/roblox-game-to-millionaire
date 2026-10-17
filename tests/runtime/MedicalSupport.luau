@@ -233,6 +233,41 @@ return function(context,player,round)
   test("native four-slot hospital presentation fits the current viewport",function()
    evidence.hud=round("medicalHUD",{},10)
   end)
+  test("Advance seeks the wounded front and keeps healing through an actual fighter replacement",function()
+   order("hold")
+   local slots=army().slots
+   local medic,patient,oldRanged=slots.medic.rig,slots.warrior.rig,slots.ranged.rig
+   freeze(medic,floorPoint(0,90));medic.HumanoidRootPart.Anchored=false
+   freeze(patient,floorPoint(0,0));freeze(slots.camp.rig,floorPoint(12,0))
+   patient.Humanoid.Health=20
+   oldRanged.Humanoid.Health=0
+   waitFor(function()return army().slots.ranged.rig==nil end,"ranged replacement wait")
+   local deadline=army().slots.ranged.respawnAt
+   order("advance")
+   waitFor(function()return patient.Humanoid.Health>=32 end,"unanchored medic approaches and heals wounded front",12)
+   local approached=(medic.HumanoidRootPart.Position-patient.HumanoidRootPart.Position).Magnitude
+   assert(approached<=45 and army().slots.medic.rig==medic)
+   waitFor(function()return army().slots.ranged.rig~=nil end,"actual distant ranged replacement",15)
+   local replacement=army().slots.ranged.rig
+   assert(replacement~=oldRanged and workspace:GetServerTimeNow()>=deadline)
+   local replacementDistance=(replacement.HumanoidRootPart.Position-patient.HumanoidRootPart.Position).Magnitude
+   assert(replacementDistance>150,"Replacement was not still far behind the front")
+   patient.Humanoid.Health=20
+   local furthest=0
+   waitFor(function()
+    furthest=math.max(furthest,(medic.HumanoidRootPart.Position-patient.HumanoidRootPart.Position).Magnitude)
+    return patient.Humanoid.Health>=32
+   end,"healing continues after healthy replacement",5)
+   assert(furthest<=47 and army().slots.medic.rig==medic)
+   neutral=Instance.new("Folder");neutral.Name="NeutralOpponents";neutral.Parent=service.world.model
+   local start=medic.HumanoidRootPart.Position
+   local enemy=dummy(start+Vector3.new(0,0,-8))
+   waitFor(function()return medic:GetAttribute("WarriorState")=="Retreating" end,"wounded patient does not override threat avoidance",3)
+   waitFor(function()return (medic.HumanoidRootPart.Position-enemy.HumanoidRootPart.Position).Magnitude>10 end,"actual threat-first retreat movement",3)
+   evidence.seeking={approachedDistance=approached,replacementDistance=replacementDistance,
+    furthestAfterRespawn=furthest,patientHealth=patient.Humanoid.Health,threatRetreat=true}
+   clearExtras();order("hold")
+  end)
   return {ok=true,cases=cases,evidence=evidence,message="Fake-store solo native medical checks; two-owner, live storage and manual movement/animation acceptance are separate."}
  end)
  clearExtras()

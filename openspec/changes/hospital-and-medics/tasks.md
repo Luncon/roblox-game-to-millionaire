@@ -43,6 +43,7 @@ Initial implementation and isolated fake-store/native verification are complete 
 - [x] 7.5 Prevent blocked or obsolete critically wounded candidates from starving visible valid patients; retain health-priority selection and prove the regression before the fix, then verify actual obstacle/health behavior in solo Studio.
 - [x] 7.6 Verify four-slot army and hospital-origin/countdown presentation at desktop and compact viewport sizes; fix clipped/overlapping status and command controls, and capture actual native UI bounds and screenshots.
 - [x] 7.7 Measure sustained single/multiple-opponent combat with a medic, including healing influence, threat response, damageability and independent replacement; review the complete feature and record evidence plus remaining boundaries without changing initial healing rates merely to make checks pass.
+- [x] 7.8 Make Advance prioritize visible wounded patients and safe approaches, with backline/rally only as fallback; reproduce the distant healthy replacement regression, verify native death/respawn while a wounded fighter remains at the front, and preserve threat-first retreat, Hold, Regroup, authority and cooldown rules.
 
 ## Workflow follow-up
 

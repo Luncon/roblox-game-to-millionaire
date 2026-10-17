@@ -220,7 +220,7 @@ bandage satchel. They are targetable enemies but cannot attack or use skills.
 
 | Order | Fighters | Medic |
 | --- | --- | --- |
-| Advance | Existing engagement behavior | Prefer 12 studs behind living fighters; retreat before healing when enemies close within 12 studs, aiming for 18 studs of safety |
+| Advance | Existing engagement behavior | Heal visible wounded troops in range, otherwise seek a safe healing position; fall back behind fighters when no patient can be helped; retreat first from close enemies |
 | Hold | Stay in place; attack enemies already in reach | Stay in place; heal patients already within range |
 | Regroup | Return to the owned training camp and rest | Cancel field bandages, return to a separate camp arrival point and rest |
 
@@ -228,6 +228,14 @@ Retreat bursts use the existing 18-stud/three-second bounds and checked routes;
 a blocked or exhausted retreat stops rather than starting an endless flee loop.
 With no fighters the medic heads to its owner-side battlefield support rally.
 Support planning does not reserve or redirect fighter engagement positions.
+Patient support takes priority over the army's average position, so healthy
+replacements returning from the settlement do not pull the medic away from the
+wounded front. A visible patient within 45 studs lets the medic stay and heal.
+Otherwise it approaches a visible healing position about 28 studs from a wounded
+patient, avoiding endpoints within 18 studs of enemies and approach legs passing
+within 12 studs. It rechecks health and life identity each update. With no eligible
+patient it falls back roughly 12 studs behind the living fighters, or to its safe
+support rally if that position is unavailable.
 
 Bandages restore up to 12 HP, have a 45-stud range and a three-second launch
 cooldown. Lowest health fraction wins, then greatest deficit, distance and stable

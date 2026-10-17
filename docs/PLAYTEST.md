@@ -1654,3 +1654,40 @@ closed after verification. The only remaining tracked acceptance task is real
 hospital save/restart restoration in an identified authorized published test
 experience. The local places have PlaceId 0; fake-store evidence cannot complete
 that task.
+
+## Patient-first medic movement — 2026-10-17
+
+The user reported that a fresh fighter replacement could pull the medic away
+from wounded troops. The old Advance planner averaged all living fighters,
+including replacements still at the settlement. The new planner first heals a
+visible owned patient in range or seeks a safe visible healing position. It uses
+backline/rally movement as a fallback, while retaining threat-first retreat and
+stationary Hold. Healing amounts, cooldowns, ownership and respawn delays are
+unchanged.
+
+- The distant healthy replacement regression failed before implementation.
+  All 135 standalone logic cases then passed, including eight additional cases
+  for patient priority, safe side approaches, rejected routes, foreign/stale/full
+  patients, threat-first retreat and a safe rally when the backline is unavailable.
+  Removing in-range patient priority in a generated test-harness mutation failed
+  the regression; repository sources were not mutated for that check.
+- One isolated fake-store Studio session passed 483 native module cases and all
+  twelve medical runtime scenarios. The new unanchored movement case started the
+  medic 90 studs from an injured fighter, killed the ranged fighter and observed
+  its actual independent replacement. The medic approached healing range and
+  restored the front fighter from 20 to 32 HP.
+- At replacement, the new healthy ranged troop was 549.721 studs from the front.
+  The original medic remained at most 43.185 studs from its patient and again
+  healed 20 → 32 instead of following the army centroid. A new enemy eight studs
+  away interrupted patient support and caused actual retreat movement beyond ten
+  studs of separation. The medic retained its original life.
+- Existing Hold attack/heal, blocked/moving flights, cooldown retention, Regroup,
+  yard recovery, hospital purchase, level-10/50 deployment/return and native combat
+  replacement scenarios passed. Strict validation passed all nineteen items;
+  Luau compilation and production/manual/solo builds passed.
+
+The test used PlaceId 0 and an explicitly injected FakeProfileStore. The already
+open published Studio window stayed in Edit mode and was not used for gameplay
+or profile checks. Only the owned local test window was played and closed. These
+results establish the patient-first movement change; real storage restoration
+and full-server balance retain their separate verification boundaries.

@@ -358,8 +358,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
       end
       return p
      end
-     local plan=MedicPlanner.step(slot.support,attacker,actors,owner.order,home,forward,now,safe)
-     if not plan.goal and owner.order=="advance" and not plan.retreat and not CombatRules.containsArena(arena,attacker.position) then plan.goal=safe(home,false) end
+     local plan=MedicPlanner.step(slot.support,attacker,actors,owner.order,home,forward,now,safe,economy:get(ownerId),
+      function(from,patient)return combat:visible(from,patient)end)
+     if not plan.goal and not plan.patient and owner.order=="advance" and not plan.retreat
+      and not CombatRules.containsArena(arena,attacker.position) then plan.goal=safe(home,false) end
      Motion.apply(rig,slot.navigator,world,plan,now)
      if not plan.retreat and medicine:throw(rig,actors) and not plan.goal then
       local target=rig:GetAttribute("BandageTargetPosition")

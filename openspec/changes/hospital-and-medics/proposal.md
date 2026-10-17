@@ -10,7 +10,7 @@ Wounded armies currently fight until death or wait for replacements. A hospital 
 
 - Add a purchasable hospital behind each settlement. Building it unlocks both a medic class and training-yard troop healing.
 - The hospital deploys one independent medic slot, separate from barracks and Army Camp reinforcements. A fully developed army can contain four troops: melee, ranged, camp reinforcement and medic.
-- Medics throw visible bandages to damaged owned troops from a distance, stay behind their fighters and actively avoid enemies while advancing.
+- Medics throw visible bandages to damaged owned troops from a distance, prioritize helping wounded troops and actively avoid enemies while advancing. They fall back behind their fighters when no patient can be helped.
 - Medics obey army orders. Hold stops movement while fighters continue their existing in-range attacks and the medic continues in-range healing. Regroup returns the whole army to its owner's training yard.
 - Hospital-enabled troops recover while physically inside their own training yard. Health never exceeds maximum and dead troops cannot be revived.
 
@@ -19,7 +19,7 @@ Wounded armies currently fight until death or wait for replacements. A hospital 
 - Hospital I: settlement 10, purchased Training Yard I, 200 coins; Army Camp ownership is not required. No hospital upgrade tiers yet.
 - Hospital medic respawn: a separate fixed 15-second wait, unaffected by barracks upgrades. Spawn at the hospital, then join the current army order.
 - Bandages: 12 health per successful contact, a three-second launch cooldown and 45-stud maximum range. One pending bandage per medic; no attacks, weapon skills, self-bandaging or player healing.
-- Advance support position: roughly 12 studs behind the fighters, with safe retreat taking priority when enemies close in. Hold does not chase heal targets or flee; it preserves the existing stationary command contract.
+- Advance prioritizes helping wounded troops: heal visible patients in range or approach a safe healing position. Roughly 12 studs behind the fighters is the fallback when no patient can be helped; fresh replacements must not draw support away from wounded fighters. Safe retreat takes priority when enemies close in. Hold does not chase heal targets or flee; it preserves the existing stationary command contract.
 - Training-yard recovery: five health per second after two continuous seconds inside the owned yard. Leaving, recent damage or lost profile authority resets eligibility; Regroup is the convenient return command, not a prerequisite for healing once inside. Recovery also works while the medic is dead or respawning.
 - Use existing civilization outfits with an original bandage satchel and throw animation; no imported character/equipment dependencies. Initial numbers are prototype tuning, not measured balance claims.
 

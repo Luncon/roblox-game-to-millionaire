@@ -12,7 +12,7 @@ See proposal.md for the requested outcome and confirmed slot/command decisions. 
 
 ## Goals / Non-Goals
 
-**Goals:** add one independent, targetable support unit; make Advance position it behind fighters and retreat from danger; retain stationary Hold attacks and support; add physical-yard recovery gated by a saved hospital; keep authority, existing progression and unit timers intact.
+**Goals:** add one independent, targetable support unit; make Advance prioritize wounded patients, fall back behind healthy fighters and retreat from danger; retain stationary Hold attacks and support; add physical-yard recovery gated by a saved hospital; keep authority, existing progression and unit timers intact.
 
 **Non-goals:** replacing the camp reinforcement choice, changing fighter damage or skill timing, healing players/foreign owners, saved troop health, revival, hospital tiers, paid consumables or new asset dependencies. Existing pending player-animation and multiplayer acceptance is not established by this feature's builds.
 
@@ -46,7 +46,9 @@ Allow CombatService to register `medic` as an owned targetable actor. Preserve o
 
 Add a bounded support planner/controller called from the existing army think/update flow for the medic slot. Use existing actor snapshots, hostility checks, navigator and Motion conventions; do not retarget fighters or create formations.
 
-Under Advance, anchor on the centroid of living owned non-medic troops. Determine forward from their nearest relevant hostile direction, falling back to the owner's arena approach direction. Prefer a position 12 studs behind that front, then ground/check candidate routes and separation. Choose a safe owner-side support rally when fighters are absent; do not chase distant patients into enemy lines or another settlement.
+Under Advance, first heal a visible current owned patient already within 45 studs, using the existing health-priority rules. Stay within healing reach even when fresh replacements are far behind. Otherwise prioritize wounded owned patients with a reachable safe healing position: consider eight directions approximately 28 studs from the patient, require clear sight and grounded arena-safe endpoints, reject endpoints within 18 studs of a hostile and straight approach legs passing within 12 studs, and choose the shortest valid approach. Re-evaluate current patient lives/health every think; never retain a dead, full-health or obsolete life.
+
+Only when no patient can be helped, anchor on the centroid of living current owned non-medic troops. Determine forward from their nearest relevant hostile direction, falling back to the owner's arena approach direction. Prefer a position 12 studs behind that front, then ground/check candidate routes and separation. Choose a safe owner-side support rally when fighters are absent. Patient seeking may move alongside the fighters; it must not pursue enemies or enter another settlement. Native navigation and the existing threat-first retreat still guard actual travel.
 
 Threat handling precedes patient selection. Within the existing 12-stud trigger, cancel an unlaunched cast and score safe retreat candidates away from threats, aiming for 18-stud separation. Reuse bounded retreat distance/time and route checks so the medic cannot kite indefinitely, leave the valid battlefield route or teleport when blocked. After a bounded burst it re-evaluates support rather than fleeing forever. Retreatment does not alter heal cooldowns or fighter orders. Already launched bandages keep their independent guarded flight unless a command/lifecycle change cancels them.
 

@@ -26,13 +26,28 @@ Medics SHALL be valid enemy attack targets with the owner's current armor health
 - **THEN** normal damage and the existing exactly-once final-hit reward rules apply
 - **AND** the medic does not retaliate or activate a weapon-family skill
 
-### Requirement: Backline advance and retreat
-During Advance a medic SHALL follow a safe position approximately 12 studs behind its living fighters. Nearby hostile threats SHALL take priority over healing and trigger bounded, grounded retreat. It SHALL avoid crossing fighter fronts to pursue patients, respect terrain and obstacles, and never teleport, flee indefinitely or pursue enemies.
+### Requirement: Patient-first advance and retreat
+During Advance a medic SHALL prioritize helping wounded current owned troops, staying in healing range or approaching a safe visible healing position. With no eligible patient it SHALL fall back behind living fighters or to its owner-side rally. Nearby hostiles SHALL take priority and trigger bounded grounded retreat. It SHALL respect terrain and obstacles, avoid unsafe approaches, and never teleport, flee indefinitely or pursue enemies.
+
+#### Scenario: No troop needs healing
+- **WHEN** no owned patient can be helped
+- **THEN** the medic falls back approximately 12 studs behind living fighters
+- **AND** an unavailable backline position uses its safe owner-side rally
+
+#### Scenario: A replacement is still returning
+- **WHEN** a healthy replacement is far behind while an owned fighter needs healing near the battlefield
+- **THEN** the medic helps or approaches the wounded fighter rather than moving toward the averaged army position
+- **AND** it re-evaluates patients when a life dies, is replaced or reaches full health
+
+#### Scenario: A patient is beyond bandage range
+- **WHEN** an owned wounded troop is beyond 45 studs and a grounded visible healing position can be reached safely
+- **THEN** the medic approaches healing range without requiring a position behind every troop
+- **AND** it rejects healing endpoints within 18 studs of hostiles and approach legs passing within 12 studs of hostiles
 
 #### Scenario: A hostile approaches the healer
 - **WHEN** a hostile comes within 12 studs of an advancing medic
 - **THEN** it interrupts any unlaunched throw and chooses a safe retreat toward at least 18 studs of separation when available
-- **AND** it resumes backline support after the threat clears without resetting its healing cooldown
+- **AND** it resumes patient support or its backline fallback after the threat clears without resetting its healing cooldown
 
 #### Scenario: Fighters are absent
 - **WHEN** no living owned fighter can anchor the backline
