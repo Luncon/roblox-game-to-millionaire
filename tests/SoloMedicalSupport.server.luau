@@ -39,7 +39,11 @@ local ok,result=pcall(function()
 		assert(response.executed,tostring(response.result));assert(response.result.ok,"Native action failed: "..id)
 		return response.result
 	end
-	return require(game.ServerStorage.RuntimeTests.MedicalSupport)(context,player,round)
+	local result=if script:GetAttribute("MedicalSurvivalOnly") then {ok=true,cases=0,evidence={}}
+	 else require(game.ServerStorage.RuntimeTests.MedicalSupport)(context,player,round)
+	local survival=require(game.ServerStorage.RuntimeTests.MedicalSurvival)(context,player,round)
+	result.cases+=survival.cases;result.evidence.survival=survival.evidence
+	return result
 end)
 game:SetAttribute("MedicalSupportVerificationPhase",if ok then "Complete" else "Failed")
 local encoded=game.HttpService:JSONEncode({ok=ok,units=units,result=if ok then result else tostring(result)})

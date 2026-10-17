@@ -19,6 +19,8 @@ local Motion = require(script.Parent.EncounterMotion)
 local MedicalConfig=require(Shared.MedicalConfig)
 local MedicalService=require(script.Parent.MedicalService)
 local MedicPlanner=require(script.Parent.MedicPlanner)
+local MedicalRetreat=require(script.Parent.MedicalRetreat)
+local MedicalRoute=require(script.Parent.MedicalRoute)
 local Topography=require(script.Parent.Topography)
 local WarriorService = {}
 local COLLISION_GROUP = "CivilizationWarriors"
@@ -108,6 +110,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		slot.target = nil
 		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 		slot.support=nil
+		slot.medicalRecovery,slot.recovering=nil,nil
 		if slot.rig then
 			medicine:forget(slot.rig)
 			projectiles:cancel(slot.rig)
@@ -260,6 +263,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				slot.target=nil
 				slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 				slot.support=nil
+				slot.medicalRecovery,slot.recovering=nil,nil
 				if slot.navigator then slot.navigator:stop() end
 				local rig=slot.rig
 				local troopRoot=rig and rig:FindFirstChild("HumanoidRootPart")
@@ -315,7 +319,11 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				if not attacker then fallen(owner, slot, rig); continue end
     local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
     medicine:recover(rig,frame)
-    if not combat:canAct(rig) then medicine:cancel(rig);slot.navigator:stop();continue end
+    if not combat:canAct(rig) then
+     medicine:cancel(rig);slot.navigator:stop()
+     slot.medicalRecovery,slot.recovering=nil,nil
+     continue
+    end
 				if owner.order=="regroup" then
 					slot.rest=slot.rest or ArmyRest.new(slot.id)
 					local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
@@ -337,29 +345,34 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					continue
 				end
 				local claim=registry:get(ownerId)
+    local function safe(point,escaping,returning)
+     local ground=world.model.Ground
+     local localPoint=ground.CFrame:PointToObjectSpace(point)
+     local p=ground.CFrame:PointToWorldSpace(Vector3.new(localPoint.X,.95+Topography.sampleHeight(localPoint.X,localPoint.Z)+3,localPoint.Z))
+     local foundation=world.model.Plots["Plot"..owner.plotId].Foundation
+     if not CombatRules.containsArena(arena,p) and not (returning and MedicalRoute.contains(foundation,arena.Position,p)) then return nil end
+     for _,other in actors do
+      if other.rig~=rig and math.abs(other.position.Y-p.Y)<4 and (other.position-p).Magnitude<3 then return nil end
+     end
+     local delta=p-attacker.position
+     if delta.Magnitude>.01 and delta.Magnitude<=18 then
+      local filter=RaycastParams.new();filter.FilterType=Enum.RaycastFilterType.Exclude
+      local excluded={rig,troops}
+      local neutrals=world.model:FindFirstChild("NeutralOpponents")
+      if neutrals then table.insert(excluded,neutrals) end
+      filter.FilterDescendantsInstances=excluded;filter.RespectCanCollide=true
+      if workspace:Blockcast(CFrame.new(attacker.position+Vector3.new(0,.5,0)),Vector3.new(1.6,3.6,1.6),delta,filter) then return nil end
+     end
+     return p
+    end
     if slot.kind=="medic" then
      local forward=arena.Position-frame.Position
      forward=Vector3.new(forward.X,0,forward.Z).Unit
      local home=arena.Position-forward*45+Vector3.new(0,3,0)
+     local reinforcementHome=world:getBarracksSpawn(owner.plotId,"warrior","warrior").Position
      slot.support=slot.support or {}
-     local function safe(point,escaping)
-      local ground=world.model.Ground
-      local localPoint=ground.CFrame:PointToObjectSpace(point)
-      local p=ground.CFrame:PointToWorldSpace(Vector3.new(localPoint.X,.95+Topography.sampleHeight(localPoint.X,localPoint.Z)+3,localPoint.Z))
-      if not CombatRules.containsArena(arena,p) then return nil end
-      for _,other in actors do
-       if other.rig~=rig and math.abs(other.position.Y-p.Y)<4 and (other.position-p).Magnitude<3 then return nil end
-      end
-      local delta=p-attacker.position
-      if delta.Magnitude<=18 then
-       local filter=RaycastParams.new();filter.FilterType=Enum.RaycastFilterType.Exclude
-       filter.FilterDescendantsInstances={rig};filter.RespectCanCollide=true
-       if workspace:Blockcast(CFrame.new(attacker.position+Vector3.new(0,.5,0)),Vector3.new(1.6,3.6,1.6),delta,filter) then return nil end
-      end
-      return p
-     end
      local plan=MedicPlanner.step(slot.support,attacker,actors,owner.order,home,forward,now,safe,economy:get(ownerId),
-      function(from,patient)return combat:visible(from,patient)end)
+      function(from,patient)return combat:visible(from,patient)end,reinforcementHome)
      if not plan.goal and not plan.patient and owner.order=="advance" and not plan.retreat
       and not CombatRules.containsArena(arena,attacker.position) then plan.goal=safe(home,false) end
      Motion.apply(rig,slot.navigator,world,plan,now)
@@ -370,6 +383,15 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      end
      continue
     end
+    slot.medicalRecovery=slot.medicalRecovery or {}
+    local recoveryPlan=MedicalRetreat.step(slot.medicalRecovery,attacker,actors,owner.order,economy:get(ownerId),safe,
+     function(from,patient)return combat:visible(from,patient)end)
+    if recoveryPlan then
+     if not slot.recovering then encounters:cancel(rig);projectiles:cancel(rig);Motion.clear(rig) end
+     slot.recovering=true
+     Motion.apply(rig,slot.navigator,world,recoveryPlan,now)
+     continue
+    elseif slot.recovering then slot.recovering=nil;Motion.clear(rig) end
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
@@ -412,7 +434,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 				if slot.rig then
 					local root = slot.rig:FindFirstChild("HumanoidRootPart")
 					if slot.rig.Humanoid.Health>0 then
-						if owner.order~="regroup" and slot.kind~="medic" then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
+						if owner.order~="regroup" and slot.kind~="medic" and not slot.recovering then Motion.publish(slot.rig,encounters:advance(slot.rig,now)) end
 						WarriorRig.animate(slot.rig,now,root and root.AssemblyLinearVelocity.Magnitude>.5)
 					end
 				end

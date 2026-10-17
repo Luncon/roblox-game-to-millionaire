@@ -13,6 +13,7 @@ Wounded armies currently fight until death or wait for replacements. A hospital 
 - Medics throw visible bandages to damaged owned troops from a distance, prioritize helping wounded troops and actively avoid enemies while advancing. They fall back behind their fighters when no patient can be helped.
 - Medics obey army orders. Hold stops movement while fighters continue their existing in-range attacks and the medic continues in-range healing. Regroup returns the whole army to its owner's training yard.
 - Hospital-enabled troops recover while physically inside their own training yard. Health never exceeds maximum and dead troops cannot be revived.
+- During Advance an isolated medic withdraws toward reinforcements or its own barracks; critically wounded fighters may withdraw to a living medic. Bandages heal one nearest eligible troop within a small three-stud radius, including near misses against moving troops.
 
 ### Proposed defaults for this first slice
 

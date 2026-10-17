@@ -27,7 +27,7 @@ Medics SHALL be valid enemy attack targets with the owner's current armor health
 - **AND** the medic does not retaliate or activate a weapon-family skill
 
 ### Requirement: Patient-first advance and retreat
-During Advance a medic SHALL prioritize helping wounded current owned troops, staying in healing range or approaching a safe visible healing position. With no eligible patient it SHALL fall back behind living fighters or to its owner-side rally. Nearby hostiles SHALL take priority and trigger bounded grounded retreat. It SHALL respect terrain and obstacles, avoid unsafe approaches, and never teleport, flee indefinitely or pursue enemies.
+During Advance a medic SHALL prioritize wounded owned troops with safe visible healing positions. With no patient it SHALL fall back behind living fighters. Nearby hostiles SHALL trigger grounded avoidance. Supported retreat bursts SHALL remain bounded; isolated medics SHALL withdraw toward reinforcements. Movement SHALL respect terrain and obstacles without teleporting or pursuing enemies.
 
 #### Scenario: No troop needs healing
 - **WHEN** no owned patient can be helped
@@ -50,9 +50,18 @@ During Advance a medic SHALL prioritize helping wounded current owned troops, st
 - **AND** it resumes patient support or its backline fallback after the threat clears without resetting its healing cooldown
 
 #### Scenario: Fighters are absent
-- **WHEN** no living owned fighter can anchor the backline
-- **THEN** the medic waits at a safe owner-side support rally or retreats from nearby threats
+- **WHEN** no owned fighter remains within 100 studs during Advance
+- **THEN** the medic continuously withdraws toward its nearest current fighter or its own barracks waiting area if all fighters are dead
+- **AND** it rejoins when a fighter is within 35 studs, without stopping after a three-second supported retreat burst
 - **AND** it does not move to enemies or enter another settlement seeking patients
+
+### Requirement: Critical fighter recovery
+During Advance an owned melee or ranged fighter at or below 25% health SHALL withdraw toward a living owned medic's healing range and pause offensive actions until reaching 60% health. This SHALL preserve pending respawn and attack/skill cooldown deadlines. Hold SHALL remain stationary, and Regroup SHALL retain yard return. Missing medics, lost authority and new lives SHALL invalidate stale recovery state.
+
+#### Scenario: Withdraw and recover
+- **WHEN** a fighter becomes critically wounded and its owner has a living hospital medic
+- **THEN** it cancels pending attacks, skills and shots and seeks a clear position within 20 studs of the medic
+- **AND** healing to 60% releases its temporary recovery state without changing the army's order
 
 ### Requirement: Stationary Hold support
 Hold SHALL stop all owned troop movement. Fighters SHALL retain their existing attacks against enemies already within valid attack range. The medic SHALL continue throwing bandages to valid patients already within healing range, without chasing patients, repositioning or pursuing enemies.
@@ -84,12 +93,12 @@ A medic SHALL select a living damaged NPC troop belonging to the same owner and 
 - **AND** no bandage or cooldown is spent on the invalid candidate
 
 ### Requirement: Visible bounded bandages
-Each bandage SHALL visibly travel toward one selected patient and restore 12 health on one validated contact, with a three-second launch cooldown and 45-stud range. A medic SHALL have at most one pending bandage. Obstructed or missed throws SHALL expire without healing or retargeting another life.
+Each bandage SHALL visibly travel toward a selected patient and restore up to 12 health to one nearest eligible troop within three studs of its swept path. A medic SHALL have at most one pending bandage, a three-second launch cooldown and 45-stud source range. Walls SHALL block proximity healing. Only troop lives registered to that owner/civilization at launch SHALL be eligible; expired or distant misses SHALL heal nobody.
 
 #### Scenario: A patient moves or a wall intervenes
-- **WHEN** a locked patient escapes the bandage path, leaves valid range or becomes obstructed
-- **THEN** the throw misses or is blocked
-- **AND** it does not heal through the obstacle or transfer to another troop
+- **WHEN** a moving patient passes within three studs of a bandage
+- **THEN** the nearest eligible wounded troop receives one clamped heal even without a direct body hit
+- **AND** troops farther away, behind walls, foreign owners and replacement lives receive no healing
 
 ### Requirement: Server-owned medical contacts
 The server SHALL choose patients, trajectories, healing amounts and cooldowns and validate source authority, ownership, range, visibility and both actor lives at contact. Healing SHALL clamp to maximum health, grant no coins or combat procs, and never resurrect. Clients SHALL NOT submit patients, amounts or successful contacts.

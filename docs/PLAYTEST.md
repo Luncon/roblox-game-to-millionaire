@@ -1691,3 +1691,50 @@ open published Studio window stayed in Edit mode and was not used for gameplay
 or profile checks. Only the owned local test window was played and closed. These
 results establish the patient-first movement change; real storage restoration
 and full-server balance retain their separate verification boundaries.
+
+
+## Medic withdrawal, critical recovery and bandage proximity — 2026-10-17
+
+The new Advance behavior continuously withdraws an isolated medic toward current
+reinforcements or its own barracks. Fighters begin medic recovery at 25% health
+and resume engagement at 60%. Bandages retain fixed visible arcs, with a
+three-stud swept proximity contact healing one nearest eligible owned launch life.
+
+- Standalone checks passed 145 cases. Red fixtures reproduced missing proximity,
+  isolated withdrawal and critical recovery before their respective fixes.
+  Mutations removing the radius, recovery hysteresis or isolation trigger were
+  caught. All 196 Luau sources compiled; strict specification checks passed 19/19.
+- One fake-store solo Studio run passed 492 native module cases and 16 medical
+  runtime scenarios, including the complete earlier hospital/yard/combat suite.
+  A focused repeat with current sources passed 493 module cases and five survival
+  scenarios, adding an actual pending ranged-shot cancellation check.
+- The near-miss fixture moved the original patient 12 studs sideways after
+  launch. A troop two studs from the path healed 60→72; a farther troop remained
+  at 60 and the original patient remained at 20. One bandage was consumed and
+  its launch cooldown remained spent. Existing native wall and distant-miss
+  checks also passed.
+- A native fighter started at 20/140 HP, spent its spear skill cooldown, withdrew
+  from 73.048 studs away to the medic, healed to 92/140 and resumed Advance
+  (`Guarding`). The spent skill deadline remained unchanged. Hold then retained
+  the fighter's position instead of automatically retreating.
+- A critically wounded ranged troop cancelled an actual in-flight javelin on
+  recovery entry, began retreating and left the target at its original 100 HP.
+- With all three fighters dead, the unanchored medic moved 51.471 studs homeward
+  over five seconds, remained in withdrawal past the old burst timeout, exited
+  the arena through its owned approach corridor and rejoined the actual fresh
+  replacements. The original medic life survived. Corridor bounds passed for
+  all eight rotated plots.
+
+All automated runs inject FakeProfileStore. Real storage restoration remains the
+separate existing acceptance boundary; these tests never access player data.
+
+The separate two-owner fake-store Studio run passed all six scenarios. A wounded
+foreign troop closer to the flight path received no heal while the nearby owned
+camp troop healed 60→72. Both real clients observed two medics, bandage flights,
+throw-arm motion and four replicated heal events. Foreign-yard rejection,
+civilization-switch cancellation and lease-loss cancellation also passed. The
+two simulated clients/server ended normally; owned test windows were closed.
+Production, solo, multiplayer and temporary-coin manual Rojo builds passed.
+Review found no remaining implementation issue; actor snapshots are shared
+within a flight update, and no new client medical input or saved combat state
+was introduced.

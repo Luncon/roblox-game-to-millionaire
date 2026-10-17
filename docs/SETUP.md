@@ -219,8 +219,12 @@ npm run build:test-project -- --solo --medical
 # Open the resulting place in Studio and start one ordinary Play client.
 ```
 
-The medical mode runs the module regressions and `tests/runtime/MedicalSupport.luau`
-using only injected FakeProfileStore. Watch `MedicalSupportVerificationPhase`,
+The medical mode runs the module regressions, `tests/runtime/MedicalSupport.luau`
+and `tests/runtime/MedicalSurvival.luau` using only injected FakeProfileStore.
+The survival checks cover proximity healing, critical fighter recovery and an
+isolated medic returning to actual replacements. For a focused repeat, set the
+`MedicalSurvivalOnly` attribute on `ServerScriptService.SoloMedicalSupportTests`
+to true before Play; module regressions still run. Watch `MedicalSupportVerificationPhase`,
 `MedicalSupportVerificationResult` and `MEDICAL_SUPPORT_RESULT`. The geometry
 matrix covers all eight plots, thirteen civilizations and levels 5–50 in a moved,
 rotated world and can take several minutes. This mode requires `--solo` and is

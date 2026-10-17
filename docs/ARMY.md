@@ -220,14 +220,21 @@ bandage satchel. They are targetable enemies but cannot attack or use skills.
 
 | Order | Fighters | Medic |
 | --- | --- | --- |
-| Advance | Existing engagement behavior | Heal visible wounded troops in range, otherwise seek a safe healing position; fall back behind fighters when no patient can be helped; retreat first from close enemies |
+| Advance | Engage normally; at 25% health seek a living medic and recover to 60% | Heal visible wounded troops in range, otherwise seek a safe healing position; fall back behind fighters when no patient can be helped; retreat first from close enemies |
 | Hold | Stay in place; attack enemies already in reach | Stay in place; heal patients already within range |
 | Regroup | Return to the owned training camp and rest | Cancel field bandages, return to a separate camp arrival point and rest |
 
-Retreat bursts use the existing 18-stud/three-second bounds and checked routes;
-a blocked or exhausted retreat stops rather than starting an endless flee loop.
-With no fighters the medic heads to its owner-side battlefield support rally.
-Support planning does not reserve or redirect fighter engagement positions.
+With fighters nearby, medic retreat bursts retain the 18-stud/three-second bounds
+and checked routes. With no owned fighter within 100 studs, the medic continuously
+withdraws toward the nearest fresh fighter or its own barracks waiting area. This
+withdrawal can leave the battlefield along its owned approach corridor and rejoins
+the army within 35 studs; it does not stop at the supported burst timeout.
+Support planning does not reserve fighter engagement positions. During Advance,
+a fighter at or below 25% health seeks a safe visible position within 20 studs of
+a living owned medic. It pauses attacks until reaching 60% health. Entry cancels
+pending attacks, skills and shots while preserving cooldowns. Losing the medic,
+changing orders or spawning a new life clears that temporary recovery state.
+Hold remains stationary and Regroup retains yard return.
 Patient support takes priority over the army's average position, so healthy
 replacements returning from the settlement do not pull the medic away from the
 wounded front. A visible patient within 45 studs lets the medic stay and heal.
@@ -241,8 +248,12 @@ Bandages restore up to 12 HP, have a 45-stud range and a three-second launch
 cooldown. Lowest health fraction wins, then greatest deficit, distance and stable
 slot identity among visible, currently registered patients. A blocked or obsolete
 critical patient cannot prevent healing another eligible troop. One visible arced
-flight per medic uses native sphere sweeps;
-obstacles, misses, replaced lives and expiry cannot heal. Launch spends cooldown
+flight per medic uses native sphere sweeps and a three-stud proximity radius.
+It heals one nearest eligible wounded troop along the swept path, including a
+near miss of a moving patient. It can catch a different nearby owned troop, but
+only a life registered at launch. Walls block contact-to-patient healing as well
+as source visibility. Distant misses, replaced lives and expiry cannot heal.
+Launch spends cooldown
 including misses; cancellation, replacement and civilization switches preserve
 the owner's medic-slot deadline within the server. Regroup, death, departure,
 lost write authority and teardown cancel pending work. No self-bandaging, player,

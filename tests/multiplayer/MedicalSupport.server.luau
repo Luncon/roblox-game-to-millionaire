@@ -70,6 +70,20 @@ local ok,result=pcall(function()
   local delta=armies[i].slots.medic.rig.HumanoidRootPart.Position-held[i]
   assert(delta.Magnitude<.05,"Unanchored Hold medic moved: "..tostring(delta))
  end
+ -- A nearer foreign troop within the proximity radius cannot receive the heal.
+ task.wait(.35);assert(service.command(players[1],"order","regroup").ok)
+ freeze(armies[1].slots.medic.rig,point(500,-100))
+ local foreignNear=armies[1].slots.warrior.rig
+ local launched=armies[2].slots.warrior.rig
+ local catch=armies[2].slots.camp.rig
+ freeze(foreignNear,point(312,7));foreignNear.Humanoid.Health=20
+ freeze(launched,point(312,8));launched.Humanoid.Health=20
+ freeze(catch,point(312,10));catch.Humanoid.Health=60
+ waitFor(function()return #service.world.model.MedicalBandages:GetChildren()>0 end,"foreign-nearer proximity launch",5)
+ freeze(launched,point(312,20))
+ waitFor(function()return #service.world.model.MedicalBandages:GetChildren()==0 end,"owned proximity recipient",2)
+ assert(catch.Humanoid.Health==72 and launched.Humanoid.Health==20 and foreignNear.Humanoid.Health==20,
+  "Proximity healing crossed owners or failed to catch the nearby owned troop")
  for _,p in players do task.wait(.35);assert(service.command(p,"order","regroup").ok)end
  local patient=armies[1].slots.warrior.rig;patient.Humanoid.Health=50
  local Camp=require(game.ReplicatedStorage.Shared.TrainingCampConfig)
@@ -98,7 +112,7 @@ local ok,result=pcall(function()
  task.wait(.4);assert(victim.Humanoid.Health==40 and #service.world.model.MedicalBandages:GetChildren()==0)
  local evidence={}
  for id,response in observed do evidence[tostring(id)]=response.result end
- return {ok=true,cases=5,clients=2,evidence=evidence,foreignHealingRejected=true,foreignYardRejected=true,switchCancelled=true,leaseLossCancelled=true}
+ return {ok=true,cases=6,clients=2,evidence=evidence,foreignHealingRejected=true,foreignProximityRejected=true,foreignYardRejected=true,switchCancelled=true,leaseLossCancelled=true}
 end)
 if service then
  for _,p in Players:GetPlayers()do
