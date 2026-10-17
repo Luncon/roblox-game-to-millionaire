@@ -101,7 +101,7 @@ return function()
 			assert(Data.decode({schemaVersion=1,civilizations={sparta=malformed}})==nil,"Malformed development state entered a stored profile")
 		end
 	end)
-	test("all sixteen civilization fields survive fake-store release reload without live clocks or commands",function()
+	test("all twenty civilization fields survive fake-store release reload without live clocks or commands",function()
 		local Fake=require(game.ServerStorage.RuntimeTests.FakeProfileStore)
 		local Service=require(game.ServerScriptService.Game.ProfileService)
 		local store=Fake.new()
@@ -125,7 +125,7 @@ return function()
 		for id,value in expected do
 			local restored=second:get(101,id)
 			local scalarCount=0;for _ in restored do scalarCount+=1 end
-			assert(scalarCount==16,"Saved expansion profile omitted a field or retained runtime data")
+			assert(scalarCount==20,"Saved expansion profile omitted a field or retained runtime data")
 			for field,number in value do assert(restored[field]==number,"Development save lost "..id.." / "..field) end
 			assert(restored.farmUpdatedAt==nil and restored.order==nil and restored.revision==nil,"Transient farm/army state persisted")
 		end

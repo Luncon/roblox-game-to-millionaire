@@ -80,13 +80,13 @@ return function()
 		local value=state(9,1);assert(Data.copyState(value)==nil)
 		value=state(50,1);value.trainingLevel=0;assert(Data.copyState(value)==nil)
 	end)
-	test("all sixteen fields round-trip independently across civilizations and economy snapshots",function()
+	test("all twenty fields round-trip independently across civilizations and economy snapshots",function()
 		local sparta,britain=state(50,5),state(20,2)
 		sparta.farmLevel,sparta.workersLevel,sparta.farmCoins,sparta.storehouseLevel=2,2,170,1
 		sparta.blacksmithLevel,sparta.armorerLevel=1,1
 		local profile=Data.decode({schemaVersion=1,civilizations={sparta=sparta,britain=britain}})
 		assert(profile and profile.civilizations.sparta.skillLevel==5 and profile.civilizations.britain.skillLevel==2)
-		local fields=0;for _ in profile.civilizations.sparta do fields+=1 end;assert(fields==16)
+		local fields=0;for _ in profile.civilizations.sparta do fields+=1 end;assert(fields==20)
 		local economy=Economy.new();assert(economy:open(101,profile.civilizations.sparta))
 		for _,field in Development.persistentFields do assert(economy:get(101)[field]==sparta[field]) end
 		assert(economy:replace(101,profile.civilizations.britain).skillLevel==2)

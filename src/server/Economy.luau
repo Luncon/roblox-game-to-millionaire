@@ -3,6 +3,7 @@
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local ProfileData = require(script.Parent.ProfileData)
+local Formation = require(game.ReplicatedStorage.Shared.FormationConfig)
 local Economy = {}
 local BURST = 20
 local REFILL = 15
@@ -12,7 +13,7 @@ type Account = ProfileData.State & {
 	revision: number, tokens: number, updatedAt: number, purchasedAt: { [string]: number }, farmUpdatedAt: number,
 }
 
-function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
+function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, civilizationFor: ((number) -> string?)?)
 	local now = clock or os.clock
 	local accounts: { [number]: Account } = {}
 	local revisions: { [number]: number } = {}
@@ -36,7 +37,7 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 
 	function economy:open(playerId: number, initialState: any?)
 		if not accounts[playerId] then
-			local state = if initialState == nil then ProfileData.defaultState() else ProfileData.copyState(initialState)
+			local state = if initialState == nil then ProfileData.defaultState() else ProfileData.copyState(initialState,if civilizationFor then civilizationFor(playerId) else nil)
 			if not state then return nil end
 			local time=now()
 			local account=table.clone(state)
@@ -50,7 +51,7 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 	-- Switching imports progress without refilling this server session's input budgets.
 	function economy:replace(playerId: number, initialState: any)
 		local account = accounts[playerId]
-		local state = ProfileData.copyState(initialState)
+		local state = ProfileData.copyState(initialState,if civilizationFor then civilizationFor(playerId) else nil)
 		if not account or not state or (canMutate and not canMutate(playerId)) then return nil end
 		for _, field in Development.persistentFields do
 			account[field] = state[field]
@@ -105,7 +106,7 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 			return rejected(playerId, "invalid")
 		end
 		if expectedLevel ~= currentLevel then return rejected(playerId, "stale_level") end
-		local offer=Development.offer(account,trackId)
+		local offer=Development.offer(account,trackId,if civilizationFor then civilizationFor(playerId) else nil)
 		local cost = offer.cost
 		if not cost then return rejected(playerId, "max_level") end
 		local required = offer.requiredSettlement
@@ -155,7 +156,7 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 		if not account then return rejected(playerId,"not_claimed") end
 		if not self:canMutate(playerId) then return rejected(playerId,"profile_unavailable") end
 		if kind~="warrior" and kind~="ranged" then return rejected(playerId,"invalid") end
-		if account.armyCampLevel~=1 then return rejected(playerId,"prerequisite") end
+		if account.armyCampLevel<1 then return rejected(playerId,"prerequisite") end
 		if kind==account.extraTroopClass then return {ok=true,state=self:get(playerId)} end
 		local time=now()
 		if account.purchasedAt.troop and time-account.purchasedAt.troop<.4 then return rejected(playerId,"rate_limited") end
@@ -164,6 +165,19 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?)
 		account.revision=nextRevision(playerId)
 		return {ok=true,state=self:get(playerId)}
 	end
+
+ function economy:selectFormation(playerId: number,selection: unknown)
+  local account=accounts[playerId]
+  if not account then return rejected(playerId,"not_claimed") end
+  if not self:canMutate(playerId) then return rejected(playerId,"profile_unavailable") end
+  if selection~="none" and selection~=Formation.id then return rejected(playerId,"invalid") end
+  if account.warCouncilLevel~=1 or (selection~="none" and (account.formationLevel~=1
+   or not civilizationFor or civilizationFor(playerId)~=Formation.civilization)) then return rejected(playerId,"prerequisite") end
+  if account.selectedFormation==selection then return {ok=true,state=self:get(playerId)} end
+  account.selectedFormation=selection
+  account.revision=nextRevision(playerId)
+  return {ok=true,state=self:get(playerId)}
+ end
 
 	-- Called only by server-validated lethal combat, independently of click tokens.
 	function economy:rewardKill(playerId: number)

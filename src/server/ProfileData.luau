@@ -3,11 +3,12 @@
 local Civilizations = require(game:GetService("ReplicatedStorage").Shared.Civilizations)
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
+local Formation=require(game.ReplicatedStorage.Shared.FormationConfig)
 local ProfileData = {}
 
 export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number,
 	trainingLevel: number, farmLevel: number, workersLevel: number, armyCampLevel: number, farmCoins: number, extraTroopClass: string,
-	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number, hospitalLevel: number }
+	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number, hospitalLevel: number, shieldLevel: number, warCouncilLevel: number, formationLevel: number, selectedFormation: string }
 export type Profile = {
 	schemaVersion: number,
 	civilizations: { [string]: State },
@@ -29,10 +30,10 @@ end
 function ProfileData.defaultState(): State
 	return { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1,
 		trainingLevel=0,farmLevel=0,workersLevel=0,armyCampLevel=0,farmCoins=0,extraTroopClass="warrior",
-		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0,hospitalLevel=0 }
+		blacksmithLevel=0,armorerLevel=0,storehouseLevel=0,skillLevel=0,hospitalLevel=0,shieldLevel=0,warCouncilLevel=0,formationLevel=0,selectedFormation="none" }
 end
 
-function ProfileData.copyState(value: any): State?
+function ProfileData.copyState(value: any,civilizationId: string?): State?
 	if type(value) ~= "table" or not integer(value.coins, 0, 1000000000)
 		or not integer(value.level, 1, #Tracks.settlement) then
 		return nil
@@ -52,7 +53,15 @@ function ProfileData.copyState(value: any): State?
 	end
 	if copied.hospitalLevel==1 and copied.trainingLevel~=1 then return nil end
 	if copied.workersLevel>copied.farmLevel then return nil end
-	if copied.armyCampLevel==1 and copied.barracksLevel<4 then return nil end
+	if copied.armyCampLevel>0 and copied.barracksLevel<4 then return nil end
+ if copied.armyCampLevel==2 and copied.barracksLevel<6 then return nil end
+ if copied.warCouncilLevel==1 and copied.trainingLevel~=1 then return nil end
+ if copied.shieldLevel==1 and (copied.armorLevel<Formation.shieldUnlock or copied.armorerLevel~=1) then return nil end
+ if copied.formationLevel==1 and (copied.shieldLevel~=1 or copied.warCouncilLevel~=1 or copied.armyCampLevel~=2 or copied.hospitalLevel~=1) then return nil end
+ local selected=if value.selectedFormation==nil then "none" else value.selectedFormation
+ if selected~="none" and (selected~=Formation.id or copied.formationLevel~=1) then return nil end
+ if civilizationId and civilizationId~=Formation.civilization and (copied.shieldLevel>0 or copied.formationLevel>0 or selected~="none") then return nil end
+ copied.selectedFormation=selected
 	if copied.storehouseLevel==1 and copied.farmLevel<1 then return nil end
 	local reserve=if value.farmCoins==nil then 0 else value.farmCoins
 	local kind=if value.extraTroopClass==nil then "warrior" else value.extraTroopClass
@@ -76,7 +85,7 @@ function ProfileData.decode(value: any): Profile?
 	local civilizations: { [string]: State } = {}
 	for civilizationId, state in value.civilizations do
 		if not ProfileData.isCivilization(civilizationId) then return nil end
-		local copied = ProfileData.copyState(state)
+		local copied = ProfileData.copyState(state,civilizationId)
 		if not copied then return nil end
 		civilizations[civilizationId] = copied
 	end

@@ -64,6 +64,9 @@ function CivilizationService.start(options: any?)
 	profiles = ProfileService.new(store,profileOptions)
 	local economy = Economy.new(nil,function(userId)
 		return not closing and activePlayers[userId] ~= nil and profiles:isWritable(userId)
+	end,function(userId)
+		local claim=registry:get(userId)
+		return if claim then claim.civilizationId else nil
 	end)
 
 	snapshot = function(player: Player?)

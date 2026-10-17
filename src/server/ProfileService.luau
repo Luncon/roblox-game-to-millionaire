@@ -11,7 +11,7 @@ end
 
 local function copyCivilizations(values: any): any
 	local copied = {}
-	for id, state in values do copied[id] = Data.copyState(state) end
+	for id, state in values do copied[id] = Data.copyState(state,id) end
 	return copied
 end
 
@@ -112,7 +112,7 @@ function ProfileService.new(store: any, options: any?)
 		local entry = entries[userId]
 		if not Data.isCivilization(civilizationId) or not writable(entry) then return nil end
 		local state = entry.civilizations[civilizationId]
-		return if state then Data.copyState(state) else Data.defaultState()
+		return if state then Data.copyState(state,civilizationId) else Data.defaultState()
 	end
 
 	function service:getAll(userId: number): any
@@ -123,7 +123,7 @@ function ProfileService.new(store: any, options: any?)
 	function service:set(userId: number, civilizationId: string, state: any): boolean
 		local entry = entries[userId]
 		if not writable(entry) or not Data.isCivilization(civilizationId) then return false end
-		local copied = Data.copyState(state)
+		local copied = Data.copyState(state,civilizationId)
 		if not copied then return false end
 		entry.civilizations[civilizationId] = copied
 		entry.revision += 1

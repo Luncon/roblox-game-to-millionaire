@@ -208,3 +208,17 @@ I. Army Camp is optional. It adds one separate medic slot, for up to four troops
 and enables recovery in the owned training yard. Workshops do not discount this
 purchase. The existing guarded physical-pad flow handles the charge; buying it
 does not replace or heal living fighters or change pending respawn deadlines.
+
+## Shields, army expansion and planning
+
+Army Camp II costs 250 coins at settlement 18 after Army Camp I and Barracks VI.
+It adds a dedicated melee slot while preserving the existing camp class choice.
+War Council I costs 200 at settlement 19 after Training Yard I, for every
+civilization. Its accessible map room sits beside the training camp.
+
+Sparta's Shield Training I costs 150 at settlement/armor 15 after Armorer I.
+Spartan Shieldwall costs 250 at settlement 20 after that shield training,
+War Council I, Army Camp II and Hospital I. Purchases use physical pads and
+receive no workshop discount. The council table selects a purchased formation;
+selection costs no coins. Unlocks and selection save separately per civilization.
+Existing level-20+ settlements receive no retroactive checkpoint requirements.
