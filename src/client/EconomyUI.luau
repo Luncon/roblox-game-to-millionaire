@@ -63,8 +63,10 @@ function EconomyUI.start(screen: ScreenGui)
 		local capacity=player:GetAttribute("TroopCapacity") or tier.capacity
 		if (player:GetAttribute("ArmyCampLevel") or 0)>0 then units..=" · Camp "..status(player:GetAttribute("CampCount") or 0,"CampRespawnAt") end
 		local medic=player:GetAttribute("MedicCount") or 0
-  if player:GetAttribute("HospitalLevel")==1 then units..=" · Medic "..status(medic,"MedicRespawnAt") end
-  army.Text = string.format("Barracks %s · %d/%d troops · fighters %gs respawn\n%s",tier.name,warrior+ranged+medic,capacity,tier.respawnDelay,units)
+		army.Text = string.format("Barracks %s · %d/%d troops · fighters %gs respawn\n%s",tier.name,warrior+ranged+medic,capacity,tier.respawnDelay,units)
+		if player:GetAttribute("HospitalLevel")==1 then
+			army.Text..="\nHospital · Medic "..status(medic,"MedicRespawnAt").." · Yard recovery"
+		end
 	end
 
 	local function trackText(kind: string, level: number): string
@@ -105,7 +107,7 @@ function EconomyUI.start(screen: ScreenGui)
 	end
 	local function layout()
 		compact = screen.AbsoluteSize.Y < 400
-		local height = if compact then 132 else 184
+		local height = if compact then 146 else 198
 		hud.Size = UDim2.new(1, -32, 0, height)
 		limit.MaxSize = Vector2.new(360, height)
 		local function place(object: TextLabel, y: number, h: number, size: number)
@@ -126,8 +128,8 @@ function EconomyUI.start(screen: ScreenGui)
 		place(progression, if compact then 44 else 58, if compact then 16 else 40, if compact then 10 else 12)
 		place(instruction, if compact then 62 else 100, if compact then 12 else 16, 10)
 		place(feedback, if compact then 74 else 116, if compact then 12 else 16, 10)
-		place(army, if compact then 86 else 134, 30, if compact then 9 else 10)
-		place(notice, if compact then 118 else 168, 12, 10)
+		place(army, if compact then 86 else 134, 44, if compact then 9 else 10)
+		place(notice, if compact then 132 else 182, 12, 10)
 		render()
 	end
 	local function acceptState(candidate)

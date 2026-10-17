@@ -46,6 +46,26 @@ function ArmyUI.start(screen: ScreenGui)
 	button("Regroup","Regroup",2/3,.23,1/3,"order","regroup")
 	button("CampWarrior","Camp: Melee",0,.55,.5,"class","warrior")
 	button("CampRanged","Camp: Ranged",.5,.55,.5,"class","ranged")
+	local function layout()
+		local size=screen.AbsoluteSize
+		local beside=size.Y<500 and size.X>=620
+		local compact=size.Y<500 and not beside
+		local height=if compact then 90 else 132
+		limit.MaxSize=Vector2.new(450,height)
+		panel.AnchorPoint=if beside then Vector2.new(1,0) else Vector2.new(.5,1)
+		local bottom=if compact then math.max(4,math.min(56,size.Y-hud.AbsolutePosition.Y-hud.AbsoluteSize.Y-8-height)) else 96
+		panel.Position=if beside then UDim2.new(1,-16,0,16) else UDim2.new(.5,0,1,-bottom)
+		panel.Size=if beside then UDim2.fromOffset(math.min(450,size.X-400),height) else UDim2.new(1,-32,0,height)
+		title.Size=UDim2.new(1,-16,0,if compact then 17 else 23)
+		feedback.Position=UDim2.fromOffset(8,if compact then 72 else 104)
+		feedback.Size=UDim2.new(1,-16,0,if compact then 18 else 24)
+		for name,b in buttons do
+			local isClass=name=="CampWarrior" or name=="CampRanged"
+			b.Position=UDim2.new(b.Position.X.Scale,6,0,if isClass then (if compact then 47 else 73) else (if compact then 20 else 30))
+			b.Size=UDim2.new(b.Size.X.Scale,-12,0,if compact then 24 else 30)
+			b.TextSize=if beside and size.X<700 then 10 else 12
+		end
+	end
 	local function render()
 		local selected=player:GetAttribute("CivilizationId")~=nil
 		local trained=(player:GetAttribute("TrainingLevel") or 0)>0
@@ -67,6 +87,9 @@ function ArmyUI.start(screen: ScreenGui)
 		player:GetAttributeChangedSignal(attribute):Connect(render)
 	end
 	hud:GetPropertyChangedSignal("Visible"):Connect(render)
+	screen:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+	layout()
 	render()
 	task.spawn(function()
 		local folder=ReplicatedStorage:WaitForChild("ArmyRemotes",15)

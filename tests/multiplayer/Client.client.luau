@@ -22,6 +22,9 @@ commands.OnClientEvent:Connect(function(command)
 		if command.action=="medicalObserve" then
 			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("MedicalObservation",10))(command.options)
 		end
+		if command.action=="medicalHUD" then
+			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("MedicalHUD",10))()
+		end
 		if command.action=="tacticalObserve" then
 			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("TacticalCombatObservation",10))(command.options)
 		end

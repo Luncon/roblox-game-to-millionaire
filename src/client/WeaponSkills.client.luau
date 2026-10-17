@@ -25,6 +25,26 @@ local feedback=Instance.new("TextLabel")
 feedback.Position,feedback.Size=UDim2.new(1,-230,.52,36),UDim2.fromOffset(210,44)
 feedback.BackgroundTransparency,feedback.TextColor3,feedback.TextSize=1,Color3.fromRGB(255,220,150),12
 feedback.TextWrapped,feedback.Text,feedback.Parent=true,"",gui
+local function layout()
+	local size=gui.AbsoluteSize
+	local beside=size.Y<500 and size.X>=620
+	local narrow=size.X<900
+	if beside or narrow then
+		local width=if beside then 180 elseif size.X>=500 then math.min(180,size.X-400) else 180
+		local y=if beside then 152 elseif size.X>=500 then 16 else 222
+		button.AnchorPoint=Vector2.new(1,0)
+		button.Position,button.Size=UDim2.new(1,-16,0,y),UDim2.fromOffset(width,if beside then 44 else 58)
+		button.TextSize=if width<180 then 10 else 12
+		feedback.Position,feedback.Size=UDim2.new(1,-width-16,0,y+button.Size.Y.Offset+4),UDim2.fromOffset(width,24)
+	else
+		button.AnchorPoint=Vector2.new(1,.5)
+		button.Position,button.Size=UDim2.new(1,-20,.52,0),UDim2.fromOffset(180,58)
+		button.TextSize=13
+		feedback.Position,feedback.Size=UDim2.new(1,-230,.52,36),UDim2.fromOffset(210,44)
+	end
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+layout()
 local feedbackUntil,lastRequest=0,-math.huge
 local playback=Playback.new()
 local acceptedReadyAt={}
