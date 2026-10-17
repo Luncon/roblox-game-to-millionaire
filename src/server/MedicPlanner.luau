@@ -34,48 +34,27 @@ local function approach(medic,patient,actors,safe,visible)
  return best
 end
 
-function Planner.step(record,medic,actors,order,home,forward,now,safe,state,visible,reinforcementHome)
+function Planner.step(record,medic,actors,order,home,forward,now,safe,state,visible,reinforcementHome,battlefieldCenter)
  local plan={phase="idle",state="Supporting",speed=12,goal=nil,direct=false}
  if order=="hold" then plan.state="Holding";return plan end
  local threat,distance=nil,math.huge
- local center,count=Vector3.zero,0
- local nearestFriend,friendDistance=nil,math.huge
+ local front,frontDistance,frontKey=nil,math.huge,""
+ local friendDistance=math.huge
+ local center=battlefieldCenter or home+forward*45
  for _,a in actors do
   if Rules.hostile(medic,a) then
    local d=Tactics.flatDistance(medic.position,a.position)
    if d<distance and math.abs(a.position.Y-medic.position.Y)<8 then threat,distance=a,d end
   elseif a.ownerId==medic.ownerId and a.civilizationId==medic.civilizationId and a.plotId==medic.plotId
    and a.alive and a.claimed and a.rig~=medic.rig and (a.kind=="warrior" or a.kind=="ranged") then
-   center+=a.position;count+=1
-   local d=Tactics.flatDistance(medic.position,a.position)
-   if d<friendDistance then nearestFriend,friendDistance=a,d end
+   friendDistance=math.min(friendDistance,Tactics.flatDistance(medic.position,a.position))
+   local d=Tactics.flatDistance(a.position,center)
+   local key=tostring(a.rig:GetAttribute("ArmySlot") or a.kind)
+   if d<frontDistance or (d==frontDistance and key<frontKey) then front,frontDistance,frontKey=a,d,key end
   end
  end
- if friendDistance<=Config.rejoinRange then record.withdrawing=nil end
- if friendDistance>Config.escortRange or record.withdrawing then
-  record.withdrawing=true;record.origin,record.began=nil,nil
-  plan.state,plan.retreat,plan.withdrawing="Withdrawing to reinforcements",true,true
-  local destination=reinforcementHome or home
-  if nearestFriend then destination=nearestFriend.position+Tactics.away(medic,nearestFriend)*12 end
-  local candidate=safe(destination,true,true) or safe(reinforcementHome or home,true,true)
-  if candidate and Tactics.flatDistance(candidate,medic.position)>3 then
-   plan.goal=candidate
-   -- Detour around pressure in front of the homeward route; no burst timeout.
-   if threat and distance<Tuning.retreatTrigger and (candidate-medic.position):Dot(threat.position-medic.position)>0 then
-    local best=-math.huge
-    for _,point in Tactics.rangedPoints(medic,threat,true)do
-     local escape=safe(point,true,true)
-     if not escape then continue end
-     local gap=Tactics.flatDistance(escape,threat.position)
-     local score=gap-Tactics.flatDistance(escape,candidate)*.1
-     if gap>distance and score>best then best=score;plan.goal=escape end
-    end
-   end
-  else plan.state="Waiting for reinforcements" end
-  return plan
- end
  if distance>=Tuning.retreatSafe then record.origin,record.began=nil,nil end
- if threat and (distance<Tuning.retreatTrigger or record.origin~=nil) then
+ if threat and friendDistance<=Config.escortRange and (distance<Tuning.retreatTrigger or record.origin~=nil) then
   if not record.origin then record.origin,record.began=medic.position,now end
   plan.state,plan.retreat,plan.speed="Retreating",true,Tuning.retreatSpeed
   if now-record.began<Tuning.retreatDuration then
@@ -108,21 +87,30 @@ function Planner.step(record,medic,actors,order,home,forward,now,safe,state,visi
   plan.goal=goals[patient.rig]
   return plan
  end
- local goal=home
- if count>0 then
-  center/=count
-  local nearest,nearestDistance=nil,120
-  for _,a in actors do if Rules.hostile(medic,a) then
-   local d=Tactics.flatDistance(center,a.position)
-   if d<nearestDistance then nearest,nearestDistance=a,d end
-  end end
-  local delta=if nearest then nearest.position-center else forward
-  delta=Vector3.new(delta.X,0,delta.Z)
-  if delta.Magnitude>.01 then forward=delta.Unit end
-  goal=center-forward*12
+ local goal=reinforcementHome or home
+ if front then
+  goal=front.position-forward*12
+  plan.following,plan.state=front,"Following front troop"
+ else plan.state="Returning to barracks" end
+ local candidate=safe(goal,false,true)
+ if candidate and Tactics.flatDistance(candidate,medic.position)>2 then
+  plan.goal=candidate
+  plan.direct=Tactics.flatDistance(candidate,medic.position)<=Tuning.closeDistance
  end
- local candidate=safe(goal,false,true) or safe(home,false)
- if candidate and Tactics.flatDistance(candidate,medic.position)>2 then plan.goal=candidate end
+ -- Follow a distant replacement without a second withdrawal mode or timeout.
+ if threat and distance<Tuning.retreatTrigger and friendDistance>Config.escortRange and plan.goal then
+  plan.retreat=true
+  if (plan.goal-medic.position):Dot(threat.position-medic.position)>0 then
+   local best=-math.huge
+   for _,point in Tactics.rangedPoints(medic,threat,true)do
+    local escape=safe(point,true,true)
+    if not escape then continue end
+    local gap=Tactics.flatDistance(escape,threat.position)
+    local score=gap-Tactics.flatDistance(escape,goal)*.1
+    if gap>distance and score>best then best,plan.goal=score,escape end
+   end
+  end
+ end
  -- Keep a minimum separation without changing fighter reservations.
  if not plan.goal then
   for _,point in Tactics.separationPoints(medic,actors)do

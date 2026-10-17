@@ -25,7 +25,7 @@ function Motion.apply(rig,navigator,world,result,now)
 	local skillActive=result.phase=="skill" or rig:GetAttribute("WeaponSkillActive")~=nil
 	local speed=if skillActive then 0 else result.speed or 12
 	if result.goal and result.direct and rig:GetAttribute("WarriorClass")~="ranged"
-		and (result.goal-root.Position).Magnitude<8 then speed=math.min(speed,6)end
+		and rig:GetAttribute("WarriorClass")~="medic" and (result.goal-root.Position).Magnitude<8 then speed=math.min(speed,6)end
 	humanoid.WalkSpeed=speed
 
 	local face=not skillActive and result.facing and (result.phase~="idle" or not result.goal or result.direct)

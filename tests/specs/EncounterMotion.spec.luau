@@ -45,5 +45,10 @@ return function(module)
 		assert(not humanoid.AutoRotate and root.CFrame.LookVector:Dot(Vector3.xAxis)>.999)
 		assert(navigator.stops==1 and navigator.routes==0)
 	end)
+	test("medic escort keeps marching speed on short direct following legs",function(rig,root,humanoid,navigator)
+		rig:SetAttribute("WarriorClass","medic")
+		Motion.apply(rig,navigator,{}, {phase="idle",goal=root.Position+Vector3.new(5,0,0),direct=true,speed=12},1)
+		assert(humanoid.WalkSpeed==12 and navigator.directs==1)
+	end)
 	return cases
 end
