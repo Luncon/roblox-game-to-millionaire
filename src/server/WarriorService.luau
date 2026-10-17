@@ -109,7 +109,6 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		if slot.navigator then slot.navigator:destroy(); slot.navigator = nil end
 		slot.target = nil
 		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
-		slot.support=nil
 		slot.medicalRecovery=nil
 		if slot.rig then
 			medicine:forget(slot.rig)
@@ -262,7 +261,6 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 			for _, slot in owner.slots do
 				slot.target=nil
 				slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
-				slot.support=nil
 				slot.medicalRecovery=nil
 				if slot.navigator then slot.navigator:stop() end
 				local rig=slot.rig
@@ -370,13 +368,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
     if slot.kind=="medic" then
      local forward=arena.Position-frame.Position
      forward=Vector3.new(forward.X,0,forward.Z).Unit
-     local home=arena.Position-forward*45+Vector3.new(0,3,0)
-     local reinforcementHome=world:getBarracksSpawn(owner.plotId,"warrior","warrior").Position
-     slot.support=slot.support or {}
-     local plan=MedicPlanner.step(slot.support,attacker,actors,owner.order,home,forward,now,safe,economy:get(ownerId),
-      function(from,patient)return combat:visible(from,patient)end,reinforcementHome,arena.Position)
+     local plan=MedicPlanner.step(attacker,actors,owner.order,arena.Position,forward,
+      CombatRules.containsArena(arena,attacker.position),safe)
      Motion.apply(rig,slot.navigator,world,plan,now)
-     if not plan.retreat and medicine:throw(rig,actors) and not plan.goal then
+     if medicine:throw(rig,actors) and not plan.goal then
       local target=rig:GetAttribute("BandageTargetPosition")
       local point=Vector3.new(target.X,attacker.position.Y,target.Z)
       if (point-attacker.position).Magnitude>.01 then attacker.root.CFrame=CFrame.lookAt(attacker.position,point) end

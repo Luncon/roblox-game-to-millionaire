@@ -220,18 +220,30 @@ bandage satchel. They are targetable enemies but cannot attack or use skills.
 
 | Order | Fighters | Medic |
 | --- | --- | --- |
-| Advance | Fight normally; at 20% health stay in medic healing range until 40% | Prioritize patients; otherwise follow the living fighter closest to the battlefield; avoid close threats |
+| Advance | Fight normally; at 20% health stay in medic healing range until 40% | Head directly to the battlefield, then support the living army average; heal injured troops while moving and avoid enemies |
 | Hold | Stay in place; attack enemies already in reach | Stay in place; heal patients already within range |
 | Regroup | Return to the owned training camp and rest | Cancel field bandages, return to a separate camp arrival point and rest |
 
-When healthy support is needed, the medic follows approximately 12 studs behind
-one living owned fighter: the one closest to the battlefield center. It chooses
-the next fighter as soon as that life dies. Healthy replacements elsewhere do not
-pull it toward an army average. With no living fighters it returns toward its own
-barracks; the first respawned fighter becomes its escort anchor. It uses owned
-approach routes and short direct following legs near the front, retaining normal
-marching speed. Actual nearby threats still trigger checked avoidance; there is
-no separate distance-triggered withdrawal latch.
+The medic heads directly to the battlefield during Advance. Once inside it,
+support positioning uses the average of every living owned melee/ranged troop
+in the active civilization and plot. Clear positions near that average favor
+covering more fighters within the 45-stud bandage radius before minimizing
+travel. It does not follow a single escort or choose a new movement goal for every injured patient. Bandage
+selection runs independently, so casts do not stop travel or repeatedly turn a
+moving medic toward the patient.
+
+Ordinary support goals stay level with or ahead of the medic along its owner's
+approach to the battlefield. Rearward troop averages, deaths, missing patients
+and fresh replacements cannot send it back to barracks. A rearward average can
+be approached laterally; otherwise the medic holds its current field position.
+With no surviving fighters it continues toward the battlefield if still ahead.
+Widely separated troops cannot all remain in healing range under this rule.
+
+Only an actual enemy or Regroup may cause backward travel. Enemies within 18
+studs prompt checked 10-stud avoidance steps that increase the distance to the
+nearest threat. There is no retreat episode, origin, duration or three-second
+stop. The next normal movement leg also checks enemy clearance, preventing an
+immediate return into the same danger. Hold remains stationary.
 
 During Advance a fighter at or below 20% health keeps a living owned medic within
 visible 45-stud healing range until reaching 40% health. It continues ordinary
@@ -242,15 +254,6 @@ contacts, launched shots and cooldowns retain their ordinary behavior. Automatic
 spear dashes pause while range-limited; stationary skills remain available.
 Missing medics, changed orders, lost authority and new lives clear support state.
 Hold stays stationary and Regroup retains yard return.
-Patient support takes priority over the army's average position, so healthy
-replacements returning from the settlement do not pull the medic away from the
-wounded front. A visible patient within 45 studs lets the medic stay and heal.
-Otherwise it approaches a visible healing position about 28 studs from a wounded
-patient, avoiding endpoints within 18 studs of enemies and approach legs passing
-within 12 studs. It rechecks health and life identity each update. With no eligible
-patient it follows the current front fighter, or its barracks route while all
-fighters await replacement. Blocked following routes retry without selecting an
-unrelated rally or an army average.
 
 Bandages restore up to 12 HP, have a 45-stud range and a three-second launch
 cooldown. Lowest health fraction wins, then greatest deficit, distance and stable

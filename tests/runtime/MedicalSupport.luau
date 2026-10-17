@@ -179,7 +179,7 @@ return function(context,player,round)
    waitFor(function()return (medic.HumanoidRootPart.Position-floorPoint(0,12)).Magnitude<22 end,"hospital to battlefield backline",90)
    local start=medic.HumanoidRootPart.Position
    local opponent=dummy(start+Vector3.new(0,0,-8))
-   waitFor(function()return medic:GetAttribute("WarriorState")=="Retreating" end,"threat-first retreat",5)
+   waitFor(function()return medic:GetAttribute("WarriorState")=="Avoiding enemies" end,"threat-first retreat",5)
    waitFor(function()return (medic.HumanoidRootPart.Position-start).Magnitude>3 end,"visible native retreat",5)
    task.wait(3)
    local displacement=(medic.HumanoidRootPart.Position-start).Magnitude
@@ -262,7 +262,7 @@ return function(context,player,round)
    neutral=Instance.new("Folder");neutral.Name="NeutralOpponents";neutral.Parent=service.world.model
    local start=medic.HumanoidRootPart.Position
    local enemy=dummy(start+Vector3.new(0,0,-8))
-   waitFor(function()return medic:GetAttribute("WarriorState")=="Retreating" end,"wounded patient does not override threat avoidance",3)
+   waitFor(function()return medic:GetAttribute("WarriorState")=="Avoiding enemies" end,"wounded patient does not override threat avoidance",3)
    waitFor(function()return (medic.HumanoidRootPart.Position-enemy.HumanoidRootPart.Position).Magnitude>10 end,"actual threat-first retreat movement",3)
    evidence.seeking={approachedDistance=approached,replacementDistance=replacementDistance,
     furthestAfterRespawn=furthest,patientHealth=patient.Humanoid.Health,threatRetreat=true}

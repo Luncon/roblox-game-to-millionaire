@@ -12,7 +12,7 @@ See proposal.md for the requested outcome and confirmed slot/command decisions. 
 
 ## Goals / Non-Goals
 
-**Goals:** add one independent, targetable support unit; make Advance prioritize wounded patients, fall back behind healthy fighters and retreat from danger; retain stationary Hold attacks and support; add physical-yard recovery gated by a saved hospital; keep authority, existing progression and unit timers intact.
+**Goals:** add one independent, targetable support unit; make Advance deploy to the battlefield and support the troop average while healing injured patients independently and avoiding enemies; retain stationary Hold attacks and support; add physical-yard recovery gated by a saved hospital; keep authority, existing progression and unit timers intact.
 
 **Non-goals:** replacing the camp reinforcement choice, changing fighter damage or skill timing, healing players/foreign owners, saved troop health, revival, hospital tiers, paid consumables or new asset dependencies. Existing pending player-animation and multiplayer acceptance is not established by this feature's builds.
 
@@ -38,19 +38,19 @@ Reserve flat connected terrain before Topography builds its triangles, exclude s
 
 ### 3. A recognizable support rig with explicit offensive exclusions
 
-Extend the shared troop creation/update path to support a procedural R6 medic using the civilization's existing outfit, skin-tone defaults and a recognizable bandage satchel. Do not reuse custom melee source models or attach a faction's offensive weapon to it. Retain existing source joint/wardrobe preservation and server network ownership. Add ready/throw/retreat poses on the server NPC animation path.
+Extend the shared troop creation/update path to support a procedural R6 medic using the civilization's existing outfit, skin-tone defaults and a recognizable bandage satchel. Do not reuse custom melee source models or attach a faction's offensive weapon to it. Retain existing source joint/wardrobe preservation and server network ownership. Add ready/throw/avoidance poses on the server NPC animation path.
 
 Allow CombatService to register `medic` as an owned targetable actor. Preserve ordinary hostility/protection and final-hit rewards when an enemy kills it. Explicitly reject medic sources in ordinary damage, projectile-damage and weapon-skill paths; bypass CombatEncounter's offensive planning for this class. Enemy targeting can select medics, but a non-attacking medic must not be classified as a melee pressure source merely because it is not ranged.
 
 ### 4. Patient support and recovery reuse owned navigation
 
-Add a bounded support planner/controller called from the existing army think/update flow for the medic slot. Use existing actor snapshots, hostility checks, navigator and Motion conventions; do not retarget fighters or create formations.
+Replace the medic planner with one stateless movement policy. Advance outside the battlefield targets the battlefield directly. Inside it, use the average position of every live owned current-civilization/plot fighter; do not average players, farmers, medics or foreign/stale actors. Prefer a grounded clear point near that average, maximizing the number of fighters within 45 studs before minimizing travel, and hold when already close. Use short direct navigation when available.
 
-Under Advance, first heal a visible current owned patient already within 45 studs, using the existing health-priority rules. Stay within healing reach even when fresh replacements are far behind. Otherwise prioritize wounded owned patients with a reachable safe healing position: consider eight directions approximately 28 studs from the patient, require clear sight and grounded arena-safe endpoints, reject endpoints within 18 studs of a hostile and straight approach legs passing within 12 studs, and choose the shortest valid approach. Re-evaluate current patient lives/health every think; never retain a dead, full-health or obsolete life.
+Project ordinary movement goals onto or ahead of the medic's current owner-to-battlefield advance plane. Rearward averages, patients and replacements cannot pull it backward. With no fighters, continue toward the battlefield center if ahead or remain in place; never select barracks or a reinforcement anchor. This is a deliberate restriction: widely spread troops cannot all be kept in healing range without violating the no-backtracking rule.
 
-When no patient can be helped, choose the current living owned fighter closest to the battlefield center, breaking ties by stable slot. Follow 12 studs behind it along the owner's arena approach direction. Do not average fighters or latch distance-triggered withdrawal: a distant fresh troop cannot override a patient or the current front fighter. Re-evaluate life identity each think. With all fighters dead, return toward the owned barracks waiting area; the first replacement immediately becomes the escort anchor. Use grounded owned approach routes outside the battlefield and short direct steering inside it to avoid repeated long-route replans during marching.
+Only current hostile threats can authorize backward movement. Within 18 studs choose a grounded 10-stud escape step that increases minimum enemy clearance. There is no retreat record, distance episode, cooldown or three-second timeout. Ordinary upcoming local legs must retain enemy clearance so avoiding a threat does not immediately turn into walking back at it. Static obstacles still use native route/ground checks. Hold overrides movement and Regroup retains the owned yard route.
 
-Threat handling precedes patient selection. Nearby fighters retain the existing 12/18-stud, 18-stud/three-second grounded avoidance burst. When the escort is far away or absent, follow its homeward route continuously and detour if a nearby enemy blocks the direction of travel. This is route avoidance, not a separate distance-based withdrawal mode. Hold overrides movement.
+MedicalService continues choosing injured owned visible patients by the established priority, range, cooldown and proximity-contact rules. Healing and movement do not select each other's goals: casting while advancing must not stop navigation or repeatedly rotate the root toward a patient. Rotate to face a throw only while stationary. Existing launched flights retain authority/life checks.
 
 For Advance fighters, latch a per-Humanoid support range at or below 20% health, released at 40%, while a current living same-owner/civilization/plot medic exists. A fighter already within visible 45-stud healing range continues normal attacks and movement inside that radius. Outside range or sight, seek a safe visible point about 40 studs from the medic, preserving existing contacts/shots and cooldowns. Pass the support boundary into CombatEncounter so separation, melee approach and ranged movement cannot pursue outside it. Do not bypass encounter advancement or cancel ordinary offense when support begins. Automatic spear dashes are withheld while tethered because they can leave healing range; stationary skills remain eligible. Missing medics, new lives, authority loss and orders clear obsolete support state.
 
@@ -97,7 +97,7 @@ Use one Studio playtest at a time. Perform solo native checks first; use a focus
 1. Land the sixteen-field missing-only hospital extension and guarded purchase with legacy/fake-store round trips.
 2. Add reserved hospital geometry, controls and spawn/access helpers; verify placement before live AI.
 3. Add one inert targetable medic with independent slot lifecycle and accurate UI counts; prove no offensive dispatch and no fighter/timer changes.
-4. Add server-only bandage support, backline planning and Hold/Regroup behavior in small independently verified slices.
+4. Add server-only bandage support, battlefield support planning and Hold/Regroup behavior in small independently verified slices.
 5. Add yard recovery clocks and bounded presentation independently of medic availability.
 6. Complete isolated native geometry, commands, healing, respawns and two-owner checks; update implemented docs only with actual evidence.
 7. For rollback, disable medical behavior/availability while retaining hospitalLevel in all readers/writers and preserving existing profile keys and progress. Never silently clear a stored hospital or revert to a writer that discards the field.

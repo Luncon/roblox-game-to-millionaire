@@ -118,7 +118,10 @@ Hospital I requires settlement 10 and Training Yard I, costs 200, and adds an
 independent fourth medic slot with a fixed 15-second respawn. The hospital and
 its pad/access reserve a rear site through SettlementSites/Topography. Medics
 are targetable registered actors but must be rejected by all offensive dispatch.
-Advance keeps medics behind fighters with bounded threat avoidance; Hold remains
+Advance sends medics directly to the battlefield, then toward the living owned
+fighter average without backtracking. Healing runs independently while moving;
+only actual enemy avoidance or Regroup allows backward travel. Do not restore
+escort, patient-chase, timed retreat or barracks fallback logic. Hold remains
 stationary and permits fighter attacks plus medic healing. Regroup cancels
 bandages and uses distinct medic camp arrival index 6. MedicalService owns
 12-HP/45-stud/three-second bandages and hospital-gated five-HP/second yard recovery

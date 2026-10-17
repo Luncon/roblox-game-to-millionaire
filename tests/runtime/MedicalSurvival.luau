@@ -124,76 +124,105 @@ return function(context,player,round)
    assert(service.combat:registerNeutral(target,"warrior"));table.insert(extras,target)
    local health=target.Humanoid.Health
    waitFor(function()return #service.world.model.TroopProjectiles:GetChildren()>0 end,"actual ranged shot launch",5)
+   local firstRelease=p:GetAttribute("LastAttackAt")
+   assert(firstRelease)
    p.Humanoid.Health=20;p.HumanoidRootPart.Anchored=false
    assert(service.command(player,"order","advance").ok)
    waitFor(function()return target.Humanoid.Health<health end,"pending critical shot contacts",2)
    local first=target.Humanoid.Health
-   waitFor(function()return target.Humanoid.Health<first end,"critical ranged continues firing",4)
+   -- Firing and impact have separate two-second cadences. Moving closer can
+   -- make the next impact arrive inside the prior damage cooldown.
+   waitFor(function()return (p:GetAttribute("LastAttackAt") or 0)>firstRelease end,"critical ranged releases another shot",4)
+   assert(p:GetAttribute("MedicalSupportActive"),"Archer only resumed after critical support ended")
+   waitFor(function()return target.Humanoid.Health<first end,"later valid ranged impact",6)
    evidence.ranged={pendingShotRetained=true,continuedFiring=true,targetHealth=target.Humanoid.Health}
    service.combat:unregister(target);target:Destroy();p.Humanoid.Health=p.Humanoid.MaxHealth
   end)
-  test("healthy medic marches behind one front fighter and switches when it dies",function()
+  test("medic advances directly then supports the troop average while healing independently",function()
    order("hold")
-   local slots=army().slots;local m,front,nextFront=slots.medic.rig,slots.warrior.rig,slots.camp.rig
+   local slots=army().slots;local m=slots.medic.rig
    local claim=service.registry:get(player.UserId)
    local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
    local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
    for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
-   freeze(front,center+back*140);front.HumanoidRootPart.Anchored=false
-   freeze(m,center+back*166);m.HumanoidRootPart.Anchored=false
-   freeze(nextFront,center+back*310);freeze(slots.ranged.rig,center+back*350)
-   order("advance");task.wait(1)
-   local samples,moving,backsteps=0,0,0
-   local previous=m.HumanoidRootPart.Position
-   local began=previous
-   for _=1,50 do
-    task.wait(.1);samples+=1
-    local root=m.HumanoidRootPart
+   freeze(m,center+back*360);m.HumanoidRootPart.Anchored=false
+   freeze(slots.warrior.rig,center+back*380);freeze(slots.camp.rig,center+back*540);freeze(slots.ranged.rig,center+back*580)
+   waitFor(function()return workspace:GetServerTimeNow()>=(m:GetAttribute("BandageReadyAt") or 0)
+    and #service.world.model.MedicalBandages:GetChildren()==0 end,"medic ready for moving cast",4)
+   order("advance");slots.warrior.rig.Humanoid.Health=20;local castAfter=workspace:GetServerTimeNow();task.wait(1)
+   local moving,backsteps=0,0;local previous=m.HumanoidRootPart.Position;local began=previous
+   for _=1,30 do
+    task.wait(.1);local root=m.HumanoidRootPart
     if root.AssemblyLinearVelocity.Magnitude>5 then moving+=1 end
     if (root.Position-previous):Dot(back)>.3 then backsteps+=1 end
-    assert(m:GetAttribute("WarriorState")=="Following front troop")
+    assert(m:GetAttribute("WarriorState")=="Advancing to battlefield")
     previous=root.Position
    end
-   assert((began-m.HumanoidRootPart.Position):Dot(back)>35 and moving/samples>=.8 and backsteps==0,"Healthy escort hesitated or reversed")
-   front.Humanoid.Health=0
-   local before=m.HumanoidRootPart.Position
-   waitFor(function()return (m.HumanoidRootPart.Position-before):Dot(back)>4 end,"medic selects next living front",4)
-   assert(m:GetAttribute("WarriorState")=="Following front troop")
-   evidence.escort={movingSamples=moving,samples=samples,backsteps=backsteps,nextFighterSelected=true}
+   assert((began-m.HumanoidRootPart.Position):Dot(back)>24 and moving>=24 and backsteps==0,"Deployment hesitated or followed rear troops")
+   assert(slots.warrior.rig.Humanoid.Health>=32 and m:GetAttribute("BandageThrownAt")>=castAfter,"Medic did not heal while advancing")
+   waitFor(function()return CombatRules.containsArena(service.world.model.Battlefield,m.HumanoidRootPart.Position)end,"actual battlefield arrival",15)
+   freeze(m,center+back*180);m.HumanoidRootPart.Anchored=false
+   freeze(slots.warrior.rig,center+back*20);freeze(slots.camp.rig,center+back*60);freeze(slots.ranged.rig,center+back*100)
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   local mean=(slots.warrior.rig.HumanoidRootPart.Position+slots.camp.rig.HumanoidRootPart.Position+slots.ranged.rig.HumanoidRootPart.Position)/3
+   waitFor(function()return (m.HumanoidRootPart.Position-mean).Magnitude<=12 end,"actual support at troop average",15)
+   local averageDistance=(m.HumanoidRootPart.Position-mean).Magnitude
+   local patient=slots.ranged.rig;patient.Humanoid.Health=20
+   local start=m.HumanoidRootPart.Position
+   waitFor(function()return patient.Humanoid.Health>=32 end,"heal patient behind without chasing it",5)
+   assert((m.HumanoidRootPart.Position-start):Dot(back)<2)
+   evidence.centroid={movingSamples=moving,samples=30,backsteps=backsteps,averageDistance=averageDistance,patientHealth=patient.Humanoid.Health,healedWhileAdvancing=true}
    order("hold")
-   waitFor(function()return army().slots.warrior.rig~=nil end,"actual front replacement",15)
   end)
-  test("isolated native medic keeps retreating outside the arena and rejoins actual replacements",function()
+  test("deaths and actual rearward replacements keep the medic on the battlefield",function()
    order("hold")
    local slots=army().slots;local m=slots.medic.rig
    local claim=service.registry:get(player.UserId)
-   local foundation=service.world.model.Plots["Plot"..claim.plotId].Foundation
    local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
-   local homeward=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
-   freeze(m,center+homeward*220);m.HumanoidRootPart.Anchored=false;m.Humanoid.Health=m.Humanoid.MaxHealth
-   local threat=Rig.createNeutral(CFrame.new(floorPoint(m.HumanoidRootPart.Position-homeward*8)),"warrior")
+   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   freeze(m,center+back*10);m.HumanoidRootPart.Anchored=false
+   for id,slot in slots do if id~="medic" then slot.rig.Humanoid.Health=0 end end
+   waitFor(function()return not army().slots.warrior.rig and not army().slots.ranged.rig and not army().slots.camp.rig end,"all fighters await replacement")
+   order("advance")
+   local start=m.HumanoidRootPart.Position;local worst=0
+   waitFor(function()
+    worst=math.max(worst,(m.HumanoidRootPart.Position-start):Dot(back))
+    return army().slots.warrior.rig and army().slots.ranged.rig and army().slots.camp.rig
+   end,"actual rearward replacements",16)
+   task.wait(2)
+   worst=math.max(worst,(m.HumanoidRootPart.Position-start):Dot(back))
+   assert(worst<2 and (m.HumanoidRootPart.Position-center).Magnitude<25 and army().slots.medic.rig==m,"Medic returned toward replacements")
+   evidence.respawns={maxBacktrack=worst,stayedOnBattlefield=true,sameMedicLife=true}
+   order("hold")
+  end)
+  test("only a real enemy authorizes continued backward avoidance beyond three seconds",function()
+   order("hold")
+   local slots=army().slots;local m=slots.medic.rig
+   local claim=service.registry:get(player.UserId)
+   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
+   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   freeze(m,center+back*20);m.HumanoidRootPart.Anchored=false
+   for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
+   local threat=Rig.createNeutral(CFrame.new(floorPoint(m.HumanoidRootPart.Position-back*8)),"warrior")
    threat.Parent=folder;freeze(threat,threat.HumanoidRootPart.Position)
    assert(service.combat:registerNeutral(threat,"warrior"));table.insert(extras,threat)
-   for id,slot in slots do if id~="medic" then slot.rig.Humanoid.Health=0 end end
-   waitFor(function()return not army().slots.warrior.rig and not army().slots.ranged.rig and not army().slots.camp.rig end,"all fighters await respawn")
-   local start=m.HumanoidRootPart.Position
    order("advance")
-   task.wait(5)
-   local moved=(m.HumanoidRootPart.Position-start):Dot(homeward)
-   assert(moved>35 and m:GetAttribute("WarriorState")=="Returning to barracks","Medic stopped at old retreat bound")
-   waitFor(function()return not CombatRules.containsArena(service.world.model.Battlefield,m.HumanoidRootPart.Position)end,"medic exits arena toward barracks",12)
-   assert(Route.contains(foundation,center,m.HumanoidRootPart.Position),"Medic left its own approach corridor")
-   waitFor(function()return army().slots.warrior.rig and army().slots.ranged.rig and army().slots.camp.rig end,"actual fresh fighter respawns",15)
-   waitFor(function()
-    local medic=m.HumanoidRootPart.Position
-    for id,slot in army().slots do if id~="medic" and (slot.rig.HumanoidRootPart.Position-medic).Magnitude<=36 then
-     return m:GetAttribute("WarriorState")=="Following front troop"
-    end end
-    return false
-   end,"withdrawal rejoins fresh troops",35)
-   assert(army().slots.medic.rig==m)
-   evidence.withdrawal={movementAfterFiveSeconds=moved,leftArena=true,ownCorridor=true,rejoinedFreshTroops=true}
-   service.combat:unregister(threat);threat:Destroy();order("hold")
+   local start=m.HumanoidRootPart.Position;local afterThree
+   local began=os.clock()
+   repeat
+    freeze(threat,m.HumanoidRootPart.Position-back*8)
+    if os.clock()-began>=3 and not afterThree then afterThree=m.HumanoidRootPart.Position end
+    task.wait(.05)
+   until os.clock()-began>=4.5
+   local movement=(m.HumanoidRootPart.Position-start):Dot(back)
+   local late=(m.HumanoidRootPart.Position-afterThree):Dot(back)
+   assert(movement>24 and late>8 and m:GetAttribute("WarriorState")=="Avoiding enemies","Avoidance stopped at the old timeout")
+   service.combat:unregister(threat);threat:Destroy()
+   waitFor(function()return m:GetAttribute("WarriorState")~="Avoiding enemies" end,"next plan clears enemy avoidance",2)
+   local cleared=m.HumanoidRootPart.Position;task.wait(1)
+   assert((m.HumanoidRootPart.Position-cleared):Dot(back)<1,"Medic kept retreating after enemy disappeared")
+   evidence.avoidance={movement=movement,afterThreeSeconds=late,stoppedWhenThreatCleared=true}
+   order("hold")
   end)
   test("medical homeward corridors remain bounded for all rotated plots",function()
    for _,plot in service.world.model.Plots:GetChildren()do

@@ -1786,3 +1786,63 @@ Strict specifications passed 19/19, all 196 Luau files compiled, and production,
 solo and temporary-coin manual Rojo builds passed. Owned Play/window cleanup was
 completed. This follow-up did not rerun the separate two-owner isolation
 suite; its prior evidence remains in the preceding sections.
+
+
+## Stateless battlefield medic support — 2026-10-17
+
+The user replaced escort/patient-chase/retreat movement with direct battlefield
+travel and troop-average support. Healing now runs independently from movement.
+Only actual enemy avoidance or Regroup can authorize backward travel. Rearward
+averages are projected laterally onto the medic's current advance plane, so
+fresh replacements and missing fighters cannot pull it toward barracks.
+
+- The obsolete escort/retreat planner cases were replaced with twelve scenarios
+  for the requested policy, retaining medical eligibility, patient ranking,
+  bandage authority and yard recovery checks. Standalone logic passed 145 cases;
+  the first isolated native run passed 498 module cases and eight survival cases.
+- During deployment the medic moved in 30/30 samples without a backward step,
+  despite the entire army being behind it. On the battlefield it moved to within
+  11.812 studs of the three-fighter average and healed a patient behind it 20→32
+  without chasing that patient backward.
+- After all fighters died and actually respawned behind it, the original medic
+  stayed on the battlefield. Maximum measured reverse drift was 0.001763 studs,
+  consistent with native position rounding rather than a return route.
+- A moving registered enemy kept threatening the medic for 4.5 seconds. The
+  medic avoided it for 51.271 studs, including 18.968 studs after the former
+  three-second timeout, and stopped backtracking when the enemy disappeared.
+- Existing critical melee/ranged combat remained active, released support at
+  56/140 HP and retained pending ranged shots. The near-miss bandage still healed
+  one nearby owned life 60→72 while the distant original patient remained at 20.
+- Mutations removing forward-only movement, averaging division or real-enemy
+  avoidance were caught. Strict specifications passed 19/19 and all 196 Luau
+  files compiled. No medical client input, saved fields or healing rates changed.
+
+All automated checks inject FakeProfileStore and do not access player storage.
+The prior real-storage restoration acceptance boundary remains separate.
+
+Final coverage and asynchronous-check follow-up passed 146 standalone cases,
+499 native module cases and all eight updated survival scenarios. A new coverage
+regression caught the earlier choice of a nearer point that left one fighter
+outside 45 studs even though a lateral point could cover the whole group. Clear
+positions now maximize covered fighters before minimizing travel.
+
+The final unanchored medic moved in 30/30 samples with zero backsteps while a
+ready bandage healed a rear patient during deployment. It settled 11.818 studs
+from the army average, retained its field position through actual replacements
+(maximum reverse drift 0.001762), and moved 49.957 studs under an actual moving
+threat, including 18.100 studs beyond three seconds. It stopped backing up after
+the next AI update cleared the removed enemy.
+
+The broader run completed the twelve existing hospital scenarios, including
+actual hospital deployment, four troop yard arrivals, full healing and the
+hospital without an Army Camp. An existing ranged follow-up initially waited for
+second-impact damage rather than a second shot; moving closer can put that
+impact inside the separate damage cooldown. The corrected fixture independently
+checks a new shot release while critical and a later valid impact. Another
+fixture now waits for the next avoidance plan before measuring stop drift, and
+the moving-cast fixture waits for the preserved bandage cooldown rather than
+resetting it. These changes preserve the tested gameplay requirements.
+
+Production and manual builds were refreshed. Two-owner and real-storage checks
+were not rerun for this movement-only follow-up; previous evidence and the
+outstanding real-storage boundary remain separately recorded.

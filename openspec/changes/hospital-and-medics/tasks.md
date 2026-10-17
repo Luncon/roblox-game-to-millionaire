@@ -51,6 +51,8 @@ Initial implementation and isolated fake-store/native verification are complete 
 - [x] 7.12 Replace centroid/distance-latched medic fallback with following the living owned fighter closest to the battlefield center; patients retain priority, death selects the next fighter and no fighters returns toward barracks until the first respawn. Verify steady native marching, retargets, owned routes and danger avoidance.
 - [x] 7.13 Change critical support to 20% entry/40% release and restrict only movement outside visible 45-stud medic range; preserve ordinary melee/ranged attacks, pending contacts/shots and cooldowns. Verify native attacks while wounded, range-bound pursuit, gap closing, threshold release and command/life/authority guards.
 
+- [x] 7.14 Replace medic movement with direct battlefield deployment and live owned fighter-average support; remove escort, patient chase, isolation/barracks fallback and timed retreat state. Allow backward movement only for real enemy avoidance or Regroup, heal independently while moving, and verify actual deployment, centroid movement, deaths/respawns without backtracking, continuous avoidance, Hold/Regroup and existing critical-fighter combat in Studio.
+
 ## Workflow follow-up
 
 - Review the complete medical implementation and its evidence before syncing/archiving its implemented capabilities. Keep unverified acceptance tasks unchecked.
