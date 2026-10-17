@@ -33,4 +33,22 @@ function Medical.choose(source,actors,state,range,eligible)
  end
  return best
 end
+function Medical.nearest(source,actors,state,from,to,radius,eligible)
+ local best,point,bestDistance,bestKey=nil,nil,radius,""
+ local delta=to-from
+ for _,a in actors do
+  if a.rig==source.rig or not Medical.patient(a,source.ownerId,state)
+   or a.civilizationId~=source.civilizationId or a.plotId~=source.plotId then continue end
+  local center=a.position+Vector3.new(0,1,0)
+  local t=if delta.Magnitude>.001 then math.clamp((center-from):Dot(delta)/delta:Dot(delta),0,1) else 0
+  local contact=from+delta*t
+  local distance=(center-contact).Magnitude
+  local stable=key(a)
+  if distance>radius or (eligible and not eligible(a,contact)) then continue end
+  if not best or distance<bestDistance or (distance==bestDistance and stable<bestKey) then
+   best,point,bestDistance,bestKey=a,contact,distance,stable
+  end
+ end
+ return best,point
+end
 return table.freeze(Medical)

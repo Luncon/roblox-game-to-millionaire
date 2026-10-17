@@ -11,6 +11,7 @@ return function()
   function combat:actor(rig)local a=actors[rig];return if a and a.humanoid.Health>0 then a else nil end
   function combat:canAct(rig)return writable and self:actor(rig)~=nil end
   function combat:visible(_,target)return visible and not target.blocked end
+  function combat:actors()local list={};for _,a in actors do if a.humanoid.Health>0 then table.insert(list,a)end end;return list end
   local economy={get=function(_,id)return states[id]end,canMutate=function()return writable end}
   local function actor(kind,owner,hp,x)
    local rig={attrs={},Name=kind};function rig:GetAttribute(k)return self.attrs[k]end;function rig:SetAttribute(k,v)self.attrs[k]=v end
@@ -28,6 +29,7 @@ return function()
    end
    return nil
   end
+  function physics:Raycast()return nil end
   local created={}
   local service=Medical.new({model={}},combat,economy,function()return active end,function()return time end,physics,function(origin)
    local part={Position=origin};function part:Destroy()self.destroyed=true end;table.insert(created,part);return part
@@ -54,11 +56,35 @@ return function()
   assert(f.service:throw(f.source.rig,{f.source,stale,f.target}))
   assert(f.source.rig.attrs.BandageTargetPosition==f.target.position)
  end)end)
+ test("a near miss heals only the closest eligible wounded launch life",function()run(function(f)
+  local near=f.create("ranged",1,60,11);near.position+=Vector3.new(0,0,2)
+  local far=f.create("warrior",1,10,12);far.position+=Vector3.new(0,0,4)
+  assert(f.service:throw(f.source.rig,{f.source,f.target,near}))
+  f.target.position=Vector3.new(40,2.15,0);f.physics.mode="miss"
+  f.step(.1);f.step(.2)
+  assert(near.humanoid.Health==72 and far.humanoid.Health==10 and f.target.humanoid.Health==50)
+  assert(f.service:count()==0 and f.service:readyAt(1)==3)
+ end)end)
+ test("proximity healing cannot cross a wall or reach a replacement life",function()
+  for _,reason in {"wall","life","foreign","distance"}do run(function(f)
+   local near=f.create("ranged",1,60,11);near.position+=Vector3.new(0,0,2)
+   assert(f.service:throw(f.source.rig,{f.source,f.target,near}))
+   f.target.position=Vector3.new(40,2.15,0);f.physics.mode="miss"
+   if reason=="wall" then function f.physics:Raycast()return {Instance={IsDescendantOf=function()return false end}}end
+   elseif reason=="life"then near.humanoid={Health=60,MaxHealth=100}
+   elseif reason=="foreign"then near.ownerId=2
+   else near.position+=Vector3.new(0,0,3)end
+   f.step(.1);f.step(.2);assert(near.humanoid.Health==60 and f.service:count()==0)
+  end)end
+ end)
  test("blocked missed moving or expired bandages consume their launch cooldown",function()
   for _,mode in {"blocked","miss","moving","stalled"}do run(function(f)
    assert(f.service:throw(f.source.rig,f.list()))
    if mode=="moving" then f.target.position=Vector3.new(40,2.15,0)
-   elseif mode~="stalled" then f.physics.mode=mode end
+   elseif mode~="stalled" then
+    f.physics.mode=mode
+    if mode=="miss" then f.target.position+=Vector3.new(0,0,5)end
+   end
    f.step(if mode=="stalled" then 2 else .2)
    assert(f.target.humanoid.Health==50 and f.service:count()==0)
    assert(f.service:readyAt(1)==3 and not f.service:throw(f.source.rig,f.list()))

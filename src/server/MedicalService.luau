@@ -88,9 +88,14 @@ function Medical.new(world,combat,economy,isActive,clock,physics,visual)
   local filter=RaycastParams.new();filter.FilterType=Enum.RaycastFilterType.Exclude
   filter.FilterDescendantsInstances=if folder then {rig,folder} else {rig}
   local part=make(origin)
+  local lives={}
+  for _,actor in actors do
+   if actor.rig~=rig and actor.alive and actor.claimed and actor.ownerId==a.ownerId
+    and actor.civilizationId==a.civilizationId and actor.plotId==a.plotId then lives[actor.rig]=actor.humanoid end
+  end
   shots[rig]={part=part,sourceLife=a.humanoid,ownerId=a.ownerId,civilizationId=a.civilizationId,plotId=a.plotId,
-   target=current.rig,life=current.humanoid,origin=origin,destination=destination,duration=duration,
-   began=time,elapsed=0,position=origin,filter=filter}
+   origin=origin,destination=destination,duration=duration,
+   began=time,elapsed=0,position=origin,filter=filter,lives=lives}
   deadlines[a.ownerId]=time+Config.cooldown
   rig:SetAttribute("BandageTargetPosition",target.position)
   rig:SetAttribute("BandageThrownAt",workspace:GetServerTimeNow())
@@ -99,12 +104,11 @@ function Medical.new(world,combat,economy,isActive,clock,physics,visual)
  end
  function controller:step()
   local time=now()
+  local actors
   for rig,shot in shots do
    local a=source(rig)
-   local target=patient(shot.ownerId,shot.target)
    local elapsed=time-shot.began
    if not a or a.humanoid~=shot.sourceLife or a.civilizationId~=shot.civilizationId or a.plotId~=shot.plotId
-    or not target or target.humanoid~=shot.life or target.civilizationId~=shot.civilizationId or target.plotId~=shot.plotId
     or elapsed>Config.lifetime or elapsed-shot.elapsed>.25 then self:cancel(rig);continue end
    -- Subdivide the arc to prevent a chord cutting through an obstacle.
    local untilTime=math.min(elapsed,shot.duration)
@@ -114,12 +118,22 @@ function Medical.new(world,combat,economy,isActive,clock,physics,visual)
     local point=shot.origin:Lerp(shot.destination,t)+Vector3.new(0,math.sin(t*math.pi)*Config.arc,0)
     local delta=point-shot.position
     local hit=if delta.Magnitude>.001 then space:Spherecast(shot.position,.25,delta,shot.filter) else nil
-    if hit then
+    local endPoint=if hit then shot.position+delta.Unit*math.max(0,(hit.Distance or delta.Magnitude)-.01) else point
+    actors=actors or combat:actors()
+    local recipient=Rules.nearest(a,actors,economy:get(a.ownerId),shot.position,endPoint,Config.contactRadius,function(candidate,contact)
+     local current=patient(shot.ownerId,candidate.rig)
+     if not current or shot.lives[candidate.rig]~=current.humanoid or current.humanoid~=candidate.humanoid
+      or (current.position-a.position).Magnitude>Config.range or not combat:visible(a,current) then return false end
+     local ray=current.position+Vector3.new(0,1,0)-contact
+     local wall=if ray.Magnitude>.001 then space:Raycast(contact,ray,shot.filter) else nil
+     return not wall or wall.Instance:IsDescendantOf(current.rig)
+    end)
+    if recipient then
      self:cancel(rig) -- Consume once before any health mutation.
-     if hit.Instance:IsDescendantOf(shot.target) and (target.position-a.position).Magnitude<=Config.range
-      and combat:visible(a,target) then heal(shot.ownerId,shot.target,shot.life,Config.heal) end
+     heal(shot.ownerId,recipient.rig,shot.lives[recipient.rig],Config.heal)
      break
     end
+    if hit then self:cancel(rig);break end
     shot.elapsed,shot.position=nextTime,point
     shot.part.Position=point
    end
