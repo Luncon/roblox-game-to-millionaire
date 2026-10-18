@@ -50,6 +50,18 @@ function F.step(group,actors,dt,allows,ground)
   if flat(delta)>Config.cohesionTolerance or math.abs(delta.Y)>5 or a.avoiding
    or (a.phase~='idle' and a.phase~='recovery') then coherent=false end
  end
+ -- Positional tolerances alone can accept an inverted two-stud front arc.
+ local front=actors.warrior.position
+ local right=Vector3.new(-group.heading.Z,0,group.heading.X)
+ local shape=(front-actors.camp.position):Dot(group.heading)>=.5
+  and (front-actors.reinforcement.position):Dot(group.heading)>=.5
+  and (front-actors.camp.position):Dot(right)>=3
+  and (actors.reinforcement.position-front):Dot(right)>=3
+  and (front-actors.ranged.position):Dot(group.heading)>=7
+  and (front-actors.medic.position):Dot(group.heading)>=7
+  and (actors.medic.position-actors.ranged.position):Dot(right)>=3
+ allArrived=allArrived and shape
+ coherent=coherent and shape
  if group.phase=='assembling' then
   if allArrived then group.phase='marching' end
  elseif group.phase=='marching' and coherent then

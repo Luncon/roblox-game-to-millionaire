@@ -45,5 +45,17 @@ return function()
   a.medic.rig={};local result,reason=F.step(g,a,.2,function()return true end,function(p)return p end)
   assert(not result and reason=='member_lost')
  end)
+ test('nearby arrival alone cannot deploy an inverted front or collapsed support pair',function()
+  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a)
+  local goals=F.goals(g,function(p)return p end);for id,p in goals do a[id].position=p end
+  a.warrior.position+=Vector3.new(0,0,2.1)
+  F.step(g,a,.2,function()return true end,function(p)return p end)
+  assert(g.phase=='assembling','March began before the center shieldman led')
+  a.warrior.position=goals.warrior;a.ranged.position+=Vector3.new(2,0,0);a.medic.position-=Vector3.new(2,0,0)
+  F.step(g,a,.2,function()return true end,function(p)return p end)
+  assert(g.phase=='assembling','March began with collapsed support spacing')
+  for id,p in goals do a[id].position=p end
+  F.step(g,a,.2,function()return true end,function(p)return p end);assert(g.phase=='marching')
+ end)
  return n
 end

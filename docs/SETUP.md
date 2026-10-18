@@ -260,3 +260,19 @@ Before any isolated Play, inspect `Game.Bootstrap` and confirm it uses the suppl
 fake store. An automatic connection to a production Rojo server can replace that
 script after the test place opens; disconnect that sync or restore the matching
 repository test bootstrap in the owned test window before starting.
+
+## Formation checks
+
+`npm run build:test-project -- --solo --formations` generates the isolated
+formation harness. Build `.cache/solo-test.project.json`, open it in the owned
+Studio window and verify its SoloBootstrap injects FakeProfileStore before Play.
+Watch `FormationVerificationPhase`, `FormationUnitCases`, `FormationEvidence`
+and `FormationVerificationResult`. Default execution includes all module cases,
+ten formation runtime scenarios and four bounded-frame GUI layouts.
+
+Set `SoloFormationsTests.FullRegression` to true before Play to add the existing
+tactical combat, crowd movement and medic-survival native fixtures. For a focused
+formation-only runtime rerun, `RuntimeOnly=true` omits module fixtures; restore
+false for final all-module verification. Neither flag opens player storage.
+Physical phone/controller play, multi-owner formation combat and real storage
+restoration remain separate from these solo fake-store checks.
