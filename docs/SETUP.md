@@ -128,7 +128,8 @@ game. Check the connection and startup messages in Studio. Use a separate test
 experience for persistent data. Test teleports in a published experience through
 the Roblox application, since Studio play mode does not support them.
 
-Keep one Studio playtest open at a time and use solo Play for ordinary checks.
+Keep at most two Studio playtests open at a time, allowing the user's playtest
+and one isolated verification run together. Use solo Play for ordinary checks.
 For automated checks isolated from player data, run
 `npm run build:test-project -- --solo --development`, then build `.cache/solo-test.project.json`
 with Rojo and open the resulting place in the existing Studio window. Press

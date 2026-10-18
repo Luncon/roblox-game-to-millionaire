@@ -92,7 +92,8 @@ store. Equipped player weapons attack in melee. NPC attacks use the owner's
 weapon damage and armor tiers. See [prices and equipment](ECONOMY.md) and
 [barracks and warriors](ARMY.md).
 
-Keep only one Studio playtest open at a time. Solo checks cover progression,
+Keep at most two Studio playtests open at a time: the user's playtest and one
+isolated verification run may run together. Solo checks cover progression,
 native controls, interface layout, imported NPC movement and one owner's troop
 lifecycle and neutral opponent combat. Multiple connected owners, claim races
 and combat between different owners need their own focused multiplayer evidence;

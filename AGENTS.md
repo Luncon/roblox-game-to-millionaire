@@ -21,9 +21,10 @@ for the Windows/WSL workflow.
   overwrite existing progress with a fresh profile.
 - Verify game behavior in Studio. A Rojo build or OpenSpec validation alone
   does not demonstrate that gameplay works. Teleports need Roblox client tests.
-- Keep one Studio playtest open at a time. Prefer solo checks; use extra clients
+- Keep at most two Studio playtests open at a time, allowing the user's playtest
+  and one isolated verification run together. Prefer solo checks; use extra clients
   only when required by the behavior under test, and close owned test windows
-  before starting the next run.
+  when verification finishes.
 - Keep each change small enough to playtest. Report what was checked and any
   required runtime checks that could not be completed.
 - Keep dependency installation scripts disabled. Review the known OpenSpec
