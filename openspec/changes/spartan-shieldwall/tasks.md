@@ -21,4 +21,4 @@
 
 ## 5. Integration and delivery
 
-- [ ] 5.1 Run relevant full regressions, review and mutation-check the final change, record native evidence/limits, refresh production/manual builds, clean owned windows and integrate main.
+- [x] 5.1 Run relevant full regressions, review and mutation-check the final change, record native evidence/limits, refresh production/manual builds, clean owned windows and integrate main.
