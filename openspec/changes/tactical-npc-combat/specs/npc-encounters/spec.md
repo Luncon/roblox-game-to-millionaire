@@ -39,6 +39,17 @@ NPC attacks SHALL visibly wind up, make one contact attempt and recover. The ser
 - **WHEN** a strike reaches a still-valid target
 - **THEN** it applies at most one normal damage event, or releases one normal nonhoming projectile, and observes the existing attack cooldown
 
+### Requirement: Extended troop detection
+Owned and neutral melee troops SHALL acquire new hostile targets up to 52.5 studs away while advancing; ranged troops SHALL acquire up to 90 studs. This SHALL increase the previous detection ranges by 50% without extending melee damage reach, projectile range, healing range or stationary Hold engagement range. Existing hostility, arena, visibility and authority checks SHALL remain enforced.
+
+#### Scenario: Spot a previously distant opponent
+- **WHEN** advancing melee face a valid hostile 50 studs away or ranged face one 85 studs away
+- **THEN** they acquire that target and move into ordinary attack reach rather than waiting at their rally
+
+#### Scenario: Hold does not pursue distant targets
+- **WHEN** a held troop sees an enemy within extended detection but outside ordinary attack reach
+- **THEN** it stays in place and does not extend its attacks or projectile damage range
+
 ### Requirement: Ranged positioning
 Advancing ranged troops SHALL hold a useful firing distance, make bounded slower retreats from close melee threats and seek a nearby clear firing line when obstructed. Aiming and release SHALL stay stationary; recovery MAY permit guarded optional strafing before the next shot.
 

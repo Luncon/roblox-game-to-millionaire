@@ -11,6 +11,7 @@ NPCs currently converge on enemy roots, overlap and exchange immediate damage wh
 - Attacks visibly wind up, strike and recover. Damage or projectile release occurs at contact after fresh server validation, with weapon-family poses, a short hit reaction and impact feedback.
 - Ranged troops maintain a firing distance, use bounded retreats when threatened and sidestep obstructed firing lines. Shooting requires a stationary commitment.
 - Troops retain valid targets, prefer open approaches and respond to enemies threatening friendly ranged troops.
+- Increase owned and neutral melee/ranged target acquisition by 50% to 52.5/90 studs; preserve ordinary attack ranges and stationary Hold behavior.
 - Preserve current stats, attack cooldowns, progression, rewards, troop capacity, protected areas, orders and respawn deadlines. Hold remains fixed; Regroup cancels pending attacks.
 - Proposed implementation choices: shared encounter coordination, existing pathfinding for travel and guarded short movement near combat. Use replicated procedural R6 poses suited to custom joints; marketplace clips remain optional if verified compatible and accessible.
 - Outside scope: capture objectives, formation bonuses, new classes, blocking/dodge rules, healing, morale and combat stat rebalance.

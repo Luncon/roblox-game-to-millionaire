@@ -16,5 +16,5 @@ local variants = {
 	ming={name="Ming Crossbowman",weaponName="Ming Crossbow",weaponKind="crossbow",projectileKind="bolt"},
 }
 for _, variant in variants do table.freeze(variant) end
-return table.freeze({range=45,attackCooldown=2,aggroRange=60,speed=90,
+return table.freeze({range=45,attackCooldown=2,aggroRange=90,speed=90,
 	maxProjectiles=32,damageMultiplier=.8,variants=table.freeze(variants)})

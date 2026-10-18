@@ -20,6 +20,6 @@ table.freeze(variants)
 return table.freeze({
 	unlockLevel=2, maxTroops=1, respawnDelay=15,
 	maxHealth=100, damage=10, attackCooldown=1, attackRange=5,
-	aggroRange=35, walkSpeed=12, thinkInterval=.2,
+	aggroRange=52.5, walkSpeed=12, thinkInterval=.2,
 	arenaHeightTolerance=16, corpseLifetime=3, variants=variants,
 })

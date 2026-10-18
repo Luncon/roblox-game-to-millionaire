@@ -21,3 +21,8 @@
 - [x] 4.1 Add shared soft crowd avoidance for allied/enemy troops during travel, direct camp walks and combat, with stable passing/yielding, separate camp entrances and no stuck jumps while yielding. Verify lifecycle, grounded dry detours, held actors, crowded bridges and four-slot camp arrivals.
 - [x] 4.2 Add varied idle shuffles near rally positions, ranged recovery strafing and short melee arcs/pressure/yield steps during recovery. Preserve planted windup/contact, attack cadence, skills, medic support boundaries and stationary Hold; validate deterministic varied decisions and actual fights.
 - [x] 4.3 Run native fake-store crowd/camp/duel/ranged checks plus relevant regressions, review changes, document evidence and refresh production/manual builds; clean owned test windows and merge to main.
+
+## 5. Extended troop detection
+
+- [x] 5.1 Increase owned and neutral melee/ranged target acquisition by 50% to 52.5/90 studs; verify fresh target boundaries, friendly/dead exclusion and unchanged Hold attack ranges with deterministic tests.
+- [x] 5.2 Verify native pursuit from beyond the previous acquisition ranges, preserve attack/arena/authority guards, update documentation and evidence, validate specifications and refresh builds.
