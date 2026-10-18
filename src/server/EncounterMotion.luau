@@ -28,15 +28,18 @@ function Motion.apply(rig,navigator,world,result,now)
 		and rig:GetAttribute("WarriorClass")~="medic" and (result.goal-root.Position).Magnitude<8 then speed=math.min(speed,6)end
 	humanoid.WalkSpeed=speed
 
-	local face=not skillActive and result.facing and (result.phase~="idle" or not result.goal or result.direct)
+	local face=not skillActive and result.facing and (result.phase~="idle" or not result.goal or result.direct or result.formation)
 	humanoid.AutoRotate=not (skillActive or face)
 	if face then
 		local point=Vector3.new(result.facing.X,root.Position.Y,result.facing.Z)
 		if (point-root.Position).Magnitude>.01 then root.CFrame=CFrame.lookAt(root.Position,point)end
 	end
 	-- Root facing changes cancel Humanoid MoveTo, so issue movement last.
-	if not skillActive and result.goal and (result.phase=="idle" or (result.phase=="recovery" and result.footwork)) then
-		if not result.direct or not navigator:walkCombat(result.goal,world,result.allowsDetour)then
+	if not skillActive and result.goal and (result.phase=="idle" or (result.phase=="recovery" and (result.footwork or result.formation))) then
+		local walked=false
+		if result.formation then walked=navigator:walkFormation(result.goal,result.allowsDetour)
+		elseif result.direct then walked=navigator:walkCombat(result.goal,world,result.allowsDetour)end
+		if not walked then
 			navigator:setGoal(result.goal,result.allowsDetour);navigator:step(now)
 		end
 	else navigator:stop()end

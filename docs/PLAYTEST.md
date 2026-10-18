@@ -2019,3 +2019,16 @@ and NPC equipment/source-immutability matrices also passed. Council room access,
 physical pad eligibility, eight rotated plots, all thirteen factions and the
 2000-part landscape limit passed. Selection, HUD and actual formation travel
 remain to be verified in subsequent slices. No player data or live publication.
+
+The subsequent focused native run passed ten formation scenarios: paid pad and
+map-table keyboard/mouse selection, distant-selection rejection, missing-camp
+rejection, all-five road assembly, full unanchored 452-stud march in 75.58 seconds
+(slowest 451.53; maximum group spread 12.32), formed Hold damage/bandage healing,
+medic enemy avoidance while healing, Advance/Regroup cancellation, medic death
+with independent replacement excluded, lost write authority and switching with
+saved selection retained and stale phase cleared. Deliberate temporary-copy
+mutations of assembly gating, shield direction, camp height and captured-life
+identity were caught. The independent review's assembly-detour and stale-HUD
+findings were corrected. Four native bounded-frame GUI cases at 320×360,
+320×568, 640×360 and 1024×768 passed containment, readable text and non-overlap
+checks. These are engine layout fixtures, not physical phone/controller tests.

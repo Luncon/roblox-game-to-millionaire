@@ -5,6 +5,7 @@ local ReplicatedStorage=game:GetService("ReplicatedStorage")
 local ArmyUI={}
 
 function ArmyUI.start(screen: ScreenGui)
+	require(script.Parent.WarCouncilUI).start(screen)
 	local player=Players.LocalPlayer
 	local hud=screen:WaitForChild("SettlementHUD") :: Frame
 	local panel=Instance.new("Frame")
@@ -24,6 +25,9 @@ function ArmyUI.start(screen: ScreenGui)
 	local buttons={}
 	local remote: RemoteFunction?=nil
 	local busy=false
+	local reasons={formation_locked="Build the Spartan Shieldwall prerequisites first.",formation_unselected="Select Spartan Shieldwall at your War Council map.",
+		formation_missing_troops="All five troops must be alive: 3 melee, 1 ranged, 1 medic.",formation_wrong_classes="Choose Camp: Melee, then wait for its next respawn.",
+		formation_outside_camp="Regroup all five troops into the training camp first."}
 	local function button(name,text,x,y,width,action,value)
 		local b=Instance.new("TextButton")
 		b.Name,b.Text,b.Position,b.Size=name,text,UDim2.new(x,6,y,0),UDim2.new(width,-12,0,30)
@@ -37,31 +41,32 @@ function ArmyUI.start(screen: ScreenGui)
 			busy=false
 			if not ok or not result.ok then
 				feedback.Text=if ok and result.reason=="rate_limited" then "Wait a moment before giving another order."
-					else "Order unavailable. Check your buildings and saved session."
-			else feedback.Text=if action=="class" then "Camp class changes on its next respawn." else "Order: "..value end
+					else (if ok then reasons[result.reason] else nil) or "Order unavailable. Check your buildings and saved session."
+			else feedback.Text=if action=="class" then "Camp class changes on its next respawn." elseif action=="march" then "Order: formation" else "Order: "..value end
 		end)
 	end
 	button("Advance","Advance",0,.23,1/3,"order","advance")
 	button("Hold","Hold",1/3,.23,1/3,"order","hold")
 	button("Regroup","Regroup",2/3,.23,1/3,"order","regroup")
+	button("MarchFormation","March Formation",0,.4,1,"march","spartan-shieldwall")
 	button("CampWarrior","Camp: Melee",0,.55,.5,"class","warrior")
 	button("CampRanged","Camp: Ranged",.5,.55,.5,"class","ranged")
 	local function layout()
 		local size=screen.AbsoluteSize
 		local beside=size.Y<500 and size.X>=620
 		local compact=size.Y<500 and not beside
-		local height=if compact then 90 else 132
+		local height=if compact then 128 else 168
 		limit.MaxSize=Vector2.new(450,height)
 		panel.AnchorPoint=if beside then Vector2.new(1,0) else Vector2.new(.5,1)
 		local bottom=if compact then math.max(4,math.min(56,size.Y-hud.AbsolutePosition.Y-hud.AbsoluteSize.Y-8-height)) else 96
 		panel.Position=if beside then UDim2.new(1,-16,0,16) else UDim2.new(.5,0,1,-bottom)
 		panel.Size=if beside then UDim2.fromOffset(math.min(450,size.X-400),height) else UDim2.new(1,-32,0,height)
 		title.Size=UDim2.new(1,-16,0,if compact then 17 else 23)
-		feedback.Position=UDim2.fromOffset(8,if compact then 72 else 104)
-		feedback.Size=UDim2.new(1,-16,0,if compact then 18 else 24)
+		feedback.Position=UDim2.fromOffset(8,if compact then 106 else 138)
+		feedback.Size=UDim2.new(1,-16,0,if compact then 20 else 28)
 		for name,b in buttons do
 			local isClass=name=="CampWarrior" or name=="CampRanged"
-			b.Position=UDim2.new(b.Position.X.Scale,6,0,if isClass then (if compact then 47 else 73) else (if compact then 20 else 30))
+			b.Position=UDim2.new(b.Position.X.Scale,6,0,if isClass then (if compact then 78 else 102) elseif name=="MarchFormation" then (if compact then 49 else 66) else (if compact then 20 else 30))
 			b.Size=UDim2.new(b.Size.X.Scale,-12,0,if compact then 24 else 30)
 			b.TextSize=if beside and size.X<700 then 10 else 12
 		end
@@ -71,11 +76,11 @@ function ArmyUI.start(screen: ScreenGui)
 		local trained=(player:GetAttribute("TrainingLevel") or 0)>0
 		local camp=(player:GetAttribute("ArmyCampLevel") or 0)>0
 		panel.Visible=selected and hud.Visible and (trained or camp)
-		title.Text="ARMY · "..string.upper(player:GetAttribute("ArmyOrder") or "advance")
+		title.Text="ARMY · "..string.upper(player:GetAttribute("FormationPhase") or player:GetAttribute("ArmyOrder") or "advance")
 		local writable=player:GetAttribute("ProgressStatus")=="ready" or player:GetAttribute("ProgressStatus")=="saving"
 		for name,b in buttons do
 			local isClass=name=="CampWarrior" or name=="CampRanged"
-			b.Visible=if isClass then camp else trained
+			b.Visible=if isClass then camp elseif name=="MarchFormation" then (player:GetAttribute("WarCouncilLevel") or 0)>0 else trained
 			b.Active,b.Selectable=writable,writable
 			local selectedClass=player:GetAttribute("ExtraTroopClass") or "warrior"
 			local highlighted=(name=="CampWarrior" and selectedClass=="warrior") or (name=="CampRanged" and selectedClass=="ranged")
@@ -83,7 +88,7 @@ function ArmyUI.start(screen: ScreenGui)
 			b.BackgroundColor3=if highlighted then Color3.fromRGB(136,109,51) else Color3.fromRGB(80,98,77)
 		end
 	end
-	for _,attribute in {"CivilizationId","TrainingLevel","ArmyCampLevel","ArmyOrder","ExtraTroopClass","ProgressStatus"}do
+	for _,attribute in {"CivilizationId","TrainingLevel","ArmyCampLevel","ArmyOrder","ExtraTroopClass","ProgressStatus","WarCouncilLevel","FormationPhase"}do
 		player:GetAttributeChangedSignal(attribute):Connect(render)
 	end
 	hud:GetPropertyChangedSignal("Visible"):Connect(render)

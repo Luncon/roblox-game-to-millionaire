@@ -29,6 +29,7 @@ local ok,result=pcall(function()
 	end,"one ready client",60)
 	local player=Players:GetPlayers()[1]
 	local specs=game.ServerStorage.Tests:GetChildren();table.sort(specs,function(a,b)return a.Name<b.Name end)
+	if script:GetAttribute("RuntimeOnly")then specs={}end -- Focused native reruns; default always includes all modules.
 	for _,spec in specs do if spec:IsA("ModuleScript")then
 		stage("Module "..spec.Name);local count=require(spec)();assert(count>0)
 		evidence.suites[spec.Name]=count;units+=count;task.wait()
@@ -43,6 +44,17 @@ local ok,result=pcall(function()
 		return response.result
 	end
 	evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round)
+	evidence.layout=round("formationLayout",{},20)
+	if script:GetAttribute("FullRegression")then
+		stage("Existing tactical combat and movement regressions")
+		local service=context.service
+		service.neutralOpponents=require(game.ServerScriptService.Game.NeutralOpponentService).start(service.world,service.combat,nil,service.encounters)
+		evidence.combat=require(game.ServerStorage.RuntimeTests.TacticalCombat)(context,player,round)
+		evidence.movement=require(game.ServerStorage.RuntimeTests.TroopMovement)(context,player,round)
+		service.neutralOpponents:destroy()
+		stage("Existing medic survival regressions")
+		evidence.medical=require(game.ServerStorage.RuntimeTests.MedicalSurvival)(context,player,round)
+	end
 	return evidence.runtime
 end)
 stage(if ok then "Complete" else "Failed")

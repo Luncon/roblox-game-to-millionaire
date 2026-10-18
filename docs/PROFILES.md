@@ -20,7 +20,7 @@ Cross-server civilization matchmaking remains planned.
 
 ## What is saved
 
-The version-one profile stores these sixteen scalar fields for each started civilization:
+The version-one profile stores these twenty scalar fields for each started civilization:
 
 | Field | Meaning | Accepted values |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ The version-one profile stores these sixteen scalar fields for each started civi
 | `trainingLevel` | Training Yard purchase | 0 or 1; owning it requires settlement 5 |
 | `farmLevel` | Farm tier | 0–2; I requires settlement 7, II requires 12 |
 | `workersLevel` | Worker Camp tier | 0–2; I requires settlement 7, II requires 12; no higher than farm tier |
-| `armyCampLevel` | Army Camp purchase | 0 or 1; owning it requires settlement 10 and Barracks IV or higher |
+| `armyCampLevel` | Army Camp tier | 0–2; I requires settlement 10/Barracks IV; II requires settlement 18/Barracks VI |
 | `farmCoins` | Uncollected farm reserve | Integer 0–60, or 0–180 with Storehouse I; must be 0 without a farm |
 | `extraTroopClass` | Next camp reinforcement class | `warrior` or `ranged`; default `warrior` |
 | `blacksmithLevel` | Weapon-price workshop | 0 or 1; owning it requires settlement 13 |
@@ -40,6 +40,10 @@ The version-one profile stores these sixteen scalar fields for each started civi
 | `storehouseLevel` | Reserve-capacity building | 0 or 1; owning it requires settlement 16 and Farm I |
 | `skillLevel` | Purchased weapon-family skill tier | Integer 0–5; positive tiers require Training Yard I and weapon level at least tier × 10 |
 | `hospitalLevel` | Hospital purchase | 0 or 1; requires settlement 10 and Training Yard I |
+| `shieldLevel` | Spartan Shield Training | 0 or 1; requires Sparta, settlement/armor 15 and Armorer I |
+| `warCouncilLevel` | War Council purchase | 0 or 1; requires settlement 19 and Training Yard I |
+| `formationLevel` | Spartan Shieldwall training | 0 or 1; requires Sparta, settlement 20, shields, council, Army Camp II and hospital |
+| `selectedFormation` | Council selection | `none` or purchased `spartan-shieldwall`; missing defaults to `none` |
 
 Both building milestones retain `schemaVersion = 1` and the existing store/key.
 Only missing new fields receive defaults: building levels and reserve become
@@ -62,7 +66,7 @@ so a high settlement cannot accidentally admit unsupported barracks levels.
 An older four-level build cannot safely load newly saved high levels. Any rollback
 must retain compatible validation rather than clamp or reset stored progress.
 A pre-building or eleven-field writer could silently omit newer fields on its
-next save; rollback must retain all sixteen fields, expanded tier validation
+next save; rollback must retain all twenty fields, expanded tier validation
 and capacity rules.
 
 Level-one barracks state is stored even before the building unlocks at settlement
@@ -93,13 +97,13 @@ them into defaults.
 Weapon skills add one scalar, `skillLevel`, to the existing fourteen fields.
 Only a missing value defaults to zero; supplied malformed values, unsupported
 levels, missing training or insufficient weapon levels fail validation. All
-copies, economy snapshots and saves preserve sixteen fields under the existing
+copies, economy snapshots and saves preserve twenty fields under the existing
 version-one keys and scopes. Skills save separately for each civilization.
 Purchases preserve troop health and pending replacement deadlines. Player and
 owner/slot/family cooldowns are transient but survive resets/replacements and
 civilization switches within the same server; they are not restored across servers.
 
-Rollback must retain sixteen-field readers and writers, even when skills are
+Rollback must retain twenty-field readers and writers, even when skills are
 disabled. A fourteen-field writer would silently discard purchased skills.
 Automated save/reload checks use the injected FakeProfileStore; this does not
 establish real Roblox storage restoration for the new field. See
@@ -190,3 +194,9 @@ keys, store names and scopes remain unchanged. All original fifteen fields are
 preserved. Bandage flights, recovery clocks, cooldowns and troop health are never
 saved. A rollback must retain a hospital-field-aware profile writer even when
 medical deployment is disabled; an older writer would discard the purchase.
+
+Shield/council/formation fields use missing-only defaults under unchanged
+version-one keys. Malformed values and cross-field/faction inconsistencies fail
+loading rather than resetting progress. Shield charges and march state are
+transient and never saved. Switching a player character away from Sparta and
+back during the same life preserves its spent shield charges.

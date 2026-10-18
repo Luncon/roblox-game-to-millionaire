@@ -22,6 +22,8 @@ local MedicPlanner=require(script.Parent.MedicPlanner)
 local MedicalRetreat=require(script.Parent.MedicalRetreat)
 local MedicalRoute=require(script.Parent.MedicalRoute)
 local Topography=require(script.Parent.Topography)
+local Formation=require(script.Parent.ArmyFormation)
+local FormationConfig=require(Shared.FormationConfig)
 local WarriorService = {}
 local COLLISION_GROUP = "CivilizationWarriors"
 local ORDERS = {advance=true,hold=true,regroup=true}
@@ -106,6 +108,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		player:SetAttribute("CampClass",nil)
 		player:SetAttribute("ExtraTroopClass","warrior")
 		player:SetAttribute("ArmyOrder","advance")
+		player:SetAttribute("FormationPhase",nil)
 	end
 	local function disconnect(slot)
 		if slot.deathConnection then slot.deathConnection:Disconnect(); slot.deathConnection = nil end
@@ -131,10 +134,66 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	local function current(owner, slot): boolean
 		return alive and owners[owner.player.UserId] == owner and owner.slots[slot.id] == slot
 	end
+	local function formationActors(owner)
+		local result={}
+		for id,slot in owner.slots do if slot.rig then
+			local actor=combat:actor(slot.rig)
+			if actor then
+				actor.phase=slot.rig:GetAttribute("CombatPhase") or "idle"
+				actor.avoiding=slot.rig:GetAttribute("FormationAvoiding")==true
+				result[id]=actor
+			end
+		end end
+		return result
+	end
+	local function clearFormation(owner,hold)
+		if not owner.formation then return end
+		owner.formation=nil
+		owner.player:SetAttribute("FormationPhase",nil)
+		for _,slot in owner.slots do
+			if slot.rig then
+				slot.rig:SetAttribute("FormationActive",false);slot.rig:SetAttribute("FormationAvoiding",nil)
+				if hold then
+					local root=slot.rig:FindFirstChild("HumanoidRootPart")
+					slot.holdPosition=if root then root.Position else nil
+					encounters:cancel(slot.rig);projectiles:cancel(slot.rig)
+					if slot.rig:FindFirstChildOfClass("Humanoid") then Motion.clear(slot.rig)end
+					if slot.navigator then slot.navigator:stop()end
+				end
+			end
+		end
+		if hold then owner.order="hold" end
+	end
+	function controller:cancelFormation(player)
+		local owner=owners[player.UserId]
+		if owner then clearFormation(owner,true);publish(owner)end
+	end
+	function controller:march(player)
+		local claim,state=eligible(player)
+		if not claim then return {ok=false,reason="profile_unavailable"}end
+		local owner=owners[player.UserId]
+		if not owner or owner.civilizationId~=claim.civilizationId or owner.plotId~=claim.plotId then return {ok=false,reason="not_ready"}end
+		local frame=world.model.Plots["Plot"..claim.plotId].Foundation.CFrame
+		local actors=formationActors(owner)
+		local ready,reason=Formation.ready(state,claim.civilizationId,frame,actors)
+		if not ready then return {ok=false,reason=reason}end
+		-- Reuse the complete living-owner/authority/order guard before capturing lives.
+		local accepted=self:command(player,"hold")
+		if not accepted.ok then return accepted end
+		local anchor=frame:PointToWorldSpace(Vector3.new(0,3,-world.model.Plots["Plot"..claim.plotId].Foundation.Size.Z/2-24))
+		local forward=arena.Position-frame.Position;forward=Vector3.new(forward.X,0,forward.Z).Unit
+		local destination=arena.Position-forward*16
+		owner.formation=Formation.new(anchor,destination,actors)
+		owner.formation.lastAt=os.clock();owner.order="formation"
+		owner.player:SetAttribute("FormationPhase","assembling")
+		for _,slot in owner.slots do if slot.rig then slot.rig:SetAttribute("FormationActive",true)end end
+		publish(owner);return {ok=true,order="formation"}
+	end
 
 	local spawnSlot
 	local function fallen(owner, slot, rig: Model)
 		if not current(owner, slot) or slot.rig ~= rig then return end
+		clearFormation(owner,true)
 		local state = economy:get(owner.player.UserId)
 		local delay = if slot.id=="medic" then MedicalConfig.respawnDelay elseif state then tier(state).respawnDelay else Config.respawnDelay
 		disconnect(slot)
@@ -260,7 +319,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		local now=os.clock()
 		if now-owner.lastCommandAt<.3 then return {ok=false,reason="rate_limited"} end
 		owner.lastCommandAt=now
-		if owner.order~=order then
+		if owner.order~=order or owner.formation then
+			if owner.formation and order=="hold" then
+				owner.formation.phase="holding";owner.player:SetAttribute("FormationPhase","holding")
+			else clearFormation(owner,false)end
 			owner.order=order
 			for _, slot in owner.slots do
 				slot.target=nil
@@ -315,6 +377,28 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		syncFallbackPlayers()
 		local actors = combat:actors() -- Owned armies, players and neutral test opponents.
 		for ownerId, owner in owners do
+			local formationGoals=nil
+			if owner.formation then
+				local group=owner.formation
+				if not eligible(owner.player) then clearFormation(owner,true);publish(owner)else
+					local ground=world.model.Ground
+					local function grounded(p)
+						local localPoint=ground.CFrame:PointToObjectSpace(p)
+						return ground.CFrame:PointToWorldSpace(Vector3.new(localPoint.X,.95+Topography.sampleHeight(localPoint.X,localPoint.Z)+3,localPoint.Z))
+					end
+					local snapshot=formationActors(owner)
+					local phase=group.phase
+					if phase=="holding" then
+						-- Validate captured lives even while Hold freezes formation movement.
+						formationGoals=Formation.step(group,snapshot,0,function()return false end,grounded)
+					else formationGoals=Formation.step(group,snapshot,now-group.lastAt,function(id,p)
+						return owner.slots[id].navigator:canWalkFormation(p)
+					end,grounded)end
+					group.lastAt=now
+					if not formationGoals then clearFormation(owner,true);publish(owner)
+					else owner.player:SetAttribute("FormationPhase",group.phase)end
+				end
+			end
 			for _, slot in owner.slots do
 				local rig = slot.rig
 				if not rig then continue end
@@ -375,6 +459,15 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      forward=Vector3.new(forward.X,0,forward.Z).Unit
      local plan=MedicPlanner.step(attacker,actors,owner.order,arena.Position,forward,
       CombatRules.containsArena(arena,attacker.position),safe,function(point)return CombatRules.containsArena(arena,point)end)
+     if formationGoals then
+      rig:SetAttribute("FormationAvoiding",plan.avoiding==true)
+      if not plan.avoiding then
+       plan.goal=if owner.order=="hold" then nil else formationGoals[slot.id]
+       plan.phase,plan.state,plan.formation,plan.direct,plan.speed="idle","Formation",true,false,FormationConfig.pace
+       plan.allowsDetour=nil
+       if owner.formation.phase~="assembling" then plan.facing=attacker.position+owner.formation.heading*10 end
+      end
+     end
      Motion.apply(rig,slot.navigator,world,plan,now)
      if medicine:throw(rig,actors) and not plan.goal then
       local target=rig:GetAttribute("BandageTargetPosition")
@@ -384,18 +477,24 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      continue
     end
     slot.medicalRecovery=slot.medicalRecovery or {}
-    local recoveryPlan=MedicalRetreat.step(slot.medicalRecovery,attacker,actors,owner.order,economy:get(ownerId),safe,
+    local recoveryPlan=if formationGoals then nil else MedicalRetreat.step(slot.medicalRecovery,attacker,actors,owner.order,economy:get(ownerId),safe,
      function(from,patient)return combat:visible(from,patient)end)
     rig:SetAttribute("MedicalSupportActive",recoveryPlan~=nil)
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="reinforcement" then 42 elseif slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
-				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,support=recoveryPlan,
+				local plan=encounters:step(rig,{order=if formationGoals then "hold" else owner.order,homeGoal=home,actors=actors,support=recoveryPlan,
 					cancelShots=function() projectiles:cancel(rig) end,
 					fire=function(target)
 						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
 						return projectiles:fire(rig,target,variant.projectileKind)
 					end},now)
+				if formationGoals and owner.order~="hold" then
+					plan.goal,plan.formation,plan.direct,plan.speed=formationGoals[slot.id],true,false,FormationConfig.pace
+					local anchorGoal=plan.goal
+					if owner.formation.phase~="assembling" and not plan.facing then plan.facing=attacker.position+owner.formation.heading*10 end
+					plan.allowsDetour=if owner.formation.phase=="assembling" then nil else function(p)return (p-anchorGoal).Magnitude<=FormationConfig.cohesionTolerance end
+				end
 				slot.target=plan.target
 				Motion.apply(rig,slot.navigator,world,plan,now)
 			end

@@ -94,8 +94,8 @@ free Creator Store garments/cosmetics with derived copies of the user skins.
 The looks are approximate historical themes fitted to existing R6 troops and
 R15 players. Egyptian players wear Pharaoh headwear, while Egyptian
 troops wear Anubis headwear. Britain’s player/melee weapon is the officer sword;
-its ranged troop retains the musket. Spartan shields are cosmetic and do not
-grant extra armor. See [the asset assignments](../assets/README.md#imported-equipment-visuals)
+its ranged troop retains the musket. Spartan shields require Shield Training I and block two frontal hits per life;
+they do not increase armor health. See [the asset assignments](../assets/README.md#imported-equipment-visuals)
 and [marketplace provenance](MARKETPLACE_ASSETS.md) for source IDs and dated free-price
 checks. Safe visual-only clones attach to the server-generated
 equipment and follow upgrades, respawns and switches without changing combat
@@ -197,8 +197,10 @@ purchases, plus the camp class choice, save for each civilization. Returning to
 a saved civilization rebuilds its army from those levels; troop health,
 locations, orders and pending countdowns are not persisted.
 Switching removes the old civilization's units and deploys the selected
-civilization's eligible troops. See [saved profiles](PROFILES.md). Formations,
-fourth/fifth troop slots, specialist recruitment and ranged player attacks are planned.
+civilization's eligible troops. See [saved profiles](PROFILES.md). Hospital medics
+and Army Camp II provide the fourth/fifth slots. The first Spartan formation is
+tracked in the active `spartan-shieldwall` change; other formations, specialist
+recruitment and ranged player attacks remain planned.
 
 ## Custom melee models
 
@@ -326,6 +328,20 @@ bypass it. Ordinary and skill contacts share this rule. Rejected contacts and
 ForceFields preserve charges. Equipment rebuilds, upgrades and same-life
 civilization switches cannot refill it; fresh lives receive two charges.
 
-War Council geometry and physical unlock pads are implemented; interactive
-selection and coordinated marching remain in the active OpenSpec change until
-verified. No formation combat-stat bonus is granted.
+To deploy Spartan Shieldwall, buy its unlocks and use the owned War Council map
+table (click, E/touch interaction or controller prompt) to select it. Use Regroup
+and wait for all five living troops in the training camp: three melee, one ranged
+and one medic. The selectable camp slot must currently be melee; changing its
+choice applies only at the next life. Press March Formation. The group gathers
+at the road center outside the settlement before advancing at six studs/second.
+The center shieldman leads the outer two by two studs; ranged and medic follow
+side by side nine studs behind the outer frontmen (`(:` when marching left).
+
+The march waits for slow/attacking members. Formed fighters attack in place;
+medics keep throwing bandages and can avoid enemies. Optional independent
+footwork and spear dashes stay suppressed. Hold stops the march but permits
+attacks/healing. Advance immediately abandons the formation for normal combat;
+Regroup returns to camp. A casualty holds survivors and never enrolls the
+replacement automatically. Starting again requires a fresh full camp muster.
+Selection remains saved after cancellation; live phases, health and positions
+do not. No formation combat-stat bonus is granted.

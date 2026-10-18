@@ -50,7 +50,7 @@ free-price checks are recorded in [marketplace provenance](../docs/MARKETPLACE_A
 | egypt-pharaoh | UndeadPharoah | Egyptian players |
 | egypt-anubis | Priest of Anubis | Egyptian melee and ranged troops |
 | spartan-spear | Arms of Sparta.Spear | Spartan players, melee and ranged troops |
-| spartan-shield | Arms of Sparta.Shield | Spartan players and melee troops; cosmetic |
+| spartan-shield | Arms of Sparta.Shield | Trained Spartan players and melee troops; inert visual for two-hit frontal protection |
 | officer-sword | British Officers Sword (Made by WorkclockDevs) | British players and melee troops |
 | katana | HandleAccessory | Japanese players and melee troops |
 | spear | Spear | Mauryan/Persian players and melee troops; Roman ranged troops |

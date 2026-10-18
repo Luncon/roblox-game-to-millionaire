@@ -68,5 +68,17 @@ return function(module)
 		Motion.apply(rig,navigator,{}, {phase="idle",goal=root.Position+Vector3.new(20,0,0)},2)
 		assert(navigator.routePolicy==nil,"Old medical policy leaked into a new plan")
 	end)
+	test("formation steering preserves its heading and contact locks while allowing recovery movement",function(rig,root,humanoid,navigator)
+		function navigator:walkFormation(goal,policy)self.formations=(self.formations or 0)+1;self.goal=goal;self.policy=policy;return true end
+		local heading=root.Position+Vector3.new(0,0,-10)
+		local goal=root.Position+Vector3.new(2,0,0)
+		Motion.apply(rig,navigator,{}, {phase="idle",formation=true,goal=goal,facing=heading,speed=6},1)
+		assert(not humanoid.AutoRotate and root.CFrame.LookVector:Dot(Vector3.new(0,0,-1))>.999)
+		assert(navigator.formations==1 and humanoid.WalkSpeed==6)
+		for _,phase in {"windup","contact"}do Motion.apply(rig,navigator,{}, {phase=phase,formation=true,goal=goal,speed=6},1)end
+		assert(navigator.formations==1 and navigator.stops==2)
+		Motion.apply(rig,navigator,{}, {phase="recovery",formation=true,goal=goal,speed=6},1)
+		assert(navigator.formations==2)
+	end)
 	return cases
 end

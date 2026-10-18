@@ -58,7 +58,7 @@ rounding; never change their combat stats. Storehouse I at 16 requires a farm
 and raises reserve capacity from 60 to 180. Use storageCapacity(state) everywhere
 the cap matters. Farm/worker/storage purchases settle old-yield/old-capacity
 whole intervals then reset the clock; never bank full, offline or inactive time.
-Save all sixteen scalar fields, with missing-only zero defaults for the three
+Save all twenty scalar fields, with missing-only zero defaults for the three
 workshop/storage fields, skillLevel and hospitalLevel, and unchanged version-one keys. Barracks V/VI require
 settlement 8/14, cost 200/300 and set future delays to 13/12.5 seconds; they
 preserve two barracks slots, pending deadlines and the optional camp slot.
@@ -108,7 +108,7 @@ skills use server-authoritative contacts, cooldowns and five paid tiers requirin
 Training Yard I and weapon levels 10/20/30/40/50. Players activate with R; eligible
 owned troops activate automatically. Regroup cancels skills, and Hold prohibits
 dash skills. Preserve ordinary attack exclusion, source grips and pending respawns.
-Matchmaking, formations, civilization-specific abilities, mounts and ranged player
+Matchmaking, additional formations, civilization-specific abilities, mounts and ranged player
 attacks remain planned. See docs/WEAPON_SKILLS.md for verification boundaries.
 
 The generated landscape uses deterministic connected native geometry with
@@ -138,3 +138,18 @@ after two undamaged seconds. Fresh registered life/claim/authority checks are
 mandatory; no players, foreign troops, revival, offline healing or rewards.
 Medical clocks/health never save. See docs/ARMY.md and medical verification
 boundaries in docs/PLAYTEST.md; fake fixtures do not establish native gameplay.
+
+Army Camp II (settlement 18, 250 coins, Barracks VI/Camp I) adds a fixed fifth
+melee slot for all civilizations; War Council I (19, 200, Training I) adds an
+accessible map room beside camp. Sparta alone buys Shield Training I (15, armor
+15/Armorer I, 150) and Spartan Shieldwall (20, 250, council/shields/camp II/hospital).
+Save shieldLevel, warCouncilLevel, formationLevel and selectedFormation with
+missing-only defaults (zero/none); retain twenty-field version-one compatibility.
+The council guards living owner, write authority, faction/unlock and map distance.
+March Formation requires all five current correct troop lives in owned camp;
+assemble at the road center, then march in a convex three-melee front with a
+side-by-side ranged/medic pair behind. Hold attacks/heals, Advance abandons,
+Regroup cancels; casualties hold survivors and replacements never silently join.
+Shields share player/melee visuals and block two validated frontal hits per life.
+Rebuilds/upgrades/same-life civilization switches never refill charges. No bonus
+stats, client authority, persisted charges or persisted march phases.

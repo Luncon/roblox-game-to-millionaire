@@ -152,7 +152,7 @@ return function(options)
 			walk(frame:PointToWorldSpace(Vector3.new(0,3,10)))
 			return {ok=true,cases=1,coins=player:GetAttribute("Coins"),weaponLevel=3,standingSeconds=1.5}
 		elseif options.kind=="command" then
-			local allowed={Advance="advance",Hold="hold",Regroup="regroup",CampWarrior="warrior",CampRanged="ranged"}
+			local allowed={Advance="advance",Hold="hold",Regroup="regroup",CampWarrior="warrior",CampRanged="ranged",MarchFormation="formation"}
 			assert(allowed[options.button],"Unknown native commander button")
 			local panel=ui();local button=panel:WaitForChild(options.button,10)
 			waitFor(function() return panel.Visible and button.Visible and button.Active end,"unlocked commander "..options.button)

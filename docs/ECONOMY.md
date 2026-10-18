@@ -204,7 +204,7 @@ See [weapon skills](WEAPON_SKILLS.md) for damage, cooldowns and controls. Runtim
 acceptance of this new purchase path remains pending in [PLAYTEST.md](PLAYTEST.md).
 
 Hospital I costs 200 coins at settlement 10 and requires purchased Training Yard
-I. Army Camp is optional. It adds one separate medic slot, for up to four troops,
+I. Army Camp is optional. It adds one separate medic slot, for up to four troops before Army Camp II (five with II),
 and enables recovery in the owned training yard. Workshops do not discount this
 purchase. The existing guarded physical-pad flow handles the charge; buying it
 does not replace or heal living fighters or change pending respawn deadlines.

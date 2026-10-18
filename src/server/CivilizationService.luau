@@ -28,7 +28,7 @@ function CivilizationService.start(options: any?)
 	local revision = 0
 	local lastRequest, lastLoad, activePlayers, loading, generations = {}, {}, {}, {}, {}
 	local closing = false
-	local army, buttons, profiles, snapshot
+	local army, buttons, profiles, snapshot, council
 	local commandTraffic = {}
 	local remotes = Instance.new("Folder")
 	remotes.Name = "CivilizationRemotes"
@@ -44,6 +44,8 @@ function CivilizationService.start(options: any?)
 	armyRemotes.Name="ArmyRemotes"
 	local armyRequest=Instance.new("RemoteFunction")
 	armyRequest.Name,armyRequest.Parent="Request",armyRemotes
+	local councilOpened=Instance.new("RemoteEvent")
+	councilOpened.Name,councilOpened.Parent="CouncilOpened",armyRemotes
 	local scope = if RunService:IsStudio() then "StudioDevelopment" else "Live"
 	local store = options.profileStore or game:GetService("DataStoreService"):GetDataStore("CivilizationProfilesV1",scope)
 	local profileOptions = table.clone(options.profileOptions or {})
@@ -132,6 +134,7 @@ function CivilizationService.start(options: any?)
 		if player.Parent==Players then
 			economyState:FireClient(player,{ok=result.ok,reason=result.reason,state=state,action=action,amount=result.amount})
 		end
+		if council then council:sync() end
 	end
 	local combat=CombatService.new(world,registry,economy,publishEconomy)
 	local encounters=require(script.Parent.CombatEncounter).new(world,combat)
@@ -139,6 +142,8 @@ function CivilizationService.start(options: any?)
 	army=WarriorService.start(world,registry,economy,catalog,combat,encounters)
 	local neutralOpponents=NeutralOpponentService.start(world,combat,nil,encounters)
 	buttons=TycoonButtons.new(world,registry,economy,catalog,publishEconomy)
+	council=require(script.Parent.WarCouncilService).new(world,registry,economy,councilOpened,publishEconomy,
+		function(player)army:cancelFormation(player)end)
 	local function command(player: Player,action: unknown,value: unknown)
 		local id=player.UserId
 		if closing or activePlayers[id]~=player or not profiles:isWritable(id) or not registry:get(id) then
@@ -150,6 +155,9 @@ function CivilizationService.start(options: any?)
 		if commandTraffic[id] and now-commandTraffic[id]<.3 then return {ok=false,reason="rate_limited"} end
 		commandTraffic[id]=now
 		if action=="order" then return army:command(player,value) end
+		if action=="march" then return army:march(player) end
+		if action=="council" then return council:open(player) end
+		if action=="formation" then return council:select(player,value) end
 		if action=="class" then
 			local result=economy:selectTroop(id,value)
 			publishEconomy(player,result,"troopClass")
@@ -165,6 +173,7 @@ function CivilizationService.start(options: any?)
 		farmElapsed+=dt
 		if farmElapsed<1 then return end
 		farmElapsed=0
+		council:sync()
 		for id,player in activePlayers do
 			local claim=registry:get(id)
 			if not claim then continue end
@@ -294,6 +303,7 @@ function CivilizationService.start(options: any?)
 		activePlayers[userId]=nil
 		generations[userId]=(generations[userId] or 0)+1
 		playerCombat:release(userId);army:release(userId);buttons:release(userId)
+		council:release(userId)
 		combat.skills:forgetOwner(userId)
 		local claim=registry:release(userId)
 		economy:close(userId)
@@ -315,6 +325,7 @@ function CivilizationService.start(options: any?)
 		for _,player in activePlayers do capture(player) end
 		closing=true
 		farmHeartbeat:Disconnect()
+		council:destroy()
 		neutralOpponents:destroy()
 		encounters:destroy()
 		shutdownResult=profiles:shutdown(25)
@@ -331,7 +342,7 @@ function CivilizationService.start(options: any?)
 	print(string.format("Civilization selection ready: 8 plots, %d civilizations, independent saved profiles (%s)",#Civilizations,scope))
 	return {profiles=profiles,economy=economy,registry=registry,army=army,buttons=buttons,world=world,
 		combat=combat,encounters=encounters,playerCombat=playerCombat,neutralOpponents=neutralOpponents,
-		shutdown=shutdown,select=select,snapshot=snapshot,command=command}
+		shutdown=shutdown,select=select,snapshot=snapshot,command=command,council=council}
 end
 
 return CivilizationService

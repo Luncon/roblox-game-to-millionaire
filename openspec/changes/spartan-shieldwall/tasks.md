@@ -12,12 +12,12 @@
 ## 3. Council room and selection
 
 - [x] 3.1 Add the accessible themed room, map table, pads and reserved terrain/access beside training; verify all rotated plots, clear routes and landscape budget with native geometry checks and document locations.
-- [ ] 3.2 Add guarded physical-table formation selection, responsive room UI and March Formation command/readiness feedback; verify native input, proximity/ownership/faction/lease rejection, persistence and small-screen layout.
+- [x] 3.2 Add guarded physical-table formation selection, responsive room UI and March Formation command/readiness feedback; verify native input, proximity/ownership/faction/lease rejection, persistence and small-screen layout.
 
 ## 4. Formation deployment and combat
 
-- [ ] 4.1 Implement complete five-life camp muster, server road assembly and coordinated convex-front/support-pair marching; verify corrected geometry, ground/dry routes, all-arrived gating, pace/cohesion and no teleports with logic plus unanchored Studio tests.
-- [ ] 4.2 Preserve stationary attacks/healing and medic avoidance, suppress independent formation footwork/dashes, and implement Advance/Hold/Regroup/casualty/authority transitions; verify immediate Advance cancellation during assembly/march/Hold, fresh muster, stale-life rejection and preserved timers in native combat scenarios, documenting controls.
+- [x] 4.1 Implement complete five-life camp muster, server road assembly and coordinated convex-front/support-pair marching; verify corrected geometry, ground/dry routes, all-arrived gating, pace/cohesion and no teleports with logic plus unanchored Studio tests.
+- [x] 4.2 Preserve stationary attacks/healing and medic avoidance, suppress independent formation footwork/dashes, and implement Advance/Hold/Regroup/casualty/authority transitions; verify immediate Advance cancellation during assembly/march/Hold, fresh muster, stale-life rejection and preserved timers in native combat scenarios, documenting controls.
 
 ## 5. Integration and delivery
 

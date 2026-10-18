@@ -18,6 +18,8 @@ return function()
     assert(map:FindFirstChildOfClass('ProximityPrompt') and map:FindFirstChildOfClass('ClickDetector'))
     assert(not plot.Controls:FindFirstChild('WarCouncilButton'))
     assert((plot.Controls:FindFirstChild('ShieldButton')~=nil)==(civ.id=='sparta'))
+    local shield=plot.Controls:FindFirstChild('ShieldButton')
+    if shield then assert(shield.Position.Y-shield.Size.Y/2>=plot.Foundation.Position.Y+plot.Foundation.Size.Y/2,'Shield pad is buried in the foundation')end
     local filter=OverlapParams.new();filter.FilterType=Enum.RaycastFilterType.Include
     filter.FilterDescendantsInstances={plot.Infrastructure,plot.Settlement};filter.RespectCanCollide=true
     for z=22,36,2 do

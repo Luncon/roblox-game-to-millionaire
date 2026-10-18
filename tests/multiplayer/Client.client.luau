@@ -16,6 +16,8 @@ commands.OnClientEvent:Connect(function(command)
 		return
 	end
 	local ok, result = pcall(function()
+		if command.action=="formationLayout" then return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("FormationLayout",10))()end
+		if command.action=="formationInput" then return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("FormationInput",10))()end
 		if command.action=="skillInput" then
 			return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("WeaponSkillInput",10))()
 		end

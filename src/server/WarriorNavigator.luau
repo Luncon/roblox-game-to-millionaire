@@ -150,6 +150,18 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 		end
 		return true
 	end
+	function controller:canWalkFormation(position: Vector3)
+		return supported(position,false,nil)~=false
+	end
+	function controller:walkFormation(position: Vector3,policy): boolean
+		local destination=supported(position,false,nil)
+		if not destination then return false end
+		self:stop(true);allowsDetour=policy
+		if flatDistance(root.Position,destination)>.45 and move(destination,position,os.clock(),false,nil)then
+			rig:SetAttribute("NavigationStatus","Marching in formation")
+		end
+		return true
+	end
 
 	local function compute(destination: Vector3, now: number)
 		sequence += 1
