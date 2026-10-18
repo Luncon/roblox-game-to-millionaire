@@ -14,4 +14,4 @@
 
 ## 4. Integration
 
-- [ ] 4.1 Run the complete relevant regression fixture including pending Spartan continuity/sight checks, strict specs and Luau compilation; review/mutation-check the diff, refresh builds, sync main Edit sources, record evidence/limits, clean owned test windows and integrate the verified changes.
+- [x] 4.1 Run the complete relevant regression fixture including pending Spartan continuity/sight checks, strict specs and Luau compilation; review/mutation-check the diff, refresh builds, sync main Edit sources, record evidence/limits, clean owned test windows and integrate the verified changes.

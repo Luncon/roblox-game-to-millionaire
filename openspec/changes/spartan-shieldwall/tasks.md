@@ -27,4 +27,4 @@
 
 - [x] 6.1 Release final center arrival and front-line casualties into ordinary Advance, retain formation after support losses, preserve explicit Hold and authority stops, shield depletion, selection and independent replacement deadlines; verify focused logic and native fake-store combat, pursuit, medic and replacement scenarios.
 - [x] 6.2 Allow unlocked frontline stationary spear thrusts with planted-leg poses, normal skill cooldown/damage and no dash, while excluding formed ranged skills; verify deterministic contacts/movement/exclusion and native formation combat.
-- [ ] 6.3 Update army documentation and playtest evidence, run relevant regressions and specification validation, review the diff, refresh production/manual builds and integrate the verified change.
+- [x] 6.3 Update army documentation and playtest evidence, run relevant regressions and specification validation, review the diff, refresh production/manual builds and integrate the verified change.

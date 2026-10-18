@@ -2134,3 +2134,139 @@ reservation. Both existing WarCouncilWorld geometry cases passed in an isolated
 Edit-only Studio window, including the 104 faction/plot room-access combinations,
 pad eligibility and landscape budget. The user's active playtest was left running;
 physical movement/purchase interaction was not rerun for this placement-only edit.
+
+### October 18, 2026 — Formation continuity and stationary thrust (runtime pending)
+
+Front-line casualties now release survivors to Advance unless explicitly held;
+support losses remove only the captured support life. Reaching the final center
+march destination also releases ordinary Advance, regardless of enemy positions. Replacement supports receive
+ordinary orders without rejoining stale slots. Captured Spartan melee can use
+their purchased spear skill as a stationary thrust; formed ranged skills are
+excluded. The thrust retains ordinary spear damage/cooldown, five-stud contact
+range, one immediate validated hit and planted-leg posing, without a dash trail.
+
+All 200 standalone logic cases passed, all 20 OpenSpec items validated, and all
+222 Luau files compiled. Regression mutation checks detected incorrectly breaking formation on a
+support loss, substituting dash behavior for the stationary thrust, and failing
+to release formation at the center destination. Production, temporary-coin and formation test builds were
+refreshed. These checks do not prove native gameplay behavior.
+
+The formation runtime fixture now includes support losses/replacements,
+center-arrival release, stationary thrust posing and root displacement, ordinary ranged throws,
+two-hit shield breakage without dissolution, frontline casualty pursuit/healing,
+replacement deadlines and explicit Hold after a casualty. These new scenarios
+have not yet run. The user's Studio playtest remains active; its running scripts
+were not replaced and no second playtest was started. Native fake-store
+verification and multi-owner combat remain outstanding; tasks 6.1–6.3 remain
+unchecked until their runtime/integration requirements are satisfied.
+
+### October 18, 2026 — Extended troop sight (native pursuit pending)
+
+Owned and neutral melee acquisition increased from 35 to 52.5 studs; ranged
+acquisition increased from 60 to 90 studs. Melee/projectile damage reach remains
+5/45 studs. Healing, avoidance, Hold and authority guards retain their existing
+bounds. Four new deterministic cases failed with the old ranges and pass with
+the new ranges, covering both ownership types, fresh-target boundaries, Hold
+and friendly/dead exclusion. The full logic suite passes 200 cases.
+
+The formation runtime fixture now also checks acquisition at 50/85 studs before
+a troop walks more than four studs, subsequent physical pursuit and no remote
+attack damage. This native scenario has not run while the user's playtest is
+active. Tactical task 5.1 is complete; 5.2 remains pending native verification.
+
+### October 18, 2026 — Roman Shield Guard and normal Studio testing coins
+
+Added a Rome-only compact guard with three gladius/shield melee, a pilum ranged
+support and a medic. Both formations retain six-stud-per-second marching. Roman
+outer guards face 45 degrees outward while idle, supports fit between them, and
+front-line melee retain stationary Double Slash. Shields share the existing
+visual and two-hit lifetime. Unlock prices and requirements match Sparta.
+
+The normal Studio build now includes a purple +1,000 TEST COINS pad beside each
+ordinary coin pad. The grant is fixed on the server, uses the active civilization,
+and preserves owner, proximity, living-character, writable-profile, cadence and
+balance-cap checks. Both pad creation and direct grants reject non-Studio use.
+No currency remote or published-server test grant was added.
+
+The native module run passed 595 cases across 71 suites using fake storage.
+Fixtures were corrected for the additional Studio pad and to inspect captured
+formation state through a generated test-only WarriorService copy; the production
+army getter still exposes only its normal snapshot. The ranged-throw observation
+uses the accepted-release timestamp (melee contacts have a separate timestamp)
+and allows twelve seconds for a valid firing opportunity while the line settles.
+It still requires an accepted ordinary throw and excludes formed ranged skills.
+
+The standalone suite passes 208 cases, all 224 repository Luau files compile,
+and all 21 OpenSpec items validate strictly. Mutation checks detect removing the
+public-server grant guard, reversing Roman flank facing and accepting another
+civilization's saved formation, in addition to the three continuity/thrust checks
+recorded above. Production, manual fake-store and formation test builds refresh
+successfully. Native physical runtime results are recorded below when complete.
+
+The expanded fake-store save/reload check also passed all seven formation
+progression cases natively, restoring Rome and Sparta independently without live
+shield charges or march state. The runtime repeat again passed camp purchases,
+five-body regroup, physical Spartan council selection, full center-arrival
+march, medic avoidance and held attacks/healing. The main Studio place was then
+observed in Play, so the owned test was stopped to preserve the one-playtest
+rule. Roman physical purchases/march/combat and the complete regression repeat
+remain pending that playtest becoming available; integration checkboxes remain
+open. No test failure is being treated as a completed runtime check.
+
+The user subsequently authorized two concurrent Studio playtests. AGENTS.md and
+setup/playtest guidance now permit the user's playtest plus one isolated
+verification run, so verification resumed without stopping the main window.
+
+The resumed native run passed all fourteen Spartan/continuity/sight scenarios.
+The full march covered 452.48 studs in 75.68 seconds with maximum spread 12.18.
+The formed thrust displaced its root less than 0.001 stud, damaged the target,
+retained the group and excluded ranged skills; an accepted ordinary ranged
+throw and both shield blocks passed. Support losses/replacements retained the
+front line, a frontline death released ordinary pursuit (16.15 studs) and full
+medic recovery, and explicit Hold remained stationary after a casualty. Targets
+at 50/85 studs were acquired after only 0.066 stud of movement, followed by
+physical pursuit without extending damage reach. Authority loss and faction
+switching also cleared live state correctly. These results resolve the earlier
+pending native Spartan continuity/thrust and extended-sight checks above.
+
+The first Roman purchase attempt exposed a fixture setup error: the trusted
+negative-X placement beside TestCoinButton was inside the Army Camp wall, so
+native pathfinding could not leave its starting point. The fixture now begins
+on the clear positive-X side; pad placement and production movement are
+unchanged. A focused Roman rerun seeds the already verified Spartan selection
+baseline, then executes all three Roman scenarios and the existing GUI/combat/
+crowd/medic regressions. The default runner continues to execute every scenario.
+
+Roman native purchasing now passes: physical interaction granted exactly 1,000
+coins, foreign/proximity/write failures granted nothing, the four unlocks left
+150 coins, the real map selected Roman Shield Guard, and Sparta's saved
+selection remained independent. The subsequent unanchored Roman march is the
+remaining formation runtime check before its combat case and regressions.
+
+All three focused Roman scenarios passed. The unanchored guard marched 452.00
+studs in 75.66 seconds (5.97 studs/second), with maximum member spread 11.00.
+The two outer guards faced outward with one shield visual each and two charges.
+The stationary Double Slash damaged its target with less than 0.001 stud of
+root displacement, excluded ranged skills and retained the group; a frontline
+casualty then released Advance. Final center arrival also released Advance.
+
+Final regression verification passed all four GUI layouts, four tactical cases,
+six crowd/movement cases and ten medical cases after the Roman scenarios. Across
+the focused native runs, all 37 gameplay scenarios passed (formation 17,
+tactical 4, crowd 6, medical 10), alongside the 595 native module cases and the
+additional seven-case save/reload repeat. These were separate focused runs,
+not one uninterrupted full-suite run. The medic moved in 27/30 advance samples
+with no backsteps, reached within 11.93 studs of the troop average and healed
+while advancing. Under pursuit it moved 14.61 studs toward the patient and away
+from the enemy, retained at least 8.00 studs clearance and healed to 52 HP.
+
+Final review found no remaining required issues. All 208 standalone cases,
+224 Luau compilations, 21 strict OpenSpec items and production/manual/test builds
+pass. The main Edit place (73839918762778) was checked after the user stopped its
+playtest: Roman definitions, coin grants, arrival release and the Studio guard
+were synced, the production Bootstrap was intact and the test-only army getter
+was absent. The owned formation-tests Play was stopped, its focused-run flags
+cleared and its window closed; the user's main Studio remained open. Test
+fixtures used fake storage throughout. Published-client, physical phone/
+controller, multi-owner formation combat and real-storage restoration remain
+separate acceptance boundaries; no Roblox publication was performed.
