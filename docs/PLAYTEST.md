@@ -2068,3 +2068,14 @@ It now accepts successful native touch purchases during navigation, skips furthe
 movement after success and retains the ordinary E-prompt rejection assertions.
 No purchase remote or production interaction behavior changed. Test input requires
 an uninterrupted owned Studio window; experimental click retries were discarded.
+
+The timestamped combined rerun reproduced 23/30 moving samples, zero backsteps
+and 30.79 studs of progress. Velocity briefly fell at successive four-stud path
+waypoints while the movement target waited for the next think. A deterministic
+native regression failed the old navigator at a straight intermediate waypoint
+3.3 studs ahead. Navigation now anticipates arrival using walking speed and the
+bounded observed think interval on collinear walk legs. Corners, jump approaches,
+height changes and the final goal retain the original tolerance. All seven
+deferred-path checks passed, including the original three stale-path checks and
+four new waypoint cases. This addresses the observed waypoint pauses; the older
+centroid timeout remains a separate, unproven symptom.

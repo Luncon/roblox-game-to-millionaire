@@ -34,7 +34,28 @@ return function()
   repeat task.wait()until module:GetAttribute('Started')
   rig:PivotTo(rig:GetPivot()+Vector3.new(25,0,0));module.Release:Fire();task.wait(.05)
   assert(module:GetAttribute('Discarded'),'A delayed path from before displacement was accepted')
-  return 3
+  local function leg(offset,jump,middle)
+   nav:destroy();module:SetAttribute('Started',nil);module:SetAttribute('Discarded',nil)
+   position=rig.HumanoidRootPart.Position
+   module:SetAttribute('Middle',if middle then position+Vector3.new(3.3,0,0)else nil)
+   module:SetAttribute('Jump',jump)
+   nav=require(module).new(rig,function()return true end)
+   nav:setGoal(position+offset);nav:step(os.clock())
+   local untilStarted=os.clock()+3
+   repeat task.wait()until module:GetAttribute('Started')or os.clock()>untilStarted
+   assert(module:GetAttribute('Started'),'Waypoint fixture did not start')
+   module.Release:Fire();task.wait(.05);nav:step(os.clock())
+   return rig.Humanoid.WalkToPoint-position
+  end
+  local straight=leg(Vector3.new(20,0,0),false,true)
+  assert(straight.X>10,'Straight route stopped at an intermediate waypoint instead of anticipating the next think')
+  local corner=leg(Vector3.new(3.3,0,20),false,true)
+  assert(math.abs(corner.X-3.3)<.1 and math.abs(corner.Z)<.1,'Waypoint lookahead cut a corner')
+  local jump=leg(Vector3.new(20,0,0),true,true)
+  assert(math.abs(jump.X-3.3)<.1,'Waypoint lookahead skipped a jump approach')
+  local final=leg(Vector3.new(3.3,0,0),false,false)
+  assert(math.abs(final.X-3.3)<.1,'Waypoint lookahead stopped short of the final goal')
+  return 7
  end)
  nav:destroy();rig:Destroy();floor:Destroy();module:Destroy();assert(ok,result);return result
 end

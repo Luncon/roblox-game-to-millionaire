@@ -3,6 +3,7 @@
 local PathfindingService = game:GetService("PathfindingService")
 local Rules = require(script.Parent.CombatRules)
 local Tuning = require(game.ReplicatedStorage.Shared.TacticalCombatConfig)
+local Warrior = require(game.ReplicatedStorage.Shared.WarriorConfig)
 local WaterNavigation = require(script.Parent.WaterNavigation)
 local Crowd = require(script.Parent.CrowdMovement)
 local Camp = require(game.ReplicatedStorage.Shared.TrainingCampConfig)
@@ -31,6 +32,7 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 	local blocked = true
 	local lastProgress = os.clock()
 	local lastPosition = root.Position
+	local lastStepAt: number? = nil
 	local crowd=if world then Crowd.forWorld(world.model) else nil
 	if crowd then crowd:register(rig,isActive) end
 
@@ -203,6 +205,8 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 
 	function controller:step(now: number)
 		if not active() or not goal then return end
+		local interval=if lastStepAt then math.clamp(now-lastStepAt,Warrior.thinkInterval,.35) else Warrior.thinkInterval
+		lastStepAt=now
 		local destination = goal
 		if flatDistance(root.Position, destination) <= 2 and math.abs(root.Position.Y-destination.Y) <= 6 then
 			humanoid:MoveTo(root.Position)
@@ -223,8 +227,22 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 			compute(destination, now)
 		end
 		local waypoint = waypoints[nextWaypoint]
-		while waypoint and flatDistance(root.Position, waypoint.Position) <= 2.5
-			and math.abs(root.Position.Y - waypoint.Position.Y) <= 6 do
+		local function reached(point)
+			local radius=2.5
+			local following=waypoints[nextWaypoint+1]
+			if following and point.Action==Enum.PathWaypointAction.Walk and following.Action==Enum.PathWaypointAction.Walk
+				and math.abs(following.Position.Y-point.Position.Y)<.5 then
+				local approach,exit=point.Position-root.Position,following.Position-point.Position
+				approach,exit=Vector3.new(approach.X,0,approach.Z),Vector3.new(exit.X,0,exit.Z)
+				-- Keep MoveTo ahead of its arrival radius until the next think.
+				-- Only collinear walk legs qualify; retain corners, jumps and final goals.
+				if approach.Magnitude>.01 and exit.Magnitude>.01 and approach.Unit:Dot(exit.Unit)>.999 then
+					radius=math.max(radius,humanoid.WalkSpeed*interval+1)
+				end
+			end
+			return flatDistance(root.Position,point.Position)<=radius and math.abs(root.Position.Y-point.Position.Y)<=6
+		end
+		while waypoint and reached(waypoint) do
 			nextWaypoint += 1
 			waypoint = waypoints[nextWaypoint]
 		end
