@@ -159,14 +159,18 @@ return function(context,player,round)
    waitFor(function()return workspace:GetServerTimeNow()>=(m:GetAttribute("BandageReadyAt") or 0)
     and #service.world.model.MedicalBandages:GetChildren()==0 end,"medic ready for moving cast",4)
    order("advance");slots.warrior.rig.Humanoid.Health=20;local castAfter=workspace:GetServerTimeNow();task.wait(1)
-   local moving,backsteps=0,0;local previous=m.HumanoidRootPart.Position;local began=previous
+   local moving,backsteps=0,0;local previous=m.HumanoidRootPart.Position;local began=previous;local samples={};local observedAt=os.clock()
    for _=1,30 do
     task.wait(.1);local root=m.HumanoidRootPart
     if root.AssemblyLinearVelocity.Magnitude>5 then moving+=1 end
     if (root.Position-previous):Dot(back)>.3 then backsteps+=1 end
+    table.insert(samples,{time=os.clock()-observedAt,position={root.Position.X,root.Position.Y,root.Position.Z},speed=root.AssemblyLinearVelocity.Magnitude,
+     navigation=m:GetAttribute('NavigationStatus'),goal={m.Humanoid.WalkToPoint.X,m.Humanoid.WalkToPoint.Y,m.Humanoid.WalkToPoint.Z}})
     assert(m:GetAttribute("WarriorState")=="Advancing to battlefield")
     previous=root.Position
    end
+   game:SetAttribute('MedicalAdvanceEvidence',game.HttpService:JSONEncode({moving=moving,backsteps=backsteps,
+    progress=(began-m.HumanoidRootPart.Position):Dot(back),samples=samples}))
    assert((began-m.HumanoidRootPart.Position):Dot(back)>24 and moving>=24 and backsteps==0,"Deployment hesitated or followed rear troops")
    assert(slots.warrior.rig.Humanoid.Health>=32 and m:GetAttribute("BandageThrownAt")>=castAfter,"Medic did not heal while advancing")
    waitFor(function()return CombatRules.containsArena(service.world.model.Battlefield,m.HumanoidRootPart.Position)end,"actual battlefield arrival",15)

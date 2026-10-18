@@ -181,10 +181,12 @@ return function(options)
 					table.insert(movementEvents,{action=value.action,ok=value.ok,amount=value.amount,coins=value.state and value.state.coins,
 						reserve=value.state and value.state.farmCoins,x=position.X,z=position.Z})
 				end
-				if interacting and value.action==responseAction then response=value end
+				if value.action==responseAction and (value.ok or interacting) and not response then response=value end
 			end)
 			local prompt=pad:FindFirstChildOfClass("ProximityPrompt")
 			assert(prompt and prompt.Enabled,"Requested pad has no enabled interaction prompt")
+			local before={coins=player:GetAttribute("Coins"),reserve=player:GetAttribute("FarmCoins"),
+				label=pad:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text,prompt=prompt.ActionText}
 			local shown=false
 			local prompts=game:GetService("ProximityPromptService")
 			table.insert(promptConnections,prompts.PromptShown:Connect(function(item) if item==prompt then shown=true end end))
@@ -192,26 +194,31 @@ return function(options)
 			-- A replacement tier may already have shown its prompt before this
 			-- helper subscribed. Physically leave/reenter to observe a fresh show.
 			if (root.Position-pad.Position).Magnitude<10 then walkToPad(pad,16) end
-			walkToPad(pad)
-			camera.CameraType=Enum.CameraType.Scriptable
-			-- Prompt sightlines should come from the standing player's eye, not
-			-- an overhead camera that can look through a nearby building's roof.
-			camera.CFrame=CFrame.lookAt(root.Position+Vector3.new(0,2.5,0),pad.Position)
-			task.wait(.2)
-			local projected,visible=camera:WorldToViewportPoint(pad.Position+Vector3.new(0,pad.Size.Y/2,0))
-			assert(visible)
-			waitFor(function() return shown end,"visible native "..options.action.." proximity prompt")
-			local before={coins=player:GetAttribute("Coins"),reserve=player:GetAttribute("FarmCoins"),
-				label=pad:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text,prompt=prompt.ActionText}
-			-- Equipped Tools consume native M1 before ClickDetector. E preserves the
-			-- equipped weapon while using the normal ground interaction path.
-			interacting=true
-			input:SendKey(true,Enum.KeyCode.E,false);keyDown=true;task.wait(.1)
-			input:SendKey(false,Enum.KeyCode.E,false);keyDown=false
+			if not response then walkToPad(pad) end
+			if not response then
+				camera.CameraType=Enum.CameraType.Scriptable
+				-- Prompt sightlines come from the standing player's eye.
+				camera.CFrame=CFrame.lookAt(root.Position+Vector3.new(0,2.5,0),pad.Position)
+				task.wait(.2)
+				local projected,visible=camera:WorldToViewportPoint(pad.Position+Vector3.new(0,pad.Size.Y/2,0))
+				assert(visible)
+				waitFor(function() return shown or response~=nil end,"visible native "..options.action.." proximity prompt or touch purchase")
+			end
+			-- Walking can legitimately purchase a pad through its native Touched
+			-- handler. Observe that response before waiting on a destroyed prompt.
+			local interaction=if response then "touch" else "prompt"
+			if not response then
+				before.coins,before.reserve=player:GetAttribute("Coins"),player:GetAttribute("FarmCoins")
+				-- Equipped Tools consume native M1 before ClickDetector. E preserves
+				-- the weapon while using the normal ground interaction path.
+				interacting=true
+				input:SendKey(true,Enum.KeyCode.E,false);keyDown=true;task.wait(.1)
+				input:SendKey(false,Enum.KeyCode.E,false);keyDown=false
+			end
 			waitFor(function() return response~=nil end,"actual "..options.action.." pad response")
 			assert(response.ok,"Physical purchase rejected: "..tostring(response.reason))
 			return {ok=true,cases=1,action=options.action,event=response,before=before,movementBefore=movementBefore,
-				movementEvents=movementEvents,distance=(root.Position-pad.Position).Magnitude}
+				movementEvents=movementEvents,interaction=interaction,distance=(root.Position-pad.Position).Magnitude}
 		end
 	end)
 	Run:UnbindFromRenderStep(binding);hum:Move(Vector3.zero,false)

@@ -2050,3 +2050,21 @@ in the old direction. Completed paths now reject materially stale destinations
 and the existing path-compute throttle. A deferred native pathfinder fixture
 checks changed goals, retained small jitter and displaced-start rejection.
 This race is proven; its causal role in the earlier timeout is not established.
+
+The updated native module suite passed 569 cases. A later uninterrupted gameplay
+run passed all ten formation, four layout, four tactical combat and six crowd
+movement scenarios. The full road march covered 451.80 studs in 75.58 seconds
+(slowest member 451.39; maximum group spread 12.33). The medical continuation
+failed its existing deployment movement assertion; a fresh focused run passed
+all ten unchanged medical scenarios, with 30/30 moving advance samples, no
+backsteps, 39.13 studs of progress and support within 11.78 studs of the troop
+average. This does not establish the intermittent failure's cause. Timestamped
+movement/goal/status snapshots now accompany that assertion for future diagnosis.
+
+A separate native purchase-helper failure was confirmed: walking onto the shield
+pad bought it successfully (Shield Training I, 2600 coins after Army Camp II),
+but the helper ignored the touch response and waited for the destroyed prompt.
+It now accepts successful native touch purchases during navigation, skips further
+movement after success and retains the ordinary E-prompt rejection assertions.
+No purchase remote or production interaction behavior changed. Test input requires
+an uninterrupted owned Studio window; experimental click retries were discarded.
