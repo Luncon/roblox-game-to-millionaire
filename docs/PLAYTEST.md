@@ -2108,3 +2108,19 @@ current-body segment with height and supported-walk checks; displaced paths with
 no usable segment are discarded while preserving an existing route. All eleven
 navigation regressions passed. The full terrain/combat/medical run remains the
 acceptance check for this correction.
+
+The final complete run passed **577 native module cases, all 30 gameplay
+scenarios and all four GUI layout cases** in one uninterrupted fake-store Play.
+That includes formation 10, tactical combat 4, crowd movement 6 and medical
+survival 10. The march covered 452.18 studs in 75.71 seconds (slowest member
+451.61; maximum spread 12.20). The medic passed 27/30 moving advance samples
+with no backsteps, healed while advancing and reached within 11.72 studs of the
+troop average. Under pursuit it moved 14.54 studs toward the patient and away
+from the enemy, retained at least 8.00 studs clearance and healed the patient
+to 52 HP. The earlier failing assertions and timing limits were unchanged.
+
+All 221 Luau files compiled, 191 standalone logic cases passed and independent
+review found no remaining required issues. Verification remained isolated from
+player data and the user's Studio window. These results cover solo native tests;
+published-client, physical phone/controller, multi-owner formation combat and
+real-storage restoration remain separate acceptance boundaries.
