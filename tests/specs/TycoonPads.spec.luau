@@ -51,6 +51,16 @@ return function()
 					"Settlement rebuild destroyed pad input bindings")
 			end
 		end)
+		test("Studio-only testing pads are absent at creation and after claim sync in a disabled environment",function()
+			assert(world.model.Plots.Plot1.Controls:FindFirstChild('TestCoinButton'))
+			local liveParent=Instance.new('Folder');liveParent.Parent=workspace
+			local live=BattlefieldMap.build(liveParent,function()return false end)
+			for id=1,8 do assert(not live.model.Plots['Plot'..id].Controls:FindFirstChild('TestCoinButton'))end
+			live:setOwner(1,catalog[1],101,'NoTestCoins',1)
+			live:syncControls(1,{coins=0,level=1,weaponLevel=1,armorLevel=1,barracksLevel=1})
+			assert(not live.model.Plots.Plot1.Controls:FindFirstChild('TestCoinButton'))
+			liveParent:Destroy()
+		end)
 		test("every civilization leaves standing room above every upgrade pad", function()
 			local plot = world.model.Plots.Plot1
 			local overlap = OverlapParams.new()

@@ -7,6 +7,7 @@ local definitions = {
 	{action="warCouncil",name="WarCouncilButton",track="warCouncil",x=Sites.warCouncilPad.X,y=Sites.warCouncilPad.Y,z=Sites.warCouncilPad.Z,stage=19},
 	{action="formation",name="FormationButton",track="formation",x=Sites.formationPad.X,y=Sites.formationPad.Y,z=Sites.formationPad.Z,stage=20},
 	{action="earn",name="CoinButton",track="earn",x=-12,z=14,stage=1},
+	{action="testCoins",name="TestCoinButton",track="testCoins",x=-12,z=24,stage=1,studioOnly=true},
 	{action="upgrade",name="UpgradeButton",track="settlement",x=12,z=14,stage=1},
 	{action="weapon",name="WeaponButton",track="weapon",tier=2,x=18,z=23,stage=2},
 	{action="armor",name="ArmorButton",track="armor",tier=2,x=28,z=23,stage=2},

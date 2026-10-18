@@ -28,8 +28,9 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		connect(prompt.Triggered,function(player) activate(player,plotId,definition.action,20) end)
 		prompt.MaxActivationDistance, prompt.HoldDuration = 10, 0
 		prompt.ObjectText = if definition.action == "earn" then "Coin Button"
+			elseif definition.action=="testCoins" then "Studio Testing"
 			elseif definition.action=="collectFarm" then "Farm Collection" else string.upper(definition.track) .. " Upgrade"
-		if definition.action ~= "earn" then
+		if definition.action ~= "earn" and definition.action~="testCoins" then
 			contacts[plotId][definition.track] = contacts[plotId][definition.track] or {}
 			local touching = contacts[plotId][definition.track]
 			local contactFrame,contactSize=pad.CFrame,pad.Size+Vector3.new(0,1,0)
@@ -82,6 +83,10 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 				bound.pad.Color = Color3.fromRGB(240,191,54)
 				bound.label.Text = if enabled then "+1 COIN\nClick or interact" else "COINS\nClaim this plot first"
 				bound.prompt.ActionText = "+1 Coin"
+			elseif action=="testCoins" then
+				bound.pad.Color=Color3.fromRGB(134,94,185)
+				bound.label.Text="+1,000 TEST COINS\nStudio testing only"
+				bound.prompt.ActionText="+1,000 Test Coins"
 			elseif action=="collectFarm" then
 				local reserve=if state then state.farmCoins or 0 else 0
 				bound.pad.Color=if reserve>0 then Color3.fromRGB(72,187,90) else Color3.fromRGB(185,150,70)
@@ -142,6 +147,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		if not state then return {ok=false,reason="not_claimed"} end
 		local result
 		if action=="earn" then result=economy:earn(player.UserId)
+		elseif action=="testCoins" then result=economy:grantTestCoins(player.UserId)
 		elseif action=="collectFarm" then result=economy:collectFarm(player.UserId)
 		else
 			local offer=Development.offer(state,definition.track,claim.civilizationId)

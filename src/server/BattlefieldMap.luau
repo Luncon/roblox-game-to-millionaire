@@ -1,6 +1,7 @@
 --!strict
 
 local BattlefieldMap = {}
+local RunService=game:GetService("RunService")
 local SettlementBuilder = require(script.Parent.SettlementBuilder)
 local Progression = require(game:GetService("ReplicatedStorage").Shared.SettlementProgression)
 local PadCatalog = require(game:GetService("ReplicatedStorage").Shared.PadCatalog)
@@ -85,7 +86,7 @@ local function createPad(controls: Folder, frame: CFrame, definition, plotId: nu
 	pad:SetAttribute("Action",definition.action)
 	pad:SetAttribute("GeneratedBy","CivilizationTycoonPad")
 	pad:SetAttribute("PlotId",plotId)
-	pad.CanTouch = definition.action ~= "earn"
+	pad.CanTouch = definition.action ~= "earn" and definition.action~="testCoins"
 	local detector = Instance.new("ClickDetector")
 	detector.MaxActivationDistance = 0
 	detector.Parent = pad
@@ -112,7 +113,8 @@ local function createPad(controls: Folder, frame: CFrame, definition, plotId: nu
 	return pad
 end
 
-function BattlefieldMap.build(parent: Instance)
+function BattlefieldMap.build(parent: Instance, studioCheck: (() -> boolean)?)
+	local studio=studioCheck or function()return RunService:IsStudio()end
 	assert(not parent:FindFirstChild("CivilizationPrototype"), "Prototype map already exists in this container")
 	local model = Instance.new("Model")
 	model.Name = "CivilizationPrototype"
@@ -152,7 +154,7 @@ function BattlefieldMap.build(parent: Instance)
 		controls.Name = "Controls"
 		controls.Parent = plot
 		for _, definition in PadCatalog.definitions do
-			if definition.stage == 1 then createPad(controls, frame, definition, plotId) end
+			if definition.stage == 1 and (not definition.studioOnly or studio()) then createPad(controls, frame, definition, plotId) end
 		end
 		local direction=Vector3.new(frame.Position.X,0,frame.Position.Z).Unit
 		local inner=20
@@ -216,7 +218,8 @@ function BattlefieldMap.build(parent: Instance)
 		local controls = plot:FindFirstChild("Controls") :: Folder
 		for _, definition in PadCatalog.definitions do
 			local visible=false
-			if definition.action=="earn" then visible=true
+			if definition.studioOnly then visible=studio()
+			elseif definition.action=="earn" then visible=true
 			elseif not state then visible=definition.stage==1
 			elseif definition.action=="collectFarm" then visible=(state.farmLevel or 0)>0
 			else

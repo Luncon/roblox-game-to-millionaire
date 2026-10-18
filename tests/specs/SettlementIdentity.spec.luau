@@ -66,7 +66,9 @@ return function()
 			assert(marker and string.find(marker.SurfaceGui.TextLabel.Text,"UNCLAIMED",1,true))
 			local localPosition = plot.Foundation.CFrame:PointToObjectSpace(marker.Position)
 			assert(localPosition.Y<4,"Unclaimed marker remains a tall blocking board")
-			assert(plot.Controls.CoinButton and plot.Controls.UpgradeButton and #plot.Controls:GetChildren()==2)
+			local studio=game:GetService('RunService'):IsStudio()
+			assert(plot.Controls.CoinButton and plot.Controls.UpgradeButton and #plot.Controls:GetChildren()==(if studio then 3 else 2))
+			assert((plot.Controls:FindFirstChild('TestCoinButton')~=nil)==studio)
 			for _,name in {"BuildFrame","BuildOwnerName","BuildPlotId","BuiltLevel","Architecture","GrowthFeatureCount"} do
 				assert(plot.Settlement:GetAttribute(name)==nil,"Release retained stale builder metadata: "..name)
 			end

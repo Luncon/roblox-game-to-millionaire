@@ -11,10 +11,12 @@ local MAX_COINS = 1000000000
 
 type Account = ProfileData.State & {
 	revision: number, tokens: number, updatedAt: number, purchasedAt: { [string]: number }, farmUpdatedAt: number,
+	testGrantedAt: number?,
 }
 
-function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, civilizationFor: ((number) -> string?)?)
+function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, civilizationFor: ((number) -> string?)?, studioCheck: (() -> boolean)?)
 	local now = clock or os.clock
+	local studio=studioCheck or function()return game:GetService("RunService"):IsStudio()end
 	local accounts: { [number]: Account } = {}
 	local revisions: { [number]: number } = {}
 	local economy = {}
@@ -88,6 +90,20 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, 
 		account.coins += 1
 		account.revision = nextRevision(playerId)
 		return { ok = true, state = self:get(playerId) }
+	end
+
+	-- Fixed testing amount, never exposed through a client currency remote.
+	function economy:grantTestCoins(playerId: number)
+		if not studio() then return rejected(playerId,"testing_disabled") end
+		local account=accounts[playerId]
+		if not account then return rejected(playerId,"not_claimed") end
+		if not self:canMutate(playerId) then return rejected(playerId,"profile_unavailable") end
+		local time=now()
+		if account.testGrantedAt and time-account.testGrantedAt<.5 then return rejected(playerId,"rate_limited") end
+		if account.coins>MAX_COINS-1000 then return rejected(playerId,"coin_limit") end
+		account.testGrantedAt=time
+		account.coins+=1000;account.revision=nextRevision(playerId)
+		return {ok=true,amount=1000,state=self:get(playerId)}
 	end
 
 	function economy:upgrade(playerId: number, expectedLevel: unknown, kind: unknown)

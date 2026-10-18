@@ -61,7 +61,7 @@ return function()
 			world.model:PivotTo(CFrame.new(900,20,-1200)*CFrame.Angles(0,.7,0)*world.model:GetPivot())
 			world:setOwner(1,catalog[1],101,"UnlockTester",50)
 			world:syncControls(1,state(50))
-			local expected={earn=true,weapon=true,armor=true,barracks2=true,training=true,farm=true,blacksmith=true,armorer=true}
+			local expected={earn=true,testCoins=game:GetService("RunService"):IsStudio(),weapon=true,armor=true,barracks2=true,training=true,farm=true,blacksmith=true,armorer=true}
 			for _,definition in require(game.ReplicatedStorage.Shared.PadCatalog).definitions do
 				local pad=plot.Controls:FindFirstChild(definition.name)
 				assert((pad~=nil)==(expected[definition.action]==true),"Moved-world pad eligibility mismatch: "..definition.action)
