@@ -13,15 +13,33 @@ return function(options)
 	local binding="NativeDevelopmentWalk"..player.UserId
 	local down,keyDown=false,false;local last=Vector2.zero
 	local response=nil;local connection=nil
-	local promptConnections={}
+	local inputConnections={}
 	local function waitFor(predicate,description,seconds)
 		local deadline=os.clock()+(seconds or 12)
 		repeat if predicate() then return end;task.wait(.03) until os.clock()>deadline
 		error("Timed out: "..description.." position="..tostring(root.Position).." mouse="..tostring(player:GetMouse().Target))
 	end
-	local function click(position)
-		last=position;input:SendMousePosition(last);input:SendMouseButton(last,Enum.UserInputType.MouseButton1,true,0);down=true
-		task.wait(.06);input:SendMouseButton(last,Enum.UserInputType.MouseButton1,false,0);down=false
+	local function click(button,screen)
+		local received=false;local activated={};local observers={};local attempts=0
+		for _,item in button.Parent:GetChildren()do if item:IsA("GuiButton")then
+			local observer=item.Activated:Connect(function()
+				table.insert(activated,item.Name);if item==button then received=true end
+			end)
+			table.insert(observers,observer);table.insert(inputConnections,observer)
+		end end
+		local deadline=os.clock()+3
+		repeat
+			attempts+=1
+			local inset=game:GetService("GuiService"):GetGuiInset()
+			last=button.AbsolutePosition+button.AbsoluteSize/2+(if screen.IgnoreGuiInset then Vector2.zero else inset)
+			input:SendMousePosition(last);Run.RenderStepped:Wait()
+			input:SendMouseButton(last,Enum.UserInputType.MouseButton1,true,0);down=true
+			task.wait(.06);input:SendMouseButton(last,Enum.UserInputType.MouseButton1,false,0);down=false
+			task.wait(.15)
+		until received or os.clock()>=deadline or #activated>0
+		for _,observer in observers do observer:Disconnect()end
+		assert(received,"Native click did not activate "..button.Name.."; activated="..table.concat(activated,",").."; point="..tostring(last))
+		return attempts
 	end
 	local function walk(point)
 		Run:UnbindFromRenderStep(binding)
@@ -158,13 +176,12 @@ return function(options)
 			waitFor(function() return panel.Visible and button.Visible and button.Active end,"unlocked commander "..options.button)
 			task.wait(.4)
 			local screen=panel:FindFirstAncestorOfClass("ScreenGui")
-			local inset=game:GetService("GuiService"):GetGuiInset()
-			click(button.AbsolutePosition+button.AbsoluteSize/2+(if screen.IgnoreGuiInset then Vector2.zero else inset))
+			local attempts=click(button,screen)
 			local field=if string.sub(options.button,1,4)=="Camp" then "ExtraTroopClass" else "ArmyOrder"
 			local feedback=panel:WaitForChild("CommandFeedback",10)
 			local expected=if field=="ArmyOrder" then "Order: "..allowed[options.button] else "Camp class changes on its next respawn."
 			waitFor(function() return player:GetAttribute(field)==allowed[options.button] and feedback.Text==expected end,"native commander result")
-			return {ok=true,cases=1,button=options.button,order=player:GetAttribute("ArmyOrder"),choice=player:GetAttribute("ExtraTroopClass")}
+			return {ok=true,cases=1,button=options.button,clickAttempts=attempts,order=player:GetAttribute("ArmyOrder"),choice=player:GetAttribute("ExtraTroopClass")}
 		else
 			assert(options.kind=="pad" and type(options.action)=="string")
 			local plot=workspace.CivilizationPrototype.Plots["Plot"..player:GetAttribute("PlotId")]
@@ -189,8 +206,8 @@ return function(options)
 				label=pad:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel").Text,prompt=prompt.ActionText}
 			local shown=false
 			local prompts=game:GetService("ProximityPromptService")
-			table.insert(promptConnections,prompts.PromptShown:Connect(function(item) if item==prompt then shown=true end end))
-			table.insert(promptConnections,prompts.PromptHidden:Connect(function(item) if item==prompt then shown=false end end))
+			table.insert(inputConnections,prompts.PromptShown:Connect(function(item) if item==prompt then shown=true end end))
+			table.insert(inputConnections,prompts.PromptHidden:Connect(function(item) if item==prompt then shown=false end end))
 			-- A replacement tier may already have shown its prompt before this
 			-- helper subscribed. Physically leave/reenter to observe a fresh show.
 			if (root.Position-pad.Position).Magnitude<10 then walkToPad(pad,16) end
@@ -223,7 +240,7 @@ return function(options)
 	end)
 	Run:UnbindFromRenderStep(binding);hum:Move(Vector3.zero,false)
 	if connection then connection:Disconnect() end
-	for _,item in promptConnections do item:Disconnect() end
+	for _,item in inputConnections do item:Disconnect() end
 	if down then pcall(function()input:SendMouseButton(last,Enum.UserInputType.MouseButton1,false,0)end) end
 	if keyDown then pcall(function()input:SendKey(false,Enum.KeyCode.E,false)end) end
 	camera.CameraType,camera.CFrame,camera.CameraSubject=original.type,original.frame,original.subject

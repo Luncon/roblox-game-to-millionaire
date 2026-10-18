@@ -2067,7 +2067,12 @@ but the helper ignored the touch response and waited for the destroyed prompt.
 It now accepts successful native touch purchases during navigation, skips further
 movement after success and retains the ordinary E-prompt rejection assertions.
 No purchase remote or production interaction behavior changed. Test input requires
-an uninterrupted owned Studio window; experimental click retries were discarded.
+an uninterrupted owned Studio window; blind selector click retries were discarded.
+The HUD helper now waits a rendered frame after positioning the virtual cursor,
+observes the actual button activation and retries only undelivered clicks within
+three seconds. A different button's activation fails immediately; the original
+server-order and feedback assertions remain required. An isolated native Hold
+check passed before the combined rerun. No production button signals are forged.
 
 The timestamped combined rerun reproduced 23/30 moving samples, zero backsteps
 and 30.79 studs of progress. Velocity briefly fell at successive four-stud path
