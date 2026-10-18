@@ -191,7 +191,7 @@ function BattlefieldMap.build(parent: Instance)
 	function world:getBarracksSpawn(plotId: number, kind: string?, slotId: string?): CFrame
 		local plot = plots:FindFirstChild("Plot" .. plotId)
 		assert(plot, "Unknown barracks plot")
-		return (plot.Foundation :: BasePart).CFrame * (if slotId=="medic" then CFrame.new(Sites.hospitalSpawn) elseif slotId=="camp" then CFrame.new(-36,5,-16)
+		return (plot.Foundation :: BasePart).CFrame * (if slotId=="medic" then CFrame.new(Sites.hospitalSpawn) elseif slotId=="reinforcement" then CFrame.new(-44,5,-16) elseif slotId=="camp" then CFrame.new(-36,5,-16)
 			else CFrame.new(if kind == "ranged" then -28 else -24, 5, -11))
 	end
 
@@ -220,7 +220,7 @@ function BattlefieldMap.build(parent: Instance)
 			elseif not state then visible=definition.stage==1
 			elseif definition.action=="collectFarm" then visible=(state.farmLevel or 0)>0
 			else
-				local offer=Development.offer(state,definition.track)
+				local offer=Development.offer(state,definition.track,plot:GetAttribute("CivilizationId"))
 				visible=offer and offer.available and state.level>=definition.stage
 					and (if definition.repeatFrom then offer.current>=definition.repeatFrom elseif definition.tier then offer.nextLevel==definition.tier else true)
 			end

@@ -53,6 +53,9 @@ for id=1,Layout.plotCount do
 	local frame=Layout.plotFrame(id)
 	rectangle(frame.X,frame.Z,frame.RightVector.X,frame.RightVector.Z,Layout.maxPlotSize/2,Layout.maxPlotSize/2,"plot")
 	for _,reservation in {
+  {site=Sites.warCouncil,hx=16,hz=14,kind="war_council"},
+  {site=Sites.warCouncilPad,hx=8,hz=8,kind="council_control"},
+  {site=Sites.formationPad,hx=8,hz=8,kind="formation_control"},
   {site=Sites.hospital,hx=Sites.hospitalHalfSize.X,hz=Sites.hospitalHalfSize.Z,kind="hospital"},
   {site=Sites.hospitalPad,hx=8,hz=8,kind="hospital_control"},
   {site=Vector3.new(0,0,(Sites.hospitalAccessStart+Sites.hospital.Z)/2),hx=Sites.hospitalAccessHalfWidth,

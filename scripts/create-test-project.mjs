@@ -14,8 +14,9 @@ const combat = process.argv.includes('--combat');
 const geometry = process.argv.includes('--geometry');
 const medical = process.argv.includes('--medical');
 const navigation = process.argv.includes('--navigation');
+const formations = process.argv.includes('--formations');
 const skills = process.argv.includes('--skills');
-if (localPlaytest && [solo, development, expansion, neutral, training, farmers, combat, geometry, skills, medical, navigation].some(Boolean)) throw new Error('--local-playtest must run by itself');
+if (localPlaytest && [solo, development, expansion, neutral, training, farmers, combat, geometry, skills, medical, navigation, formations].some(Boolean)) throw new Error('--local-playtest must run by itself');
 if (development && !solo) throw new Error('--development requires --solo');
 if (expansion && !solo) throw new Error('--expansion requires --solo');
 if (neutral && !solo) throw new Error('--neutral requires --solo');
@@ -25,8 +26,9 @@ if (combat && !solo) throw new Error('--combat requires --solo');
 if (geometry && !solo) throw new Error('--geometry requires --solo');
 if (medical && !solo) throw new Error('--medical requires --solo');
 if (navigation && !solo) throw new Error('--navigation requires --solo');
+if (formations && !solo) throw new Error('--formations requires --solo');
 if (skills && !solo) throw new Error('--skills requires --solo');
-if ([development, expansion, neutral, training, farmers, combat, geometry, skills, medical, navigation].filter(Boolean).length > 1) throw new Error('Choose one solo test mode');
+if ([development, expansion, neutral, training, farmers, combat, geometry, skills, medical, navigation, formations].filter(Boolean).length > 1) throw new Error('Choose one solo test mode');
 const project = JSON.parse(fs.readFileSync('default.project.json', 'utf8'));
 
 function relocatePaths(instance) {
@@ -63,7 +65,7 @@ project.tree.ServerScriptService.Game.Bootstrap = { $path: localPlaytest ? '../t
 if (localPlaytest) {
   project.tree.ServerScriptService.Game.FakeProfileStore = { $path: '../tests/runtime/FakeProfileStore.luau' };
 } else if (solo) {
-  const runner = navigation ? 'SoloBridgeNavigation' : medical ? 'SoloMedicalSupport' : geometry ? 'SoloSettlementGeometry' : skills ? 'SoloWeaponSkills' : combat ? 'SoloTacticalCombat' : farmers ? 'SoloFarmTenders' : training ? 'SoloTrainingCamp' : neutral ? 'SoloNeutralOpponents' : expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
+  const runner = formations ? 'SoloFormations' : navigation ? 'SoloBridgeNavigation' : medical ? 'SoloMedicalSupport' : geometry ? 'SoloSettlementGeometry' : skills ? 'SoloWeaponSkills' : combat ? 'SoloTacticalCombat' : farmers ? 'SoloFarmTenders' : training ? 'SoloTrainingCamp' : neutral ? 'SoloNeutralOpponents' : expansion ? 'SoloEconomyExpansion' : development ? 'SoloSettlementDevelopment' : 'SoloWorldGrowth';
   project.tree.ServerScriptService[`${runner}Tests`] = { $path: `../tests/${runner}.server.luau` };
 } else {
 project.tree.ServerScriptService.MedicalMultiplayerTests = { $path: '../tests/multiplayer/MedicalSupport.server.luau' };

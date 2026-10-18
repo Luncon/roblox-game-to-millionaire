@@ -7,6 +7,7 @@ local Development = require(Shared.SettlementDevelopment)
 local Districts = require(script.Parent.SettlementDistricts)
 local Tenders = require(script.Parent.FarmTenders)
 local Topography = require(script.Parent.Topography)
+local CouncilRoom=require(script.Parent.WarCouncilRoom)
 local Infrastructure = {}
 
 local function part(parent, name, size, frame, tint, material)
@@ -129,9 +130,9 @@ function Infrastructure.sync(plot,frame,civ,state)
 	local folder=plot:FindFirstChild("Infrastructure")
 	if not folder then folder=Instance.new("Folder");folder.Name="Infrastructure";folder.Parent=plot end
 	if not civ or not state then folder:ClearAllChildren();folder:SetAttribute("BuildKey",nil);return end
-	local key=string.format("%s:%d:%d:%d:%d:%d:%d:%d:%d:%d",civ.id,if state.level>=2 then 1 else 0,
+	local key=string.format("%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",civ.id,if state.level>=2 then 1 else 0,
 		state.trainingLevel or 0,state.farmLevel or 0,state.workersLevel or 0,state.armyCampLevel or 0,
-		state.blacksmithLevel or 0,state.armorerLevel or 0,state.storehouseLevel or 0,state.hospitalLevel or 0)
+		state.blacksmithLevel or 0,state.armorerLevel or 0,state.storehouseLevel or 0,state.hospitalLevel or 0,state.warCouncilLevel or 0)
 	if folder:GetAttribute("BuildKey")~=key or folder:GetAttribute("BuildFrame")~=frame then
 		folder:ClearAllChildren()
 		if state.level>=2 then
@@ -141,6 +142,7 @@ function Infrastructure.sync(plot,frame,civ,state)
 		if (state.trainingLevel or 0)>0 then
 			trainingYard(folder,frame,civ)
 		end
+		if state.warCouncilLevel==1 then CouncilRoom.build(folder,frame,civ) end
 		if state.hospitalLevel==1 then
    local groundY=exteriorY(plot,frame,Sites.hospital)
    local origin=frame*CFrame.new(Sites.hospital+Vector3.new(0,groundY-1,0))*CFrame.Angles(0,math.pi,0)
@@ -153,7 +155,7 @@ function Infrastructure.sync(plot,frame,civ,state)
   end
   if (state.armyCampLevel or 0)>0 then
 			Districts.house(folder,frame*CFrame.new(Sites.armyCamp),civ,12,"ArmyCamp")
-			facadeLabel(folder.ArmyCamp,folder.ArmyCamp,"CampLabel","ARMY CAMP I",civ.color)
+			facadeLabel(folder.ArmyCamp,folder.ArmyCamp,"CampLabel","ARMY CAMP "..(if state.armyCampLevel==2 then "II" else "I"),civ.color)
 		end
 		if (state.farmLevel or 0)>0 then farmland(folder,frame,civ,state.workersLevel or 0,state.farmLevel) end
 		if (state.workersLevel or 0)>0 then

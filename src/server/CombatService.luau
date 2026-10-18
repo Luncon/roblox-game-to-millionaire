@@ -6,6 +6,7 @@ local Tracks = require(Shared.UpgradeTracks)
 local Warrior = require(Shared.WarriorConfig)
 local Ranged = require(Shared.RangedConfig)
 local Rules = require(script.Parent.CombatRules)
+local Shield=require(script.Parent.ShieldCombat)
 local CombatService = {}
 
 function CombatService.new(world, registry, economy, publishEconomy, clock)
@@ -94,7 +95,12 @@ function CombatService.new(world, registry, economy, publishEconomy, clock)
 		local hit = workspace:Raycast(origin,destination-origin,filter)
 		return hit == nil or hit.Instance:IsDescendantOf(target.rig)
 	end
-	local function applyDamage(attacker,target,damage)
+	local function applyDamage(attacker,target,damage,impactOrigin)
+		if target.rig:FindFirstChildOfClass("ForceField") then return {ok=false,reason="blocked_damage"} end
+		if not target.neutral then
+			Shield.refresh(target.rig,target.civilizationId,target.kind,economy:get(target.ownerId))
+			if Shield.block(target,impactOrigin or attacker.position) then return {ok=true,blocked=true,damage=0,killed=false} end
+		end
 		local humanoid = target.humanoid
 		local before = humanoid.Health
 		humanoid:TakeDamage(damage)
@@ -116,7 +122,7 @@ function CombatService.new(world, registry, economy, publishEconomy, clock)
 		end
 		return {ok=true,damage=before-after,killed=killed,reward=reward}
 	end
-	function controller:hit(attackerRig, targetRig)
+	function controller:hit(attackerRig, targetRig,impactOrigin)
 		if self.skills:busy(attackerRig) then return {ok=false,reason="busy"} end
 		local attacker, target = self:actor(attackerRig), self:actor(targetRig)
 		if not attacker or attacker.kind=="medic" or not target or not self:canAct(attackerRig) then return {ok=false,reason="invalid_actor"} end
@@ -138,7 +144,7 @@ function CombatService.new(world, registry, economy, publishEconomy, clock)
 		if ranged then damage = math.max(1,damage*Ranged.damageMultiplier) end
 		nextAttack[attackerRig] = time + (if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
 		self.skills:lockOrdinary(attackerRig,if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
-		return applyDamage(attacker,target,damage)
+		return applyDamage(attacker,target,damage,impactOrigin)
 	end
 
 	function controller:destroy()

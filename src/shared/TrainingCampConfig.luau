@@ -14,7 +14,7 @@ local Camp={
 }
 
 function Camp.arrivalIndex(slotId: string?): number
-	return if slotId=="medic" then 6 elseif slotId=="ranged" then 2 elseif slotId=="camp" then 8 else 1
+	return if slotId=="reinforcement" then 3 elseif slotId=="medic" then 6 elseif slotId=="ranged" then 2 elseif slotId=="camp" then 8 else 1
 end
 
 function Camp.point(index: number): Vector3
@@ -24,10 +24,14 @@ function Camp.point(index: number): Vector3
 end
 
 function Camp.entryPoint(index: number): Vector3
-	-- Stagger four body-width destinations within the gate's clear navmesh.
-	local inner=index==2 or index==6
+	-- Exterior navmesh goals avoid decorative fire/seat tiles inside the yard.
+	local inner=index==2 or index==6 or index==3
 	local lower=index==1 or index==6
-	return Camp.center+Vector3.new(if inner then 5 else 9,2.15,if lower then -3 else 3)
+	return Camp.center+Vector3.new(if inner then 26 else 22,2.15,if lower then -3 else 3)
+end
+
+function Camp.entryTarget(index: number): Vector3
+	return Camp.center+Vector3.new(9,2.15,if index==1 or index==6 then -6.5 else 6.5)
 end
 
 function Camp.contains(position: Vector3,margin: number?): boolean

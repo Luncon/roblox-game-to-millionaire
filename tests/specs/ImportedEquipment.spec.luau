@@ -105,12 +105,12 @@ return function()
 				local avatar=Instance.new("Accessory"); avatar.Name="UnrelatedAvatarHat"; avatar.Parent=char
 				for _,civ in catalog do
 					for _,level in {1,25,50} do
-						assert(Equipment.apply(player,civ,{weaponLevel=level,armorLevel=level}))
+						assert(Equipment.apply(player,civ,{weaponLevel=level,armorLevel=level,shieldLevel=if civ.id=="sparta" and level>=15 then 1 else 0}))
 						local tool=toolOf(char,backpack)
 						local expected={}
 						if hats[civ.id] then expected[hats[civ.id]]=1 end
 						if playerWeapons[civ.id] then expected[playerWeapons[civ.id]]=1 end
-						if civ.id=="sparta" then expected["spartan-shield"]=1 end
+						if civ.id=="sparta" and level>=15 then expected["spartan-shield"]=1 end
 						local actual=imported(char)
 						if tool.Parent==backpack then for id,n in imported(tool) do actual[id]=(actual[id] or 0)+n end end
 						for id,n in expected do assert(actual[id]==n,"Player import mismatch: "..civ.id.." / "..id) end
@@ -127,7 +127,7 @@ return function()
 							for _,name in {"HelmetCap","Headband","Crest","TricornBrim","NeckGuard","HelmetRidge"} do assert(not char.CivilizationArmor:FindFirstChild(name),"Fallback hat overlaid imported headwear") end
 						end
 						local armor=char.CivilizationArmor
-						assert(Equipment.apply(player,civ,{weaponLevel=level,armorLevel=level}))
+						assert(Equipment.apply(player,civ,{weaponLevel=level,armorLevel=level,shieldLevel=if civ.id=="sparta" and level>=15 then 1 else 0}))
 						assert(char.CivilizationArmor==armor and toolOf(char,backpack)==tool,"Same-tier apply duplicated imported equipment")
 						assert(avatar.Parent==char)
 					end
@@ -141,13 +141,13 @@ return function()
 				for _,role in {"warrior","ranged"} do
 					local rig=keep(Rig.create(civ,CFrame.new(150,10000,200)*CFrame.Angles(0,.7,0),101,1,nil,role))
 					for _,level in {1,25,50} do
-						Rig.update(rig,civ,{weaponLevel=level,armorLevel=level})
+						Rig.update(rig,civ,{weaponLevel=level,armorLevel=level,shieldLevel=if civ.id=="sparta" and level>=15 then 1 else 0})
 						local expected={}
 						local hat=if civ.id=="egypt" then "egypt-anubis" else hats[civ.id]
 						if hat and rig:GetAttribute("CustomMeleeModel")~=true then expected[hat]=1 end
 						local skin=if role=="warrior" then meleeWeapons[civ.id] else rangedWeapons[civ.id]
 						if skin then expected[skin]=1 end
-						if role=="warrior" and civ.id=="sparta" then expected["spartan-shield"]=1 end
+						if role=="warrior" and civ.id=="sparta" and level>=15 then expected["spartan-shield"]=1 end
 						expectImports(rig,expected)
 						expectOutfit(rig,civ,rig:GetAttribute("CustomMeleeModel")==true)
 						local tool=toolOf(rig)
@@ -175,7 +175,7 @@ return function()
 			for _,id in {"sparta","britain","japan","maurya","persia"} do
 				local rig=keep(Rig.create(byId[id],CFrame.new(420,10000,-360)*CFrame.Angles(.1,1.2,0),101,1))
 				for _,level in {1,25,50} do
-					Rig.update(rig,byId[id],{weaponLevel=level,armorLevel=level})
+						Rig.update(rig,byId[id],{weaponLevel=level,armorLevel=level,shieldLevel=if id=="sparta" and level>=15 then 1 else 0})
 					local tool=toolOf(rig)
 					local visual=nil
 					for _,item in tool:GetDescendants() do if item:GetAttribute("TemplateId")==meleeWeapons[id] then visual=item end end

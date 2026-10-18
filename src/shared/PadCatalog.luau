@@ -3,6 +3,9 @@
 local Camp = require(script.Parent.TrainingCampConfig)
 local Sites = require(script.Parent.SettlementSites)
 local definitions = {
+	{action="shield",name="ShieldButton",track="shield",x=Sites.shieldPad.X,y=Sites.shieldPad.Y,z=Sites.shieldPad.Z,stage=15},
+	{action="warCouncil",name="WarCouncilButton",track="warCouncil",x=Sites.warCouncilPad.X,y=Sites.warCouncilPad.Y,z=Sites.warCouncilPad.Z,stage=19},
+	{action="formation",name="FormationButton",track="formation",x=Sites.formationPad.X,y=Sites.formationPad.Y,z=Sites.formationPad.Z,stage=20},
 	{action="earn",name="CoinButton",track="earn",x=-12,z=14,stage=1},
 	{action="upgrade",name="UpgradeButton",track="settlement",x=12,z=14,stage=1},
 	{action="weapon",name="WeaponButton",track="weapon",tier=2,x=18,z=23,stage=2},

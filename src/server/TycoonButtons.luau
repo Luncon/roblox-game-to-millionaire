@@ -88,7 +88,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 				bound.label.Text=string.format("COLLECT FARM\n%d / %d COINS",reserve,Development.storageCapacity(state or {}))
 				bound.prompt.ActionText="Collect "..reserve.." coins"
 			else
-				local offer=if state then Development.offer(state,definition.track) else nil
+				local offer=if state then Development.offer(state,definition.track,world.model.Plots["Plot"..plotId]:GetAttribute("CivilizationId")) else nil
 				local cost=if offer then offer.cost else nil
 				local available=offer and offer.available
 				local building=Development.buildings[definition.track]
@@ -144,7 +144,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		if action=="earn" then result=economy:earn(player.UserId)
 		elseif action=="collectFarm" then result=economy:collectFarm(player.UserId)
 		else
-			local offer=Development.offer(state,definition.track)
+			local offer=Development.offer(state,definition.track,claim.civilizationId)
 			local expected=if definition.tier and not definition.repeatFrom then definition.tier-1 else offer.current
 			if expected~=offer.current then result={ok=false,reason="prerequisite",state=state}
 			else result=economy:upgrade(player.UserId,expected,definition.track) end
@@ -152,7 +152,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		if result.ok and action == "upgrade" then
 			world:setOwner(plotId,civilizations[claim.civilizationId],player.UserId,player.DisplayName,result.state.level)
 		end
-		if result.ok and (definition.track == "weapon" or definition.track == "armor") then
+		if result.ok and (definition.track == "weapon" or definition.track == "armor" or definition.track=="shield") then
 			Equipment.apply(player,civilizations[claim.civilizationId],result.state)
 		end
 		publishEconomy(player,result,if action == "upgrade" then "upgrade" else definition.track)

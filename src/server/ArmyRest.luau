@@ -17,7 +17,7 @@ local function pause(state,now)
 	state.pauseUntil=now+2+(state.index+state.cycles)%4
 end
 
-function Rest.step(state,position: Vector3,now: number): (Vector3?,number,boolean)
+function Rest.step(state,position: Vector3,now: number): (Vector3?,number,boolean,boolean?)
 	if state.phase~="returning" and not Camp.contains(position,2) then
 		state.phase="returning"
 		state.index=state.reachedIndex
@@ -29,7 +29,16 @@ function Rest.step(state,position: Vector3,now: number): (Vector3?,number,boolea
 		-- Enter through the clear approach first. Short walks inside the reserved
 		-- yard use native MoveTo rather than asking the world navmesh to resolve
 		-- every point around decorative geometry.
-		if not Camp.contains(position,2) then return Camp.entryPoint(state.index),Warrior.walkSpeed,false end
+		if not Camp.contains(position,2) then
+			local entry=Camp.entryPoint(state.index)
+			local d=position-entry
+			if state.entering or (Vector3.new(d.X,0,d.Z).Magnitude<=3 and math.abs(d.Y)<=6) then
+				state.entering=true
+				return Camp.entryTarget(state.index),Warrior.walkSpeed,false,true
+			end
+			return entry,Warrior.walkSpeed,false
+		end
+		state.entering=nil
 		if not arrived then return goal,Warrior.walkSpeed,false end
 		pause(state,now)
 	elseif state.phase=="walking" then

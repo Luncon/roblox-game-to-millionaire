@@ -61,5 +61,21 @@ return function(moduleOverride)
 			table.insert(entries,p)
 		end
 	end)
+	test("camp return hands off from reachable exterior entry to a clear local crossing",function()
+		for _,slot in {"warrior","ranged","camp","medic","reinforcement"}do
+			local state=Rest.new(slot);local entry=Camp.entryPoint(state.index)
+			assert(not Camp.contains(entry,2),"Pathfinding destination must stay outside decorative camp navmesh")
+			local goal,speed,arrived,direct=Rest.step(state,entry,0)
+			assert(direct and not arrived and speed==12 and Camp.contains(goal,2))
+			assert(entry.X-Camp.center.X>=22,"Entry must clear the decorative navmesh border")
+			local midway=entry:Lerp(goal,.5)
+			local continued,_,_,stillDirect=Rest.step(state,midway,.2)
+			assert(stillDirect and (continued-goal).Magnitude<.001,"Entering must stay committed until inside camp")
+			for t=0,1,.1 do
+				local d=entry:Lerp(goal,t)-Camp.center
+				assert(Vector3.new(d.X,0,d.Z).Magnitude>5,"Camp entry crossed the fire")
+			end
+		end
+	end)
 	return cases
 end

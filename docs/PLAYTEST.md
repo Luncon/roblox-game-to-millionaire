@@ -2000,3 +2000,22 @@ Verification used only the owned fake-store Studio window under the user's
 permission for a separate window. Published-client, two-owner replication and
 real-storage acceptance were not rerun. Soft avoidance reduces sustained body
 crowding; it does not guarantee that all noncolliding meshes never intersect.
+
+### October 18, 2026 — Shieldwall foundation, isolated native Studio
+
+Owned `formation-tests.rbxlx`, PlaceId 0, supplied SoloBootstrap and
+FakeProfileStore only. 560 native module cases passed, including four shield
+authority cases and the 104-room faction/rotation geometry matrix. Two runtime
+cases physically purchased Army Camp II (3000 → 2750), preserved an existing
+60-HP warrior, other original lives and a pending ranged deadline, then observed
+all five unanchored troops reach camp in 26.12 seconds with zero sustained
+root overlap during the eight-second camp observation.
+
+Shield checks exercised native damage/raycast/cooldown and skill-contact paths
+with only the connected-owner lookup replaced. Player/melee protection, two-hit
+visual removal, side/rear bypass, duplicate/rejected/obstructed/ForceField hits,
+no rebuild refill and fresh-life restoration passed. Original imported player
+and NPC equipment/source-immutability matrices also passed. Council room access,
+physical pad eligibility, eight rotated plots, all thirteen factions and the
+2000-part landscape limit passed. Selection, HUD and actual formation travel
+remain to be verified in subsequent slices. No player data or live publication.

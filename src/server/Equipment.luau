@@ -3,6 +3,7 @@
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local Visuals = require(script.Parent.EquipmentVisuals)
 local Outfits = require(script.Parent.OutfitTemplates)
+local Shield=require(script.Parent.ShieldCombat)
 local Equipment = {}
 local OWNER = "CivilizationEquipment"
 local styles = {
@@ -75,13 +76,14 @@ function Equipment.clear(player: Player)
 	removeOwned(character)
 	removeOwned(player:FindFirstChildOfClass("Backpack"))
 	if character then
+		character:SetAttribute("ShieldCharges",0)
 		local humanoid = character:FindFirstChildOfClass("Humanoid")
 		local base = character:GetAttribute("EquipmentBaseHealth")
 		if humanoid and typeof(base) == "number" then
 			humanoid.MaxHealth = base
 			humanoid.Health = math.min(humanoid.Health, base)
 		end
-		for _, key in {"EquipmentCivilization", "EquippedWeaponLevel", "EquippedArmorLevel", "EquipmentBaseHealth", "EquipmentRole"} do
+		for _, key in {"EquipmentCivilization", "EquippedWeaponLevel", "EquippedArmorLevel", "EquipmentBaseHealth", "EquipmentRole", "EquippedShieldLevel"} do
 			character:SetAttribute(key, nil)
 		end
 	end
@@ -105,16 +107,19 @@ local function applyCharacter(character: Model?, backpack: Instance?, civilizati
 	local role = if warrior then character:GetAttribute("WarriorClass") or "warrior" else "player"
 	local weaponLevel = state.weaponLevel or 1
 	local armorLevel = state.armorLevel or 1
+	Shield.refresh(character,civilization.id,role,state)
 	if not force and character:GetAttribute("EquipmentCivilization") == civilization.id
 		and character:GetAttribute("EquippedWeaponLevel") == weaponLevel
 		and character:GetAttribute("EquippedArmorLevel") == armorLevel
-		and character:GetAttribute("EquipmentRole") == role then return true end
+		and character:GetAttribute("EquipmentRole") == role
+		and character:GetAttribute("EquippedShieldLevel")== (state.shieldLevel or 0) then return true end
 	removeOwned(character)
 	removeOwned(backpack)
 	character:SetAttribute("EquipmentRole", role)
 	character:SetAttribute("EquipmentCivilization", civilization.id)
 	character:SetAttribute("EquippedWeaponLevel", weaponLevel)
 	character:SetAttribute("EquippedArmorLevel", armorLevel)
+	character:SetAttribute("EquippedShieldLevel",state.shieldLevel or 0)
 	local baseHealth = character:GetAttribute("EquipmentBaseHealth")
 	if typeof(baseHealth) ~= "number" then baseHealth = if warrior then 100 else humanoid.MaxHealth; character:SetAttribute("EquipmentBaseHealth", baseHealth) end
 	local previousMaximum = humanoid.MaxHealth
@@ -269,10 +274,13 @@ local function applyCharacter(character: Model?, backpack: Instance?, civilizati
 		tool.Parent = backpack or character
 		humanoid:EquipTool(tool)
 	end
-	if civilization.id=="sparta" and role~="ranged" then
+	if (character:GetAttribute("ShieldCharges") or 0)>0 and (role=="player" or role=="warrior") then
 		local leftArm=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
 		local shield=if leftArm and leftArm:IsA("BasePart") then Visuals.clone("spartan-shield") else nil
-		if shield then mountVisual(armor,leftArm :: BasePart,shield,CFrame.new(0,0,-.7)*CFrame.Angles(0,math.pi,0),.7) end
+		if shield then
+			shield:SetAttribute("CombatShield",true)
+			mountVisual(armor,leftArm :: BasePart,shield,CFrame.new(0,0,-.7)*CFrame.Angles(0,math.pi,0),.7)
+		end
 	end
 	return true
 end

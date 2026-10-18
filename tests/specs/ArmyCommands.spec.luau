@@ -18,6 +18,17 @@ return function()
 			end end
 		end
 	end)
+	test("Army Camp II adds a dedicated melee beside the unchanged selected camp slot",function()
+		for _,civ in require(game.ReplicatedStorage.Shared.Civilizations)do
+			for _,kind in {"warrior","ranged"}do
+				local state={barracksLevel=6,armyCampLevel=2,hospitalLevel=1,extraTroopClass=kind}
+				local slots=Service.slotDefinitions(state);assert(#slots==5,civ.id)
+				local byId={};for _,slot in slots do assert(not byId[slot.id]);byId[slot.id]=slot end
+				assert(byId.camp.kind==kind and byId.reinforcement.kind=="warrior" and byId.medic.kind=="medic")
+			end
+		end
+	end)
+
 	test("class selection changes only the future camp definition and leaves previous descriptors intact",function()
 		local state={barracksLevel=4,armyCampLevel=1,extraTroopClass="warrior"}
 		local before=Service.slotDefinitions(state)

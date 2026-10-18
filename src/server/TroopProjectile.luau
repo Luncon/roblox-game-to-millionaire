@@ -89,7 +89,7 @@ function TroopProjectile.new(world, combat, isShooterActive: ((Model) -> boolean
 							if attacker and CombatRules.hostile(attacker,victim)
 								and CombatRules.containsArena(arena, attacker.position)
 								and CombatRules.containsArena(arena, victim.position) then
-								combat:hit(shot.shooter, candidate)
+								combat:hit(shot.shooter, candidate,shot.position-shot.direction*2)
 							end
 							break
 						end

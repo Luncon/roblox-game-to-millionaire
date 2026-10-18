@@ -58,10 +58,11 @@ function EconomyUI.start(screen: ScreenGui)
 		end
 		local campCount=player:GetAttribute("CampCount") or 0
 		local campClass=player:GetAttribute("CampClass")
-		local units = "Warrior "..status(warrior-(if campClass=="warrior" then campCount else 0),"WarriorRespawnAt")
+		local units = "Warrior "..status(warrior-(if campClass=="warrior" then campCount else 0)-(player:GetAttribute("ReinforcementCount") or 0),"WarriorRespawnAt")
 		if tier.capacity == 2 then units ..= " · Ranged "..status(ranged-(if campClass=="ranged" then campCount else 0),"RangedRespawnAt") end
 		local capacity=player:GetAttribute("TroopCapacity") or tier.capacity
 		if (player:GetAttribute("ArmyCampLevel") or 0)>0 then units..=" · Camp "..status(player:GetAttribute("CampCount") or 0,"CampRespawnAt") end
+		if player:GetAttribute("ArmyCampLevel")==2 then units..=" · Extra melee "..status(player:GetAttribute("ReinforcementCount") or 0,"ReinforcementRespawnAt") end
 		local medic=player:GetAttribute("MedicCount") or 0
 		army.Text = string.format("Barracks %s · %d/%d troops · fighters %gs respawn\n%s",tier.name,warrior+ranged+medic,capacity,tier.respawnDelay,units)
 		if player:GetAttribute("HospitalLevel")==1 then
@@ -156,7 +157,7 @@ function EconomyUI.start(screen: ScreenGui)
 		"BlacksmithLevel","ArmorerLevel","StorehouseLevel","HospitalLevel" } do
 		player:GetAttributeChangedSignal(attribute):Connect(syncAttributes)
 	end
-	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","TroopCapacity","MedicCount","MedicRespawnAt" } do
+	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","ReinforcementCount","ReinforcementRespawnAt","TroopCapacity","MedicCount","MedicRespawnAt" } do
 		player:GetAttributeChangedSignal(attribute):Connect(renderArmy)
 	end
 	task.spawn(function()
@@ -198,7 +199,7 @@ function EconomyUI.start(screen: ScreenGui)
 					elseif result.action=="armorer" then "Armorer built! Armor upgrades cost 5% less."
 					elseif result.action=="storehouse" then "Storehouse built! Your farm can hold 180 coins."
 					elseif result.action=="hospital" then "Hospital built! Medic deployed; troops recover at the training yard."
-					elseif result.action=="armyCamp" then "Army camp built! Choose your third troop's class."
+					elseif result.action=="armyCamp" then (if state.armyCampLevel==2 then "Army Camp II built! Additional melee deployed." else "Army camp built! Choose your third troop's class.")
 					elseif result.action=="troopClass" then "Camp class saved for its next respawn."
 					elseif result.action == "upgrade" then "Settlement expanded!"
 					elseif result.action == "switch" then "Civilization progress restored!"

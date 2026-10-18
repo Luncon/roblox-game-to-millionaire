@@ -311,3 +311,21 @@ two-owner replication and real-storage restoration are separate acceptance check
 The HUD identifies the hospital medic on its own line with its independent
 countdown. Short landscape layouts place army orders beside settlement status;
 narrow layouts retain space between status, commands and the skill button.
+
+### Shieldwall implementation milestone (October 18, 2026)
+
+Army Camp II adds an independent fixed melee life, bringing the maximum to five
+with the ranged barracks slot, selectable camp slot and hospital medic. Existing
+health, class choices and pending respawn deadlines survive the purchase. Camp
+returns use exterior navmesh goals and commit to the short crossing into the yard.
+
+Purchased Spartan Shield Training equips the same shield asset on players and
+melee troops. Each of two accepted frontal contacts in a 120-degree arc blocks
+damage and spends a charge; the second removes the visual. Side/rear attacks
+bypass it. Ordinary and skill contacts share this rule. Rejected contacts and
+ForceFields preserve charges. Equipment rebuilds, upgrades and same-life
+civilization switches cannot refill it; fresh lives receive two charges.
+
+War Council geometry and physical unlock pads are implemented; interactive
+selection and coordinated marching remain in the active OpenSpec change until
+verified. No formation combat-stat bonus is granted.

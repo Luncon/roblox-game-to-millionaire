@@ -32,9 +32,10 @@ function WarriorService.slotDefinitions(state)
 	if Tracks.barracks[state.barracksLevel or 1].capacity >= 2 then
 		table.insert(slots,{id="ranged",kind="ranged"})
 	end
-	if state.armyCampLevel == 1 then
+	if (state.armyCampLevel or 0) >= 1 then
 		table.insert(slots,{id="camp",kind=if state.extraTroopClass=="ranged" then "ranged" else "warrior"})
 	end
+	if state.armyCampLevel==2 then table.insert(slots,{id="reinforcement",kind="warrior"}) end
 	if state.hospitalLevel==1 then table.insert(slots,{id="medic",kind="medic"}) end
 	return slots
 end
@@ -91,12 +92,15 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		owner.player:SetAttribute("RangedRespawnAt", if ranged then ranged.respawnAt else 0)
 		owner.player:SetAttribute("CampCount", if camp and camp.rig then 1 else 0)
 		owner.player:SetAttribute("CampRespawnAt", if camp then camp.respawnAt else 0)
+		local reinforcement=owner.slots.reinforcement
+		owner.player:SetAttribute("ReinforcementCount",if reinforcement and reinforcement.rig then 1 else 0)
+		owner.player:SetAttribute("ReinforcementRespawnAt",if reinforcement then reinforcement.respawnAt else 0)
 		owner.player:SetAttribute("CampClass", if camp then camp.kind else nil)
 		owner.player:SetAttribute("ExtraTroopClass", state.extraTroopClass or "warrior")
 		owner.player:SetAttribute("ArmyOrder", owner.order)
 	end
 	local function clearAttributes(player: Player)
-		for _, name in {"BarracksLevel", "WarriorCount", "RangedCount", "ArmyCount", "TroopCapacity", "ArmyRespawnDelay", "WarriorRespawnAt", "RangedRespawnAt", "CampCount", "CampRespawnAt", "MedicCount", "MedicRespawnAt"} do
+		for _, name in {"BarracksLevel", "WarriorCount", "RangedCount", "ArmyCount", "TroopCapacity", "ArmyRespawnDelay", "WarriorRespawnAt", "RangedRespawnAt", "CampCount", "CampRespawnAt", "MedicCount", "MedicRespawnAt", "ReinforcementCount", "ReinforcementRespawnAt"} do
 			player:SetAttribute(name, 0)
 		end
 		player:SetAttribute("CampClass",nil)
@@ -328,8 +332,8 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					slot.rest=slot.rest or ArmyRest.new(slot.id)
 					local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
 					local position=frame:PointToObjectSpace(attacker.position)
-					local goal,speed,arrived=ArmyRest.step(slot.rest,position,now)
-					local direct=goal~=nil and TrainingCamp.contains(position,2)
+					local goal,speed,arrived,entering=ArmyRest.step(slot.rest,position,now)
+					local direct=goal~=nil and (entering==true or TrainingCamp.contains(position,2))
 					attacker.humanoid.WalkSpeed=speed
 					if goal~=slot.restGoal or frame~=slot.restFrame or direct~=slot.restDirect then
 						if not goal then slot.navigator:stop()
@@ -384,7 +388,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      function(from,patient)return combat:visible(from,patient)end)
     rig:SetAttribute("MedicalSupportActive",recoveryPlan~=nil)
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
-				local radius=if slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
+				local radius=if slot.id=="reinforcement" then 42 elseif slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
 				local plan=encounters:step(rig,{order=owner.order,homeGoal=home,actors=actors,support=recoveryPlan,
 					cancelShots=function() projectiles:cancel(rig) end,

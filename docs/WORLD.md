@@ -272,3 +272,9 @@ reserves the hospital, pad and access before sampling collision triangles.
 Construction uses the existing transformed-world height sampler. Native access,
 all-civilization footprint and part-budget checks are supplied in
 `HospitalGeometry.spec.luau` and have passed in the isolated native solo suite; see PLAYTEST.md for evidence.
+
+The War Council room sits beside the exterior Training Camp at local plot
+(-148, 0, 42), with its purchase pad at (-148, -.3, 26) and Spartan formation
+unlock pad at (-166, -.3, 42). The open entrance faces the camp; the map table
+is inside. Footprint, access and pads reserve flat native terrain. Shield
+Training's pad is beside the armory at (42, 0, 18).
