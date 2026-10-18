@@ -2092,3 +2092,19 @@ route continuing away from a materially changed destination. Navigation now
 discards that opposing leg while awaiting the replacement route, retaining both
 small jitter and useful forward legs for larger target movement. All ten path
 regressions passed; the connection to the centroid timeout awaits the full rerun.
+
+Native HUD delivery failures were subsequently traced to the inspection workflow:
+Studio was displaying the Server viewport after server-side tool calls. In that
+state simulated client clicks delivered no button activation. Switching the
+visible viewport to Client made one native Hold click activate the real button
+and change the server order. The harness now publishes progress/results on
+ReplicatedStorage so Client-side monitoring leaves the required viewport intact.
+
+The centroid timeout persisted after the opposing-leg guard. A deferred native
+path that includes its start reproduced a further problem: moving the body eight
+studs during computation still accepted the route, then targeted its old start.
+The new regression failed before the fix. Completed paths now resume on a nearby
+current-body segment with height and supported-walk checks; displaced paths with
+no usable segment are discarded while preserving an existing route. All eleven
+navigation regressions passed. The full terrain/combat/medical run remains the
+acceptance check for this correction.

@@ -64,7 +64,14 @@ return function()
   leg(Vector3.new(20,0,0),false,false)
   nav:setGoal(position+Vector3.new(40,0,0));nav:step(os.clock())
   assert(rig.Humanoid.WalkToPoint.X>position.X+15,'Forward target movement erased useful route progress')
-  return 10
+  nav:destroy();module:SetAttribute('Started',nil);module:SetAttribute('Middle',nil);module:SetAttribute('IncludeStart',true)
+  position=rig.HumanoidRootPart.Position
+  nav=require(module).new(rig,function()return true end)
+  nav:setGoal(position+Vector3.new(30,0,0));nav:step(os.clock())
+  repeat task.wait()until module:GetAttribute('Started')
+  rig:PivotTo(rig:GetPivot()+Vector3.new(8,0,0));module.Release:Fire();task.wait(.05);nav:step(os.clock())
+  assert(rig.Humanoid.WalkToPoint.X>rig.HumanoidRootPart.Position.X,'Delayed replacement route retraced its already-passed start')
+  return 11
  end)
  nav:destroy();rig:Destroy();floor:Destroy();module:Destroy();assert(ok,result);return result
 end

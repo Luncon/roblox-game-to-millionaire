@@ -201,10 +201,32 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 				rig:SetAttribute("NavigationStatus", "Retrying route")
 				return
 			end
+			local points=candidate:GetWaypoints()
+			local resume,closest=1,2.5
+			-- Replans start at the compute-time position. Resume on the nearby
+			-- segment containing the current body, rather than walking back to it.
+			for index=1,#points-1 do
+				local a,b=points[index].Position,points[index+1].Position
+				local leg,offset=b-a,root.Position-a
+				local length=leg.X*leg.X+leg.Z*leg.Z
+				if length<.01 then continue end
+				local t=math.clamp((offset.X*leg.X+offset.Z*leg.Z)/length,0,1)
+				local projection=a+leg*t
+				local distance=flatDistance(root.Position,projection)
+				local target=if t>.01 then index+1 else index
+				if distance<=closest and math.abs(root.Position.Y-projection.Y)<=6
+					and (not world or supported(points[target].Position,false,nil)) then
+					resume,closest=target,distance
+				end
+			end
+			if #points>1 and resume==1 and flatDistance(root.Position,start)>2.5
+				and flatDistance(root.Position,points[1].Position)>2.5 then
+				candidate:Destroy();blocked=true;return
+			end
 			clearRoute()
 			path = candidate
-			waypoints = candidate:GetWaypoints()
-			nextWaypoint = 1
+			waypoints = points
+			nextWaypoint = resume
 			plannedGoal = destination
 			blockedConnection = candidate.Blocked:Connect(function(index)
 				if index >= nextWaypoint then blocked = true end

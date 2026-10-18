@@ -266,8 +266,12 @@ repository test bootstrap in the owned test window before starting.
 `npm run build:test-project -- --solo --formations` generates the isolated
 formation harness. Build `.cache/solo-test.project.json`, open it in the owned
 Studio window and verify its SoloBootstrap injects FakeProfileStore before Play.
-Watch `FormationVerificationPhase`, `FormationUnitCases`, `FormationEvidence`
-and `FormationVerificationResult`. Default execution includes all module cases,
+Keep the Studio viewport on Client during native input. Server inspection can
+switch that viewport and prevent client GUI activation. Read
+`ReplicatedStorage.FormationVerificationPhase` and
+`ReplicatedStorage.FormationVerificationResult` attributes from Client to monitor
+the run without switching. Detailed `FormationUnitCases`/`FormationEvidence`
+remain on the server DataModel. Default execution includes all module cases,
 ten formation runtime scenarios and four bounded-frame GUI layouts.
 
 Set `SoloFormationsTests.FullRegression` to true before Play to add the existing

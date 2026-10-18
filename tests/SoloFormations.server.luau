@@ -13,7 +13,12 @@ local connection=reports.OnServerEvent:Connect(function(player,round,result)
 end)
 control.Parent=Replicated
 local evidence={suites={}};local units,sequence=0,0
-local function stage(name)game:SetAttribute("FormationVerificationPhase",name)end
+local function stage(name)
+	game:SetAttribute("FormationVerificationPhase",name)
+	-- Client-visible progress avoids switching Studio's viewport away from the
+	-- client and making native GUI input unavailable during a running scenario.
+	Replicated:SetAttribute("FormationVerificationPhase",name)
+end
 local function waitFor(predicate,label,timeout)
 	local deadline=os.clock()+(timeout or 15)
 	repeat if predicate()then return end;task.wait(.05)until os.clock()>deadline
@@ -47,6 +52,7 @@ local ok,result=pcall(function()
 		evidence.medical=require(game.ServerStorage.RuntimeTests.MedicalSurvival)(context,player,round)
 		return evidence.medical
 	end
+	stage("Formation runtime")
 	evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round)
 	evidence.layout=round("formationLayout",{},20)
 	if script:GetAttribute("FullRegression")then
@@ -62,7 +68,9 @@ local ok,result=pcall(function()
 	return evidence.runtime
 end)
 stage(if ok then "Complete" else "Failed")
-game:SetAttribute("FormationVerificationResult",game.HttpService:JSONEncode({ok=ok,units=units,evidence=evidence,
-	result=if ok then result else tostring(result)}))
+local encoded=game.HttpService:JSONEncode({ok=ok,units=units,evidence=evidence,
+	result=if ok then result else tostring(result)})
+game:SetAttribute("FormationVerificationResult",encoded)
+Replicated:SetAttribute("FormationVerificationResult",encoded)
 connection:Disconnect();control:Destroy()
 if not ok then warn("Tactical combat verification failed: "..tostring(result))end
