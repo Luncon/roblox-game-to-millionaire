@@ -275,6 +275,7 @@ all-civilization footprint and part-budget checks are supplied in
 
 The War Council room sits beside the exterior Training Camp at local plot
 (-148, 0, 42), with its purchase pad at (-148, -.3, 26) and Spartan formation
-unlock pad at (-166, -.3, 42). The open entrance faces the camp; the map table
+unlock pad beside it at (-136, -.3, 26), directly in front of the room.
+The open entrance faces the camp; the map table
 is inside. Footprint, access and pads reserve flat native terrain. Shield
 Training's pad is beside the armory at (42, 2, 18).

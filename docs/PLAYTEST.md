@@ -2124,3 +2124,12 @@ review found no remaining required issues. Verification remained isolated from
 player data and the user's Studio window. These results cover solo native tests;
 published-client, physical phone/controller, multi-owner formation combat and
 real-storage restoration remain separate acceptance boundaries.
+
+### October 18, 2026 — Shieldwall pad at the council entrance
+
+Moved the Spartan formation unlock pad to local (-136, -.3, 26), beside the
+council purchase pad in front of the room. The shared site also moves its terrain
+reservation. Both existing WarCouncilWorld geometry cases passed in an isolated
+Edit-only Studio window, including the 104 faction/plot room-access combinations,
+pad eligibility and landscape budget. The user's active playtest was left running;
+physical movement/purchase interaction was not rerun for this placement-only edit.
