@@ -14,4 +14,4 @@
 
 ## 4. Integration
 
-- [ ] 4.1 Run relevant full native and standalone regressions, strict specs and Luau compilation; review/mutation-check the changes, refresh production/manual/test builds, verify main source sync and fake-store isolation, record limitations, close owned fixtures and integrate the verified change.
+- [x] 4.1 Run relevant full native and standalone regressions, strict specs and Luau compilation; review/mutation-check the changes, refresh production/manual/test builds, verify main source sync and fake-store isolation, record limitations, close owned fixtures and integrate the verified change.

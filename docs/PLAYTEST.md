@@ -2270,3 +2270,73 @@ cleared and its window closed; the user's main Studio remained open. Test
 fixtures used fake storage throughout. Published-client, physical phone/
 controller, multi-owner formation combat and real-storage restoration remain
 separate acceptance boundaries; no Roblox publication was performed.
+
+### October 18, 2026 — Persian Archer Screen and recalled shield supplies
+
+The approved Persian screen keeps existing progression/costs/speed and deploys
+for a clear captured-archer shot within 40 studs, or at the final destination.
+It latches that defensive position after targets leave. Melee defend within six
+studs of their slots; ordinary bow fire and medic support continue behind them.
+Sparta/Rome retain their existing center-arrival release.
+
+The user also requested shield racks after shield unlock. Supported factions
+now display a rack north of camp, with three separated pickup points. Recalled
+melee with fully spent shields visit their assigned point, regain a two-hit
+shield and return to camp. Partial shields and player shields are excluded.
+Shield-only restoration preserves weapons/grips and health; ordinary equipment
+rebuilds still never refill charges. No persistent fields were added.
+
+All 216 standalone cases pass. The native module run passed 609 cases, including
+three rack authority/visual tests and the expanded 28-case encounter suite.
+The guard regression first failed before bounded acquisition was added, then
+exposed a reachable target whose normal approach points all lay outside the
+circle. A valid edge approach fixed that case; all 28 cases passed. All 228 Luau
+files compile and all 22 OpenSpec items validate strictly. Generated-copy
+mutations detect missing early deployment, ignored visibility, lost deployment
+latching and partial/repeat shield refills without mutating the synced sources.
+Physical formation/recall and broader regression evidence follows below.
+
+The full native run passed all seventeen existing Spartan/Roman formation
+scenarios with the new definitions and rack code. Persian physical purchases
+spent the expected 850 coins, selected the screen at the real council and
+created the rack immediately on shield unlock. The unanchored screen walked
+278.50 studs before deploying, with its bow 39.15 studs from the hostile. It
+released real arrows, damaged that hostile, healed its front line and stayed
+latched after target retreat/death. A guard moved at most 3.57 studs from its
+slot, used the stationary spear skill, contacted its enemy and returned when
+the enemy retreated. Native occlusion, empty-center deployment, stationary Hold
+attacks/healing, explicit cancellation, support replacement and frontline
+casualty release also passed. Remaining checks cover physical resupply and
+shared combat/movement/medical regressions.
+
+The uninterrupted full run passed **609 native module cases, all 46 gameplay
+scenarios and four UI layouts**: existing formations 17, Persian/supply 9,
+tactical 4, crowd 6 and medical 10. Recalled warriors in Sparta, Rome and Persia
+walked to supplies and back on the same lives, received exactly one shield with
+two charges, retained their weapon/cooldown and had 57 HP at pickup. One-charge
+shields remained unchanged. Hold/Advance and write-loss interruptions granted
+nothing. Combat, bridge/camp spacing and all medic survival checks passed.
+
+A subsequent focused run passed the updated **610 native module cases**, all
+three resupply scenarios and four UI layouts. It adds clear supported pickup
+positions for all 24 shield-faction/rotated-plot combinations, three depleted
+shieldmen sharing the rack and returning to camp, and resupply resuming after
+write authority returns. That last path clears the cached destination when
+navigation is stopped by authority loss, allowing a fresh route on recovery.
+All three concurrent pickups retained their original lives and exactly one
+shield each. Across these runs, all 47 distinct gameplay scenarios are covered;
+this is not a claim that the final expanded suite ran uninterrupted in one Play.
+A rendered rack inspection showed the three hanging shield models and readable
+SHIELD SUPPLIES sign beside the camp with a clear pickup aisle.
+
+Final review found no remaining required issues. All 216 standalone cases,
+228 Luau compilations and 22 strict OpenSpec items pass. Production, manual
+fake-store and default full-verification builds refresh successfully. The main
+Edit place (73839918762778) contains the Persian definition, deployed-screen
+logic, rack, collection route and authority-recovery reset; its production
+Bootstrap is intact and the test-only mutable army getter is absent. The owned
+Play was stopped, focused-run flags cleared and the Persian test window closed.
+The user's main Studio remains open. No real profile store was used by fixtures,
+no imported source templates were mutated and no Roblox publication occurred.
+Published-client, physical phone/controller, multi-owner formation combat and
+real-storage restoration remain separate acceptance boundaries.
