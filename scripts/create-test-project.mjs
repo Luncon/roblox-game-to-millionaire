@@ -80,6 +80,19 @@ project.tree.ServerScriptService.FullServerTests = { $path: '../tests/multiplaye
 if (!localPlaytest) project.tree.StarterPlayer.StarterPlayerScripts.MultiplayerTests = { $path: '../tests/multiplayer/Client.client.luau' };
 fs.mkdirSync(outputDirectory, { recursive: true });
 fs.mkdirSync(path.join(root, 'build'), { recursive: true });
+if (!localPlaytest) {
+  const dependency = 'local PathfindingService = game:GetService("PathfindingService")';
+  const navigation = fs.readFileSync(path.join(serverDirectory, 'WarriorNavigator.luau'), 'utf8');
+  if (navigation.split(dependency).length !== 2) throw new Error('Navigation fixture dependency changed');
+  fs.writeFileSync(path.join(outputDirectory, 'navigation-lifetime-fixture.luau'),
+    navigation.replace(dependency, 'local PathfindingService = require(script.TestPathfinder)'));
+  project.tree.ServerScriptService.Game.NavigationLifetimeNavigator = {
+    $path: './navigation-lifetime-fixture.luau',
+    TestPathfinder: { $path: '../tests/runtime/DeferredPathfinder.luau' },
+    Release: { $className: 'BindableEvent' },
+    Blocked: { $className: 'BindableEvent' },
+  };
+}
 const outputName = localPlaytest ? 'local-playtest.project.json' : solo ? 'solo-test.project.json' : 'test.project.json';
 fs.writeFileSync(path.join(outputDirectory, outputName), JSON.stringify(project, null, 2) + '\n');
 console.log(`Created .cache/${outputName}; build it with Rojo to run the Studio tests.`);

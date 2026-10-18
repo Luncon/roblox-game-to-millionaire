@@ -276,3 +276,8 @@ formation-only runtime rerun, `RuntimeOnly=true` omits module fixtures; restore
 false for final all-module verification. Neither flag opens player storage.
 Physical phone/controller play, multi-owner formation combat and real storage
 restoration remain separate from these solo fake-store checks.
+
+For medic diagnostics in the formation harness, `MedicalOnly=true` selects only
+the existing medic-survival runtime after any enabled module checks. Restore
+false for formation verification. `MedicalFailureEvidence` captures positions,
+goals, anchoring and navigation state before fixture cleanup on a timeout.

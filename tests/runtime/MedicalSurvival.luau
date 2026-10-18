@@ -11,6 +11,15 @@ return function(context,player,round)
  local function waitFor(fn,label,seconds)
   local deadline=os.clock()+(seconds or 10)
   repeat if fn()then return end;task.wait(.02)until os.clock()>deadline
+  local snapshot={label=label,troops={}}
+  local owner=service.army:get(player.UserId)
+  if owner then for id,slot in owner.slots do
+   local r=slot.rig;local root=r and r:FindFirstChild('HumanoidRootPart');local hum=r and r:FindFirstChildOfClass('Humanoid')
+   if root and hum then snapshot.troops[id]={position={root.Position.X,root.Position.Y,root.Position.Z},
+    goal={hum.WalkToPoint.X,hum.WalkToPoint.Y,hum.WalkToPoint.Z},anchored=root.Anchored,
+    navigation=r:GetAttribute('NavigationStatus'),state=r:GetAttribute('WarriorState')}end
+  end end
+  game:SetAttribute('MedicalFailureEvidence',game.HttpService:JSONEncode(snapshot))
   error("Timed out: "..label)
  end
  local function choose(id)

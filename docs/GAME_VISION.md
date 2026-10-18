@@ -43,7 +43,7 @@ which faction wins; strengths, costs, formations, and counters need playtesting.
 | Ming China | Approximately 1400–1600 CE |
 
 The roster can contain more than eight choices; only eight can be active in
-one full server. Britain uses redcoats and firearms. More troop types, formation
+one full server. Britain uses redcoats and firearms. More troop types, additional formations, formation
 bonuses and ability effects remain to be designed; current economy and combat
 values are prototype tuning.
 
@@ -83,7 +83,7 @@ barracks through three faster-respawn upgrades to one melee plus one ranged troo
 See [army details](ARMY.md) and the active OpenSpec implementation checklist.
 
 The proposed sequence above records the original plan. Current saving and army
-features have overtaken some of its steps; formations, battlefield objectives and
+features have overtaken some of its steps; additional formations, battlefield objectives and
 civilization-aware cross-server routing still need implementation. Storage and
 multiplayer verification are recorded separately in [playtest notes](PLAYTEST.md).
 
@@ -134,3 +134,10 @@ purchases along the way. Later farm tiers at 20/30/42, Storehouse II and beyond,
 checkpoint 20, more army slots, infirmaries, formations, abilities and specialist
 buildings remain planned.
 Current tuning has not yet established a measured level-50 completion time.
+
+The first formation is now Spartan Shieldwall: every civilization can unlock
+Army Camp II and the War Council, while Sparta alone buys two-hit shields and
+the five-troop formation. The council map selects it; March Formation musters
+three melee, one ranged and one medic from camp, assembles at the road and
+advances together. Advance restores normal independent fighting. See
+[army controls](ARMY.md) and [verified boundaries](PLAYTEST.md).

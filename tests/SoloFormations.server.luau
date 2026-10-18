@@ -43,6 +43,10 @@ local ok,result=pcall(function()
 		assert(response.executed,tostring(response.result));assert(response.result.ok,"Native client action failed: "..name)
 		return response.result
 	end
+	if script:GetAttribute("MedicalOnly")then
+		evidence.medical=require(game.ServerStorage.RuntimeTests.MedicalSurvival)(context,player,round)
+		return evidence.medical
+	end
 	evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round)
 	evidence.layout=round("formationLayout",{},20)
 	if script:GetAttribute("FullRegression")then

@@ -178,6 +178,11 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 			local ok = pcall(function() candidate:ComputeAsync(start, destination) end)
 			if pending == token then pending = nil end
 			if not active() or sequence ~= token or not goal then candidate:Destroy(); return end
+			-- Computing can yield while the target moves or the actor is displaced.
+			-- Never install a route belonging to an obsolete destination/start.
+			if flatDistance(goal,destination)>6 or flatDistance(root.Position,start)>Tuning.closeDistance then
+				candidate:Destroy();blocked=true;return
+			end
 			if not ok or candidate.Status ~= Enum.PathStatus.Success then
 				candidate:Destroy()
 				blocked = true

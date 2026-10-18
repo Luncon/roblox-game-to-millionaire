@@ -2032,3 +2032,21 @@ identity were caught. The independent review's assembly-detour and stale-HUD
 findings were corrected. Four native bounded-frame GUI cases at 320×360,
 320×568, 640×360 and 1024×768 passed containment, readable text and non-overlap
 checks. These are engine layout fixtures, not physical phone/controller tests.
+
+A subsequent full run exposed arrival tolerance accepting a temporarily inverted
+front arc. Assembly and advance now require the actual center to lead, outer
+melee spacing and a separated support pair, in addition to positional tolerance.
+A new regression and its inverted-gate mutation caught this case. The corrected
+logic suite passes 191 cases. The all-module native suite passes 566, including
+the new heading/contact-lock adapter and shape gate checks.
+
+The broad run then passed formation, tactical and crowd checks but timed out
+once in the pre-existing medic-centroid scenario. The unchanged focused medic
+suite passed all ten cases. Diagnostic snapshots were added without extending
+its timing limits. Investigation separately reproduced an asynchronous path
+race: a superseded destination could install its delayed path and move the NPC
+in the old direction. Completed paths now reject materially stale destinations
+(six studs) and displaced starts (eighteen studs), preserving small target jitter
+and the existing path-compute throttle. A deferred native pathfinder fixture
+checks changed goals, retained small jitter and displaced-start rejection.
+This race is proven; its causal role in the earlier timeout is not established.
