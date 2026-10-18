@@ -20,7 +20,7 @@ Cross-server civilization matchmaking remains planned.
 
 ## What is saved
 
-The version-one profile stores these twenty scalar fields for each started civilization:
+The version-one profile stores these twenty required scalar fields and three optional recruitment counts per civilization:
 
 | Field | Meaning | Accepted values |
 | --- | --- | --- |
@@ -32,9 +32,9 @@ The version-one profile stores these twenty scalar fields for each started civil
 | `trainingLevel` | Training Yard purchase | 0 or 1; owning it requires settlement 5 |
 | `farmLevel` | Farm tier | 0–2; I requires settlement 7, II requires 12 |
 | `workersLevel` | Worker Camp tier | 0–2; I requires settlement 7, II requires 12; no higher than farm tier |
-| `armyCampLevel` | Army Camp tier | 0–2; I requires settlement 10/Barracks IV; II requires settlement 18/Barracks VI |
+| `armyCampLevel` | Barracks capacity purchase tier (legacy storage key) | 0–2; I requires settlement 10/Barracks IV; II requires settlement 18/Barracks VI |
 | `farmCoins` | Uncollected farm reserve | Integer 0–60, or 0–180 with Storehouse I; must be 0 without a farm |
-| `extraTroopClass` | Next camp reinforcement class | `warrior` or `ranged`; default `warrior` |
+| `extraTroopClass` | Legacy automatic reinforcement class | `warrior` or `ranged`; default `warrior` |
 | `blacksmithLevel` | Weapon-price workshop | 0 or 1; owning it requires settlement 13 |
 | `armorerLevel` | Armor-price workshop | 0 or 1; owning it requires settlement 13 |
 | `storehouseLevel` | Reserve-capacity building | 0 or 1; owning it requires settlement 16 and Farm I |
@@ -44,6 +44,17 @@ The version-one profile stores these twenty scalar fields for each started civil
 | `warCouncilLevel` | War Council purchase | 0 or 1; requires settlement 19 and Training Yard I |
 | `formationLevel` | Civilization formation training | 0 or 1; requires Sparta, Rome or Persia, settlement 20, shields, council, Army Camp II and hospital |
 | `selectedFormation` | Council selection | `none`, purchased `spartan-shieldwall` for Sparta, purchased `roman-shield-guard` for Rome, or purchased `persian-archer-screen` for Persia; missing defaults to `none` |
+
+| `recruitMelee` | Selected future melee count | Optional integer 0–4; selected fighter sum must fit Barracks capacity |
+| `recruitRanged` | Selected future ranged count | Optional integer 0–4; positive counts require Barracks IV |
+| `recruitMedic` | Selected future medic count | Optional integer 0–1; positive count requires Hospital I |
+
+All three recruitment fields must be absent together (legacy automatic lineup)
+or present together (custom lineup). Missing counts do not become zero: old
+purchases and `extraTroopClass` still determine the automatic composition.
+Explicit choices save per civilization. `armyCampLevel` remains the compatibility
+key for the two Barracks Capacity purchases; no owner repurchases those slots.
+Composition changes preserve current troop lives and pending replacement timers.
 
 Both building milestones retain `schemaVersion = 1` and the existing store/key.
 Only missing new fields receive defaults: building levels and reserve become

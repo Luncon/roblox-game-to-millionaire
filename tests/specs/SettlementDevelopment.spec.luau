@@ -10,7 +10,7 @@ return function()
 	end
 	test("canonical fields and building tuning are immutable and complete",function()
 		local expected={training={"trainingLevel",5,50,"Training Yard"},farm={"farmLevel",7,80,"Farm"},
-			workers={"workersLevel",7,60,"Worker Camp"},armyCamp={"armyCampLevel",10,120,"Army Camp"},
+			workers={"workersLevel",7,60,"Worker Camp"},armyCamp={"armyCampLevel",10,120,"Barracks Capacity"},
 			blacksmith={"blacksmithLevel",13,150,"Blacksmith"},armorer={"armorerLevel",13,150,"Armorer"},storehouse={"storehouseLevel",16,140,"Storehouse"}}
 		local fields={};for _,field in Policy.persistentFields do assert(not fields[field]);fields[field]=true end
 		for _,field in {"coins","level","weaponLevel","armorLevel","barracksLevel","trainingLevel","farmLevel","workersLevel","armyCampLevel","farmCoins","extraTroopClass","blacksmithLevel","armorerLevel","storehouseLevel"} do assert(fields[field]) end

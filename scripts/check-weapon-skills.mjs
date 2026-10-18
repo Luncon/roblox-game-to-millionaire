@@ -10,7 +10,7 @@ const modules = [
   'src/shared/UpgradeTracks.luau', 'src/shared/Civilizations.luau',
   'src/shared/WarriorConfig.luau', 'src/shared/RangedConfig.luau',
   'src/shared/WeaponSkillConfig.luau', 'src/shared/WeaponSkillPose.luau', 'src/shared/WeaponSkillAnimation.luau', 'src/shared/SpearDashTrail.luau', 'src/shared/WeaponSkillPlayback.luau',
-  'src/shared/FormationConfig.luau', 'src/shared/SettlementDevelopment.luau', 'src/server/ProfileData.luau',
+  'src/shared/FormationConfig.luau', 'src/shared/ArmyRecruitment.luau', 'src/shared/SettlementDevelopment.luau', 'src/server/ProfileData.luau',
   'src/shared/TrainingCampConfig.luau', 'src/shared/TacticalCombatConfig.luau', 'src/server/CombatTactics.luau', 'src/shared/MedicalConfig.luau', 'src/server/MedicalService.luau', 'src/server/MedicalRules.luau', 'src/server/YardRecovery.luau', 'src/server/MedicPlanner.luau', 'src/server/MedicalRetreat.luau',
   'src/server/Economy.luau', 'src/server/CombatRules.luau', 'src/server/ShieldCombat.luau', 'src/server/WeaponSkillService.luau', 'src/server/CrowdMovement.luau', 'src/server/TroopFootwork.luau', 'src/server/ArmyRest.luau', 'src/server/ArmyFormation.luau',
   'src/server/ProfileService.luau', 'src/server/CombatService.luau', 'tests/runtime/FakeProfileStore.luau',
@@ -23,6 +23,7 @@ const modules = [
   'tests/specs/RomanFormation.spec.luau',
   'tests/specs/PersianFormation.spec.luau',
   'tests/specs/TestCurrency.spec.luau',
+  'tests/specs/ArmyRecruitment.spec.luau',
 ];
 const identifiers = new Map(modules.map(file => [file, file.replace(/\.luau$/, '').replaceAll('/', '.') ]));
 let source = `local primitives=(function()\n${fs.readFileSync('tests/cli/Primitives.luau', 'utf8')}\nend)()\n`;

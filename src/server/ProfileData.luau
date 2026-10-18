@@ -4,11 +4,13 @@ local Civilizations = require(game:GetService("ReplicatedStorage").Shared.Civili
 local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks)
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local Formation=require(game.ReplicatedStorage.Shared.FormationConfig)
+local Recruitment=require(game.ReplicatedStorage.Shared.ArmyRecruitment)
 local ProfileData = {}
 
 export type State = { coins: number, level: number, weaponLevel: number, armorLevel: number, barracksLevel: number,
 	trainingLevel: number, farmLevel: number, workersLevel: number, armyCampLevel: number, farmCoins: number, extraTroopClass: string,
-	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number, hospitalLevel: number, shieldLevel: number, warCouncilLevel: number, formationLevel: number, selectedFormation: string }
+	blacksmithLevel: number, armorerLevel: number, storehouseLevel: number, skillLevel: number, hospitalLevel: number, shieldLevel: number, warCouncilLevel: number, formationLevel: number, selectedFormation: string,
+ recruitMelee: number?, recruitRanged: number?, recruitMedic: number? }
 export type Profile = {
 	schemaVersion: number,
 	civilizations: { [string]: State },
@@ -76,6 +78,11 @@ function ProfileData.copyState(value: any,civilizationId: string?): State?
 	local skill=if value.skillLevel==nil then 0 else value.skillLevel
 	if not integer(skill,0,5) or (skill>0 and (copied.trainingLevel~=1 or copied.weaponLevel<skill*10)) then return nil end
 	copied.skillLevel=skill
+ if value.recruitMelee~=nil or value.recruitRanged~=nil or value.recruitMedic~=nil then
+  local selection={melee=value.recruitMelee,ranged=value.recruitRanged,medic=value.recruitMedic}
+  if not Recruitment.valid(copied,selection)then return nil end
+  copied.recruitMelee,copied.recruitRanged,copied.recruitMedic=selection.melee,selection.ranged,selection.medic
+ end
 	-- Legacy settlement 10+ does not retroactively require the new checkpoint.
 	-- Omit revisions, live clocks, rate limits, plot IDs and troop instances.
 	return copied

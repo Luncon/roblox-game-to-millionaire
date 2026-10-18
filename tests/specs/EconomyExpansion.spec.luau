@@ -138,7 +138,7 @@ return function()
 		assert(second:load(101).ok)
 		local actual=second:get(101,"sparta");local fields=0
 		for _,field in Development.persistentFields do fields+=1;assert(actual[field]==Data.copyState(saved)[field],"Save lost "..field) end
-		assert(fields==20 and second:get(101,"britain").blacksmithLevel==0 and second:get(101,"britain").farmCoins==0)
+		assert(fields==23 and second:get(101,"britain").blacksmithLevel==0 and second:get(101,"britain").farmCoins==0)
 		local economy=fixture(actual);assert(economy:get(101).farmCoins==177)
 		assert(second:release(101).ok)
 	end)

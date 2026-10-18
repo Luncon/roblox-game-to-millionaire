@@ -9,7 +9,8 @@ Development.fields=table.freeze({settlement="level",weapon="weaponLevel",armor="
 	blacksmith="blacksmithLevel",armorer="armorerLevel",storehouse="storehouseLevel",skill="skillLevel",hospital="hospitalLevel",shield="shieldLevel",warCouncil="warCouncilLevel",formation="formationLevel"})
 Development.persistentFields=table.freeze({"coins","level","weaponLevel","armorLevel","barracksLevel",
 	"trainingLevel","farmLevel","workersLevel","armyCampLevel","farmCoins","extraTroopClass",
-	"blacksmithLevel","armorerLevel","storehouseLevel","skillLevel","hospitalLevel","shieldLevel","warCouncilLevel","formationLevel","selectedFormation"})
+	"blacksmithLevel","armorerLevel","storehouseLevel","skillLevel","hospitalLevel","shieldLevel","warCouncilLevel","formationLevel","selectedFormation",
+ "recruitMelee","recruitRanged","recruitMedic"})
 local buildings={
  shield={field="shieldLevel",title="Shield Training",tiers={{unlock=Formation.shieldUnlock,cost=Formation.shieldCost}}},
  warCouncil={field="warCouncilLevel",title="War Council",tiers={{unlock=Formation.councilUnlock,cost=Formation.councilCost}}},
@@ -18,7 +19,7 @@ local buildings={
 	training={field="trainingLevel",title="Training Yard",tiers={{unlock=5,cost=50}}},
 	farm={field="farmLevel",title="Farm",tiers={{unlock=7,cost=80},{unlock=12,cost=180}}},
 	workers={field="workersLevel",title="Worker Camp",tiers={{unlock=7,cost=60},{unlock=12,cost=140}}},
-	armyCamp={field="armyCampLevel",title="Army Camp",tiers={{unlock=10,cost=120},{unlock=Formation.campUnlock,cost=Formation.campCost}}},
+	armyCamp={field="armyCampLevel",title="Barracks Capacity",tiers={{unlock=10,cost=120},{unlock=Formation.campUnlock,cost=Formation.campCost}}},
 	blacksmith={field="blacksmithLevel",title="Blacksmith",tiers={{unlock=13,cost=150}}},
 	armorer={field="armorerLevel",title="Armorer",tiers={{unlock=13,cost=150}}},
 	storehouse={field="storehouseLevel",title="Storehouse",tiers={{unlock=16,cost=140}}},
@@ -78,7 +79,7 @@ function Development.offer(state,track: string,civilizationId: string?)
  if track=="formation" then
   if state.warCouncilLevel~=1 then table.insert(missing,"War Council I") end
   if state.shieldLevel~=1 then table.insert(missing,"Shield Training I") end
-  if state.armyCampLevel~=2 then table.insert(missing,"Army Camp II") end
+  if state.armyCampLevel~=2 then table.insert(missing,"Barracks Capacity II") end
   if state.hospitalLevel~=1 then table.insert(missing,"Hospital I") end
  end
 	if track=="hospital" and state.trainingLevel~=1 then table.insert(missing,"Training Yard I") end

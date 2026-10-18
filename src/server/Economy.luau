@@ -4,6 +4,7 @@ local Tracks = require(game:GetService("ReplicatedStorage").Shared.UpgradeTracks
 local Development = require(game:GetService("ReplicatedStorage").Shared.SettlementDevelopment)
 local ProfileData = require(script.Parent.ProfileData)
 local Formation = require(game.ReplicatedStorage.Shared.FormationConfig)
+local Recruitment=require(game.ReplicatedStorage.Shared.ArmyRecruitment)
 local Economy = {}
 local BURST = 20
 local REFILL = 15
@@ -167,6 +168,18 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, 
 		account.revision=nextRevision(playerId)
 		return {ok=true,amount=amount,state=self:get(playerId)}
 	end
+	function economy:selectComposition(playerId: number,selection: unknown)
+  local account=accounts[playerId]
+  if not account then return rejected(playerId,'not_claimed')end
+  if not self:canMutate(playerId)then return rejected(playerId,'profile_unavailable')end
+  if account.level<2 or not Recruitment.valid(account,selection)then return rejected(playerId,'invalid_composition')end
+  local time=now()
+  if account.purchasedAt.troop and time-account.purchasedAt.troop<.4 then return rejected(playerId,'rate_limited')end
+  account.purchasedAt.troop=time
+  account.recruitMelee,account.recruitRanged,account.recruitMedic=selection.melee,selection.ranged,selection.medic
+  account.revision=nextRevision(playerId)
+  return {ok=true,state=self:get(playerId)}
+ end
 	function economy:selectTroop(playerId: number,kind: unknown)
 		local account=accounts[playerId]
 		if not account then return rejected(playerId,"not_claimed") end
@@ -178,6 +191,8 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, 
 		if account.purchasedAt.troop and time-account.purchasedAt.troop<.4 then return rejected(playerId,"rate_limited") end
 		account.purchasedAt.troop=time
 		account.extraTroopClass=kind
+  -- Legacy internal callers return to the legacy automatic composition.
+  account.recruitMelee,account.recruitRanged,account.recruitMedic=nil,nil,nil
 		account.revision=nextRevision(playerId)
 		return {ok=true,state=self:get(playerId)}
 	end

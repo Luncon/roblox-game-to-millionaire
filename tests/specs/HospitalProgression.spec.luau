@@ -8,7 +8,7 @@ return function()
  local function state() local s=Data.defaultState();s.level=10;s.trainingLevel=1;s.coins=1000;return s end
  test("hospital is a sixteen-field missing-only migration with prerequisite validation",function()
   local s=state();s.hospitalLevel=nil;local copy=Data.copyState(s);assert(copy.hospitalLevel==0)
-  assert(#D.persistentFields==20)
+  assert(#D.persistentFields==23)
   for _,bad in {false,"1",-1,.5,2,math.huge,0/0} do s.hospitalLevel=bad;assert(Data.copyState(s)==nil) end
   s=state();s.hospitalLevel=1;assert(Data.copyState(s));s.trainingLevel=0;assert(not Data.copyState(s))
   s=state();s.level=9;s.hospitalLevel=1;assert(not Data.copyState(s))
