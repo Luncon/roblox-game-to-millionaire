@@ -200,3 +200,7 @@ version-one keys. Malformed values and cross-field/faction inconsistencies fail
 loading rather than resetting progress. Shield charges and march state are
 transient and never saved. Switching a player character away from Sparta and
 back during the same life preserves its spent shield charges.
+
+Persian deployment phases, local guard bounds, shield rack trips and replenished
+charges are transient. All twenty saved scalars and version-one keys stay
+unchanged; a recalled rack pickup restores only the current NPC life's charges.

@@ -53,7 +53,12 @@ local ok,result=pcall(function()
 		return evidence.medical
 	end
 	stage("Formation runtime")
-	evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round,script:GetAttribute("RomanOnly"))
+	if not script:GetAttribute("PersianOnly") and not script:GetAttribute("ResupplyOnly")then
+		evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round,script:GetAttribute("RomanOnly"))
+	end
+	if not script:GetAttribute("RomanOnly")then
+		evidence.persian=require(game.ServerStorage.RuntimeTests.PersianScreen)(context,player,round,script:GetAttribute("ResupplyOnly"))
+	end
 	evidence.layout=round("formationLayout",{},20)
 	if script:GetAttribute("FullRegression")then
 		stage("Existing tactical combat and movement regressions")
@@ -65,7 +70,7 @@ local ok,result=pcall(function()
 		stage("Existing medic survival regressions")
 		evidence.medical=require(game.ServerStorage.RuntimeTests.MedicalSurvival)(context,player,round)
 	end
-	return evidence.runtime
+	return evidence.persian or evidence.runtime
 end)
 stage(if ok then "Complete" else "Failed")
 local encoded=game.HttpService:JSONEncode({ok=ok,units=units,evidence=evidence,

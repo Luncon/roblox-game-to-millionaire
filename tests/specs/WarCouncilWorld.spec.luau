@@ -30,6 +30,23 @@ return function()
     assert(Topography.isReserved(center,0,true) and math.abs(Topography.sampleHeight(center.X,center.Z)-.15)<.001)
    end end
   end)
+  test('unlocked shield racks have clear supported pickups for every shield faction and rotated plot',function()
+   for id=1,8 do for _,civ in require(game.ReplicatedStorage.Shared.Civilizations)do
+    if not require(game.ReplicatedStorage.Shared.FormationConfig).forCivilization(civ.id)then continue end
+    world:setOwner(id,civ,100+id,'SupplyTester',50)
+    world:syncControls(id,{level=50,weaponLevel=20,armorLevel=15,barracksLevel=6,trainingLevel=1,
+     armyCampLevel=2,hospitalLevel=1,armorerLevel=1,warCouncilLevel=1,shieldLevel=1,formationLevel=1})
+    local plot=world.model.Plots['Plot'..id];local rack=assert(plot.Infrastructure:FindFirstChild('ShieldRack'))
+    local filter=OverlapParams.new();filter.FilterType=Enum.RaycastFilterType.Include
+    filter.FilterDescendantsInstances={plot.Settlement,plot.Infrastructure};filter.RespectCanCollide=true
+    for _,slot in {'warrior','camp','reinforcement'}do
+     local point=assert(require(Game.ShieldRack).goal(rack,slot));local localPoint=plot.Foundation.CFrame:PointToObjectSpace(point)
+     assert(Topography.isReserved(point,0,true) and math.abs(Topography.sampleHeight(point.X,point.Z)-.15)<.001)
+     assert(math.abs(localPoint.Z-(Sites.shieldRack.Z+5))<.01)
+     assert(#workspace:GetPartBoundsInBox(CFrame.new(point),Vector3.new(2,5,2),filter)==0,'Shield pickup is blocked')
+    end
+   end end
+  end)
   test('council and formation pads are physical eligible purchases beside the room',function()
    local civ=require(game.ReplicatedStorage.Shared.Civilizations)[1]
    world:setOwner(1,civ,101,'CouncilTester',20)

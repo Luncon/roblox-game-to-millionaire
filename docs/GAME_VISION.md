@@ -143,3 +143,9 @@ medic from camp, assembles at the road and
 advances together at six studs/second. Center arrival or a frontline casualty
 restores ordinary Advance; explicit Hold stays stationary. See
 [army controls](ARMY.md) and [verified boundaries](PLAYTEST.md).
+
+Persian Archer Screen extends the shared system with a straight spear/shield
+line, an archer and a medic. It deploys for clear bow fire and retains a bounded
+defensive position rather than releasing at center. Purchased shield training
+also adds a rack near camp: recalled melee with spent shields physically
+replenish before returning to training. See [army details](ARMY.md).

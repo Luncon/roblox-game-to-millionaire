@@ -142,19 +142,19 @@ boundaries in docs/PLAYTEST.md; fake fixtures do not establish native gameplay.
 
 Army Camp II (settlement 18, 250 coins, Barracks VI/Camp I) adds a fixed fifth
 melee slot for all civilizations; War Council I (19, 200, Training I) adds an
-accessible map room beside camp. Sparta and Rome buy Shield Training I (15, armor
-15/Armorer I, 150) and their own Shieldwall/Shield Guard formation (20, 250,
+accessible map room beside camp. Sparta, Rome and Persia buy Shield Training I (15, armor
+15/Armorer I, 150) and their own Shieldwall/Shield Guard/Archer Screen formation (20, 250,
 council/shields/camp II/hospital).
 Save shieldLevel, warCouncilLevel, formationLevel and selectedFormation with
 missing-only defaults (zero/none); retain twenty-field version-one compatibility.
 The council guards living owner, write authority, faction/unlock and map distance.
 March Formation requires all five current correct troop lives in owned camp;
 assemble at the road center, then march at six studs/second in the faction
-layout: Spartan convex front/support pair, or compact Roman guard with outward
-flanks. Hold attacks/heals, Advance abandons, Regroup cancels. Final center
-arrival or a captured frontline casualty releases ordinary Advance unless
-explicitly held. Support losses remove only that captured life; replacements
-never silently join. Stationary formation skills use spear thrust for Sparta
+layout: Spartan convex front/support pair, compact Roman guard with outward
+flanks, or straight Persian archer screen. Hold attacks/heals, Advance abandons,
+Regroup cancels. Sparta/Rome release at final center arrival. A captured frontline
+casualty releases ordinary Advance unless explicitly held. Support losses remove only that captured life; replacements
+never silently join. Stationary formation skills use spear thrust for Sparta/Persia
 and Double Slash for Rome; formed ranged troops keep ordinary attacks.
 Shields share player/melee visuals and block two validated frontal hits per life.
 Rebuilds/upgrades/same-life civilization switches never refill charges. No bonus
@@ -162,3 +162,13 @@ stats, client authority, persisted charges or persisted march phases.
 The normal Studio build has a +1,000 TEST COINS pad beside the earning pad.
 Owner/life/proximity/write checks and a half-second grant cadence apply; both
 pad creation and the fixed-amount economy grant reject non-Studio environments.
+
+Persian Archer Screen uses a straight front with paired rear support. It latches
+a deployed screen at a clear captured-archer shot within 40 studs or at its final
+destination; melee defend within six studs of their slots. Existing Sparta/Rome
+center release stays unchanged. Purchased shield training builds a rack north of
+camp; recalled living owned melee with zero charges physically replenish there
+before normal camp return. Partial shields and player shields are not refilled.
+Preserve weapon/grip identity, health, cooldowns and timers; pickups require
+Regroup, current ownership/civilization, write authority and assigned proximity.
+No new persistent fields or charge-refill path through ordinary equipment sync.

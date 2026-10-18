@@ -60,5 +60,20 @@ return function()
   end
   assert(target('ranged','rome').rig:GetAttribute('ShieldCharges')==0)
  end)
+ test('explicit rack restock replaces only a fully spent melee shield once',function()
+  local t=target('warrior','persia');assert(Shield.block(t,Vector3.new(0,0,-4)));assert(Shield.block(t,Vector3.new(0,0,-4)))
+  assert(Shield.restock(t.rig,'persia','warrior',{shieldLevel=1}) and t.rig:GetAttribute('ShieldCharges')==2)
+  assert(not Shield.restock(t.rig,'persia','warrior',{shieldLevel=1}))
+  assert(Shield.block(t,Vector3.new(0,0,-4)))
+  assert(not Shield.restock(t.rig,'persia','warrior',{shieldLevel=1}) and t.rig:GetAttribute('ShieldCharges')==1)
+ end)
+ test('rack restock excludes players unsupported factions and untrained lives',function()
+  for _,kind in {'player','ranged','medic'}do local t=target(kind);t.rig:SetAttribute('ShieldCharges',0);t.rig:SetAttribute('SpartanShieldRemaining',0)
+   assert(not Shield.restock(t.rig,'sparta',kind,{shieldLevel=1}))
+  end
+  local t=target();t.rig:SetAttribute('ShieldCharges',0);t.rig:SetAttribute('SpartanShieldRemaining',0)
+  assert(not Shield.restock(t.rig,'britain','warrior',{shieldLevel=1}))
+  assert(not Shield.restock(t.rig,'sparta','warrior',{shieldLevel=0}))
+ end)
  return n
 end

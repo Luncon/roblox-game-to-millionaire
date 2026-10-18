@@ -8,6 +8,7 @@ local Districts = require(script.Parent.SettlementDistricts)
 local Tenders = require(script.Parent.FarmTenders)
 local Topography = require(script.Parent.Topography)
 local CouncilRoom=require(script.Parent.WarCouncilRoom)
+local ShieldRack=require(script.Parent.ShieldRack)
 local Infrastructure = {}
 
 local function part(parent, name, size, frame, tint, material)
@@ -132,7 +133,7 @@ function Infrastructure.sync(plot,frame,civ,state)
 	if not civ or not state then folder:ClearAllChildren();folder:SetAttribute("BuildKey",nil);return end
 	local key=string.format("%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d",civ.id,if state.level>=2 then 1 else 0,
 		state.trainingLevel or 0,state.farmLevel or 0,state.workersLevel or 0,state.armyCampLevel or 0,
-		state.blacksmithLevel or 0,state.armorerLevel or 0,state.storehouseLevel or 0,state.hospitalLevel or 0,state.warCouncilLevel or 0)
+		state.blacksmithLevel or 0,state.armorerLevel or 0,state.storehouseLevel or 0,state.hospitalLevel or 0,state.warCouncilLevel or 0)..":"..tostring(state.shieldLevel or 0)
 	if folder:GetAttribute("BuildKey")~=key or folder:GetAttribute("BuildFrame")~=frame then
 		folder:ClearAllChildren()
 		if state.level>=2 then
@@ -142,6 +143,7 @@ function Infrastructure.sync(plot,frame,civ,state)
 		if (state.trainingLevel or 0)>0 then
 			trainingYard(folder,frame,civ)
 		end
+		if ShieldRack.unlocked(civ,state) then ShieldRack.build(folder,frame,civ) end
 		if state.warCouncilLevel==1 then CouncilRoom.build(folder,frame,civ) end
 		if state.hospitalLevel==1 then
    local groundY=exteriorY(plot,frame,Sites.hospital)

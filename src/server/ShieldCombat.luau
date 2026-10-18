@@ -13,6 +13,15 @@ function Shield.refresh(rig,civilizationId,kind,state)
  return eligible==true
 end
 
+-- Only the server's validated Regroup rack pickup calls this explicit refill.
+function Shield.restock(rig,civilizationId,kind,state)
+ if kind~='warrior' or not Config.forCivilization(civilizationId) or not state or state.shieldLevel~=1
+  or rig:GetAttribute('ShieldCharges')~=0 or rig:GetAttribute('SpartanShieldRemaining')~=0 then return false end
+ rig:SetAttribute('SpartanShieldRemaining',Config.shieldHits)
+ rig:SetAttribute('ShieldCharges',Config.shieldHits)
+ return true
+end
+
 -- Called only after hostility, life, range, sight and cadence validation.
 function Shield.block(target,source)
  local charges=target.rig:GetAttribute('ShieldCharges') or 0

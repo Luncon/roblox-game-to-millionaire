@@ -331,7 +331,8 @@ melee troops. Each of two accepted frontal contacts in a 120-degree arc blocks
 damage and spends a charge; the second removes the visual. Side/rear attacks
 bypass it. Ordinary and skill contacts share this rule. Rejected contacts and
 ForceFields preserve charges. Equipment rebuilds, upgrades and same-life
-civilization switches cannot refill it; fresh lives receive two charges.
+civilization switches cannot refill it; fresh lives receive two charges. Spent
+NPC shields can be explicitly replenished by a recalled trip to the shield rack.
 
 To deploy Spartan Shieldwall, buy its unlocks and use the owned War Council map
 table (click, E/touch interaction or controller prompt) to select it. Use Regroup
@@ -396,6 +397,23 @@ skills are stationary thrusts. Advance/Regroup cancel the screen; Hold stays
 stationary; frontline loss releases Advance unless explicitly held. Support
 loss/replacement and authority rules remain shared. Sparta and Rome continue
 to release Advance at the center.
+
+### Shield supplies on recall
+
+Purchased shield training in Sparta, Rome or Persia adds a rack with three inert
+shield displays north of the training camp, at local (-148, 0, -36). During
+Regroup, shield melee with zero remaining charges first walk to their assigned
+pickup in front of that rack, regain one two-hit shield, then return to the camp.
+Three separated pickup points limit crowding. A one-charge shield stays intact;
+ranged troops and medics return normally. Players do not replenish at the rack.
+
+Pickup requires the same living owned melee life, current civilization,
+purchased shields, writable progress, Regroup and proximity to its assigned
+point. Advance/Hold cancel the trip and authority loss stops movement. No coins
+are spent. Shield-only visual restoration preserves the weapon, grips, health,
+skill cooldown and respawn deadlines. Training-yard healing continues normally
+after camp arrival. Charges and pickup travel remain transient, and ordinary
+equipment rebuilds still never replenish a shield.
 
 ### Testing coins in the normal Studio build
 

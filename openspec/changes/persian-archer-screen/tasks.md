@@ -10,7 +10,7 @@
 
 ## 3. Shield rack and recall
 
-- [ ] 3.1 Build unlocked racks with immutable inert shield displays and clear approaches, then implement guarded spent-shield pickup before normal Regroup; verify all supported factions/rotated sites, zero-only grants, native same-life walk/pickup/return and command interruption, preserving health/cooldowns/deadlines, and document resupply.
+- [x] 3.1 Build unlocked racks with immutable inert shield displays and clear approaches, then implement guarded spent-shield pickup before normal Regroup; verify all supported factions/rotated sites, zero-only grants, native same-life walk/pickup/return and command interruption, preserving health/cooldowns/deadlines, and document resupply.
 
 ## 4. Integration
 

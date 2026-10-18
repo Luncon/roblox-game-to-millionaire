@@ -22,6 +22,7 @@ local MedicPlanner=require(script.Parent.MedicPlanner)
 local MedicalRetreat=require(script.Parent.MedicalRetreat)
 local MedicalRoute=require(script.Parent.MedicalRoute)
 local Topography=require(script.Parent.Topography)
+local ShieldRack=require(script.Parent.ShieldRack)
 local Formation=require(script.Parent.ArmyFormation)
 local FormationConfig=require(Shared.FormationConfig)
 local WarriorService = {}
@@ -115,6 +116,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		if slot.destroyConnection then slot.destroyConnection:Disconnect(); slot.destroyConnection = nil end
 		if slot.navigator then slot.navigator:destroy(); slot.navigator = nil end
 		slot.target = nil
+		slot.resupplyGoal=nil
 		slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 		slot.medicalRecovery=nil
 		if slot.rig then
@@ -347,6 +349,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 			owner.order=order
 			for _, slot in owner.slots do
 				slot.target=nil
+				slot.resupplyGoal=nil
 				slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
 				slot.medicalRecovery=nil
 				if slot.navigator then slot.navigator:stop() end
@@ -432,11 +435,29 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
     medicine:recover(rig,frame)
     if not combat:canAct(rig) then
      medicine:cancel(rig);slot.navigator:stop()
+     slot.resupplyGoal=nil
      slot.medicalRecovery=nil
      rig:SetAttribute("MedicalSupportActive",false)
      continue
     end
 				if owner.order=="regroup" then
+					local state=economy:get(ownerId)
+					if ShieldRack.needs(rig,state)then
+						local infrastructure=world.model.Plots["Plot"..owner.plotId]:FindFirstChild("Infrastructure")
+						local rack=infrastructure and infrastructure:FindFirstChild("ShieldRack")
+						local goal=ShieldRack.goal(rack,slot.id)
+						if goal then
+							if not ShieldRack.collect(rig,rack,slot.id,owner.order,state,economy:canMutate(ownerId))then
+								attacker.humanoid.WalkSpeed=Config.walkSpeed
+								if slot.resupplyGoal~=goal then slot.navigator:setGoal(goal);slot.resupplyGoal=goal end
+								slot.navigator:step(now);rig:SetAttribute("WarriorState","Collecting shield")
+								rig:SetAttribute("RestPhase","resupplying");continue
+							end
+							slot.rest,slot.restGoal,slot.restFrame,slot.restDirect=nil,nil,nil,nil
+							slot.navigator:stop()
+						end
+					end
+					slot.resupplyGoal=nil
 					slot.rest=slot.rest or ArmyRest.new(slot.id)
 					local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
 					local position=frame:PointToObjectSpace(attacker.position)

@@ -216,8 +216,9 @@ It adds a dedicated melee slot while preserving the existing camp class choice.
 War Council I costs 200 at settlement 19 after Training Yard I, for every
 civilization. Its accessible map room sits beside the training camp.
 
-Sparta and Rome offer Shield Training I for 150 at settlement/armor 15 after
-Armorer I. Spartan Shieldwall or Roman Shield Guard costs 250 at settlement 20
+Sparta, Rome and Persia offer Shield Training I for 150 at settlement/armor 15 after
+Armorer I. Each faction formation (Spartan Shieldwall, Roman Shield Guard or
+Persian Archer Screen) costs 250 at settlement 20
 after that shield training,
 War Council I, Army Camp II and Hospital I. Purchases use physical pads and
 receive no workshop discount. The council table selects a purchased formation;
@@ -230,3 +231,7 @@ a fixed 1,000-coin grant, at most once per half second and within the normal
 balance cap. It affects the active civilization and uses normal StudioDevelopment
 saving; the separate temporary-coin test build still uses fake storage. Testing
 pads and grants are disabled outside Studio.
+
+Purchased shield training also provides a rack beside camp. Recalled melee can
+replace a fully spent shield there without a coin charge; partial shields are
+preserved. This restores transient charges only and adds no saved field.

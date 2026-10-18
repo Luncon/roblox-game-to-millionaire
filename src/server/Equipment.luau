@@ -44,6 +44,20 @@ local function mountVisual(parent: Instance,base: BasePart,visual: Model,offset:
 	weld.Name,weld.Part0,weld.Part1,weld.Parent="EquipmentVisualGrip",base,handle,handle
 end
 
+-- Restore only the missing shield; retain weapons, health and pose/grip baselines.
+function Equipment.refreshShield(character: Model): boolean
+ local role=character:GetAttribute("EquipmentRole")
+ if (character:GetAttribute("ShieldCharges") or 0)<=0 or (role~="player" and role~="warrior")then return false end
+ for _,item in character:GetDescendants()do if item:GetAttribute("CombatShield")==true then return true end end
+ local armor=character:FindFirstChild("CivilizationArmor")
+ local arm=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
+ local visual=if armor and arm and arm:IsA("BasePart")then Visuals.clone("spartan-shield") else nil
+ if not visual then return false end
+ visual:SetAttribute("CombatShield",true)
+ mountVisual(armor,arm :: BasePart,visual,CFrame.new(0,0,-.7)*CFrame.Angles(0,math.pi,0),.7)
+ return true
+end
+
 local function removeOwned(parent: Instance?)
 	if not parent then return end
 	for _, child in parent:GetChildren() do
@@ -274,14 +288,7 @@ local function applyCharacter(character: Model?, backpack: Instance?, civilizati
 		tool.Parent = backpack or character
 		humanoid:EquipTool(tool)
 	end
-	if (character:GetAttribute("ShieldCharges") or 0)>0 and (role=="player" or role=="warrior") then
-		local leftArm=character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm")
-		local shield=if leftArm and leftArm:IsA("BasePart") then Visuals.clone("spartan-shield") else nil
-		if shield then
-			shield:SetAttribute("CombatShield",true)
-			mountVisual(armor,leftArm :: BasePart,shield,CFrame.new(0,0,-.7)*CFrame.Angles(0,math.pi,0),.7)
-		end
-	end
+	Equipment.refreshShield(character)
 	return true
 end
 
