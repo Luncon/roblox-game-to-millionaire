@@ -48,7 +48,17 @@ function F.goals(group,ground)
  return result
 end
 
-function F.step(group,actors,dt,allows,ground)
+-- canShoot supplies the server's ordinary hostility/life/arena/visibility checks.
+function F.firingOpportunity(group,archer,actors,canShoot)
+ local member=group.members.ranged
+ if not group.definition.screenRange or not member or not archer or archer.rig~=member.rig then return false end
+ for _,target in actors do
+  if (target.position-archer.position).Magnitude<=group.definition.screenRange and canShoot(archer,target) then return true end
+ end
+ return false
+end
+
+function F.step(group,actors,dt,allows,ground,hasShot)
  for id,member in group.members do
   local a=actors[id]
   if not a or not a.alive or a.rig~=member.rig or a.humanoid~=member.humanoid then
@@ -73,6 +83,10 @@ function F.step(group,actors,dt,allows,ground)
   and (front-actors.reinforcement.position):Dot(group.heading)>=definition.frontLeadMinimum
   and (front-actors.camp.position):Dot(right)>=3
   and (actors.reinforcement.position-front):Dot(right)>=3
+ if definition.frontLeadMaximum then
+  shape=shape and math.abs((front-actors.camp.position):Dot(group.heading))<=definition.frontLeadMaximum
+   and math.abs((front-actors.reinforcement.position):Dot(group.heading))<=definition.frontLeadMaximum
+ end
  for _,id in {'ranged','medic'}do
   if group.members[id] then shape=shape and (front-actors[id].position):Dot(group.heading)>=definition.supportDepthMinimum end
  end
@@ -85,7 +99,8 @@ function F.step(group,actors,dt,allows,ground)
   if allArrived then group.phase='marching' end
  elseif group.phase=='marching' and coherent then
   local remaining=flat(group.destination-group.anchor)
-  if remaining<=.25 then group.phase='deployed' else
+  if definition.screenRange and hasShot then group.phase='screening'
+  elseif remaining<=.25 then group.phase=if definition.screenRange then 'screening' else 'deployed' else
    local previous=group.anchor
    group.anchor=ground(previous+group.heading*math.min(remaining,Config.pace*math.clamp(dt,0,.25)))
    local nextGoals=F.goals(group,ground);local clear=true

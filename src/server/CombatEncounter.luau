@@ -100,7 +100,10 @@ function CombatEncounter.new(world,combat)
 		return true
 	end
 	local function free(point,attacker,target,actors,escaping): boolean
-  local support=records[attacker.rig] and records[attacker.rig].support
+  local record=records[attacker.rig]
+  local support=record and record.support
+  local guard=record and record.guard
+  if guard and Tactics.flatDistance(point,guard.center)>guard.radius then return false end
   if support and not support.allows(point) then return false end
 		if not Rules.containsArena(arena,point) then return false end
 		if Tactics.flatDistance(point,attacker.position)<=Tuning.closeDistance and not clearRoute(point,attacker,escaping) then return false end
@@ -140,6 +143,15 @@ function CombatEncounter.new(world,combat)
 			local distance=Tactics.flatDistance(point,attacker.position)
 			if distance<score and attackPoint(point) then chosen,score=point,distance end
 		end
+		-- A defense boundary can intersect attack reach between the normal
+		-- four-stud approach slots. Use that reachable edge before waiting.
+		if not chosen and record.guard then
+			local delta=target.position-record.guard.center;delta=Vector3.new(delta.X,0,delta.Z)
+			if delta.Magnitude>.01 then
+				local point=ground(record.guard.center+delta.Unit*math.min(delta.Magnitude,record.guard.radius-.05),attacker)
+				if attackPoint(point)then chosen=point end
+			end
+		end
 		local waiting=false
 		if not chosen then
 			waiting=true
@@ -166,6 +178,7 @@ function CombatEncounter.new(world,combat)
 		if not record then record={rig=rig,nextAttackAt=0};records[rig]=record end
 		record.lastNow=now
   record.support=options.support
+  record.guard=options.guard
   local function supportMovement()
    local support,plan=record.support,record.plan
    if not plan then return end
@@ -181,6 +194,20 @@ function CombatEncounter.new(world,combat)
   end
   local function finishPlan()
    supportMovement()
+   local guard,plan=record.guard,record.plan
+   if guard and plan and options.order~="hold" and permitted(rig) then
+    local supportAllows=plan.allowsDetour
+    plan.allowsDetour=function(point)
+     local distance=Tactics.flatDistance(point,guard.center)
+     local displaced=Tactics.flatDistance(attacker.position,guard.center)
+     return (distance<=guard.radius or (displaced>guard.radius and distance<displaced)) and (not supportAllows or supportAllows(point))
+    end
+    if plan.goal and not plan.allowsDetour(plan.goal) then plan.goal=nil;record.reservation=nil end
+    if Tactics.flatDistance(attacker.position,guard.center)>guard.radius+.25 then
+     record.action,record.reservation=nil,nil
+     plan.goal,plan.state,plan.direct=guard.center,"Returning to screen",false
+    end
+   end
    return pose(record,now,false)
   end
 		if record.order~=options.order then self:cancel(rig);record.order=options.order end
@@ -207,7 +234,14 @@ function CombatEncounter.new(world,combat)
 			if record.action and now<record.action.startedAt+duration(record.action.kind) then
 				target=combat:actor(record.action.target)
 			else
-				target=Tactics.chooseTarget(attacker,actors,record.target,options.order,occupancy)
+				local candidates=actors
+				if record.guard then
+					candidates={}
+					for _,other in actors do
+						if Tactics.flatDistance(other.position,record.guard.center)<=record.guard.radius+Warrior.attackRange then table.insert(candidates,other)end
+					end
+				end
+				target=Tactics.chooseTarget(attacker,candidates,record.target,options.order,occupancy)
 			end
 		end
 		if record.target~=(if target then target.rig else nil) then record.reservation=nil end
@@ -267,7 +301,7 @@ function CombatEncounter.new(world,combat)
 			record.reservation=nil
 			plan.goal=if options.order=="hold" then nil else options.homeGoal
 			plan.state=if options.order=="hold" then "Holding" elseif Rules.containsArena(arena,attacker.position) then "Guarding" else "Marching"
-			if options.order~="hold" and options.homeGoal and Rules.containsArena(arena,attacker.position)
+			if not record.guard and options.order~="hold" and options.homeGoal and Rules.containsArena(arena,attacker.position)
 				and Tactics.flatDistance(attacker.position,options.homeGoal)<3.5 then
 				record.footwork=record.footwork or {}
 				plan.goal=Footwork.idle(record.footwork,attacker,options.homeGoal,now,function(point)

@@ -16,6 +16,15 @@ local definitions={
    ranged=Vector3.new(-3,0,9),medic=Vector3.new(3,0,9)},
   facingAngles={},
  },
+ ['persian-archer-screen']={
+  id='persian-archer-screen',name='Persian Archer Screen',civilization='persia',skillFamily='spear',
+  description='3 shieldmen in a straight line\nStops for bow fire; guards stay nearby',
+  screenRange=40,guardRadius=6,
+  frontLeadMinimum=-1,frontLeadMaximum=1,supportDepthMinimum=7,supportSpacingMinimum=3,
+  offsets={warrior=Vector3.new(0,0,0),camp=Vector3.new(-6,0,0),reinforcement=Vector3.new(6,0,0),
+   ranged=Vector3.new(-3,0,9),medic=Vector3.new(3,0,9)},
+  facingAngles={},
+ },
  ['roman-shield-guard']={
   id='roman-shield-guard',name='Roman Shield Guard',civilization='rome',skillFamily='sword',
   description='3 shieldmen guard a compact group\nJavelin + medic protected between flank guards',

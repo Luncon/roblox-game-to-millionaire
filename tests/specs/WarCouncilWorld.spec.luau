@@ -17,7 +17,7 @@ return function()
     local map=assert(room:FindFirstChild('MapTable'))
     assert(map:FindFirstChildOfClass('ProximityPrompt') and map:FindFirstChildOfClass('ClickDetector'))
     assert(not plot.Controls:FindFirstChild('WarCouncilButton'))
-    assert((plot.Controls:FindFirstChild('ShieldButton')~=nil)==(civ.id=='sparta' or civ.id=='rome'))
+    assert((plot.Controls:FindFirstChild('ShieldButton')~=nil)==(require(game.ReplicatedStorage.Shared.FormationConfig).forCivilization(civ.id)~=nil))
     local shield=plot.Controls:FindFirstChild('ShieldButton')
     if shield then assert(shield.Position.Y-shield.Size.Y/2>=plot.Foundation.Position.Y+plot.Foundation.Size.Y/2,'Shield pad is buried in the foundation')end
     local filter=OverlapParams.new();filter.FilterType=Enum.RaycastFilterType.Include

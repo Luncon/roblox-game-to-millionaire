@@ -25,7 +25,7 @@ function ArmyUI.start(screen: ScreenGui)
 	local buttons={}
 	local remote: RemoteFunction?=nil
 	local busy=false
-	local reasons={formation_locked="Build the Spartan Shieldwall prerequisites first.",formation_unselected="Select Spartan Shieldwall at your War Council map.",
+	local reasons={formation_locked="Build your formation prerequisites first.",formation_unselected="Select a formation at your War Council map.",
 		formation_missing_troops="All five troops must be alive: 3 melee, 1 ranged, 1 medic.",formation_wrong_classes="Choose Camp: Melee, then wait for its next respawn.",
 		formation_outside_camp="Regroup all five troops into the training camp first."}
 	local function button(name,text,x,y,width,action,value)

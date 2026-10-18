@@ -48,6 +48,40 @@ return function(moduleOverride)
 		local f=fixture(kind);local ok,message=pcall(fn,f)
 		f.encounter:destroy();f.model:Destroy();assert(ok,message)
 	end
+	test("screen guards acquire reachable threats and reject distant retained targets",function()run(function(f)
+		local center=f.source.HumanoidRootPart.Position
+		f.options.order="advance";f.options.homeGoal=center;f.options.guard={center=center,radius=6}
+		f.target.HumanoidRootPart.Position=Vector3.new(20,10004,0)
+		local far=f.encounter:step(f.source,f.options,0)
+		assert(far.target==nil,"Screen guard acquired a distant enemy")
+		local near=f.create(3,"warrior",5,0,"local-threat")
+		local plan=f.encounter:step(f.source,f.options,.3)
+		assert(plan.target==near and plan.goal and (plan.goal-center).Magnitude<=6)
+		assert(plan.allowsDetour and not plan.allowsDetour(center+Vector3.new(6.1,0,0)))
+		near.HumanoidRootPart.Position=Vector3.new(6.5,10004,0);f.encounter:cancel(f.source)
+		local edge=f.encounter:step(f.source,f.options,.6)
+		assert(edge.goal and (edge.goal-center).Magnitude<=6 and (edge.goal-near.HumanoidRootPart.Position).Magnitude<=5,"Guard failed a reachable boundary strike")
+	end)end)
+	test("screen guards return to their slot after retreating foes and displacement",function()run(function(f)
+		local center=f.source.HumanoidRootPart.Position
+		f.options.order="advance";f.options.homeGoal=center;f.options.guard={center=center,radius=6}
+		f.target.HumanoidRootPart.Position=Vector3.new(5,10004,0)
+		local first=f.encounter:step(f.source,f.options,0);assert(first.goal)
+		f.source.HumanoidRootPart.Position=first.goal;f.target.HumanoidRootPart.Position=Vector3.new(35,10004,0)
+		local returned=f.encounter:step(f.source,f.options,1)
+		assert(not returned.target and returned.goal==center,"Guard followed retreating foe")
+		f.source.HumanoidRootPart.Position=center+Vector3.new(15,0,0)
+		local displaced=f.encounter:step(f.source,f.options,2)
+		assert(displaced.goal==center,"Displaced guard did not return home")
+	end)end)
+	test("screen guard Hold authority and in-range contacts retain ordinary rules",function()run(function(f)
+		local center=f.source.HumanoidRootPart.Position
+		f.options.guard={center=center,radius=6};f.options.homeGoal=center
+		local plan=f.encounter:step(f.source,f.options,0);assert(plan.phase=="windup" and not plan.goal)
+		f.encounter:advance(f.source,.21);assert(f.combat.hits==1)
+		f.combat.writable=false;f.source.HumanoidRootPart.Position=center+Vector3.new(15,0,0)
+		assert(not f.encounter:step(f.source,f.options,.3).goal,"Authority loss moved a guard")
+	end)end)
 	test("medical range limits retain ordinary melee contacts and forbid chasing outside",function()run(function(f)
 		f.options.order="advance"
 		f.options.support={allows=function(p)return p.X<=1 end}

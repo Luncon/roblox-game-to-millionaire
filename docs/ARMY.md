@@ -378,6 +378,25 @@ pilum throws. The same center-arrival/frontline-casualty release, explicit Hold,
 Regroup, support-loss and replacement rules apply. Roman and Spartan selection
 save independently under the existing twenty-field profile.
 
+### Persian Archer Screen
+
+Persia uses the same unlock levels, prices, camp muster and six-stud marching
+speed as Sparta/Rome. Buy the council-side Persian Archer Screen pad and select
+it at the map. Three spear-and-shield melee stand in a straight line six studs
+apart; the archer and medic form a rear pair nine studs behind, with the archer
+behind a gap for a clear firing lane.
+
+The screen deploys when its captured archer sees a valid hostile within 40 studs
+of ordinary 45-stud bow reach, or at its final destination if no shot appeared.
+It stays deployed after targets move or die. Each front guard can approach,
+attack and take recovery steps within six studs of its assigned slot, then
+returns when the threat leaves. The archer fires ordinary arrows from its rear
+slot; the medic keeps healing and avoiding enemies. Purchased front-line spear
+skills are stationary thrusts. Advance/Regroup cancel the screen; Hold stays
+stationary; frontline loss releases Advance unless explicitly held. Support
+loss/replacement and authority rules remain shared. Sparta and Rome continue
+to release Advance at the center.
+
 ### Testing coins in the normal Studio build
 
 The purple +1,000 TEST COINS pad sits beside the ordinary coin pad on each

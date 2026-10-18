@@ -44,7 +44,7 @@ the on-screen skill button on touch. The button displays the skill, tier and
 cooldown, and reports rejected activation. Typing into a text box does not activate
 a skill. Troops activate automatically for valid opportunities. Hold prevents
 dash movement but permits in-range stationary skills. Regroup cancels skills.
-In Spartan Shieldwall, captured front-line melee use a stationary spear thrust
+In Spartan Shieldwall and Persian Archer Screen, captured front-line melee use a stationary spear thrust
 instead of dashing: one ordinary-melee-range contact, the same purchased damage
 tier and eight-second cooldown, and an upper-body thrust with planted legs.
 Roman Shield Guard front-line melee retain the stationary two-contact Double Slash

@@ -409,12 +409,15 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					end
 					local snapshot=formationActors(owner)
 					local phase=group.phase
+					local hasShot=phase=="marching" and Formation.firingOpportunity(group,snapshot.ranged,actors,function(archer,target)
+						return combat:canAct(archer.rig) and CombatRules.canDamage(archer,target,arena,Ranged.range) and combat:visible(archer,target)
+					end)
 					if phase=="holding" then
 						-- Validate captured lives even while Hold freezes formation movement.
 						formationGoals=Formation.step(group,snapshot,0,function()return false end,grounded)
 					else formationGoals=Formation.step(group,snapshot,now-group.lastAt,function(id,p)
 						return owner.slots[id].navigator:canWalkFormation(p)
-					end,grounded)end
+					end,grounded,hasShot)end
 					group.lastAt=now
 					if not formationGoals then releaseFormation(owner);publish(owner)
 					else owner.player:SetAttribute("FormationPhase",group.phase)end
@@ -506,13 +509,19 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="reinforcement" then 42 elseif slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
-				local plan=encounters:step(rig,{order=if formed then "hold" else ordinaryOrder,formation=formed,homeGoal=home,actors=actors,support=recoveryPlan,
+				local guarding=formed and owner.order~="hold" and owner.formation.phase=="screening" and slot.kind=="warrior"
+				local guard=if guarding then {center=formationGoals[slot.id],radius=owner.formation.definition.guardRadius} else nil
+				local plan=encounters:step(rig,{order=if guarding then "advance" elseif formed then "hold" else ordinaryOrder,
+					formation=formed,guard=guard,homeGoal=if guard then guard.center else home,actors=actors,support=recoveryPlan,
 					cancelShots=function() projectiles:cancel(rig) end,
 					fire=function(target)
 						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
 						return projectiles:fire(rig,target,variant.projectileKind)
 					end},now)
-				if formed and owner.order~="hold" then
+				if guarding then
+					plan.speed=FormationConfig.pace
+					if not plan.facing then plan.facing=attacker.position+owner.formation.heading*10 end
+				elseif formed and owner.order~="hold" then
 					plan.goal,plan.formation,plan.direct,plan.speed=formationGoals[slot.id],true,false,FormationConfig.pace
 					local anchorGoal=plan.goal
 					if owner.formation.phase~="assembling" and (not plan.facing
