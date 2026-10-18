@@ -214,8 +214,10 @@ function CombatEncounter.new(world,combat)
 		record.target=if target then target.rig else nil
 		local plan={goal=nil,facing=if target then target.position else nil,direct=false,speed=Warrior.walkSpeed,state="Fighting"}
 		record.plan=plan
-		if combat.skills and not record.action and now>=record.nextAttackAt and target then
-			local result=combat.skills:activate(rig,if record.support then "hold" else options.order,true)
+		if combat.skills and not record.action and now>=record.nextAttackAt and target
+			and (not options.formation or attacker.kind=="warrior") then
+			local skillOrder=if options.formation then "formation" elseif record.support then "hold" else options.order
+			local result=combat.skills:activate(rig,skillOrder,true)
 			if result.ok then
 				if options.cancelShots then options.cancelShots() end
 				record.reservation=nil

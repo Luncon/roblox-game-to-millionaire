@@ -6,7 +6,9 @@ local Config=require(Shared.WeaponSkillConfig)
 local DashTrail=require(Shared.SpearDashTrail)
 local Tracks=require(Shared.UpgradeTracks)
 local Ranged=require(Shared.RangedConfig)
-local Variants=require(Shared.WarriorConfig).variants
+local Warrior=require(Shared.WarriorConfig)
+local Variants=Warrior.variants
+local Formation=require(Shared.FormationConfig)
 local Rules=require(script.Parent.CombatRules)
 local Skills={}
 
@@ -80,6 +82,7 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		local info=controller:info(action.rig)
 		return info and info.family==action.family and info.actor.humanoid==action.humanoid
 			and info.actor.civilizationId==action.civilizationId and info.actor.plotId==action.plotId
+			and (not action.formation or action.rig:GetAttribute("FormationActive")==true)
 			and combat:canAct(action.rig) and Rules.containsArena(arena,info.actor.position)
 	end
 	local function targets(actor,reach,facing)
@@ -106,19 +109,25 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		local actor,state,family=info.actor,info.state,info.family
 		local tier=Config.tiers[state.skillLevel or 0]
 		if not tier or state.trainingLevel~=1 or state.weaponLevel<tier.unlock then return {ok=false,reason="skill_locked"} end
+		local formation=order=="formation"
+		local definitionForActor=Formation.forCivilization(actor.civilizationId)
+		if formation and (actor.kind~="warrior" or not definitionForActor or family~=definitionForActor.skillFamily
+			or rig:GetAttribute("FormationActive")~=true or Formation.roles[rig:GetAttribute("ArmySlot")]~="warrior") then
+			return {ok=false,reason="order_locked"}
+		end
 		if order=="regroup" or (family=="spear" and order=="hold") then return {ok=false,reason="order_locked"} end
 		if not Rules.containsArena(arena,actor.position) then return {ok=false,reason="protected"} end
 		local time=now()
 		if time<info.readyAt then return {ok=false,reason="cooldown"} end
 		if self:busy(rig) or time<(ordinary[rig] or 0) then return {ok=false,reason="busy"} end
 		local definition=Config.families[family]
-		local candidates=targets(actor,if family=="spear" then definition.range+5 else definition.range,family~="axe")
+		local candidates=targets(actor,if formation then Warrior.attackRange elseif family=="spear" then definition.range+5 else definition.range,family~="axe")
 		if automatic and #candidates==0 then return {ok=false,reason="no_target"} end
 		local direction=Vector3.new(actor.root.CFrame.LookVector.X,0,actor.root.CFrame.LookVector.Z)
 		if direction.Magnitude<.01 then return {ok=false,reason="invalid_direction"} end
 		local action={rig=rig,root=actor.root,humanoid=actor.humanoid,family=family,tier=tier,
 			civilizationId=actor.civilizationId,plotId=actor.plotId,startedAt=time,lastAt=time,
-			direction=direction.Unit,distance=0,struck=false,resolved={},
+			direction=direction.Unit,distance=0,struck=false,resolved={},formation=formation,
 			target=if candidates[1] then {rig=candidates[1].rig,humanoid=candidates[1].humanoid} else nil,
 			speed=actor.humanoid.WalkSpeed,autoRotate=actor.humanoid.AutoRotate,
 			base=Tracks.weapon[state.weaponLevel].damage*(if actor.kind=="ranged" then Ranged.damageMultiplier else 1)}
@@ -128,8 +137,8 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		actor.humanoid.WalkSpeed=0
 		actor.humanoid.AutoRotate=false
 		actor.humanoid:Move(Vector3.zero)
-		if family=="spear" then action.clearTrail=DashTrail.attach(rig) end
-		if family=="spear" and not actor.root.Anchored then
+		if family=="spear" and not formation then action.clearTrail=DashTrail.attach(rig) end
+		if family=="spear" and not formation and not actor.root.Anchored then
 			local taken=pcall(function() actor.root:SetNetworkOwner(nil) end)
 			-- Troops must remain server-owned after the dash. Only player
 			-- characters return to their usual automatic ownership policy.
@@ -212,8 +221,15 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		if not valid(action) or elapsed>definition.duration+.05 then controller:cancel(rig);return end
 		action.humanoid:Move(Vector3.zero);action.humanoid.Jump=false
 		if action.family=="spear" then
-			if time-action.lastAt>=.15 then controller:cancel(rig);return end
-			dash(action,elapsed)
+			if action.formation then
+				if not action.struck then
+					action.struck=true
+					if action.target then contact(action,action.target,1,action.tier.spear,Warrior.attackRange,true) end
+				end
+			else
+				if time-action.lastAt>=.15 then controller:cancel(rig);return end
+				dash(action,elapsed)
+			end
 		elseif action.family=="axe" then
 			if not action.struck then
 				action.struck=true

@@ -135,6 +135,36 @@ return function()
 		f.step(.1);f.step(.21);f.step(.3)
 		assert(#f.hits==1 and f.hits[1].target~=flank and math.abs(f.hits[1].amount-30.6)<.0001)
 	end)end)
+	test("formed frontline thrust strikes once without moving and retains the normal spear cooldown",function()run("sparta","warrior",function(f)
+		f.source:SetAttribute("FormationActive",true)
+		-- A foe within spear reach can stand outside the dash's narrow travel lane.
+		f.victim.root.CFrame=CFrame.new(2,3,-3.5)
+		local start=f.actor.root.CFrame
+		assert(f.service:activate(f.source,"formation",true).ok)
+		assert(#f.hits==1 and math.abs(f.hits[1].amount-30.6)<.0001)
+		for i=1,20 do f.step(i/100);assert(f.actor.root.CFrame==start,'Formation thrust dashed out of its slot')end
+		assert(#f.hits==1 and not f.service:busy(f.source) and f.actor.humanoid.WalkSpeed==12)
+		assert(f.service:activate(f.source,"advance",true).reason=="cooldown")
+	end)end)
+	test("formation thrust requires a captured frontline spear and a visible hostile in normal melee reach",function()
+		for _,kind in {'warrior','ranged'}do run('sparta',kind,function(f)
+			f.source:SetAttribute('FormationActive',true)
+			if kind=='ranged' then assert(f.service:activate(f.source,'formation',true).reason=='order_locked');return end
+			f.victim.root.CFrame=CFrame.new(0,3,-8)
+			assert(f.service:activate(f.source,'formation',true).reason=='no_target')
+			f.victim.root.CFrame=CFrame.new(0,3,-4);f.combat.clear=false
+			assert(f.service:activate(f.source,'formation',true).reason=='no_target')
+			f.combat.clear=true;f.source:SetAttribute('FormationActive',false)
+			assert(f.service:activate(f.source,'formation',true).reason=='order_locked')
+		end)end
+	end)
+	test("Roman formed sword skill keeps both contacts stationary and uses the normal cooldown",function()run('rome','warrior',function(f)
+		f.source:SetAttribute('FormationActive',true)
+		local start=f.actor.root.CFrame
+		assert(f.service:activate(f.source,'formation',true).ok and #f.hits==1)
+		f.step(.24);assert(#f.hits==2 and f.actor.root.CFrame==start and not f.service:busy(f.source))
+		assert(f.service:activate(f.source,'formation',true).reason=='cooldown')
+	end)end)
 	test("dash collision grounding and distance are bounded even with skipped frames",function()
 		for _,obstacle in {"clear","wall","no_floor","stall"} do run("maurya","warrior",function(f)
 			f.victim.root.CFrame=CFrame.new(0,3,-40)

@@ -6,13 +6,13 @@ return function()
  local frame={PointToObjectSpace=function(_,p)return p end}
  local n=0;local function test(name,fn)fn();n+=1;print('PASS: '..name)end
  local function setup()
-  local state={formationLevel=1,warCouncilLevel=1,shieldLevel=1,armyCampLevel=2,hospitalLevel=1,selectedFormation=Config.id}
+  local state={formationLevel=1,warCouncilLevel=1,shieldLevel=1,armyCampLevel=2,hospitalLevel=1,selectedFormation=Config.forCivilization('sparta').id}
   local actors={};for id,kind in Config.roles do actors[id]={rig={},humanoid={},kind=kind,alive=true,position=Camp.point(Camp.arrivalIndex(id)),phase='idle'}end
   return state,actors
  end
  test('muster requires selected trained faction and five correctly typed current camp lives at ground height',function()
   local s,a=setup();assert(F.ready(s,'sparta',frame,a))
-  assert(not F.ready(s,'britain',frame,a));s.selectedFormation='none';assert(not F.ready(s,'sparta',frame,a));s.selectedFormation=Config.id
+  assert(not F.ready(s,'britain',frame,a));s.selectedFormation='none';assert(not F.ready(s,'sparta',frame,a));s.selectedFormation=Config.forCivilization('sparta').id
   a.camp.kind='ranged';assert(not F.ready(s,'sparta',frame,a));a.camp.kind='warrior'
   local old=a.medic;a.medic=nil;assert(not F.ready(s,'sparta',frame,a));a.medic=old
   a.medic.position+=Vector3.new(0,30,0);assert(not F.ready(s,'sparta',frame,a))
@@ -21,7 +21,7 @@ return function()
  test('convex middle leads outer shieldmen and supports remain paired behind for rotated headings',function()
   local _,a=setup()
   for _,direction in {Vector3.new(0,0,-1),Vector3.new(-1,0,0),Vector3.new(.7,0,.7).Unit}do
-   local g=F.new(Vector3.zero,direction*100,a);local goals=F.goals(g,function(p)return p end)
+   local g=F.new(Vector3.zero,direction*100,a,Config.forCivilization('sparta'));local goals=F.goals(g,function(p)return p end)
    assert((goals.warrior-goals.camp):Dot(direction)>1.9)
    assert(math.abs((goals.camp-goals.reinforcement):Dot(direction))<.001)
    assert((goals.warrior-goals.medic):Dot(direction)>10)
@@ -29,7 +29,7 @@ return function()
   end
  end)
  test('road assembly waits for all five and marching waits for lagging attacking or unsafe members',function()
-  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a)
+  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a,Config.forCivilization('sparta'))
   F.step(g,a,.2,function()return true end,function(p)return p end);assert(g.phase=='assembling' and g.anchor.Magnitude==0)
   local goals=F.goals(g,function(p)return p end);for id,p in goals do a[id].position=p end
   F.step(g,a,.2,function()return true end,function(p)return p end);assert(g.phase=='marching')
@@ -40,13 +40,36 @@ return function()
   a.warrior.phase='windup';F.step(g,a,.2,function()return true end,function(p)return p end);assert((g.anchor-anchor).Magnitude==0)
   a.warrior.phase='idle';F.step(g,a,.2,function()return false end,function(p)return p end);assert((g.anchor-anchor).Magnitude==0)
  end)
- test('a dead or replaced member invalidates the captured formation life',function()
-  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a)
-  a.medic.rig={};local result,reason=F.step(g,a,.2,function()return true end,function(p)return p end)
-  assert(not result and reason=='member_lost')
+ test('a dead or replaced frontline member invalidates the captured formation life',function()
+  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a,Config.forCivilization('sparta'))
+  a.warrior.rig={};local result,reason=F.step(g,a,.2,function()return true end,function(p)return p end)
+  assert(not result and reason=='frontline_lost')
+ end)
+ test('support losses keep the shield line moving and replacement lives never join its goals',function()
+  for _,lost in {'ranged','medic'}do
+   local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a,Config.forCivilization('sparta'))
+   for id,p in F.goals(g,function(p)return p end)do a[id].position=p end
+   F.step(g,a,.2,function()return true end,function(p)return p end)
+   a[lost]=nil
+   local goals=F.step(g,a,.2,function()return true end,function(p)return p end)
+   assert(goals and goals[lost]==nil and g.anchor.Magnitude>0,'Support loss stopped the shield line')
+   a[lost]={rig={},humanoid={},alive=true,position=Vector3.new(100,0,100),kind=Config.roles[lost],phase='idle'}
+   assert(F.step(g,a,.2,function()return true end,function(p)return p end)[lost]==nil,'Replacement rejoined stale formation')
+   a.ranged=nil;a.medic=nil
+   assert(F.step(g,a,.2,function()return true end,function(p)return p end),'Both support losses broke the front')
+  end
+ end)
+ test('arrival releases formation while explicit Hold and broken shields preserve it before release',function()
+  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a,Config.forCivilization('sparta'))
+  g.anchor=g.destination;g.phase='marching'
+  for id,p in F.goals(g,function(p)return p end)do a[id].position=p;a[id].shieldCharges=0 end
+  local goals,reason=F.step(g,a,.2,function()return true end,function(p)return p end)
+  assert(not goals and reason=='destination_reached' and g.anchor==g.destination)
+  g.phase='holding';a.ranged=nil;a.medic=nil
+  assert(F.step(g,a,.2,function()return true end,function(p)return p end) and g.phase=='holding')
  end)
  test('nearby arrival alone cannot deploy an inverted front or collapsed support pair',function()
-  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a)
+  local _,a=setup();local g=F.new(Vector3.zero,Vector3.new(0,0,-100),a,Config.forCivilization('sparta'))
   local goals=F.goals(g,function(p)return p end);for id,p in goals do a[id].position=p end
   a.warrior.position+=Vector3.new(0,0,2.1)
   F.step(g,a,.2,function()return true end,function(p)return p end)

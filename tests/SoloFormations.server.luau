@@ -53,7 +53,7 @@ local ok,result=pcall(function()
 		return evidence.medical
 	end
 	stage("Formation runtime")
-	evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round)
+	evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round,script:GetAttribute("RomanOnly"))
 	evidence.layout=round("formationLayout",{},20)
 	if script:GetAttribute("FullRegression")then
 		stage("Existing tactical combat and movement regressions")

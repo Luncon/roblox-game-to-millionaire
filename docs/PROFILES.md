@@ -40,10 +40,10 @@ The version-one profile stores these twenty scalar fields for each started civil
 | `storehouseLevel` | Reserve-capacity building | 0 or 1; owning it requires settlement 16 and Farm I |
 | `skillLevel` | Purchased weapon-family skill tier | Integer 0–5; positive tiers require Training Yard I and weapon level at least tier × 10 |
 | `hospitalLevel` | Hospital purchase | 0 or 1; requires settlement 10 and Training Yard I |
-| `shieldLevel` | Spartan Shield Training | 0 or 1; requires Sparta, settlement/armor 15 and Armorer I |
+| `shieldLevel` | Shield Training | 0 or 1; requires Sparta or Rome, settlement/armor 15 and Armorer I |
 | `warCouncilLevel` | War Council purchase | 0 or 1; requires settlement 19 and Training Yard I |
-| `formationLevel` | Spartan Shieldwall training | 0 or 1; requires Sparta, settlement 20, shields, council, Army Camp II and hospital |
-| `selectedFormation` | Council selection | `none` or purchased `spartan-shieldwall`; missing defaults to `none` |
+| `formationLevel` | Civilization formation training | 0 or 1; requires Sparta or Rome, settlement 20, shields, council, Army Camp II and hospital |
+| `selectedFormation` | Council selection | `none`, purchased `spartan-shieldwall` for Sparta, or purchased `roman-shield-guard` for Rome; missing defaults to `none` |
 
 Both building milestones retain `schemaVersion = 1` and the existing store/key.
 Only missing new fields receive defaults: building levels and reserve become

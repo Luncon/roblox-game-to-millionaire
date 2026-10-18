@@ -164,6 +164,21 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		end
 		if hold then owner.order="hold" end
 	end
+	local function releaseFormation(owner)
+		local order=if owner.order=="hold" then "hold" else "advance"
+		clearFormation(owner,true)
+		owner.order=order
+		if order=="advance" then
+			for _,slot in owner.slots do
+				slot.holdPosition,slot.target,slot.medicalRecovery=nil,nil,nil
+				if slot.rig then
+					local humanoid=slot.rig:FindFirstChildOfClass("Humanoid")
+					if humanoid then humanoid.WalkSpeed=Config.walkSpeed end
+					slot.rig:SetAttribute("WarriorState","Marching")
+				end
+			end
+		end
+	end
 	function controller:cancelFormation(player)
 		local owner=owners[player.UserId]
 		if owner then clearFormation(owner,true);publish(owner)end
@@ -183,7 +198,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		local anchor=frame:PointToWorldSpace(Vector3.new(0,3,-world.model.Plots["Plot"..claim.plotId].Foundation.Size.Z/2-24))
 		local forward=arena.Position-frame.Position;forward=Vector3.new(forward.X,0,forward.Z).Unit
 		local destination=arena.Position-forward*16
-		owner.formation=Formation.new(anchor,destination,actors)
+		owner.formation=Formation.new(anchor,destination,actors,FormationConfig.forCivilization(claim.civilizationId))
 		owner.formation.lastAt=os.clock();owner.order="formation"
 		owner.player:SetAttribute("FormationPhase","assembling")
 		for _,slot in owner.slots do if slot.rig then slot.rig:SetAttribute("FormationActive",true)end end
@@ -193,7 +208,13 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 	local spawnSlot
 	local function fallen(owner, slot, rig: Model)
 		if not current(owner, slot) or slot.rig ~= rig then return end
-		clearFormation(owner,true)
+		local group=owner.formation
+		if group and group.members[slot.id] then
+			if slot.kind=="warrior" then releaseFormation(owner) else
+				group.members[slot.id]=nil
+				rig:SetAttribute("FormationActive",false);rig:SetAttribute("FormationAvoiding",nil)
+			end
+		end
 		local state = economy:get(owner.player.UserId)
 		local delay = if slot.id=="medic" then MedicalConfig.respawnDelay elseif state then tier(state).respawnDelay else Config.respawnDelay
 		disconnect(slot)
@@ -395,7 +416,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 						return owner.slots[id].navigator:canWalkFormation(p)
 					end,grounded)end
 					group.lastAt=now
-					if not formationGoals then clearFormation(owner,true);publish(owner)
+					if not formationGoals then releaseFormation(owner);publish(owner)
 					else owner.player:SetAttribute("FormationPhase",group.phase)end
 				end
 			end
@@ -454,18 +475,20 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      end
      return p
     end
+    local formed=formationGoals and formationGoals[slot.id]~=nil
+    local ordinaryOrder=if owner.order=="formation" then "advance" else owner.order
     if slot.kind=="medic" then
      local forward=arena.Position-frame.Position
      forward=Vector3.new(forward.X,0,forward.Z).Unit
-     local plan=MedicPlanner.step(attacker,actors,owner.order,arena.Position,forward,
+     local plan=MedicPlanner.step(attacker,actors,ordinaryOrder,arena.Position,forward,
       CombatRules.containsArena(arena,attacker.position),safe,function(point)return CombatRules.containsArena(arena,point)end)
-     if formationGoals then
+     if formed then
       rig:SetAttribute("FormationAvoiding",plan.avoiding==true)
       if not plan.avoiding then
        plan.goal=if owner.order=="hold" then nil else formationGoals[slot.id]
        plan.phase,plan.state,plan.formation,plan.direct,plan.speed="idle","Formation",true,false,FormationConfig.pace
        plan.allowsDetour=nil
-       if owner.formation.phase~="assembling" then plan.facing=attacker.position+owner.formation.heading*10 end
+       if owner.formation.phase~="assembling" then plan.facing=attacker.position+Formation.facing(owner.formation,slot.id)*10 end
       end
      end
      Motion.apply(rig,slot.navigator,world,plan,now)
@@ -477,22 +500,25 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      continue
     end
     slot.medicalRecovery=slot.medicalRecovery or {}
-    local recoveryPlan=if formationGoals then nil else MedicalRetreat.step(slot.medicalRecovery,attacker,actors,owner.order,economy:get(ownerId),safe,
+    local recoveryPlan=if formed then nil else MedicalRetreat.step(slot.medicalRecovery,attacker,actors,ordinaryOrder,economy:get(ownerId),safe,
      function(from,patient)return combat:visible(from,patient)end)
     rig:SetAttribute("MedicalSupportActive",recoveryPlan~=nil)
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="reinforcement" then 42 elseif slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
-				local plan=encounters:step(rig,{order=if formationGoals then "hold" else owner.order,homeGoal=home,actors=actors,support=recoveryPlan,
+				local plan=encounters:step(rig,{order=if formed then "hold" else ordinaryOrder,formation=formed,homeGoal=home,actors=actors,support=recoveryPlan,
 					cancelShots=function() projectiles:cancel(rig) end,
 					fire=function(target)
 						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
 						return projectiles:fire(rig,target,variant.projectileKind)
 					end},now)
-				if formationGoals and owner.order~="hold" then
+				if formed and owner.order~="hold" then
 					plan.goal,plan.formation,plan.direct,plan.speed=formationGoals[slot.id],true,false,FormationConfig.pace
 					local anchorGoal=plan.goal
-					if owner.formation.phase~="assembling" and not plan.facing then plan.facing=attacker.position+owner.formation.heading*10 end
+					if owner.formation.phase~="assembling" and (not plan.facing
+						or (plan.phase=="idle" and owner.formation.definition.facingAngles[slot.id]~=nil)) then
+						plan.facing=attacker.position+Formation.facing(owner.formation,slot.id)*10
+					end
 					plan.allowsDetour=if owner.formation.phase=="assembling" then nil else function(p)return (p-anchorGoal).Magnitude<=FormationConfig.cohesionTolerance end
 				end
 				slot.target=plan.target

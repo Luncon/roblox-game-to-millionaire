@@ -5,10 +5,17 @@ local Camp=require(game.ReplicatedStorage.Shared.TrainingCampConfig)
 local F={}
 local function flat(v)return Vector3.new(v.X,0,v.Z).Magnitude end
 
+function F.facing(group,id)
+ local angle=group.definition.facingAngles[id] or 0
+ local right=Vector3.new(-group.heading.Z,0,group.heading.X)
+ return group.heading*math.cos(angle)+right*math.sin(angle)
+end
+
 function F.ready(state,civilizationId,frame,actors)
- if civilizationId~=Config.civilization or state.formationLevel~=1 or state.shieldLevel~=1
+ local definition=Config.forCivilization(civilizationId)
+ if not definition or state.formationLevel~=1 or state.shieldLevel~=1
   or state.warCouncilLevel~=1 or state.armyCampLevel~=2 or state.hospitalLevel~=1 then return false,'formation_locked' end
- if state.selectedFormation~=Config.id then return false,'formation_unselected' end
+ if state.selectedFormation~=definition.id then return false,'formation_unselected' end
  local count=0;for _ in actors do count+=1 end
  if count~=5 then return false,'formation_missing_troops' end
  for id,kind in Config.roles do
@@ -21,26 +28,34 @@ function F.ready(state,civilizationId,frame,actors)
  return true
 end
 
-function F.new(anchor,destination,actors)
+function F.new(anchor,destination,actors,definition)
+ assert(definition and Config.byId[definition.id]==definition,'Known formation required')
  local direction=destination-anchor;direction=Vector3.new(direction.X,0,direction.Z)
  assert(direction.Magnitude>.01,'Formation needs a route')
  local members={};for id in Config.roles do
   members[id]={rig=actors[id].rig,humanoid=actors[id].humanoid}
  end
- return {anchor=anchor,destination=destination,heading=direction.Unit,members=members,phase='assembling'}
+ return {definition=definition,anchor=anchor,destination=destination,heading=direction.Unit,members=members,phase='assembling'}
 end
 
 function F.goals(group,ground)
  local right=Vector3.new(-group.heading.Z,0,group.heading.X)
  local result={}
- for id,offset in Config.offsets do result[id]=ground(group.anchor+right*offset.X-group.heading*offset.Z)end
+ for id in group.members do
+  local offset=group.definition.offsets[id]
+  result[id]=ground(group.anchor+right*offset.X-group.heading*offset.Z)
+ end
  return result
 end
 
 function F.step(group,actors,dt,allows,ground)
  for id,member in group.members do
   local a=actors[id]
-  if not a or not a.alive or a.rig~=member.rig or a.humanoid~=member.humanoid then return nil,'member_lost' end
+  if not a or not a.alive or a.rig~=member.rig or a.humanoid~=member.humanoid then
+   if Config.roles[id]=='warrior' then return nil,'frontline_lost' end
+   -- Keep the surviving shield line; never capture a replacement support life.
+   group.members[id]=nil
+  end
  end
  local goals=F.goals(group,ground)
  local allArrived,coherent=true,true
@@ -53,13 +68,17 @@ function F.step(group,actors,dt,allows,ground)
  -- Positional tolerances alone can accept an inverted two-stud front arc.
  local front=actors.warrior.position
  local right=Vector3.new(-group.heading.Z,0,group.heading.X)
- local shape=(front-actors.camp.position):Dot(group.heading)>=.5
-  and (front-actors.reinforcement.position):Dot(group.heading)>=.5
+ local definition=group.definition
+ local shape=(front-actors.camp.position):Dot(group.heading)>=definition.frontLeadMinimum
+  and (front-actors.reinforcement.position):Dot(group.heading)>=definition.frontLeadMinimum
   and (front-actors.camp.position):Dot(right)>=3
   and (actors.reinforcement.position-front):Dot(right)>=3
-  and (front-actors.ranged.position):Dot(group.heading)>=7
-  and (front-actors.medic.position):Dot(group.heading)>=7
-  and (actors.medic.position-actors.ranged.position):Dot(right)>=3
+ for _,id in {'ranged','medic'}do
+  if group.members[id] then shape=shape and (front-actors[id].position):Dot(group.heading)>=definition.supportDepthMinimum end
+ end
+ if group.members.ranged and group.members.medic then
+  shape=shape and (actors.medic.position-actors.ranged.position):Dot(right)>=definition.supportSpacingMinimum
+ end
  allArrived=allArrived and shape
  coherent=coherent and shape
  if group.phase=='assembling' then
@@ -74,6 +93,7 @@ function F.step(group,actors,dt,allows,ground)
    if clear then goals=nextGoals else group.anchor=previous end
   end
  end
+ if group.phase=='deployed' then return nil,'destination_reached' end
  return goals
 end
 return F

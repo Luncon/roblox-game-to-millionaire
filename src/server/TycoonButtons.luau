@@ -97,7 +97,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 				local cost=if offer then offer.cost else nil
 				local available=offer and offer.available
 				local building=Development.buildings[definition.track]
-				local title=string.upper(if building then building.title else definition.track)
+				local title=string.upper(if offer then offer.title elseif building then building.title else definition.track)
 				if definition.track=="skill" and available then
 					local civId=world.model.Plots["Plot"..plotId]:GetAttribute("CivilizationId")
 					local variant=Variants[civId]

@@ -59,8 +59,13 @@ function ProfileData.copyState(value: any,civilizationId: string?): State?
  if copied.shieldLevel==1 and (copied.armorLevel<Formation.shieldUnlock or copied.armorerLevel~=1) then return nil end
  if copied.formationLevel==1 and (copied.shieldLevel~=1 or copied.warCouncilLevel~=1 or copied.armyCampLevel~=2 or copied.hospitalLevel~=1) then return nil end
  local selected=if value.selectedFormation==nil then "none" else value.selectedFormation
- if selected~="none" and (selected~=Formation.id or copied.formationLevel~=1) then return nil end
- if civilizationId and civilizationId~=Formation.civilization and (copied.shieldLevel>0 or copied.formationLevel>0 or selected~="none") then return nil end
+ local selectedDefinition=Formation.byId[selected]
+ if selected~="none" and (not selectedDefinition or copied.formationLevel~=1) then return nil end
+ if civilizationId then
+  local definition=Formation.forCivilization(civilizationId)
+  if not definition and (copied.shieldLevel>0 or copied.formationLevel>0 or selected~="none") then return nil end
+  if selectedDefinition and selectedDefinition~=definition then return nil end
+ end
  copied.selectedFormation=selected
 	if copied.storehouseLevel==1 and copied.farmLevel<1 then return nil end
 	local reserve=if value.farmCoins==nil then 0 else value.farmCoins

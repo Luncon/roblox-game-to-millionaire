@@ -135,9 +135,11 @@ checkpoint 20, more army slots, infirmaries, formations, abilities and specialis
 buildings remain planned.
 Current tuning has not yet established a measured level-50 completion time.
 
-The first formation is now Spartan Shieldwall: every civilization can unlock
-Army Camp II and the War Council, while Sparta alone buys two-hit shields and
-the five-troop formation. The council map selects it; March Formation musters
-three melee, one ranged and one medic from camp, assembles at the road and
-advances together. Advance restores normal independent fighting. See
+Spartan Shieldwall and Roman Shield Guard share the formation system: every
+civilization can unlock Army Camp II and the War Council, while Sparta and Rome
+buy two-hit shields and their own five-troop formation. The council map selects
+the faction formation; March Formation musters three melee, one ranged and one
+medic from camp, assembles at the road and
+advances together at six studs/second. Center arrival or a frontline casualty
+restores ordinary Advance; explicit Hold stays stationary. See
 [army controls](ARMY.md) and [verified boundaries](PLAYTEST.md).

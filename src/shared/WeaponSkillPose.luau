@@ -3,7 +3,7 @@
 -- Pose offsets only: no reparenting joints, replacing grips or modifying source rigs.
 local Pose={}
 local Config=require(script.Parent.WeaponSkillConfig)
-function Pose.sample(family: string,elapsed: number)
+function Pose.sample(family: string,elapsed: number,formation: boolean?)
 	local right,left,twist,lean=Vector3.zero,Vector3.new(.3,0,-.1),0,0
 	local offset=Vector3.zero
 	local rightHip,leftHip,neck=nil,nil,nil
@@ -19,6 +19,15 @@ function Pose.sample(family: string,elapsed: number)
 		rightHip=Vector3.new(.85+.12*drive,0,.06)
 		leftHip=Vector3.new(-.65-.12*drive,0,-.06)
 		neck=Vector3.new(-lean*.7,0,0)
+		if formation then
+			-- Drive the spear with the upper body while keeping both feet planted.
+			lean=-.12-.12*drive
+			right=Vector3.new(-lean,0,0)
+			offset=Vector3.new(0,.05,-.5-.6*drive)
+			left=Vector3.new(.45,.05,-.25)
+			rightHip,leftHip=Vector3.zero,Vector3.zero
+			neck=Vector3.new(-lean*.7,0,0)
+		end
 	elseif family=="axe" then
 		local spin=math.clamp(elapsed/Config.families.axe.duration,0,1)
 		local strength=1

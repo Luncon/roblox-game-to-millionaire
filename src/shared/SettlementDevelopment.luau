@@ -13,7 +13,7 @@ Development.persistentFields=table.freeze({"coins","level","weaponLevel","armorL
 local buildings={
  shield={field="shieldLevel",title="Shield Training",tiers={{unlock=Formation.shieldUnlock,cost=Formation.shieldCost}}},
  warCouncil={field="warCouncilLevel",title="War Council",tiers={{unlock=Formation.councilUnlock,cost=Formation.councilCost}}},
- formation={field="formationLevel",title=Formation.name,tiers={{unlock=Formation.unlock,cost=Formation.cost}}},
+ formation={field="formationLevel",title="Formation Training",tiers={{unlock=Formation.unlock,cost=Formation.cost}}},
 	hospital={field="hospitalLevel",title="Hospital",tiers={{unlock=10,cost=200}}},
 	training={field="trainingLevel",title="Training Yard",tiers={{unlock=5,cost=50}}},
 	farm={field="farmLevel",title="Farm",tiers={{unlock=7,cost=80},{unlock=12,cost=180}}},
@@ -67,7 +67,7 @@ function Development.offer(state,track: string,civilizationId: string?)
 		table.insert(missing,if nextLevel==2 then "Farm II" else "Farm I")
 	end
  if track=="shield" or track=="formation" then
-  if civilizationId~=Formation.civilization then table.insert(missing,"Sparta only") end
+  if not Formation.forCivilization(civilizationId) then table.insert(missing,"Shield formation unavailable") end
  end
  if track=="shield" then
   if (state.armorLevel or 1)<Formation.shieldUnlock then table.insert(missing,"Armor 15") end
@@ -90,7 +90,9 @@ function Development.offer(state,track: string,civilizationId: string?)
 		if (state.farmLevel or 0)<1 then table.insert(missing,"Farm I") end
 		if (state.workersLevel or 0)<1 then table.insert(missing,"Worker Camp I") end
 	end
-	return {current=current,nextLevel=nextLevel,cost=cost,requiredSettlement=required,missing=missing,
+	local definition=Formation.forCivilization(civilizationId)
+	return {title=if track=="formation" and definition then definition.name elseif building then building.title else track,
+		current=current,nextLevel=nextLevel,cost=cost,requiredSettlement=required,missing=missing,
 		available=cost~=nil and state.level>=required and #missing==0}
 end
 function Development.farmYield(state): number

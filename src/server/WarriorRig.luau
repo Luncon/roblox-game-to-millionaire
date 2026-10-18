@@ -276,7 +276,7 @@ function WarriorRig.animate(rig: Model, now: number, moving: boolean, attacking:
 	end
 	local neck=Vector3.new(if hit then -.1 else 0,0,0)
 	if family and skillStarted then
-		local skill=SkillPose.sample(family,serverNow-skillStarted)
+		local skill=SkillPose.sample(family,serverNow-skillStarted,rig:GetAttribute("FormationActive")==true)
 		right,left,offset,twist,lean=skill.right,skill.left,skill.offset,skill.twist,skill.lean
 		if family=="spear" then
 			rightHip,leftHip,neck=skill.rightHip,skill.leftHip,skill.neck

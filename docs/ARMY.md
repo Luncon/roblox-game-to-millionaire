@@ -133,6 +133,11 @@ some successive shots deal no damage. Melee reach is five studs with a one-secon
 cooldown. Marching speed remains 12; close melee footwork slows to 6 and ranged
 retreats use speed 8.
 
+Advancing melee detect hostile targets up to 52.5 studs away; ranged detect up
+to 90 studs, a 50% increase for both owned troops and neutral opponents. Troops
+still move into ordinary attack reach before striking or firing. Hold retains
+five-stud melee and 45-stud ranged engagement limits.
+
 Owned troops and neutral opponents share encounter coordination. Advancing melee
 troops take separate four-stud approach positions around an enemy, wait outside
 reach when all six positions are occupied, and walk apart before pursuit if
@@ -339,9 +344,47 @@ side by side nine studs behind the outer frontmen (`(:` when marching left).
 
 The march waits for slow/attacking members. Formed fighters attack in place;
 medics keep throwing bandages and can avoid enemies. Optional independent
-footwork and spear dashes stay suppressed. Hold stops the march but permits
-attacks/healing. Advance immediately abandons the formation for normal combat;
-Regroup returns to camp. A casualty holds survivors and never enrolls the
-replacement automatically. Starting again requires a fresh full camp muster.
+footwork and spear dashes stay suppressed. Unlocked front-line spear skills use
+a stationary thrust with planted legs, normal damage tiers and the usual eight-second
+cooldown; formed ranged troops use ordinary throws without weapon skills.
+Hold stops the march but permits attacks/healing. Advance immediately abandons the formation for normal combat;
+Regroup returns to camp. Reaching the final center march destination or losing
+a front-line melee releases survivors to ordinary Advance, including pursuit
+and independent medic support;
+an explicit Hold keeps survivors on Hold. Support casualties remove only that
+captured life and leave the shield line intact. Replacement supports follow the
+ordinary current order without joining the old formation. Shield breakage alone
+does not dissolve the group. Starting again requires a fresh full camp muster.
 Selection remains saved after cancellation; live phases, health and positions
 do not. No formation combat-stat bonus is granted.
+
+### Roman Shield Guard
+
+Rome unlocks Shield Training and Roman Shield Guard at the same levels and
+prices as Sparta: settlement/armor 15 and Armorer I for 150 coins, then settlement
+20, War Council I, Army Camp II, Hospital I and shield training for 250 coins.
+The owned council map selects Roman Shield Guard; the council-side pad buys it.
+All five living members must muster in camp: three gladius-and-shield melee,
+one pilum thrower and one medic. The current inert shield asset is shared with
+Sparta on players and melee and keeps the same two-hit depletion for each life.
+
+The center guard leads by five studs. Outer guards stand 5.5 studs to either
+side, with the ranged/medic pair 1.5 studs behind them and 3.5 studs apart.
+Between attacks the outer guards face 45 degrees outward, protecting the front
+corners according to actual shield facing. Normal attack aiming still faces the
+enemy. The group marches at six studs/second, matching Sparta. Unlocked Roman
+melee use stationary Double Slash, while formed ranged troops use ordinary
+pilum throws. The same center-arrival/frontline-casualty release, explicit Hold,
+Regroup, support-loss and replacement rules apply. Roman and Spartan selection
+save independently under the existing twenty-field profile.
+
+### Testing coins in the normal Studio build
+
+The purple +1,000 TEST COINS pad sits beside the ordinary coin pad on each
+plot, including the normal main project. Click or interact as the nearby living
+owner to add exactly 1,000 coins to the active civilization. Grants require
+writable progress, have a half-second cadence and reject balances without room
+for the full grant. The pad does not grant through touch and is absent outside
+Studio; the economy also rejects testing grants outside Studio. Normal Studio
+progress still uses StudioDevelopment unless an explicitly fake test bootstrap
+is installed. The separate temporary-coin playtest remains available.

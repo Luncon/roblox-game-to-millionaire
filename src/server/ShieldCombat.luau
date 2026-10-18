@@ -4,7 +4,7 @@ local Shield={}
 
 -- A life receives charges once. Equipment rebuilds reuse these server attributes.
 function Shield.refresh(rig,civilizationId,kind,state)
- local eligible=civilizationId==Config.civilization and (kind=='warrior' or kind=='player') and state and state.shieldLevel==1
+ local eligible=Config.forCivilization(civilizationId)~=nil and (kind=='warrior' or kind=='player') and state and state.shieldLevel==1
  local remaining=rig:GetAttribute('SpartanShieldRemaining')
  if eligible and remaining==nil then
   remaining=Config.shieldHits;rig:SetAttribute('SpartanShieldRemaining',remaining)

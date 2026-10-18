@@ -81,6 +81,16 @@ if (!localPlaytest) project.tree.StarterPlayer.StarterPlayerScripts.MultiplayerT
 fs.mkdirSync(outputDirectory, { recursive: true });
 fs.mkdirSync(path.join(root, 'build'), { recursive: true });
 if (!localPlaytest) {
+  if (formations) {
+    // Trusted fixture setup may inspect/reposition a captured group. Production
+    // keeps the read-only army snapshot; only this generated test copy exposes it.
+    const snapshot = 'slots=slots,order=owner.order}';
+    const warriors = fs.readFileSync(path.join(serverDirectory, 'WarriorService.luau'), 'utf8');
+    if (warriors.split(snapshot).length !== 2) throw new Error('Formation snapshot fixture dependency changed');
+    fs.writeFileSync(path.join(outputDirectory, 'formation-warriors-fixture.luau'),
+      warriors.replace(snapshot, 'slots=slots,order=owner.order,formation=owner.formation}'));
+    project.tree.ServerScriptService.Game.WarriorService = { $path: './formation-warriors-fixture.luau' };
+  }
   const dependency = 'local PathfindingService = game:GetService("PathfindingService")';
   const navigation = fs.readFileSync(path.join(serverDirectory, 'WarriorNavigator.luau'), 'utf8');
   if (navigation.split(dependency).length !== 2) throw new Error('Navigation fixture dependency changed');

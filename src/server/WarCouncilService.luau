@@ -27,7 +27,7 @@ function Council.new(world,registry,economy,event,publish,onSelect)
  end
  function controller:select(player,value)
   local data,reason=nearby(player);if not data then return {ok=false,reason=reason}end
-  if value~=Config.id and value~='none' then return {ok=false,reason='invalid'}end
+  if value~='none' and not Config.byId[value] then return {ok=false,reason='invalid'}end
   local result=economy:selectFormation(player.UserId,value)
   if result.ok then onSelect(player)end
   publish(player,result,'formationSelection');return result

@@ -20,6 +20,7 @@ const modules = [
   'tests/specs/ProfileGrowth.spec.luau', 'tests/specs/EconomyExpansion.spec.luau',
   'tests/specs/SettlementDevelopment.spec.luau', 'tests/specs/HospitalProgression.spec.luau', 'tests/specs/MedicalLogic.spec.luau', 'tests/specs/MedicalFlights.spec.luau', 'tests/specs/MedicalRetreat.spec.luau', 'tests/specs/CrowdMovement.spec.luau', 'tests/specs/TroopFootwork.spec.luau', 'tests/specs/ArmyRest.spec.luau', 'tests/specs/FormationProgression.spec.luau', 'tests/specs/ShieldCombat.spec.luau', 'tests/specs/ArmyFormation.spec.luau',
   'tests/specs/TargetAcquisition.spec.luau',
+  'tests/specs/RomanFormation.spec.luau',
   'tests/specs/TestCurrency.spec.luau',
 ];
 const identifiers = new Map(modules.map(file => [file, file.replace(/\.luau$/, '').replaceAll('/', '.') ]));

@@ -186,9 +186,9 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, 
   local account=accounts[playerId]
   if not account then return rejected(playerId,"not_claimed") end
   if not self:canMutate(playerId) then return rejected(playerId,"profile_unavailable") end
-  if selection~="none" and selection~=Formation.id then return rejected(playerId,"invalid") end
+  if selection~="none" and not Formation.byId[selection] then return rejected(playerId,"invalid") end
   if account.warCouncilLevel~=1 or (selection~="none" and (account.formationLevel~=1
-   or not civilizationFor or civilizationFor(playerId)~=Formation.civilization)) then return rejected(playerId,"prerequisite") end
+   or not civilizationFor or Formation.byId[selection]~=Formation.forCivilization(civilizationFor(playerId)))) then return rejected(playerId,"prerequisite") end
   if account.selectedFormation==selection then return {ok=true,state=self:get(playerId)} end
   account.selectedFormation=selection
   account.revision=nextRevision(playerId)

@@ -51,10 +51,12 @@ return function()
   local options={clock=function()return 100 end,wait=function()end,sessionId='formation-save'}
   local first=Service.new(store,options);assert(first:load(101).ok)
   local s=ready();s.armyCampLevel=2;s.warCouncilLevel=1;s.shieldLevel=1;s.formationLevel=1;s.selectedFormation='spartan-shieldwall';s.shieldCharges=1;s.formationPhase='marching'
-  assert(first:set(101,'sparta',s));assert(first:set(101,'britain',ready()));assert(first:release(101).ok)
+  local roman=table.clone(s);roman.selectedFormation='roman-shield-guard'
+  assert(first:set(101,'sparta',s));assert(first:set(101,'rome',roman));assert(first:set(101,'britain',ready()));assert(first:release(101).ok)
   options.sessionId='formation-reload';local second=Service.new(store,options);assert(second:load(101).ok)
-  local a,b=second:get(101,'sparta'),second:get(101,'britain')
+  local a,b,c=second:get(101,'sparta'),second:get(101,'britain'),second:get(101,'rome')
   assert(a.selectedFormation=='spartan-shieldwall' and a.armyCampLevel==2 and b.selectedFormation=='none' and b.armyCampLevel==1)
+  assert(c.selectedFormation=='roman-shield-guard' and c.formationLevel==1 and not c.shieldCharges and not c.formationPhase)
   assert(not a.shieldCharges and not a.formationPhase and #D.persistentFields==20);assert(second:release(101).ok)
  end)
  test('server purchases spend exact prices and selection preserves health-free scalar state',function()

@@ -1,6 +1,7 @@
 -- Native E + UI mouse activation. Does not invoke production remotes directly.
 return function()
  local player=game.Players.LocalPlayer
+ local definition=assert(require(game.ReplicatedStorage.Shared.FormationConfig).forCivilization(player:GetAttribute('CivilizationId')))
  local screen=player.PlayerGui:WaitForChild('CivilizationSelection',10)
  local overlay=screen:WaitForChild('CouncilOverlay',10)
  local input=game:GetService('UserInputService'):CreateVirtualInput()
@@ -28,7 +29,7 @@ return function()
    task.wait(.08);input:SendMouseButton(point,Enum.UserInputType.MouseButton1,false,0)
   end
   click(select)
-  waitFor(function()return player:GetAttribute('SelectedFormation')=='spartan-shieldwall' end,'saved formation selection')
+  waitFor(function()return player:GetAttribute('SelectedFormation')==definition.id end,'saved formation selection')
   click(panel.CloseCouncil);waitFor(function()return not overlay.Visible end,'council close')
   return {ok=true,shown=shown,selected=player:GetAttribute('SelectedFormation'),viewport={camera.ViewportSize.X,camera.ViewportSize.Y}}
  end)

@@ -10,6 +10,12 @@ return function()
 		assert(dash.rightHip.X>.5 and dash.leftHip.X<-.4,"Dash has no driving leg stance")
 	end
 	count+=1
+	for _,elapsed in {0,.05,.1,.2}do
+		local thrust=Pose.sample('spear',elapsed,true)
+		assert(thrust.rightHip==Vector3.zero and thrust.leftHip==Vector3.zero,'Formation thrust uses running legs')
+		assert(thrust.offset.Z<-.4 and thrust.lean<0 and math.abs(thrust.right.X+thrust.lean)<.001)
+	end
+	count+=1
 	for _,names in {{"RightShoulder","LeftShoulder","Root","Waist","RightElbow","RightWrist","RightHip","LeftHip","RightKnee","LeftKnee","RightAnkle","LeftAnkle","Neck"},{"Right Shoulder","Left Shoulder","RootJoint","Right Hip","Left Hip","Neck"}} do
 		for _,family in {"spear","axe","sword"} do
 			local motors={}

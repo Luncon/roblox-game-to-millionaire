@@ -36,20 +36,21 @@ function UI.start(screen)
  end
  close.Activated:Connect(hide)
  local function render()
-  local spartan=player:GetAttribute('CivilizationId')==Config.civilization
+  local definition=Config.forCivilization(player:GetAttribute('CivilizationId'))
   local unlocked=player:GetAttribute('FormationLevel')==1
-  local chosen=player:GetAttribute('SelectedFormation')==Config.id
-  description.Text=if spartan then 'SPARTAN SHIELDWALL\n3 shieldmen in a shallow arc\nRanged + medic side by side behind\nGather all five in camp, then March Formation.'
+  local chosen=definition and player:GetAttribute('SelectedFormation')==definition.id
+  description.Text=if definition then string.upper(definition.name)..'\n'..definition.description..'\nGather all five in camp, then March Formation.'
    else 'No formations available for this civilization yet.\nYour War Council is ready for future formations.'
-  select.Visible=spartan
-  select.Active=unlocked and not busy;select.Selectable=select.Active
-  select.Text=if busy then 'Selecting…' elseif chosen then 'Spartan Shieldwall Selected' elseif unlocked then 'Select Spartan Shieldwall' else 'Unlock Shieldwall at the council pad'
+  select.Visible=definition~=nil
+  select.Active=definition~=nil and unlocked and not busy;select.Selectable=select.Active
+  select.Text=if busy then 'Selecting…' elseif chosen then definition.name..' Selected' elseif unlocked and definition then 'Select '..definition.name else 'Unlock formation at the council pad'
   status.Text=if chosen then 'Selected · Advance abandons the formation.' elseif unlocked then 'Choose a formation before marching.' else 'Formation training is not purchased.'
  end
  select.Activated:Connect(function()
   if busy or not remote or not select.Active then return end
   busy=true;render()
-  local ok,result=pcall(function()return remote:InvokeServer('formation',Config.id)end)
+  local definition=Config.forCivilization(player:GetAttribute('CivilizationId'))
+  local ok,result=pcall(function()return remote:InvokeServer('formation',definition.id)end)
   busy=false;render()
   if not ok or not result.ok then status.Text='Selection unavailable. Stay near your map table.'else status.Text='Selected. Gather your army in the training camp.'end
  end)

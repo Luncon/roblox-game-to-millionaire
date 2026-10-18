@@ -216,9 +216,17 @@ It adds a dedicated melee slot while preserving the existing camp class choice.
 War Council I costs 200 at settlement 19 after Training Yard I, for every
 civilization. Its accessible map room sits beside the training camp.
 
-Sparta's Shield Training I costs 150 at settlement/armor 15 after Armorer I.
-Spartan Shieldwall costs 250 at settlement 20 after that shield training,
+Sparta and Rome offer Shield Training I for 150 at settlement/armor 15 after
+Armorer I. Spartan Shieldwall or Roman Shield Guard costs 250 at settlement 20
+after that shield training,
 War Council I, Army Camp II and Hospital I. Purchases use physical pads and
 receive no workshop discount. The council table selects a purchased formation;
 selection costs no coins. Unlocks and selection save separately per civilization.
 Existing level-20+ settlements receive no retroactive checkpoint requirements.
+
+The normal Studio build also provides a purple +1,000 TEST COINS pad beside the
+single-coin pad. Only the nearby living owner with writable progress can receive
+a fixed 1,000-coin grant, at most once per half second and within the normal
+balance cap. It affects the active civilization and uses normal StudioDevelopment
+saving; the separate temporary-coin test build still uses fake storage. Testing
+pads and grants are disabled outside Studio.

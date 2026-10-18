@@ -26,15 +26,47 @@ A validated group SHALL gather at server-chosen positions centered on the road o
 - **THEN** the front does not advance without it
 
 ### Requirement: Formation combat and interruptions
-Formed troops SHALL retain validated stationary attacks and healing while suppressing independent pursuit, optional footwork and automatic dash skills. Medic enemy avoidance SHALL remain available. Advance SHALL immediately abandon formation and restore independent combat; Hold SHALL stop movement while allowing attacks/healing; Regroup SHALL cancel formation and return to camp.
+Formed troops SHALL retain stationary attacks, healing and medic enemy avoidance while suppressing independent pursuit, optional footwork and dashes. Advance SHALL abandon formation immediately; Hold SHALL stop movement but permit attacks/healing; Regroup SHALL cancel formation and return to camp.
 
 #### Scenario: Abandon a formation
 - **WHEN** the owner presses Advance during road assembly, marching or formation Hold
 - **THEN** formation goals and reservations clear immediately, selection stays saved and troops resume normal behavior without changing health or respawn timers
 
-### Requirement: Fresh lives and authority
-A lost member, changed claim, disconnected owner, invalid authority or teardown SHALL stop stale formation control. Surviving members SHALL Hold after a casualty; replacements SHALL NOT automatically join a prior march. A new march SHALL require a fresh complete camp muster. Shield breakage alone SHALL NOT scatter the formation.
+### Requirement: Stationary frontline skills
+Eligible captured Spartan melee SHALL use a stationary spear thrust within ordinary melee reach, including formation Hold. It SHALL preserve purchased skill damage, one validated contact, ordinary-attack exclusion, duration and cooldown, with no dash/trail and planted-leg animation. Formed ranged SHALL use ordinary attacks without skills. Lost membership, Regroup, death or authority loss SHALL cancel formation skills.
 
-#### Scenario: Member dies
-- **WHEN** a formed troop dies and a replacement later spawns
-- **THEN** remaining troops stop the old march and no replacement is assigned stale movement
+#### Scenario: Thrust without leaving the shield line
+- **WHEN** an eligible captured front-line spear troop has a visible hostile within melee reach and its skill is ready
+- **THEN** it performs one stationary skill thrust without leaving its slot or replenishing shields, while ranged supports keep ordinary attacks and the group retains cohesion
+
+### Requirement: Destination combat release
+Reaching the final center march destination SHALL dissolve formation and resume ordinary Advance for all surviving troops, regardless of enemy positions or attack range. Explicit Hold SHALL freeze the march until another command. Shield breakage alone SHALL NOT scatter a marching or held formation.
+
+#### Scenario: Arrival releases ordinary combat
+- **WHEN** an intact formation reaches its final center march destination
+- **THEN** formation control clears and survivors resume ordinary Advance, independent targeting and medic support without requiring a casualty or manual command
+
+### Requirement: Frontline casualty release
+A lost captured front-line melee life SHALL clear the formation and release survivors to ordinary Advance, unless the owner explicitly commanded Hold, in which case survivors SHALL stay on Hold. Saved selection, spent shields and independent respawn deadlines SHALL remain unchanged.
+
+#### Scenario: Front-line member dies
+- **WHEN** a formed front-line melee troop dies and a replacement later spawns
+- **THEN** survivors resume ordinary Advance, independent targeting and medic support, selection remains saved, and no replacement is assigned stale formation movement
+
+#### Scenario: Explicit Hold survives a casualty
+- **WHEN** the owner commands Hold and a formed front-line melee troop dies
+- **THEN** the formation clears but survivors stay on Hold and continue nearby attacks and healing
+
+### Requirement: Support losses and fresh lives
+Lost ranged or medic lives SHALL leave the captured formation while the surviving shield line continues. Replacements SHALL follow the current ordinary order and SHALL NOT join a prior formation. A new march SHALL require a fresh complete camp muster.
+
+#### Scenario: Support casualty preserves the shield line
+- **WHEN** a captured ranged or medic life is lost or replaced
+- **THEN** that life leaves the formation, surviving members continue marching or deployment, and the replacement is not enrolled into the old formation
+
+### Requirement: Authority cancellation
+Changed claims, disconnected owners, invalid authority and teardown SHALL stop stale formation control. Lost write authority SHALL force Hold.
+
+#### Scenario: Write lease is lost
+- **WHEN** an owner loses writable profile authority during a formation march
+- **THEN** the formation clears and surviving troops stop on Hold without an automatic Advance transition

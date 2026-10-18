@@ -48,5 +48,17 @@ return function()
   Shield.refresh(t.rig,'sparta','player',{shieldLevel=1})
   assert(t.rig:GetAttribute('ShieldCharges')==1)
  end)
+ test('Roman player and melee shields share two-hit depletion and never refill on faction switches',function()
+  for _,kind in {'player','warrior'}do
+   local t=target(kind,'rome');assert(t.rig:GetAttribute('ShieldCharges')==2)
+   assert(Shield.block(t,Vector3.new(0,0,-4)))
+   Shield.refresh(t.rig,'sparta',kind,{shieldLevel=1})
+   assert(t.rig:GetAttribute('ShieldCharges')==1)
+   assert(Shield.block(t,Vector3.new(0,0,-4)))
+   Shield.refresh(t.rig,'rome',kind,{shieldLevel=1})
+   assert(t.rig:GetAttribute('ShieldCharges')==0)
+  end
+  assert(target('ranged','rome').rig:GetAttribute('ShieldCharges')==0)
+ end)
  return n
 end

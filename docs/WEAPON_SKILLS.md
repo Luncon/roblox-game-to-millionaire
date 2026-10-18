@@ -44,6 +44,12 @@ the on-screen skill button on touch. The button displays the skill, tier and
 cooldown, and reports rejected activation. Typing into a text box does not activate
 a skill. Troops activate automatically for valid opportunities. Hold prevents
 dash movement but permits in-range stationary skills. Regroup cancels skills.
+In Spartan Shieldwall, captured front-line melee use a stationary spear thrust
+instead of dashing: one ordinary-melee-range contact, the same purchased damage
+tier and eight-second cooldown, and an upper-body thrust with planted legs.
+Roman Shield Guard front-line melee retain the stationary two-contact Double Slash
+with its normal purchased damage and cooldown. Formed ranged troops keep ordinary
+attacks and cannot activate weapon skills.
 
 The table uses ordinary single-hit damage, including the existing 0.8 ranged
 multiplier for ranged actors. At weapon 50, melee tier V deals 30.6 for a dash,
