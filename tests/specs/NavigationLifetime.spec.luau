@@ -55,7 +55,16 @@ return function()
   assert(math.abs(jump.X-3.3)<.1,'Waypoint lookahead skipped a jump approach')
   local final=leg(Vector3.new(3.3,0,0),false,false)
   assert(math.abs(final.X-3.3)<.1,'Waypoint lookahead stopped short of the final goal')
-  return 7
+  leg(Vector3.new(20,0,0),false,false)
+  nav:setGoal(position-Vector3.new(20,0,0));nav:step(os.clock())
+  assert(rig.Humanoid.WalkToPoint.X<=rig.HumanoidRootPart.Position.X+1,'Changed destination kept steering along the installed old route')
+  leg(Vector3.new(20,0,0),false,false)
+  nav:setGoal(position+Vector3.new(22,0,0));nav:step(os.clock())
+  assert(rig.Humanoid.WalkToPoint.X>position.X+15,'Small goal jitter erased the installed usable route')
+  leg(Vector3.new(20,0,0),false,false)
+  nav:setGoal(position+Vector3.new(40,0,0));nav:step(os.clock())
+  assert(rig.Humanoid.WalkToPoint.X>position.X+15,'Forward target movement erased useful route progress')
+  return 10
  end)
  nav:destroy();rig:Destroy();floor:Destroy();module:Destroy();assert(ok,result);return result
 end

@@ -64,6 +64,16 @@ function WarriorNavigator.new(rig: Model, isActive: () -> boolean, world)
 	end
 	function controller:setGoal(position: Vector3,policy)
 		if not active() then return end
+		local waypoint=waypoints[nextWaypoint]
+		if plannedGoal and waypoint and flatDistance(position,plannedGoal)>6 then
+			local leg,desired=waypoint.Position-root.Position,position-root.Position
+			-- A new target may reuse forward progress, but never an old leg
+			-- leading away from it while the replacement path is computed.
+			if leg.X*desired.X+leg.Z*desired.Z<0 then
+				clearRoute();plannedGoal=nil;blocked=true
+				humanoid:MoveTo(root.Position)
+			end
+		end
 		goal = position
 		allowsDetour = policy
 	end

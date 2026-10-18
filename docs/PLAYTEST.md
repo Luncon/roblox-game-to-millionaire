@@ -2084,3 +2084,11 @@ height changes and the final goal retain the original tolerance. All seven
 deferred-path checks passed, including the original three stale-path checks and
 four new waypoint cases. This addresses the observed waypoint pauses; the older
 centroid timeout remains a separate, unproven symptom.
+
+With waypoint anticipation, the combined advance check passed at 27/30 moving
+samples, no backsteps and 33.12 studs. The following centroid check still timed
+out. Another deterministic native regression then reproduced an installed old
+route continuing away from a materially changed destination. Navigation now
+discards that opposing leg while awaiting the replacement route, retaining both
+small jitter and useful forward legs for larger target movement. All ten path
+regressions passed; the connection to the centroid timeout awaits the full rerun.
