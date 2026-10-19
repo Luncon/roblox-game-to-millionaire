@@ -4,6 +4,7 @@ return function(context,player,round,onlyRoman)
  local service=context.service
  local Data=require(game.ServerScriptService.Game.ProfileData)
  local Camp=require(game.ReplicatedStorage.Shared.TrainingCampConfig)
+ local ShieldRack=require(game.ServerScriptService.Game.ShieldRack)
  local cases,evidence=0,{}
  local function test(name,fn)
   if onlyRoman and name:sub(1,5)~='Roman' then return end
@@ -26,10 +27,10 @@ return function(context,player,round,onlyRoman)
   local frame=service.world.model.Plots['Plot'..claim.plotId].Foundation.CFrame
   for id,slot in army().slots do
    assert(slot.rig)
-   if slot.rig:GetAttribute('AwaitingShieldSupply') then
+   if ShieldRack.needs(slot.rig,service.economy:get(player.UserId)) then
     local plot=service.world.model.Plots['Plot'..service.registry:get(player.UserId).plotId]
-    local rack=plot.Infrastructure.ShieldRack;local R=require(game.ServerScriptService.Game.ShieldRack)
-    slot.rig:PivotTo(CFrame.new(R.goal(rack,id)));assert(R.collect(slot.rig,rack,id,'regroup',service.economy:get(player.UserId),true))
+    local rack=plot.Infrastructure.ShieldRack
+    slot.rig:PivotTo(CFrame.new(ShieldRack.goal(rack,id)));assert(ShieldRack.collect(slot.rig,rack,id,'regroup',service.economy:get(player.UserId),true))
    end
    slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))
   end

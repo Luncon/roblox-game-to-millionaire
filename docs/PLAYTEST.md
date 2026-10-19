@@ -2391,3 +2391,50 @@ profile counts, initial supply routing, Persian 30-stud/half-speed settings and
 spear flip, production bootstrap and absence of the diagnostic formation getter.
 The owned fake-store window was stopped, test flags cleared and closed. Production
 and temporary manual-play builds were refreshed; no Roblox publication occurred.
+
+## Viking Shield Wedge — October 18, 2026
+
+Verified in an owned native Studio solo place using injected FakeProfileStore.
+Fixtures never opened player storage or changed source equipment templates.
+
+- Standalone logic: **232 cases**; strict OpenSpec: **24 items**; all **238 Luau
+  files** compiled. Removing the contact-release condition from a generated copy
+  failed the assembly/cohesion regression, leaving production unchanged.
+- Native modules: **630 cases**, including Viking purchase prerequisites, exact
+  prices, faction-isolated fake-store restoration, eight rotated wedge headings,
+  two-hit shields, captured-life checks and valid melee-contact boundaries.
+- Viking runtime: **seven distinct scenarios across focused runs**. Native pad
+  purchases and council E/mouse selection saved the wedge and left 2,150 coins.
+  A fresh bare shieldman physically collected and returned to camp. All five
+  unanchored lives assembled on the road and marched **452 studs in 75.86 seconds**
+  (about **5.96 studs/second**) before ordinary Advance resumed at the center.
+  Separate combat checks passed contact release despite lagging support,
+  ordinary axe skill animation/damage, medic healing, occlusion, stationary Hold,
+  Advance/Regroup cancellation, frontline replacement timing and held casualties.
+  **Four bounded GUI layouts** passed with the Viking council description.
+- Existing formation runtime: **17 Spartan/Roman scenarios plus 10 Persian and
+  resupply scenarios** passed together after fixture repair. Persian deployment
+  measured **29.93 studs**, half-speed approach remained active, and actual
+  arrow damage, guard return, healing, casualty rules and physical shield resupply
+  remained intact. These and the Viking checks total **34 distinct runtime
+  scenarios across the isolated runs**, rather than one uninterrupted full run.
+
+Two Viking observers were corrected: ordinary axe skills briefly set walking
+speed to zero, and their transient start attribute clears before a later bandage
+lands. The fixture now latches animation evidence and verifies normal speed and
+the unchanged cooldown afterward. The older formation setup now supplies any
+spent shield before camp placement; a recalled spent life otherwise correctly
+walked toward the rack and failed the immediate muster. Actual resupply walks
+remain independently checked. No production behavior was changed for these
+fixture corrections.
+
+Production, temporary 3,000-coin manual-play and reproducible formation test
+builds were refreshed. Published multiplayer, physical phone/controller input
+and real profile-storage restoration were not rerun for this change.
+
+The owned test window was stopped, focused flags cleared and the window closed.
+Main Studio (Clash of Civilizations, place 73839918762778) was reopened in Edit
+mode and all 78 production sources installed. Source checks confirmed the Viking
+definition/contact integration, production bootstrap and absence of the fixture
+getter/runner. Its 19 equipment, 13 outfit, five NPC and one farmer templates
+remain present. No Roblox publication occurred.

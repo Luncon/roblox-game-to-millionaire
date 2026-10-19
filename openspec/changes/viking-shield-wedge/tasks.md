@@ -10,4 +10,4 @@
 
 ## 3. Integration
 
-- [ ] 3.1 Verify physical purchases/council input, fresh shield pickup, unanchored assembly/march, contact/arrival/casualty release, combat/healing, orders and respawn continuity in isolated fake-store Studio; run existing formation regressions and all module cases, record evidence, review the diff and install production sources in main Studio.
+- [x] 3.1 Verify physical purchases/council input, fresh shield pickup, unanchored assembly/march, contact/arrival/casualty release, combat/healing, orders and respawn continuity in isolated fake-store Studio; run existing formation regressions and all module cases, record evidence, review the diff and install production sources in main Studio.
