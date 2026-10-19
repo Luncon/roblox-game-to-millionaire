@@ -8,6 +8,15 @@ local Formation={
 }
 -- Negative Z is forward. Each definition owns its geometry and guard headings.
 local definitions={
+ ['viking-shield-wedge']={
+  id='viking-shield-wedge',name='Viking Shield Wedge',civilization='vikings',
+  description='3 shieldmen in a pointed wedge\nBreaks into combat at melee contact',
+  breakOnMeleeContact=true,
+  frontLeadMinimum=4,supportDepthMinimum=10,supportSpacingMinimum=3,
+  offsets={warrior=Vector3.new(0,0,-6),camp=Vector3.new(-5,0,0),reinforcement=Vector3.new(5,0,0),
+   ranged=Vector3.new(-3,0,8),medic=Vector3.new(3,0,8)},
+  facingAngles={},
+ },
  ['spartan-shieldwall']={
   id='spartan-shieldwall',name='Spartan Shieldwall',civilization='sparta',skillFamily='spear',
   description='3 shieldmen in a shallow arc\nRanged + medic side by side behind',

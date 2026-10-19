@@ -390,6 +390,20 @@ pilum throws. The same center-arrival/frontline-casualty release, explicit Hold,
 Regroup, support-loss and replacement rules apply. Roman and Spartan selection
 save independently under the existing twenty-field profile.
 
+### Viking Shield Wedge
+
+Vikings buy Shield Training at settlement/armor 15 with Armorer I for 150 coins.
+Viking Shield Wedge costs 250 at settlement 20 after War Council I, Shield
+Training, Barracks Capacity II and Hospital I. Select it at the owned council
+map, then gather three melee troops, one axe thrower and one medic in the
+Training Yard before pressing March Formation.
+
+The road assembly puts the lead shieldman six studs ahead of the two flanks,
+with the axe thrower and medic paired behind. All shields face forward and the
+wedge marches at the shared six studs per second. It uses the existing two-hit
+shield and physical rack pickup; no extra speed, damage or protection bonus.
+Selection saves independently for Vikings using the existing formation fields.
+
 ### Persian Archer Screen
 
 Persia uses the same unlock levels, prices, camp muster and six-stud marching
