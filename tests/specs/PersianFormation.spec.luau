@@ -31,14 +31,27 @@ return function()
    F.step(g,a,.2,function()return true end,function(v)return v end);assert(g.phase=='marching')
   end
  end)
- test('firing opportunity requires the captured archer clear validation and forty-stud range',function()
-  local g,a=setup();local bow=a.ranged;local foe={position=bow.position+g.heading*40}
+ test('firing opportunity requires the captured archer clear validation and thirty-stud range',function()
+  local g,a=setup();local bow=a.ranged;local foe={position=bow.position+g.heading*30}
   assert(F.firingOpportunity(g,bow,{foe},function()return true end))
   assert(not F.firingOpportunity(g,bow,{foe},function()return false end))
-  foe.position=bow.position+g.heading*40.01;assert(not F.firingOpportunity(g,bow,{foe},function()return true end))
+  foe.position=bow.position+g.heading*30.01;assert(not F.firingOpportunity(g,bow,{foe},function()return true end))
   foe.position=bow.position;local replaced=table.clone(bow);replaced.rig={}
   assert(not F.firingOpportunity(g,replaced,{foe},function()return true end))
   g.members.ranged=nil;assert(not F.firingOpportunity(g,bow,{foe},function()return true end))
+ end)
+ test('Persia closes twenty-five percent farther and slows to half pace within bow range',function()
+  local g,a=setup();local foe={position=a.ranged.position+g.heading*40}
+  assert(g.definition.screenRange==30 and g.definition.approachRange==45)
+  assert(not F.firingOpportunity(g,a.ranged,{foe},function()return true end))
+  assert(F.firingOpportunity(g,a.ranged,{foe},function()return true end,g.definition.approachRange))
+  assert(not F.firingOpportunity(g,a.ranged,{foe},function()return false end,g.definition.approachRange))
+  g.phase='marching';g.slowApproach=true;local before=g.anchor
+  assert(F.step(g,a,.2,function()return true end,function(v)return v end,false))
+  assert(math.abs((g.anchor-before).Magnitude-.6)<.001)
+  local normal,b=setup('rome');normal.phase='marching';local p=normal.anchor
+  assert(F.step(normal,b,.2,function()return true end,function(v)return v end,false))
+  assert(math.abs((normal.anchor-p).Magnitude-1.2)<.001)
  end)
  test('clear-shot deployment stops before the center and stays latched after targets leave',function()
   local g,a=setup();g.phase='marching';local anchor=g.anchor

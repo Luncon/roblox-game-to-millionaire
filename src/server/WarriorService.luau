@@ -403,6 +403,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		local actors = combat:actors() -- Owned armies, players and neutral test opponents.
 		for ownerId, owner in owners do
 			local formationGoals=nil
+   local formationPace=FormationConfig.pace
 			if owner.formation then
 				local group=owner.formation
 				if not eligible(owner.player) then clearFormation(owner,true);publish(owner)else
@@ -413,15 +414,20 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					end
 					local snapshot=formationActors(owner)
 					local phase=group.phase
-					local hasShot=phase=="marching" and Formation.firingOpportunity(group,snapshot.ranged,actors,function(archer,target)
+     local function canShoot(archer,target)
 						return combat:canAct(archer.rig) and CombatRules.canDamage(archer,target,arena,Ranged.range) and combat:visible(archer,target)
-					end)
+     end
+     if phase=="marching" and group.definition.approachRange and Formation.firingOpportunity(group,snapshot.ranged,actors,canShoot,group.definition.approachRange)then
+      group.slowApproach=true
+     end
+     local hasShot=phase=="marching" and Formation.firingOpportunity(group,snapshot.ranged,actors,canShoot)
 					if phase=="holding" then
 						-- Validate captured lives even while Hold freezes formation movement.
 						formationGoals=Formation.step(group,snapshot,0,function()return false end,grounded)
 					else formationGoals=Formation.step(group,snapshot,now-group.lastAt,function(id,p)
 						return owner.slots[id].navigator:canWalkFormation(p)
 					end,grounded,hasShot)end
+					formationPace=FormationConfig.pace*(if group.slowApproach then group.definition.approachSpeedMultiplier or 1 else 1)
 					group.lastAt=now
 					if not formationGoals then releaseFormation(owner);publish(owner)
 					else owner.player:SetAttribute("FormationPhase",group.phase)end
@@ -515,7 +521,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
       rig:SetAttribute("FormationAvoiding",plan.avoiding==true)
       if not plan.avoiding then
        plan.goal=if owner.order=="hold" then nil else formationGoals[slot.id]
-       plan.phase,plan.state,plan.formation,plan.direct,plan.speed="idle","Formation",true,false,FormationConfig.pace
+       plan.phase,plan.state,plan.formation,plan.direct,plan.speed="idle","Formation",true,false,formationPace
        plan.allowsDetour=nil
        if owner.formation.phase~="assembling" then plan.facing=attacker.position+Formation.facing(owner.formation,slot.id)*10 end
       end
@@ -545,10 +551,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 						return projectiles:fire(rig,target,variant.projectileKind)
 					end},now)
 				if guarding then
-					plan.speed=FormationConfig.pace
+					plan.speed=formationPace
 					if not plan.facing then plan.facing=attacker.position+owner.formation.heading*10 end
 				elseif formed and owner.order~="hold" then
-					plan.goal,plan.formation,plan.direct,plan.speed=formationGoals[slot.id],true,false,FormationConfig.pace
+					plan.goal,plan.formation,plan.direct,plan.speed=formationGoals[slot.id],true,false,formationPace
 					local anchorGoal=plan.goal
 					if owner.formation.phase~="assembling" and (not plan.facing
 						or (plan.phase=="idle" and owner.formation.definition.facingAngles[slot.id]~=nil)) then

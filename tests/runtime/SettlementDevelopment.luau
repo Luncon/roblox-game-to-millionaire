@@ -97,19 +97,24 @@ return function(context,player,round)
 			end
 			assert(army().order=="regroup");evidence.regroupSeconds=os.clock()-began
 		end)
-		test("camp class changes preserve the living troop and pending deadline then affect only its replacement",function()
+		test("Barracks composition preserves living troops and pending deadlines before replacement",function()
 			-- The living melee camp must not conceal the main melee slot's wait.
 			army().slots.warrior.rig.Humanoid.Health=0
 			waitFor(function() return army().slots.warrior.respawnAt>0 end,"main warrior death with a living melee camp")
 			local hud=native({kind="inspect"})
-			assert(hud.campCount==1 and string.match(hud.armyText,"Warrior %d+s"),"Living camp hid the independent main-slot respawn countdown: "..hud.armyText)
+			assert(hud.campCount==1 and string.match(hud.armyText,"Next spawn %d+s"),"Living camp hid the independent main-slot respawn countdown: "..hud.armyText)
 			waitFor(function() return army().slots.warrior.rig~=nil end,"main warrior's real replacement timer",16)
 			local before=army();local camp=before.slots.camp.rig
-			command("CampRanged");assert(army().slots.camp.rig==camp and army().slots.camp.kind=="warrior")
+			local function composition(melee,ranged)
+    local board=plot.Settlement.Barracks.RecruitmentBoard
+    player.Character:PivotTo(board.CFrame*CFrame.new(0,0,-3));task.wait(.45)
+    assert(service.command(player,"composition",{melee=melee,ranged=ranged,medic=0}).ok)
+   end
+			composition(1,2);assert(army().slots.camp.rig==camp and army().slots.camp.kind=="warrior")
 			camp.Humanoid.Health=0
 			waitFor(function() return army().slots.camp.respawnAt>0 end,"camp death deadline")
 			local deadline=army().slots.camp.respawnAt
-			command("CampWarrior");command("CampRanged")
+			composition(2,1);composition(1,2)
 			assert(army().slots.camp.respawnAt==deadline and not army().slots.camp.rig)
 			waitFor(function() return army().slots.camp.rig~=nil end,"real barracks-four replacement timer",16)
 			local after=army();assert(workspace:GetServerTimeNow()>=deadline and after.slots.camp.rig~=camp and after.slots.camp.kind=="ranged")
@@ -122,7 +127,7 @@ return function(context,player,round)
 			task.wait(5.3)
 			assert(service.profiles:get(uid,fixtureCiv).farmCoins==saved.farmCoins)
 			choose(fixtureCiv)
-			for _,field in {"coins","level","weaponLevel","armorLevel","barracksLevel","trainingLevel","farmLevel","workersLevel","armyCampLevel","farmCoins","extraTroopClass"} do
+			for _,field in {"coins","level","weaponLevel","armorLevel","barracksLevel","trainingLevel","farmLevel","workersLevel","armyCampLevel","farmCoins","extraTroopClass","recruitMelee","recruitRanged","recruitMedic"} do
 				assert(current()[field]==saved[field],"Civilization switch lost "..field)
 			end
 			assert(army().order=="advance","Transient orders leaked across civilization selection")

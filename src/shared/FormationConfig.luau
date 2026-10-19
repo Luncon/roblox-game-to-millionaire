@@ -19,7 +19,7 @@ local definitions={
  ['persian-archer-screen']={
   id='persian-archer-screen',name='Persian Archer Screen',civilization='persia',skillFamily='spear',
   description='3 shieldmen in a straight line\nStops for bow fire; guards stay nearby',
-  screenRange=40,guardRadius=6,
+  screenRange=30,approachRange=45,approachSpeedMultiplier=.5,guardRadius=6,
   frontLeadMinimum=-1,frontLeadMaximum=1,supportDepthMinimum=7,supportSpacingMinimum=3,
   offsets={warrior=Vector3.new(0,0,0),camp=Vector3.new(-6,0,0),reinforcement=Vector3.new(6,0,0),
    ranged=Vector3.new(-3,0,9),medic=Vector3.new(3,0,9)},

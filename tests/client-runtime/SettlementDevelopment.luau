@@ -170,16 +170,16 @@ return function(options)
 			walk(frame:PointToWorldSpace(Vector3.new(0,3,10)))
 			return {ok=true,cases=1,coins=player:GetAttribute("Coins"),weaponLevel=3,standingSeconds=1.5}
 		elseif options.kind=="command" then
-			local allowed={Advance="advance",Hold="hold",Regroup="regroup",CampWarrior="warrior",CampRanged="ranged",MarchFormation="formation"}
+			local allowed={Advance="advance",Hold="hold",Regroup="regroup",MarchFormation="formation"}
 			assert(allowed[options.button],"Unknown native commander button")
 			local panel=ui();local button=panel:WaitForChild(options.button,10)
 			waitFor(function() return panel.Visible and button.Visible and button.Active end,"unlocked commander "..options.button)
 			task.wait(.4)
 			local screen=panel:FindFirstAncestorOfClass("ScreenGui")
 			local attempts=click(button,screen)
-			local field=if string.sub(options.button,1,4)=="Camp" then "ExtraTroopClass" else "ArmyOrder"
+			local field="ArmyOrder"
 			local feedback=panel:WaitForChild("CommandFeedback",10)
-			local expected=if field=="ArmyOrder" then "Order: "..allowed[options.button] else "Camp class changes on its next respawn."
+			local expected="Order: "..allowed[options.button]
 			waitFor(function() return player:GetAttribute(field)==allowed[options.button] and feedback.Text==expected end,"native commander result")
 			return {ok=true,cases=1,button=options.button,clickAttempts=attempts,order=player:GetAttribute("ArmyOrder"),choice=player:GetAttribute("ExtraTroopClass")}
 		else

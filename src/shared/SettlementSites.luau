@@ -20,7 +20,6 @@ local Sites = {
 	hospitalAccessHalfWidth = 4,
 	armory = Vector3.new(24,0,9),
 	training = Camp.center,
-	armyCamp = Vector3.new(-24,0,25),
 	workers = Vector3.new(60,0,-144),
 	blacksmith = Vector3.new(-42,0,34),
 	armorer = Vector3.new(42,0,34),

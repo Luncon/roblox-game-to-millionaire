@@ -240,7 +240,8 @@ local function applyCharacter(character: Model?, backpack: Instance?, civilizati
 	local weaponVisual=if visualId then Visuals.clone(visualId) else nil
 	if weaponVisual then
 		tool.Grip=weaponVisual:GetAttribute("Grip") or CFrame.identity
-		mountVisual(tool,handle,weaponVisual,CFrame.identity)
+  local orientation=if civilization.id=="persia" and visualId=="spear" then CFrame.Angles(0,math.pi,0)else CFrame.identity
+		mountVisual(tool,handle,weaponVisual,orientation)
 		local visualHandle=weaponVisual:FindFirstChild("Handle") :: BasePart
 		visualHandle.Name="VisualHandle"
 		handle.Transparency=1

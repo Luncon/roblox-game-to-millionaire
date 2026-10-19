@@ -49,11 +49,11 @@ function F.goals(group,ground)
 end
 
 -- canShoot supplies the server's ordinary hostility/life/arena/visibility checks.
-function F.firingOpportunity(group,archer,actors,canShoot)
+function F.firingOpportunity(group,archer,actors,canShoot,range)
  local member=group.members.ranged
  if not group.definition.screenRange or not member or not archer or archer.rig~=member.rig then return false end
  for _,target in actors do
-  if (target.position-archer.position).Magnitude<=group.definition.screenRange and canShoot(archer,target) then return true end
+  if (target.position-archer.position).Magnitude<=(range or group.definition.screenRange) and canShoot(archer,target) then return true end
  end
  return false
 end
@@ -102,7 +102,8 @@ function F.step(group,actors,dt,allows,ground,hasShot)
   if definition.screenRange and hasShot then group.phase='screening'
   elseif remaining<=.25 then group.phase=if definition.screenRange then 'screening' else 'deployed' else
    local previous=group.anchor
-   group.anchor=ground(previous+group.heading*math.min(remaining,Config.pace*math.clamp(dt,0,.25)))
+   local pace=Config.pace*(if group.slowApproach then definition.approachSpeedMultiplier or 1 else 1)
+   group.anchor=ground(previous+group.heading*math.min(remaining,pace*math.clamp(dt,0,.25)))
    local nextGoals=F.goals(group,ground);local clear=true
    for id,point in nextGoals do if not allows(id,point)then clear=false;break end end
    if clear then goals=nextGoals else group.anchor=previous end

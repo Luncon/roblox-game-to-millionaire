@@ -445,3 +445,9 @@ Hold pauses initial collection; Advance/Regroup resume it. Current melee with a
 broken shield still require Regroup to replenish. Partial shields do not refill.
 All four fighter slots can recruit melee and collect shields. Ranged/medics do
 not use the rack, and player gear retains its existing initialization.
+
+The Persian spear visual is flipped only on cloned Persian equipment, retaining
+source assets and other civilization grips. Persian Archer Screen deploys at 30
+studs (previously 40). On the first clear valid bow opportunity within 45 studs,
+its final approach slows from six to three studs per second until deployment.
+Spartan and Roman marching speed remains six.

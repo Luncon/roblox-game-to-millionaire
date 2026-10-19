@@ -24,7 +24,15 @@ return function(context,player,round,onlyRoman)
   -- Trusted fixture placement between observations; deployment itself is walked.
   order('regroup');local claim=service.registry:get(player.UserId)
   local frame=service.world.model.Plots['Plot'..claim.plotId].Foundation.CFrame
-  for id,slot in army().slots do assert(slot.rig);slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))end
+  for id,slot in army().slots do
+   assert(slot.rig)
+   if slot.rig:GetAttribute('AwaitingShieldSupply') then
+    local plot=service.world.model.Plots['Plot'..service.registry:get(player.UserId).plotId]
+    local rack=plot.Infrastructure.ShieldRack;local R=require(game.ServerScriptService.Game.ShieldRack)
+    slot.rig:PivotTo(CFrame.new(R.goal(rack,id)));assert(R.collect(slot.rig,rack,id,'regroup',service.economy:get(player.UserId),true))
+   end
+   slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))
+  end
   task.wait(.5)
  end
  local function march()

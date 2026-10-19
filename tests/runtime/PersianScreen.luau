@@ -33,10 +33,28 @@ return function(context,player,round,resupplyOnly)
  local function seed(id,unlocked)
   if player:GetAttribute('CivilizationId')==id then choose('britain')end
   assert(service.profiles:set(player.UserId,id,state(unlocked,id)));choose(id);order('hold')
+  -- Resupply scenarios begin with equipped lives. Fresh pickup walking is
+  -- verified independently by Recruitment; prepare these legacy fixtures here.
+  if unlocked then
+   local rack=plot().Infrastructure.ShieldRack;local R=require(G.ShieldRack)
+   for slotId,slot in army().slots do if slot.rig:GetAttribute('AwaitingShieldSupply')then
+    local original=slot.rig:GetPivot();slot.rig:PivotTo(CFrame.new(R.goal(rack,slotId)))
+    assert(R.collect(slot.rig,rack,slotId,'regroup',service.economy:get(player.UserId),true))
+    slot.rig:PivotTo(original)
+   end end
+  end
  end
  local function muster()
   order('regroup');local frame=plot().Foundation.CFrame
-  for id,slot in army().slots do assert(slot.rig);slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))end
+  for id,slot in army().slots do
+   assert(slot.rig)
+   if slot.rig:GetAttribute('AwaitingShieldSupply') then
+    local plot=service.world.model.Plots['Plot'..service.registry:get(player.UserId).plotId]
+    local rack=plot.Infrastructure.ShieldRack;local R=require(game.ServerScriptService.Game.ShieldRack)
+    slot.rig:PivotTo(CFrame.new(R.goal(rack,id)));assert(R.collect(slot.rig,rack,id,'regroup',service.economy:get(player.UserId),true))
+   end
+   slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))
+  end
   task.wait(.5)
  end
  local function march()task.wait(.35);local result=service.command(player,'march');assert(result.ok,tostring(result.reason));return army().formation end
@@ -80,7 +98,10 @@ return function(context,player,round,resupplyOnly)
   waitFor(function()return g.phase=='marching'end,'straight road assembly',90)
   local starts={};local lives={};for id,slot in army().slots do starts[id]=slot.rig.HumanoidRootPart.Position;lives[id]=slot.rig end
   local r,folder=enemy(service.world.model.Battlefield.Position+Vector3.new(0,0,160))
-  local anchor=g.anchor;local began=os.clock();local last=table.clone(starts);local previous=began
+  local anchor=g.anchor;local began=os.clock();local last=table.clone(starts);local previous=began;local slowObserved=false
+  -- The requested slower final approach needs a route-based walking budget.
+  local approachDistance=math.max(0,(starts.ranged-r.HumanoidRootPart.Position).Magnitude-g.definition.screenRange)
+  local marchBudget=approachDistance/(Config.pace*g.definition.approachSpeedMultiplier)+20
   repeat
    task.wait(.05);local now=os.clock();local dt=now-previous;previous=now
    for id,slot in army().slots do
@@ -88,10 +109,15 @@ return function(context,player,round,resupplyOnly)
     local p=slot.rig.HumanoidRootPart.Position
     assert((p-last[id]).Magnitude<math.max(4,dt*30),'Screen teleported');last[id]=p
    end
-  until g.phase=='screening' or os.clock()-began>85
+   if g.slowApproach and g.phase=='marching' then
+    assert(army().slots.warrior.rig.Humanoid.WalkSpeed<=3.05,'Persian frontline did not slow to half speed')
+    slowObserved=true
+   end
+  until g.phase=='screening' or os.clock()-began>marchBudget
   assert(g.phase=='screening' and army().formation==g and (g.anchor-g.destination).Magnitude>100,'Screen did not deploy early')
   local bow=lives.ranged;local range=(bow.HumanoidRootPart.Position-r.HumanoidRootPart.Position).Magnitude
-  assert(range<=40.5 and range>35,'Unexpected deployment range: '..range)
+  assert(range<=30.5 and range>25,'Unexpected deployment range: '..range)
+  assert(slowObserved,'Persian final approach never slowed inside bow range')
   local released=bow:GetAttribute('LastAttackAt') or 0
   waitFor(function()return (bow:GetAttribute('LastAttackAt')or 0)>released and r.Humanoid.Health<10000 end,'ordinary arrow release and damage',9)
   assert(bow:GetAttribute('WeaponSkillActive')==nil)
@@ -100,7 +126,7 @@ return function(context,player,round,resupplyOnly)
   local frozen=g.anchor;r:PivotTo(CFrame.new(r.HumanoidRootPart.Position+g.heading*100));task.wait(1)
   destroy(r,folder);task.wait(1)
   assert(g.phase=='screening' and (g.anchor-frozen).Magnitude<.01,'Target loss resumed marching')
-  evidence.march={seconds=os.clock()-began,distance=(g.anchor-anchor).Magnitude,bowRange=range,latched=true,arrowDamage=true}
+  evidence.march={seconds=os.clock()-began,distance=(g.anchor-anchor).Magnitude,bowRange=range,latched=true,arrowDamage=true,halfSpeed=slowObserved}
  end)
  test('deployed Persian guard physically engages locally and returns after a retreat without chasing',function()
   local g=army().formation;local r=army().slots.camp.rig;local center=F.goals(g,ground).camp
@@ -159,7 +185,8 @@ return function(context,player,round,resupplyOnly)
   for _,id in {'sparta','rome','persia'}do
    seed(id,true);local frame=plot().Foundation.CFrame;local rack=assert(plot().Infrastructure.ShieldRack)
    local slots=army().slots;local warrior=slots.warrior.rig;local partial=slots.camp.rig
-   spend(warrior);assert(require(G.ShieldCombat).block({rig=partial,position=partial.HumanoidRootPart.Position,root=partial.HumanoidRootPart},partial.HumanoidRootPart.Position+partial.HumanoidRootPart.CFrame.LookVector*4))
+   spend(warrior);local partialRestockedAt=partial:GetAttribute('ShieldRestockedAt')
+   assert(require(G.ShieldCombat).block({rig=partial,position=partial.HumanoidRootPart.Position,root=partial.HumanoidRootPart},partial.HumanoidRootPart.Position+partial.HumanoidRootPart.CFrame.LookVector*4))
    warrior.Humanoid.Health=57;local cooldown=workspace:GetServerTimeNow()+60;warrior:SetAttribute('WeaponSkillReadyAt',cooldown)
    local tool=warrior:FindFirstChildOfClass('Tool');local start=ground(frame:PointToWorldSpace(Vector3.new(-118,3,-55)))
    warrior:PivotTo(CFrame.new(start));local point=Rack.goal(rack,'warrior')
@@ -173,7 +200,7 @@ return function(context,player,round,resupplyOnly)
    assert(warrior.Humanoid.Health==57 and warrior:GetAttribute('WeaponSkillReadyAt')==cooldown and warrior:FindFirstChildOfClass('Tool')==tool)
    local shields=0;for _,item in warrior:GetDescendants()do if item:GetAttribute('CombatShield')==true then shields+=1 end end;assert(shields==1)
    waitFor(function()return Camp.contains(frame:PointToObjectSpace(warrior.HumanoidRootPart.Position),1.5)end,'resupplied '..id..' camp return',20)
-   assert(partial:GetAttribute('ShieldCharges')==1 and partial:GetAttribute('ShieldRestockedAt')==nil)
+   assert(partial:GetAttribute('ShieldCharges')==1 and partial:GetAttribute('ShieldRestockedAt')==partialRestockedAt)
    records[id]={walked=(warrior.HumanoidRootPart.Position-start).Magnitude,charges=2,sameLife=true,healthAtPickup=57}
   end
   evidence.resupply=records

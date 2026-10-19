@@ -14,7 +14,7 @@
 
 ## 4. Persian spear
 
-- [ ] 4.1 Correct only the Persian spear orientation for players and troops, preserve source assets and other grips; deploy at 30 studs with half-speed final approach after a clear 45-stud bow opportunity; verify native equipment and formation fixtures and record evidence.
+- [x] 4.1 Correct only the Persian spear orientation for players and troops, preserve source assets and other grips; deploy at 30 studs with half-speed final approach after a clear 45-stud bow opportunity; verify native equipment and formation fixtures and record evidence.
 
 ## 5. Integration
 

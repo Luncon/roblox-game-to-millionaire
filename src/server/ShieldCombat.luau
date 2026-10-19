@@ -13,7 +13,7 @@ function Shield.refresh(rig,civilizationId,kind,state)
  return eligible==true
 end
 
--- Only the server's validated Regroup rack pickup calls this explicit refill.
+-- Only validated initial-supply or Regroup rack pickup calls this refill.
 function Shield.restock(rig,civilizationId,kind,state)
  if kind~='warrior' or not Config.forCivilization(civilizationId) or not state or state.shieldLevel~=1
   or rig:GetAttribute('ShieldCharges')~=0 or rig:GetAttribute('SpartanShieldRemaining')~=0 then return false end
