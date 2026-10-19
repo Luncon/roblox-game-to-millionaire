@@ -26,7 +26,10 @@ return function()
 					assert(pad and pad:IsA("BasePart"), "Missing ground pad " .. name)
 					assert(pad.Anchored and pad.CanCollide and pad.CanQuery)
 					assert(pad.Size.X >= 4 and pad.Size.Z >= 4, "Ground pad too small")
-					assert((pad.Position - plot.Foundation.Position).Magnitude < 40)
+     local localPoint=plot.Foundation.CFrame:PointToObjectSpace(pad.Position)
+     if name=='Barracks2Button'then
+      assert(math.abs(localPoint.X+160)<.01 and math.abs(localPoint.Z+50)<.01)
+     else assert((pad.Position - plot.Foundation.Position).Magnitude < 40)end
 					assert(pad:FindFirstChildOfClass("ClickDetector"), "Missing click input")
 					assert(pad:FindFirstChildOfClass("ProximityPrompt"), "Missing alternate input")
 					local surface = pad:FindFirstChildOfClass("SurfaceGui")

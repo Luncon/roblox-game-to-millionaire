@@ -45,10 +45,16 @@ function Rack.build(parent,frame,civ)
 end
 function Rack.goal(rack,slot)
  local point=rack and rack:FindFirstChild('Pickup_'..slot)
+ -- The rear slot can also recruit a fourth melee in a custom composition.
+ if not point and slot=='ranged' and rack then
+  local center=rack:FindFirstChild('Pickup_camp')
+  return if center then center.Position+center.CFrame.RightVector*8 else nil
+ end
  return if point and point:IsA('BasePart')then point.Position else nil
 end
 function Rack.collect(rig,rack,slot,order,state,writable)
- if order~='regroup' or writable~=true or not rack or not rack.Parent or not Rack.needs(rig,state) then return false end
+ local initial=rig:GetAttribute('AwaitingShieldSupply')==true and order=='advance'
+ if (order~='regroup' and not initial) or writable~=true or not rack or not rack.Parent or not Rack.needs(rig,state) then return false end
  local plot=rack.Parent.Parent
  local owner=rig:GetAttribute('OwnerId');local civ=rig:GetAttribute('CivilizationId')
  if not plot or owner==nil or plot:GetAttribute('OwnerId')~=owner or plot:GetAttribute('CivilizationId')~=civ
@@ -60,6 +66,7 @@ function Rack.collect(rig,rack,slot,order,state,writable)
   rig:SetAttribute('ShieldCharges',0);rig:SetAttribute('SpartanShieldRemaining',0);return false
  end
  rig:SetAttribute('ShieldRestockedAt',workspace:GetServerTimeNow())
+ rig:SetAttribute('AwaitingShieldSupply',nil)
  return true
 end
 return Rack

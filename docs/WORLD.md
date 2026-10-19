@@ -279,3 +279,14 @@ unlock pad beside it at (-136, -.3, 26), directly in front of the room.
 The open entrance faces the camp; the map table
 is inside. Footprint, access and pads reserve flat native terrain. Shield
 Training's pad is beside the armory at (42, 2, 18).
+
+### Barracks military district update (October 18, 2026)
+
+The Barracks moves from the inner courtyard to local `(-148,-2.25,-62)`, beside
+the Training Yard and opposite the War Council. It faces the yard; its entrance
+and recruitment board are reachable before Training Yard purchase. Barracks
+respawn upgrades stand at `(-160,-.3,-50)` and capacity purchases at
+`(-136,-.3,-50)`. Four separated exterior spawn positions are clear of both pads.
+The exterior site and approach are reserved flat by Topography on all eight plots.
+The former standalone Army Camp building is removed. The existing shield rack
+remains between the Barracks and camp; fresh eligible melee walk there to equip.

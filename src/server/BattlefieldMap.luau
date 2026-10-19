@@ -193,8 +193,8 @@ function BattlefieldMap.build(parent: Instance, studioCheck: (() -> boolean)?)
 	function world:getBarracksSpawn(plotId: number, kind: string?, slotId: string?): CFrame
 		local plot = plots:FindFirstChild("Plot" .. plotId)
 		assert(plot, "Unknown barracks plot")
-		return (plot.Foundation :: BasePart).CFrame * (if slotId=="medic" then CFrame.new(Sites.hospitalSpawn) elseif slotId=="reinforcement" then CFrame.new(-44,5,-16) elseif slotId=="camp" then CFrame.new(-36,5,-16)
-			else CFrame.new(if kind == "ranged" then -28 else -24, 5, -11))
+  local offset=({warrior=0,ranged=4,camp=8,reinforcement=12})[slotId or 'warrior'] or 0
+		return (plot.Foundation :: BasePart).CFrame*CFrame.new(if slotId=="medic" then Sites.hospitalSpawn else Sites.barracksSpawn+Vector3.new(offset,0,0))
 	end
 
 	function world:getArmyRally(plotId: number,slotId: string?): CFrame
@@ -237,14 +237,15 @@ function BattlefieldMap.build(parent: Instance, studioCheck: (() -> boolean)?)
 		self:syncInfrastructure(plotId,state)
 	end
 
-	function world:setBarracksLevel(plotId: number, level: number)
+	function world:setBarracksLevel(plotId: number, level: number,state)
 		local plot = plots:FindFirstChild("Plot" .. plotId) :: Model
 		local barracks = plot.Settlement:FindFirstChild("Barracks")
 		if not barracks then return end
 		local tier = Tracks.barracks[level]
 		barracks:SetAttribute("BarracksLevel",level)
 		local label = barracks.BarracksSign:FindFirstChildOfClass("SurfaceGui"):FindFirstChildOfClass("TextLabel")
-		label.Text = string.format("BARRACKS %s · %d TROOP%s\n%gs REINFORCEMENTS",tier.name,tier.capacity,if tier.capacity > 1 then "S" else "",tier.respawnDelay)
+  local capacity=if state then require(game.ReplicatedStorage.Shared.ArmyRecruitment).capacity(state)else tier.capacity
+		label.Text = string.format("BARRACKS %s · %d FIGHTERS\n%gs RESPAWN",tier.name,capacity,tier.respawnDelay)
 	end
 
 	function world:setOwner(plotId: number, civilization, ownerId: number?, ownerName: string?, level: number?)

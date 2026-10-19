@@ -155,10 +155,6 @@ function Infrastructure.sync(plot,frame,civ,state)
    local length=Sites.hospitalSpawn.Z-Sites.hospitalAccessStart
    part(folder,"HospitalApproach",Vector3.new(8,.1,length),frame*CFrame.new(0,groundY+.05,Sites.hospitalAccessStart+length/2),Color3.fromRGB(151,131,94),Enum.Material.Ground)
   end
-  if (state.armyCampLevel or 0)>0 then
-			Districts.house(folder,frame*CFrame.new(Sites.armyCamp),civ,12,"ArmyCamp")
-			facadeLabel(folder.ArmyCamp,folder.ArmyCamp,"CampLabel","ARMY CAMP "..(if state.armyCampLevel==2 then "II" else "I"),civ.color)
-		end
 		if (state.farmLevel or 0)>0 then farmland(folder,frame,civ,state.workersLevel or 0,state.farmLevel) end
 		if (state.workersLevel or 0)>0 then
 			local workers=state.workersLevel

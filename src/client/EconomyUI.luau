@@ -56,17 +56,14 @@ function EconomyUI.start(screen: ScreenGui)
 			local remaining = if typeof(deadline) == "number" then math.max(0,math.ceil(deadline-workspace:GetServerTimeNow())) else 0
 			return if remaining > 0 then remaining .. "s" else "deploying"
 		end
-		local campCount=player:GetAttribute("CampCount") or 0
-		local campClass=player:GetAttribute("CampClass")
-		local units = "Warrior "..status(warrior-(if campClass=="warrior" then campCount else 0)-(player:GetAttribute("ReinforcementCount") or 0),"WarriorRespawnAt")
-		if tier.capacity == 2 then units ..= " · Ranged "..status(ranged-(if campClass=="ranged" then campCount else 0),"RangedRespawnAt") end
+		local units=string.format("Melee %d · Ranged %d",warrior,ranged)
 		local capacity=player:GetAttribute("TroopCapacity") or tier.capacity
-		if (player:GetAttribute("ArmyCampLevel") or 0)>0 then units..=" · Camp "..status(player:GetAttribute("CampCount") or 0,"CampRespawnAt") end
-		if player:GetAttribute("ArmyCampLevel")==2 then units..=" · Extra melee "..status(player:GetAttribute("ReinforcementCount") or 0,"ReinforcementRespawnAt") end
+		local nextSpawn=player:GetAttribute("NextRecruitRespawnAt") or 0
+		if nextSpawn>workspace:GetServerTimeNow()then units..=" · Next spawn "..math.ceil(nextSpawn-workspace:GetServerTimeNow()).."s"end
 		local medic=player:GetAttribute("MedicCount") or 0
 		army.Text = string.format("Barracks %s · %d/%d troops · fighters %gs respawn\n%s",tier.name,warrior+ranged+medic,capacity,tier.respawnDelay,units)
 		if player:GetAttribute("HospitalLevel")==1 then
-			army.Text..="\nHospital · Medic "..status(medic,"MedicRespawnAt").." · Yard recovery"
+			army.Text..="\nHospital · Medic "..(if player:GetAttribute("RecruitMedic")==0 and medic==0 then "not selected" else status(medic,"MedicRespawnAt")).." · Yard recovery"
 		end
 	end
 
@@ -157,7 +154,7 @@ function EconomyUI.start(screen: ScreenGui)
 		"BlacksmithLevel","ArmorerLevel","StorehouseLevel","HospitalLevel" } do
 		player:GetAttributeChangedSignal(attribute):Connect(syncAttributes)
 	end
-	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","ReinforcementCount","ReinforcementRespawnAt","TroopCapacity","MedicCount","MedicRespawnAt" } do
+	for _, attribute in { "BarracksLevel", "WarriorCount", "RangedCount", "WarriorRespawnAt", "RangedRespawnAt","CampCount","CampClass","CampRespawnAt","ReinforcementCount","ReinforcementRespawnAt","TroopCapacity","MedicCount","MedicRespawnAt","NextRecruitRespawnAt","RecruitMedic" } do
 		player:GetAttributeChangedSignal(attribute):Connect(renderArmy)
 	end
 	task.spawn(function()
@@ -199,7 +196,7 @@ function EconomyUI.start(screen: ScreenGui)
 					elseif result.action=="armorer" then "Armorer built! Armor upgrades cost 5% less."
 					elseif result.action=="storehouse" then "Storehouse built! Your farm can hold 180 coins."
 					elseif result.action=="hospital" then "Hospital built! Medic deployed; troops recover at the training yard."
-					elseif result.action=="armyCamp" then (if state.armyCampLevel==2 then "Army Camp II built! Additional melee deployed." else "Army camp built! Choose your third troop's class.")
+					elseif result.action=="armyCamp" then "Barracks capacity increased! Choose troop numbers at the Barracks."
 					elseif result.action=="troopClass" then "Camp class saved for its next respawn."
 					elseif result.action == "upgrade" then "Settlement expanded!"
 					elseif result.action == "switch" then "Civilization progress restored!"

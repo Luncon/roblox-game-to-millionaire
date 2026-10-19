@@ -3,6 +3,10 @@
 -- Local plot coordinates shared by buildings, controls and terrain reservations.
 local Camp = require(script.Parent.TrainingCampConfig)
 local Sites = {
+ barracks = Vector3.new(-148,-2.25,-62),
+ barracksPad = Vector3.new(-160,-.3,-50),
+ capacityPad = Vector3.new(-136,-.3,-50),
+ barracksSpawn = Vector3.new(-154,2.15,-48),
 	shieldRack = Camp.center+Vector3.new(0,0,-24),
 	warCouncil = Vector3.new(-148,0,42),
 	warCouncilPad = Vector3.new(-148,-.3,26),

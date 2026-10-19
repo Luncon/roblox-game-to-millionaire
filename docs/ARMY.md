@@ -34,13 +34,25 @@ barracks slots; only future deaths receive their shorter delay. Living identitie
 health, classes, orders and pending deadlines survive these purchases. The HUD
 shows each available slot.
 
-Army Camp I is available at settlement 10 with Barracks IV or higher and costs 120 coins.
-It adds one independent reinforcement slot, bringing the fighting army to three troops; Hospital I can add a separate medic.
-Choose melee or ranged for this camp slot. The choice saves for each civilization
-and applies at its next spawn: a living troop retains its class and health, and
-changing the choice never resets a pending replacement countdown. The original
-melee and ranged slots remain unchanged. Each camp replacement receives the
-latest owner gear and uses the barracks respawn delay in effect when it died.
+Barracks Capacity I is available at settlement 10 with Barracks IV for 120 coins;
+Capacity II is available at settlement 18 with Barracks VI for 250 coins. These
+replace the Army Camp purchases and preserve existing ownership automatically.
+Combat capacity grows from one melee at settlement 2 to two fighters at Barracks
+IV, then three/four with the capacity purchases. Hospital I adds a separate medic.
+
+The Barracks stands beside the Training Yard, opposite the War Council, facing
+the yard. Its inside recruitment board opens with E or a click. Set melee/ranged
+counts within unlocked fighter capacity and choose zero/one hospital medic. Ranged
+requires Barracks IV. Save Composition changes future spawns: living troops keep
+class, health, shields and cooldowns; pending respawn deadlines do not restart.
+Zero selected troops is allowed; disabled slots cease replacements after death.
+The screen shows selected capacity and current living counts. Existing saves use
+the old automatic lineup until a composition is explicitly saved. A formation
+still requires three actual melee, one ranged and one medic in camp.
+
+The former standalone Army Camp building is removed; the Training Yard serves as
+the common army gathering area. The Barracks pad shortens future respawn waits,
+while its Capacity pad buys extra slots. Both stand beside the relocated Barracks.
 
 Training Yard I is available at settlement 5 and costs 50 coins. It unlocks
 three army orders for the living owner:
@@ -68,7 +80,7 @@ the latest gear. Fifty gradual weapon levels span 10–18 melee damage, and fift
 armor levels span 100–140 standard maximum health. Ranged damage is 80% of the
 weapon stat, from 8 through 14.4; fractional gains are preserved. Each gear
 level is capped by settlement level. Barracks has six levels and a maximum
-of two troops from the barracks, plus one from Army Camp I. See
+of two troops from the barracks, plus one from Barracks Capacity I. See
 [the balance curve](ECONOMY.md).
 Damage, armor, prices and barracks timing come from shared UpgradeTracks; ranged
 styles and flight tuning come from RangedConfig.
@@ -198,12 +210,12 @@ Character resets and settlement rebuilding preserve the army and its pending
 countdowns. Leaving removes every troop slot, corpses and in-flight shots, and cancels
 replacements. Corpses last three seconds. The server controls damage, rewards,
 NPC physics and timers. Settlement, weapon, armor, barracks and infrastructure
-purchases, plus the camp class choice, save for each civilization. Returning to
+purchases, plus the selected recruitment composition, save for each civilization. Returning to
 a saved civilization rebuilds its army from those levels; troop health,
 locations, orders and pending countdowns are not persisted.
 Switching removes the old civilization's units and deploys the selected
 civilization's eligible troops. See [saved profiles](PROFILES.md). Hospital medics
-and Army Camp II provide the fourth/fifth slots. The first Spartan formation is
+and Barracks Capacity II provide the fourth/fifth slots. The first Spartan formation is
 tracked in the active `spartan-shieldwall` change; other formations, specialist
 recruitment and ranged player attacks remain planned.
 
@@ -235,8 +247,7 @@ remain pending. See [playtest evidence](PLAYTEST.md).
 ## Hospital support and recovery
 
 Hospital I (settlement 10, Training Yard I, 200 coins) deploys one dedicated
-medic. It does not consume the Army Camp selection: barracks melee/ranged, camp
-reinforcement and hospital medic can coexist. `MedicCount` and
+medic. It uses its own Hospital slot alongside the Barracks combat roster. `MedicCount` and
 `MedicRespawnAt` are separate; total army count includes support. The medic uses
 a fixed 15-second replacement wait. Barracks purchases retain existing deadlines.
 Owner armor applies while preserving missing health; weapon upgrades never scale
@@ -321,7 +332,7 @@ narrow layouts retain space between status, commands and the skill button.
 
 ### Shieldwall implementation milestone (October 18, 2026)
 
-Army Camp II adds an independent fixed melee life, bringing the maximum to five
+Barracks Capacity II adds an independent fixed melee life, bringing the maximum to five
 with the ranged barracks slot, selectable camp slot and hospital medic. Existing
 health, class choices and pending respawn deadlines survive the purchase. Camp
 returns use exterior navmesh goals and commit to the short crossing into the yard.
@@ -363,7 +374,7 @@ do not. No formation combat-stat bonus is granted.
 
 Rome unlocks Shield Training and Roman Shield Guard at the same levels and
 prices as Sparta: settlement/armor 15 and Armorer I for 150 coins, then settlement
-20, War Council I, Army Camp II, Hospital I and shield training for 250 coins.
+20, War Council I, Barracks Capacity II, Hospital I and shield training for 250 coins.
 The owned council map selects Roman Shield Guard; the council-side pad buys it.
 All five living members must muster in camp: three gladius-and-shield melee,
 one pilum thrower and one medic. The current inert shield asset is shared with
@@ -425,3 +436,12 @@ for the full grant. The pad does not grant through touch and is absent outside
 Studio; the economy also rejects testing grants outside Studio. Normal Studio
 progress still uses StudioDevelopment unless an explicitly fake test bootstrap
 is installed. The separate temporary-coin playtest remains available.
+
+### Recruitment and supply update (October 18, 2026)
+
+New shield-trained melee spawn bare at the Barracks, walk to assigned shield-rack
+pickups, receive their two-hit shield only on arrival, then follow their order.
+Hold pauses initial collection; Advance/Regroup resume it. Current melee with a
+broken shield still require Regroup to replenish. Partial shields do not refill.
+All four fighter slots can recruit melee and collect shields. Ranged/medics do
+not use the rack, and player gear retains its existing initialization.

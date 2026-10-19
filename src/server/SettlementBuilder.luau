@@ -3,6 +3,7 @@
 local SettlementBuilder = {}
 local Districts = require(script.Parent.SettlementDistricts)
 local Geometry = require(script.Parent.SettlementGeometry)
+local Sites=require(game.ReplicatedStorage.Shared.SettlementSites)
 local STONE = Color3.fromRGB(214, 200, 166)
 local TIMBER = Color3.fromRGB(119, 85, 55)
 
@@ -202,14 +203,15 @@ local function addBarracks(parent: Folder, frame: CFrame, civilization)
 	local id, color = civilization.id, civilization.color
 	-- The original tent becomes the entrance awning rather than an obstacle.
 	local camp = parent:FindFirstChild("Camp") :: Part
-	camp.Size, camp.CFrame = Vector3.new(10,.4,3), frame*CFrame.new(-24,9.2,-8)
+ local origin=frame*CFrame.new(Sites.barracks)*CFrame.Angles(0,math.pi,0)
+	camp.Size, camp.CFrame = Vector3.new(10,.4,3), origin*CFrame.new(0,9.2,-8)
 	camp.CanCollide, camp.CanTouch, camp.CanQuery = false, false, false
 	local barracks = Instance.new("Model")
 	barracks.Name = "Barracks"
 	barracks:SetAttribute("CivilizationId", id)
 	barracks:SetAttribute("BarracksLevel", 1)
 	barracks.Parent = parent
-	local origin = frame * CFrame.new(-24,0,0)
+ camp.Parent=barracks
 	local timber = id == "seneca" or id == "vikings" or id == "mongols"
 	local material = if timber then Enum.Material.WoodPlanks else Enum.Material.Sandstone
 	local wall = if timber then TIMBER else STONE
@@ -235,6 +237,14 @@ local function addBarracks(parent: Folder, frame: CFrame, civilization)
 	label.Font, label.TextScaled = Enum.Font.GothamBold, true
 	label.TextColor3 = Color3.fromRGB(247,239,216)
 	label.Text, label.Parent = "BARRACKS I · 1 WARRIOR", surface
+ local board=block(barracks,"RecruitmentBoard",Vector3.new(7,3,.2),origin*CFrame.new(0,4.5,5.9),Color3.fromRGB(36,45,42))
+ local display=surface:Clone();display.CanvasSize=Vector2.new(700,300);display.Parent=board
+ display:FindFirstChildOfClass("TextLabel").Text="RECRUITMENT\nChoose your army\nMelee · Ranged · Medic"
+ local prompt=Instance.new("ProximityPrompt");prompt.ActionText="Manage Troops";prompt.ObjectText="Barracks Recruitment"
+ prompt.HoldDuration=0;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=board
+ local click=Instance.new("ClickDetector");click.MaxActivationDistance=14;click.Parent=board
+ -- A supported approach connects the exterior recruitment site to supplies.
+ block(barracks,"RecruitmentApproach",Vector3.new(20,.1,22),frame*CFrame.new(-148,-.9,-45),Color3.fromRGB(151,131,94),Enum.Material.Ground)
 end
 
 function SettlementBuilder.build(parent: Folder, frame: CFrame, civilization, level: number, metadata: {ownerName: string?, plotId: number?}?)

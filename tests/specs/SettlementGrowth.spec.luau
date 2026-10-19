@@ -40,7 +40,10 @@ return function()
 						parts+=1
 						for _,x in {-1,1} do for _,y in {-1,1} do for _,z in {-1,1} do
 							local corner=plot.Foundation.CFrame:PointToObjectSpace(part.CFrame:PointToWorldSpace(Vector3.new(x*part.Size.X/2,y*part.Size.Y/2,z*part.Size.Z/2)))
-							assert(math.abs(corner.X)<=half+.05 and math.abs(corner.Z)<=half+.05,civ.id.." level"..level.." out-of-bounds "..part.Name)
+       local barracks=plot.Settlement:FindFirstChild('Barracks')
+       local exterior=barracks and part:IsDescendantOf(barracks)
+       local bounded=if exterior then math.abs(corner.X+148)<=12.05 and math.abs(corner.Z+54)<=24.05 else math.abs(corner.X)<=half+.05 and math.abs(corner.Z)<=half+.05
+							assert(bounded,civ.id.." level"..level.." out-of-bounds "..part.Name)
 						end end end
 					end
 					assert(parts<=400,civ.id.." exceeds final static settlement budget: "..parts)

@@ -6,6 +6,7 @@ local ArmyUI={}
 
 function ArmyUI.start(screen: ScreenGui)
 	require(script.Parent.WarCouncilUI).start(screen)
+ require(script.Parent.BarracksUI).start(screen)
 	local player=Players.LocalPlayer
 	local hud=screen:WaitForChild("SettlementHUD") :: Frame
 	local panel=Instance.new("Frame")
@@ -26,7 +27,7 @@ function ArmyUI.start(screen: ScreenGui)
 	local remote: RemoteFunction?=nil
 	local busy=false
 	local reasons={formation_locked="Build your formation prerequisites first.",formation_unselected="Select a formation at your War Council map.",
-		formation_missing_troops="All five troops must be alive: 3 melee, 1 ranged, 1 medic.",formation_wrong_classes="Choose Camp: Melee, then wait for its next respawn.",
+		formation_missing_troops="All five troops must be alive: 3 melee, 1 ranged, 1 medic.",formation_wrong_classes="Select 3 melee, 1 ranged and 1 medic at the Barracks; wait for replacements.",
 		formation_outside_camp="Regroup all five troops into the training camp first."}
 	local function button(name,text,x,y,width,action,value)
 		local b=Instance.new("TextButton")
@@ -42,15 +43,14 @@ function ArmyUI.start(screen: ScreenGui)
 			if not ok or not result.ok then
 				feedback.Text=if ok and result.reason=="rate_limited" then "Wait a moment before giving another order."
 					else (if ok then reasons[result.reason] else nil) or "Order unavailable. Check your buildings and saved session."
-			else feedback.Text=if action=="class" then "Camp class changes on its next respawn." elseif action=="march" then "Order: formation" else "Order: "..value end
+			else feedback.Text=if action=="march" then "Order: formation" else "Order: "..value end
 		end)
 	end
 	button("Advance","Advance",0,.23,1/3,"order","advance")
 	button("Hold","Hold",1/3,.23,1/3,"order","hold")
 	button("Regroup","Regroup",2/3,.23,1/3,"order","regroup")
 	button("MarchFormation","March Formation",0,.4,1,"march",nil)
-	button("CampWarrior","Camp: Melee",0,.55,.5,"class","warrior")
-	button("CampRanged","Camp: Ranged",.5,.55,.5,"class","ranged")
+ local hint=title:Clone();hint.Name="RecruitmentHint";hint.Text="Choose troop numbers at the Barracks";hint.TextSize=12;hint.Parent=panel
 	local function layout()
 		local size=screen.AbsoluteSize
 		local beside=size.Y<500 and size.X>=620
@@ -64,9 +64,9 @@ function ArmyUI.start(screen: ScreenGui)
 		title.Size=UDim2.new(1,-16,0,if compact then 17 else 23)
 		feedback.Position=UDim2.fromOffset(8,if compact then 106 else 138)
 		feedback.Size=UDim2.new(1,-16,0,if compact then 20 else 28)
+  hint.Position=UDim2.fromOffset(8,if compact then 78 else 102)
 		for name,b in buttons do
-			local isClass=name=="CampWarrior" or name=="CampRanged"
-			b.Position=UDim2.new(b.Position.X.Scale,6,0,if isClass then (if compact then 78 else 102) elseif name=="MarchFormation" then (if compact then 49 else 66) else (if compact then 20 else 30))
+			b.Position=UDim2.new(b.Position.X.Scale,6,0,if name=="MarchFormation" then (if compact then 49 else 66) else (if compact then 20 else 30))
 			b.Size=UDim2.new(b.Size.X.Scale,-12,0,if compact then 24 else 30)
 			b.TextSize=if beside and size.X<700 then 10 else 12
 		end
@@ -74,17 +74,13 @@ function ArmyUI.start(screen: ScreenGui)
 	local function render()
 		local selected=player:GetAttribute("CivilizationId")~=nil
 		local trained=(player:GetAttribute("TrainingLevel") or 0)>0
-		local camp=(player:GetAttribute("ArmyCampLevel") or 0)>0
-		panel.Visible=selected and hud.Visible and (trained or camp)
+		panel.Visible=selected and hud.Visible and trained
 		title.Text="ARMY · "..string.upper(player:GetAttribute("FormationPhase") or player:GetAttribute("ArmyOrder") or "advance")
 		local writable=player:GetAttribute("ProgressStatus")=="ready" or player:GetAttribute("ProgressStatus")=="saving"
 		for name,b in buttons do
-			local isClass=name=="CampWarrior" or name=="CampRanged"
-			b.Visible=if isClass then camp elseif name=="MarchFormation" then (player:GetAttribute("WarCouncilLevel") or 0)>0 else trained
+			b.Visible=if name=="MarchFormation" then (player:GetAttribute("WarCouncilLevel") or 0)>0 else trained
 			b.Active,b.Selectable=writable,writable
-			local selectedClass=player:GetAttribute("ExtraTroopClass") or "warrior"
-			local highlighted=(name=="CampWarrior" and selectedClass=="warrior") or (name=="CampRanged" and selectedClass=="ranged")
-				or (not isClass and string.lower(name)==player:GetAttribute("ArmyOrder"))
+			local highlighted=string.lower(name)==player:GetAttribute("ArmyOrder")
 			b.BackgroundColor3=if highlighted then Color3.fromRGB(136,109,51) else Color3.fromRGB(80,98,77)
 		end
 	end

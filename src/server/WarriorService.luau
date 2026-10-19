@@ -31,16 +31,7 @@ local ORDERS = {advance=true,hold=true,regroup=true}
 
 -- Slot identity survives a class choice; camp.kind is resolved at its next spawn.
 function WarriorService.slotDefinitions(state)
-	local slots = {{id="warrior",kind="warrior"}}
-	if Tracks.barracks[state.barracksLevel or 1].capacity >= 2 then
-		table.insert(slots,{id="ranged",kind="ranged"})
-	end
-	if (state.armyCampLevel or 0) >= 1 then
-		table.insert(slots,{id="camp",kind=if state.extraTroopClass=="ranged" then "ranged" else "warrior"})
-	end
-	if state.armyCampLevel==2 then table.insert(slots,{id="reinforcement",kind="warrior"}) end
-	if state.hospitalLevel==1 then table.insert(slots,{id="medic",kind="medic"}) end
-	return slots
+ return require(Shared.ArmyRecruitment).slots(state)
 end
 
 function WarriorService.start(world, registry, economy, catalog, sharedCombat, sharedEncounter)
@@ -90,6 +81,12 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
   owner.player:SetAttribute("MedicRespawnAt",if owner.slots.medic then owner.slots.medic.respawnAt else 0)
   owner.player:SetAttribute("HospitalLevel",state.hospitalLevel or 0)
   owner.player:SetAttribute("TroopCapacity", #WarriorService.slotDefinitions(state))
+  local nextRecruit=math.huge
+  for _,definition in WarriorService.slotDefinitions(state)do
+   local slot=owner.slots[definition.id]
+   if definition.kind~="none" and slot and not slot.rig and slot.respawnAt>workspace:GetServerTimeNow()then nextRecruit=math.min(nextRecruit,slot.respawnAt)end
+  end
+  owner.player:SetAttribute("NextRecruitRespawnAt",if nextRecruit<math.huge then nextRecruit else 0)
 		owner.player:SetAttribute("ArmyRespawnDelay", tier(state).respawnDelay)
 		owner.player:SetAttribute("WarriorRespawnAt", if warrior then warrior.respawnAt else 0)
 		owner.player:SetAttribute("RangedRespawnAt", if ranged then ranged.respawnAt else 0)
@@ -107,6 +104,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 			player:SetAttribute(name, 0)
 		end
 		player:SetAttribute("CampClass",nil)
+  player:SetAttribute("NextRecruitRespawnAt",0)
 		player:SetAttribute("ExtraTroopClass","warrior")
 		player:SetAttribute("ArmyOrder","advance")
 		player:SetAttribute("FormationPhase",nil)
@@ -243,10 +241,11 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 		if not claim or not current(owner, slot) or slot.rig then return end
 		local definition=nil
 		for _, candidate in WarriorService.slotDefinitions(state) do if candidate.id==slot.id then definition=candidate;break end end
-		if not definition then return end
+		if not definition or definition.kind=="none" then return end
 		slot.kind=definition.kind
+		local collectShield=slot.kind=="warrior" and ShieldRack.unlocked(catalog[claim.civilizationId],state)
 		local rig = WarriorRig.create(catalog[claim.civilizationId], world:getBarracksSpawn(claim.plotId, slot.kind, slot.id),
-			owner.player.UserId, claim.plotId, state, slot.kind)
+			owner.player.UserId, claim.plotId, state, slot.kind,collectShield)
 		slot.rig, slot.respawnAt, slot.nextAttack, slot.attackUntil = rig, 0, 0, 0
 		rig.Parent = troops
 		rigSlots[rig] = slot
@@ -284,7 +283,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 			owner = {player=player,civilizationId=claim.civilizationId,plotId=claim.plotId,slots={},order="advance",lastCommandAt=-math.huge}
 			owners[player.UserId] = owner
 		end
-		world:setBarracksLevel(claim.plotId, state.barracksLevel or 1)
+		world:setBarracksLevel(claim.plotId, state.barracksLevel or 1,state)
 		local available={}
 		for _, definition in WarriorService.slotDefinitions(state) do
 			available[definition.id]=true
@@ -299,6 +298,8 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					WarriorRig.update(slot.rig, catalog[claim.civilizationId], state)
 					combat.skills:refresh(slot.rig)
 				else fallen(owner, slot, slot.rig) end
+			elseif slot.respawnAt<=workspace:GetServerTimeNow() then
+    spawnSlot(owner,slot)
 			end
 		end
 		for id, slot in owner.slots do
@@ -440,7 +441,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
      rig:SetAttribute("MedicalSupportActive",false)
      continue
     end
-				if owner.order=="regroup" then
+				if owner.order=="regroup" or (rig:GetAttribute("AwaitingShieldSupply")==true and owner.order~="hold") then
 					local state=economy:get(ownerId)
 					if ShieldRack.needs(rig,state)then
 						local infrastructure=world.model.Plots["Plot"..owner.plotId]:FindFirstChild("Infrastructure")
@@ -458,6 +459,9 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 						end
 					end
 					slot.resupplyGoal=nil
+     if owner.order~="regroup" then
+      if rig:GetAttribute("AwaitingShieldSupply")==true then slot.navigator:stop();continue end
+     else
 					slot.rest=slot.rest or ArmyRest.new(slot.id)
 					local frame=world.model.Plots["Plot"..owner.plotId].Foundation.CFrame
 					local position=frame:PointToObjectSpace(attacker.position)
@@ -477,6 +481,7 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
 					rig:SetAttribute("WarriorState",if arrived then "Regrouped" else "Regrouping")
 					rig:SetAttribute("RestPhase",slot.rest.phase)
 					continue
+     end
 				end
 				local claim=registry:get(ownerId)
     local function safe(point,escaping,returning)

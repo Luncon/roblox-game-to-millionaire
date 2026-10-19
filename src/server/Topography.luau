@@ -53,6 +53,7 @@ for id=1,Layout.plotCount do
 	local frame=Layout.plotFrame(id)
 	rectangle(frame.X,frame.Z,frame.RightVector.X,frame.RightVector.Z,Layout.maxPlotSize/2,Layout.maxPlotSize/2,"plot")
 	for _,reservation in {
+  {site=Vector3.new(-148,0,-57),hx=24,hz=23,kind="barracks"},
   {site=Sites.shieldRack,hx=12,hz=10,kind="shield_supplies"},
   {site=Sites.warCouncil,hx=16,hz=14,kind="war_council"},
   {site=Sites.warCouncilPad,hx=8,hz=8,kind="council_control"},

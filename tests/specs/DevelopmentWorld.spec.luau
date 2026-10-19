@@ -49,7 +49,7 @@ return function()
 			end
 			assert(not plot.Infrastructure:FindFirstChild("ArmyCamp"))
 			plot=sync(1,catalog[1],state(10,{trainingLevel=1,farmLevel=1,workersLevel=1,armyCampLevel=1,barracksLevel=4}))
-			assert(plot.Infrastructure:FindFirstChild("ArmyCamp"))
+			assert(not plot.Infrastructure:FindFirstChild("ArmyCamp"),"Recruitment must use the Barracks instead of a separate Army Camp")
 		end)
 		test("only eligible current purchases exist and the settlement-ten checkpoint hides its blocked pad",function()
 			local plot=sync(1,catalog[1],state(4))

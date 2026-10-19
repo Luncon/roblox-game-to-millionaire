@@ -6,11 +6,11 @@
 
 ## 2. Troop lifecycle and supplies
 
-- [ ] 2.1 Apply selected composition only to future spawns with preserved living troops and respawn deadlines; make fresh eligible melee collect shields; verify lifecycle, disabled/re-enabled slots, four-melee supplies, Hold and lost authority with native fixtures and document behavior.
+- [x] 2.1 Apply selected composition only to future spawns with preserved living troops and respawn deadlines; make fresh eligible melee collect shields; verify lifecycle, disabled/re-enabled slots, four-melee supplies, Hold and lost authority with native fixtures and document behavior.
 
 ## 3. Barracks district and screen
 
-- [ ] 3.1 Move Barracks and controls beside Training Yard, remove Army Camp building, add owner-validated recruitment board and responsive composition screen, replace old HUD class buttons; verify geometry, request authority and native GUI interaction; update progression/layout documentation.
+- [x] 3.1 Move Barracks and controls beside Training Yard, remove Army Camp building, add owner-validated recruitment board and responsive composition screen, replace old HUD class buttons; verify geometry, request authority and native GUI interaction; update progression/layout documentation.
 
 ## 4. Persian spear
 

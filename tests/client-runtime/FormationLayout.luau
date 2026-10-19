@@ -21,7 +21,7 @@ return function()
    local controls=shell.ArmyControls;assert(inside(controls,shell),'Command panel exceeds viewport '..tostring(size))
    assert(not overlaps(controls,hud),'Commands overlap settlement status '..tostring(size))
    local buttons={}
-   for _,name in {'Advance','Hold','Regroup','MarchFormation','CampWarrior','CampRanged'}do
+   for _,name in {'Advance','Hold','Regroup','MarchFormation'}do
     local b=controls[name];assert(b.Visible and inside(b,controls) and b.TextFits,'Clipped command '..name..' '..tostring(size))
     for _,other in buttons do assert(not overlaps(b,other),'Command buttons overlap')end;table.insert(buttons,b)
    end
@@ -29,7 +29,16 @@ return function()
    local room=shell.CouncilOverlay.WarCouncil
    assert(inside(room,shell) and inside(room.SelectShieldwall,room) and inside(room.CloseCouncil,room))
    assert(room.FormationDescription.TextFits and not overlaps(room.SelectShieldwall,room.CloseCouncil))
-   shell.CouncilOverlay.Visible=false;shell:Destroy();cases+=1
+   shell.CouncilOverlay.Visible=false
+   shell.RecruitmentOverlay.Visible=true;task.wait(.1)
+   local recruitment=shell.RecruitmentOverlay.BarracksRecruitment
+   assert(inside(recruitment,shell) and inside(recruitment.ApplyComposition,recruitment) and inside(recruitment.CloseRecruitment,recruitment))
+   assert(recruitment.Heading.TextFits and recruitment.ApplyComposition.TextFits)
+   for _,id in {'melee','ranged','medic'}do
+    assert(recruitment.Composition[id..'Plus'].AbsoluteSize==Vector2.new(44,44))
+    assert(not overlaps(recruitment.Composition[id..'Plus'],recruitment.Composition[id..'Minus']))
+   end
+   shell:Destroy();cases+=1
   end
   return {ok=true,cases=cases}
  end)

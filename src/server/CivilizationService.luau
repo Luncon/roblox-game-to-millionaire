@@ -28,7 +28,7 @@ function CivilizationService.start(options: any?)
 	local revision = 0
 	local lastRequest, lastLoad, activePlayers, loading, generations = {}, {}, {}, {}, {}
 	local closing = false
-	local army, buttons, profiles, snapshot, council
+	local army, buttons, profiles, snapshot, council, recruitment
 	local commandTraffic = {}
 	local remotes = Instance.new("Folder")
 	remotes.Name = "CivilizationRemotes"
@@ -46,6 +46,8 @@ function CivilizationService.start(options: any?)
 	armyRequest.Name,armyRequest.Parent="Request",armyRemotes
 	local councilOpened=Instance.new("RemoteEvent")
 	councilOpened.Name,councilOpened.Parent="CouncilOpened",armyRemotes
+ local recruitmentOpened=Instance.new("RemoteEvent")
+ recruitmentOpened.Name,recruitmentOpened.Parent="RecruitmentOpened",armyRemotes
 	local scope = if RunService:IsStudio() then "StudioDevelopment" else "Live"
 	local store = options.profileStore or game:GetService("DataStoreService"):GetDataStore("CivilizationProfilesV1",scope)
 	local profileOptions = table.clone(options.profileOptions or {})
@@ -112,7 +114,8 @@ function CivilizationService.start(options: any?)
 				TrainingLevel="trainingLevel",FarmLevel="farmLevel",WorkersLevel="workersLevel",ArmyCampLevel="armyCampLevel",
 				BlacksmithLevel="blacksmithLevel",ArmorerLevel="armorerLevel",StorehouseLevel="storehouseLevel",
 				FarmCoins="farmCoins",ExtraTroopClass="extraTroopClass",SkillLevel="skillLevel",HospitalLevel="hospitalLevel",
-				ShieldLevel="shieldLevel",WarCouncilLevel="warCouncilLevel",FormationLevel="formationLevel",SelectedFormation="selectedFormation"} do
+				ShieldLevel="shieldLevel",WarCouncilLevel="warCouncilLevel",FormationLevel="formationLevel",SelectedFormation="selectedFormation",
+    RecruitMelee="recruitMelee",RecruitRanged="recruitRanged",RecruitMedic="recruitMedic"} do
 				player:SetAttribute(attribute,state[field])
 			end
 			local stats = player:FindFirstChild("leaderstats")
@@ -122,7 +125,7 @@ function CivilizationService.start(options: any?)
 			if coins:IsA("IntValue") then coins.Value=state.coins end
 		end
 		if result.ok and (action=="claim" or action=="switch" or action=="upgrade" or action=="weapon" or action=="armor" or action=="barracks"
-			or action=="hospital" or action=="training" or action=="armyCamp" or action=="troopClass" or action=="skill" or action=="shield") then
+			or action=="hospital" or action=="training" or action=="armyCamp" or action=="troopClass" or action=="skill" or action=="shield" or action=="composition") then
 			if army then
 				if action=="skill" then army:refreshSkills(player) else army:refresh(player) end
 			end
@@ -135,6 +138,7 @@ function CivilizationService.start(options: any?)
 			economyState:FireClient(player,{ok=result.ok,reason=result.reason,state=state,action=action,amount=result.amount})
 		end
 		if council then council:sync() end
+  if recruitment then recruitment:sync()end
 	end
 	local combat=CombatService.new(world,registry,economy,publishEconomy)
 	local encounters=require(script.Parent.CombatEncounter).new(world,combat)
@@ -144,6 +148,7 @@ function CivilizationService.start(options: any?)
 	buttons=TycoonButtons.new(world,registry,economy,catalog,publishEconomy)
 	council=require(script.Parent.WarCouncilService).new(world,registry,economy,councilOpened,publishEconomy,
 		function(player)army:cancelFormation(player)end)
+ recruitment=require(script.Parent.BarracksRecruitment).new(world,registry,economy,recruitmentOpened,publishEconomy)
 	local function command(player: Player,action: unknown,value: unknown)
 		local id=player.UserId
 		if closing or activePlayers[id]~=player or not profiles:isWritable(id) or not registry:get(id) then
@@ -158,11 +163,8 @@ function CivilizationService.start(options: any?)
 		if action=="march" then return army:march(player) end
 		if action=="council" then return council:open(player) end
 		if action=="formation" then return council:select(player,value) end
-		if action=="class" then
-			local result=economy:selectTroop(id,value)
-			publishEconomy(player,result,"troopClass")
-			return result
-		end
+  if action=="recruitment" then return recruitment:open(player)end
+  if action=="composition" then return recruitment:select(player,value)end
 		return {ok=false,reason="invalid"}
 	end
 	armyRequest.OnServerInvoke=command
@@ -174,6 +176,7 @@ function CivilizationService.start(options: any?)
 		if farmElapsed<1 then return end
 		farmElapsed=0
 		council:sync()
+  recruitment:sync()
 		for id,player in activePlayers do
 			local claim=registry:get(id)
 			if not claim then continue end
@@ -304,6 +307,7 @@ function CivilizationService.start(options: any?)
 		generations[userId]=(generations[userId] or 0)+1
 		playerCombat:release(userId);army:release(userId);buttons:release(userId)
 		council:release(userId)
+  recruitment:release(userId)
 		combat.skills:forgetOwner(userId)
 		local claim=registry:release(userId)
 		economy:close(userId)
@@ -326,6 +330,7 @@ function CivilizationService.start(options: any?)
 		closing=true
 		farmHeartbeat:Disconnect()
 		council:destroy()
+  recruitment:destroy()
 		neutralOpponents:destroy()
 		encounters:destroy()
 		shutdownResult=profiles:shutdown(25)

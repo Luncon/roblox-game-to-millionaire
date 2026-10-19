@@ -52,6 +52,11 @@ local ok,result=pcall(function()
 		evidence.medical=require(game.ServerStorage.RuntimeTests.MedicalSurvival)(context,player,round)
 		return evidence.medical
 	end
+ if script:GetAttribute("RecruitmentOnly")then
+  evidence.recruitment=require(game.ServerStorage.RuntimeTests.Recruitment)(context,player,round)
+  evidence.layout=round("formationLayout",{},20)
+  return evidence.recruitment
+ end
 	stage("Formation runtime")
 	if not script:GetAttribute("PersianOnly") and not script:GetAttribute("ResupplyOnly")then
 		evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round,script:GetAttribute("RomanOnly"))

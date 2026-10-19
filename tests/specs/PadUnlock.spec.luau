@@ -68,7 +68,7 @@ return function()
 				if pad then
 					local position=plot.Foundation.CFrame:PointToObjectSpace(pad.Position)
 					assert((position-Vector3.new(definition.x,definition.y or 2,definition.z)).Magnitude<.01)
-					if definition.action=="training" then
+					if definition.action=="training" or definition.track=="barracks" or definition.track=="armyCamp" then
 						assert(position.X+pad.Size.X/2< -128,"Training construction must stay outside the final foundation")
 					elseif definition.action~="farm" then
 						assert(math.abs(position.X)+pad.Size.X/2<=128 and math.abs(position.Z)+pad.Size.Z/2<=128)

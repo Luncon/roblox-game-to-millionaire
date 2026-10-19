@@ -61,7 +61,9 @@ return function()
 								or part.Name=="CourtWallRight" or part.Name=="ArenaWallLeft" or part.Name=="ArenaWallRight")
 							if perimeter then walls += 1 end
 							for _, point in corners(part, plot.Foundation.CFrame) do
-								assert(math.abs(point.X) <= 128.05 and math.abs(point.Z) <= 128.05,
+								local exterior=part:IsDescendantOf(plot.Settlement.Barracks)
+        local bounded=if exterior then math.abs(point.X+148)<=12.05 and math.abs(point.Z+54)<=24.05 else math.abs(point.X)<=128.05 and math.abs(point.Z)<=128.05
+								assert(bounded,
 									civ.id .. " plot " .. plotId .. " has off-plot geometry: " .. part.Name)
 								if perimeter then
 									minimum = Vector3.new(math.min(minimum.X,point.X),0,math.min(minimum.Z,point.Z))

@@ -84,7 +84,7 @@ function WarriorRig.update(rig: Model, civilization, state)
 	end
 end
 
-function WarriorRig.create(civilization, spawnFrame: CFrame, ownerId: number, plotId: number, state: any?, kind: string?): Model
+function WarriorRig.create(civilization, spawnFrame: CFrame, ownerId: number, plotId: number, state: any?, kind: string?,collectShield: boolean?): Model
 	local troopClass = kind or "warrior"
 	assert(troopClass == "warrior" or troopClass == "ranged" or troopClass == "medic","Unknown troop class")
 	local variant = (if troopClass == "ranged" then Ranged else Config).variants[civilization.id]
@@ -96,6 +96,11 @@ function WarriorRig.create(civilization, spawnFrame: CFrame, ownerId: number, pl
 	rig:SetAttribute("CivilizationId", civilization.id)
 	rig:SetAttribute("PlotId", plotId)
 	rig:SetAttribute("WarriorClass", troopClass)
+ if collectShield then
+  rig:SetAttribute("AwaitingShieldSupply",true)
+  rig:SetAttribute("SpartanShieldRemaining",0)
+  rig:SetAttribute("ShieldCharges",0)
+ end
 	if not custom then proceduralBody(rig,TroopAppearance.skinColors[civilization.id],civilization.color) end
 	local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart
 	local humanoid = rig:FindFirstChildOfClass("Humanoid") or Instance.new("Humanoid")
