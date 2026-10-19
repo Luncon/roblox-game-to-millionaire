@@ -421,12 +421,16 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
       group.slowApproach=true
      end
      local hasShot=phase=="marching" and Formation.firingOpportunity(group,snapshot.ranged,actors,canShoot)
+     local hasContact=Formation.contactOpportunity(group,snapshot,actors,function(frontline,target)
+      return combat:canAct(frontline.rig) and CombatRules.canDamage(frontline,target,arena,Config.attackRange)
+       and combat:visible(frontline,target)
+     end)
 					if phase=="holding" then
 						-- Validate captured lives even while Hold freezes formation movement.
 						formationGoals=Formation.step(group,snapshot,0,function()return false end,grounded)
 					else formationGoals=Formation.step(group,snapshot,now-group.lastAt,function(id,p)
 						return owner.slots[id].navigator:canWalkFormation(p)
-					end,grounded,hasShot)end
+					end,grounded,hasShot,hasContact)end
 					formationPace=FormationConfig.pace*(if group.slowApproach then group.definition.approachSpeedMultiplier or 1 else 1)
 					group.lastAt=now
 					if not formationGoals then releaseFormation(owner);publish(owner)

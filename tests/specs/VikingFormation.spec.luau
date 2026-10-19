@@ -62,5 +62,68 @@ return function()
    assert(Shield.restock(rig,'vikings',kind,{shieldLevel=1})==(kind=='warrior'))
   end
  end)
+ test('melee opportunity uses only captured living frontline identities and server validation',function()
+  local g,a=setup();local enemy={position=a.warrior.position+g.heading*4}
+  local function accepted(attacker,target)return attacker==a.warrior and target==enemy end
+  assert(F.contactOpportunity(g,a,{enemy},accepted))
+  assert(not F.contactOpportunity(g,a,{enemy},function()return false end))
+  for _,field in {'rig','humanoid','alive','kind'}do
+   local old=a.warrior[field];a.warrior[field]=if field=='alive'then false elseif field=='kind'then 'ranged' else {}
+   assert(not F.contactOpportunity(g,a,{enemy},accepted),'Stale contact accepted: '..field);a.warrior[field]=old
+  end
+  a.warrior=nil;assert(not F.contactOpportunity(g,a,{enemy},accepted))
+  for _,id in {'camp','reinforcement'}do
+   assert(F.contactOpportunity(g,a,{enemy},function(attacker)return attacker==a[id]end),'Flank contact ignored')
+  end
+  assert(not F.contactOpportunity(g,a,{enemy},function(attacker)return attacker==a.ranged or attacker==a.medic end))
+ end)
+ test('contact callback rejects friendlies dead targets blocked sight authority range and protected ground',function()
+  local g,a=setup();local Rules=require(G.CombatRules)
+  -- An explicit arena frame works in both native Studio and the CLI doubles.
+  local arena={Size=Vector3.new(2,200,200),CFrame={PointToObjectSpace=function(_,v)return Vector3.new(v.Y,v.X,v.Z)end}}
+  local front=a.warrior;front.ownerId,front.claimed=101,true
+  local enemy={ownerId=202,claimed=true,alive=true,position=front.position+g.heading*5}
+  local visible,writable=true,true
+  local function valid(source,target)return writable and visible and Rules.canDamage(source,target,arena,5)end
+  assert(F.contactOpportunity(g,a,{enemy},valid))
+  enemy.position=front.position+g.heading*5.01;assert(not F.contactOpportunity(g,a,{enemy},valid))
+  enemy.position=front.position+g.heading*4;enemy.ownerId=101;assert(not F.contactOpportunity(g,a,{enemy},valid))
+  enemy.ownerId=202;enemy.alive=false;assert(not F.contactOpportunity(g,a,{enemy},valid));enemy.alive=true
+  visible=false;assert(not F.contactOpportunity(g,a,{enemy},valid));visible=true
+  writable=false;assert(not F.contactOpportunity(g,a,{enemy},valid));writable=true
+  front.position=Vector3.new(0,0,-99);enemy.position=Vector3.new(0,0,-101)
+  assert(not F.contactOpportunity(g,a,{enemy},valid))
+  front.position,enemy.position=enemy.position,front.position;assert(not F.contactOpportunity(g,a,{enemy},valid))
+ end)
+ test('Viking contact releases during assembly march attack stalls and lost cohesion',function()
+  for _,phase in {'assembling','marching'}do
+   local g,a=setup();g.phase=phase;a.warrior.phase='windup';a.medic.position+=Vector3.new(0,0,40)
+   local goals,reason=F.step(g,a,.2,function()return false end,function(v)return v end,false,true)
+   assert(not goals and reason=='melee_contact','Contact waited on assembly or cohesion')
+  end
+ end)
+ test('Hold and other civilizations suppress contact release while Viking ranged shots do not release',function()
+  local g,a=setup();g.phase='holding'
+  assert(F.step(g,a,0,function()return false end,function(v)return v end,false,true) and g.phase=='holding')
+  for _,id in {'sparta','rome','persia'}do
+   g.definition=Config.forCivilization(id);g.phase='marching'
+   assert(not F.contactOpportunity(g,a,{{}},function()return true end))
+   assert(F.step(g,a,.2,function()return true end,function(v)return v end,false,true),'Contact changed '..id)
+  end
+  g,a=setup();g.phase='marching'
+  assert(F.step(g,a,.2,function()return true end,function(v)return v end,true,false) and g.phase=='marching')
+ end)
+ test('Viking arrival frontline casualty and support replacement keep shared captured-life rules',function()
+  local g,a=setup();g.phase='marching';a.medic=nil
+  assert(F.step(g,a,.2,function()return true end,function(v)return v end) and not g.members.medic)
+  a.medic={rig={},humanoid={},alive=true,kind='medic',position=Vector3.zero,phase='idle'}
+  assert(F.step(g,a,.2,function()return true end,function(v)return v end).medic==nil)
+  a.camp.alive=false;local goals,reason=F.step(g,a,.2,function()return true end,function(v)return v end)
+  assert(not goals and reason=='frontline_lost')
+  g,a=setup();g.phase='marching';g.anchor=g.destination
+  for id,p in F.goals(g,function(v)return v end)do a[id].position=p end
+  goals,reason=F.step(g,a,.2,function()return true end,function(v)return v end)
+  assert(not goals and reason=='destination_reached')
+ end)
  return n
 end

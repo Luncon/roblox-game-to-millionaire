@@ -404,6 +404,16 @@ wedge marches at the shared six studs per second. It uses the existing two-hit
 shield and physical rack pickup; no extra speed, damage or protection bonus.
 Selection saves independently for Vikings using the existing formation fields.
 
+The assembling or marching wedge releases into ordinary Advance as soon as a
+captured shieldman has a visible, valid enemy within normal five-stud melee
+reach inside the battlefield. This check runs even when an attack or lagging
+support pauses movement. Ordinary axe skills resume after release. Ranged shots
+alone do not break the wedge. Center arrival or a frontline casualty also
+releases it; explicit Hold remains stationary and permits attacks/healing.
+Advance and Regroup cancel it, while support losses never capture replacements.
+Release preserves living troops, shield charges and independent cooldown/respawn
+deadlines. Sparta, Rome and Persia retain their existing release rules.
+
 ### Persian Archer Screen
 
 Persia uses the same unlock levels, prices, camp muster and six-stud marching

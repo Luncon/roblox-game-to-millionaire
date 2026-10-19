@@ -58,6 +58,11 @@ local ok,result=pcall(function()
   return evidence.recruitment
  end
 	stage("Formation runtime")
+ if script:GetAttribute("VikingOnly")then
+  evidence.viking=require(game.ServerStorage.RuntimeTests.VikingWedge)(context,player,round,script:GetAttribute("VikingCombatOnly"))
+  evidence.layout=round("formationLayout",{},20)
+  return evidence.viking
+ end
 	if not script:GetAttribute("PersianOnly") and not script:GetAttribute("ResupplyOnly")then
 		evidence.runtime=require(game.ServerStorage.RuntimeTests.Formations)(context,player,round,script:GetAttribute("RomanOnly"))
 	end
@@ -65,6 +70,9 @@ local ok,result=pcall(function()
 		evidence.persian=require(game.ServerStorage.RuntimeTests.PersianScreen)(context,player,round,script:GetAttribute("ResupplyOnly"))
 	end
 	evidence.layout=round("formationLayout",{},20)
+ if not script:GetAttribute("PriorFormationsOnly")then
+  evidence.viking=require(game.ServerStorage.RuntimeTests.VikingWedge)(context,player,round)
+ end
 	if script:GetAttribute("FullRegression")then
 		stage("Existing tactical combat and movement regressions")
 		local service=context.service

@@ -58,7 +58,20 @@ function F.firingOpportunity(group,archer,actors,canShoot,range)
  return false
 end
 
-function F.step(group,actors,dt,allows,ground,hasShot)
+-- canContact supplies ordinary server hostility/reach/arena/visibility/authority checks.
+function F.contactOpportunity(group,members,actors,canContact)
+ if not group.definition.breakOnMeleeContact or group.phase=='holding' then return false end
+ for id,member in group.members do
+  local frontline=members[id]
+  if Config.roles[id]=='warrior' and frontline and frontline.alive and frontline.kind=='warrior'
+   and frontline.rig==member.rig and frontline.humanoid==member.humanoid then
+   for _,target in actors do if canContact(frontline,target)then return true end end
+  end
+ end
+ return false
+end
+
+function F.step(group,actors,dt,allows,ground,hasShot,hasContact)
  for id,member in group.members do
   local a=actors[id]
   if not a or not a.alive or a.rig~=member.rig or a.humanoid~=member.humanoid then
@@ -67,6 +80,8 @@ function F.step(group,actors,dt,allows,ground,hasShot)
    group.members[id]=nil
   end
  end
+ -- A paused attack or lagging member must not prevent the wedge entering combat.
+ if group.definition.breakOnMeleeContact and group.phase~='holding' and hasContact then return nil,'melee_contact' end
  local goals=F.goals(group,ground)
  local allArrived,coherent=true,true
  for id,goal in goals do

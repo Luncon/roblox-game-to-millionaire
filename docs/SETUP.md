@@ -282,6 +282,17 @@ false for final all-module verification. Neither flag opens player storage.
 Physical phone/controller play, multi-owner formation combat and real storage
 restoration remain separate from these solo fake-store checks.
 
+For Viking wedge verification, set `SoloFormationsTests.VikingOnly=true` before
+Play in the formation test place. It checks physical purchases/council, shield
+pickup, road march, contact/occlusion, Hold and casualties. The default formation
+run includes Vikings after the earlier factions; restore `VikingOnly=false` for
+that default set.
+For a focused combat repeat, combine `VikingOnly=true`, `VikingCombatOnly=true`
+and `RuntimeOnly=true`; restore the latter two to false for a complete run.
+`PriorFormationsOnly=true` omits the new Viking runtime when repeating the
+earlier faction scenarios; it leaves module checks enabled unless RuntimeOnly
+is also selected. Restore false for the default full formation run.
+
 For Barracks recruitment verification, use the same formation test place and
 set `SoloFormationsTests.RecruitmentOnly=true` before Play. It runs the module
 checks, native recruitment prompt/count-button input, future-spawn continuity,

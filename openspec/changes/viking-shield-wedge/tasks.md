@@ -6,7 +6,7 @@
 
 ## 2. Contact release
 
-- [ ] 2.1 Add captured-frontline melee-contact release with authoritative combat validation; verify hostility, reach, arena, visibility, stale lives, cohesion stalls, Hold and other factions through deterministic and native tests, and document release behavior.
+- [x] 2.1 Add captured-frontline melee-contact release with authoritative combat validation; verify hostility, reach, arena, visibility, stale lives, cohesion stalls, Hold and other factions through deterministic and native tests, and document release behavior.
 
 ## 3. Integration
 

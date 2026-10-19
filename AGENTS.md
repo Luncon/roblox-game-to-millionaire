@@ -186,3 +186,12 @@ formation IDs. Fresh eligible melee defer shields and physically collect at the
 owned rack before joining orders; Hold pauses, lost authority blocks pickup.
 Persian screen deploys at 30 studs and latches half-speed approach after a clear
 45-stud bow opportunity. Persian spear flip affects cloned visuals only.
+
+Vikings also unlock Shield Training and Viking Shield Wedge at the shared
+progression gates/prices. Three axe shieldmen form a pointed six-stud lead with
+axe thrower/medic paired behind, at the unchanged six-stud marching pace.
+Only the Viking wedge releases on server-validated captured-frontline melee
+reach (five studs, hostility, arena, visibility and authority), even during
+assembly or a cohesion stall. Explicit Hold suppresses contact release and
+permits stationary attacks/healing. Center arrival/frontline casualties and
+Advance/Regroup use the existing transitions; no bonuses or new saved fields.
