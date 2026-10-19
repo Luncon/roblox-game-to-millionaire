@@ -149,3 +149,13 @@ line, an archer and a medic. It deploys for clear bow fire and retains a bounded
 defensive position rather than releasing at center. Purchased shield training
 also adds a rack near camp: recalled melee with spent shields physically
 replenish before returning to training. See [army details](ARMY.md).
+
+The recruitment consolidation moves combat capacity purchases to the Barracks,
+retaining settlement 2/4/10/18 progression and a separate Hospital medic. An
+owner-only recruitment screen sets future melee/ranged counts and zero/one medic
+within unlocked capacity. Living troops and pending respawn deadlines are
+preserved. The relocated Barracks, Training Yard, shield rack and War Council
+form one military area; the standalone Army Camp building is removed. Fresh
+shield-trained melee physically collect shields before following their order.
+Persian Archer Screen now closes to 30 studs and slows to half pace after a clear
+bow opportunity; see [army details](ARMY.md).

@@ -172,3 +172,17 @@ before normal camp return. Partial shields and player shields are not refilled.
 Preserve weapon/grip identity, health, cooldowns and timers; pickups require
 Regroup, current ownership/civilization, write authority and assigned proximity.
 No new persistent fields or charge-refill path through ordinary equipment sync.
+
+Recruitment consolidation: the Barracks now owns both extra combat capacity
+purchases (legacy `armyCampLevel` storage key), with unchanged unlocks/prices.
+The Army Camp building is removed. Barracks and both upgrade pads stand beside
+Training Yard opposite War Council. Owner-only nearby recruitment controls save
+optional `recruitMelee/recruitRanged/recruitMedic` together; all missing preserves
+the old automatic lineup. Custom fighter totals are bounded by purchased
+capacity, ranged requires Barracks IV, and medics remain hospital-limited to one.
+Keep living troops and pending respawn deadlines when changing selections;
+disabled slots stop replacement, not living units. Canonical 3/1/1 maps to existing
+formation IDs. Fresh eligible melee defer shields and physically collect at the
+owned rack before joining orders; Hold pauses, lost authority blocks pickup.
+Persian screen deploys at 30 studs and latches half-speed approach after a clear
+45-stud bow opportunity. Persian spear flip affects cloned visuals only.

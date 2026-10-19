@@ -52,7 +52,7 @@ combined. Settlement size never increases coin-button income. See
 | Training Yard I | 5 | 50 coins | None | Unlocks advance, hold and regroup army orders |
 | Farm I | 7 | 80 coins | None | Produces one reserved coin per five active seconds |
 | Worker Camp I | 7 | 60 coins | Farm I | Adds a second farmer and one coin per production interval |
-| Army Camp I | 10 | 120 coins | Barracks IV | Adds one selectable melee/ranged reinforcement slot |
+| Barracks Capacity I | 10 | 120 coins | Barracks IV | Adds one combat slot; choose counts at the Barracks screen |
 | Farm II | 12 | 180 coins | Farm I | Adds one coin per production interval and improves the fields |
 | Worker Camp II | 12 | 140 coins | Worker Camp I and Farm II | Adds a third visible farmer and one coin per interval |
 | Blacksmith I | 13 | 150 coins | None | Reduces weapon purchase prices by 5%, rounded upward |
@@ -204,15 +204,15 @@ See [weapon skills](WEAPON_SKILLS.md) for damage, cooldowns and controls. Runtim
 acceptance of this new purchase path remains pending in [PLAYTEST.md](PLAYTEST.md).
 
 Hospital I costs 200 coins at settlement 10 and requires purchased Training Yard
-I. Army Camp is optional. It adds one separate medic slot, for up to four troops before Army Camp II (five with II),
+I. Extra Barracks capacity is optional. It adds one separate medic slot, for up to four troops before Barracks Capacity II (five with II),
 and enables recovery in the owned training yard. Workshops do not discount this
 purchase. The existing guarded physical-pad flow handles the charge; buying it
 does not replace or heal living fighters or change pending respawn deadlines.
 
 ## Shields, army expansion and planning
 
-Army Camp II costs 250 coins at settlement 18 after Army Camp I and Barracks VI.
-It adds a dedicated melee slot while preserving the existing camp class choice.
+Barracks Capacity II costs 250 coins at settlement 18 after Barracks Capacity I and Barracks VI.
+It adds a fourth combat slot; the Barracks screen selects the full fighter composition.
 War Council I costs 200 at settlement 19 after Training Yard I, for every
 civilization. Its accessible map room sits beside the training camp.
 
@@ -220,7 +220,7 @@ Sparta, Rome and Persia offer Shield Training I for 150 at settlement/armor 15 a
 Armorer I. Each faction formation (Spartan Shieldwall, Roman Shield Guard or
 Persian Archer Screen) costs 250 at settlement 20
 after that shield training,
-War Council I, Army Camp II and Hospital I. Purchases use physical pads and
+War Council I, Barracks Capacity II and Hospital I. Purchases use physical pads and
 receive no workshop discount. The council table selects a purchased formation;
 selection costs no coins. Unlocks and selection save separately per civilization.
 Existing level-20+ settlements receive no retroactive checkpoint requirements.
@@ -235,3 +235,19 @@ pads and grants are disabled outside Studio.
 Purchased shield training also provides a rack beside camp. Recalled melee can
 replace a fully spent shield there without a coin charge; partial shields are
 preserved. This restores transient charges only and adds no saved field.
+
+### Consolidated recruitment
+
+Combat capacity purchases now belong to the Barracks. Its original respawn tiers
+and the two Capacity purchases retain their prices and settlement/prerequisite
+gates. Existing Army Camp purchases retain capacity through the legacy save key;
+there is no separate Army Camp building or purchase site. The Capacity pad sits
+beside the relocated Barracks, opposite the ordinary respawn-upgrade pad.
+
+The Barracks screen selects melee/ranged counts with a total no greater than
+purchased fighter capacity, plus zero/one Hospital medic. Ranged unlocks with
+Barracks IV. Saving a composition costs no coins and affects future spawns only;
+it never refreshes health, shields, skill cooldowns or pending respawn waits.
+The maximum remains four fighters and one medic. A custom lineup does not grow
+automatically when buying capacity; legacy automatic lineups retain that behavior
+until a custom composition is saved.

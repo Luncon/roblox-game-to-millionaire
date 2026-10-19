@@ -18,4 +18,4 @@
 
 ## 5. Integration
 
-- [ ] 5.1 Run logic, strict OpenSpec, compile/build and native Studio recruitment/formation/medical checks; sync main Studio sources, close owned test windows and record exact verification boundaries.
+- [x] 5.1 Run logic, strict OpenSpec, compile/build and native Studio recruitment/formation/medical checks; sync main Studio sources, close owned test windows and record exact verification boundaries.

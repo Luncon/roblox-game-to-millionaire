@@ -151,8 +151,10 @@ return function(context,player,round)
    order("hold")
    local slots=army().slots;local m=slots.medic.rig
    local claim=service.registry:get(player.UserId)
-   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
-   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   -- The military district is off the road; deployment checks use the
+   -- settlement road heading rather than the relocated Barracks spawn.
+   local settlement=service.world.model.Plots['Plot'..claim.plotId].Foundation.Position
+   local back=Vector3.new(settlement.X-center.X,0,settlement.Z-center.Z).Unit
    for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
    freeze(m,center+back*360);m.HumanoidRootPart.Anchored=false
    freeze(slots.warrior.rig,center+back*380);freeze(slots.camp.rig,center+back*540);freeze(slots.ranged.rig,center+back*580)
@@ -191,8 +193,10 @@ return function(context,player,round)
    order("hold")
    local slots=army().slots;local m=slots.medic.rig
    local claim=service.registry:get(player.UserId)
-   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
-   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   -- The military district is off the road; deployment checks use the
+   -- settlement road heading rather than the relocated Barracks spawn.
+   local settlement=service.world.model.Plots['Plot'..claim.plotId].Foundation.Position
+   local back=Vector3.new(settlement.X-center.X,0,settlement.Z-center.Z).Unit
    freeze(m,center+back*10);m.HumanoidRootPart.Anchored=false
    for id,slot in slots do if id~="medic" then slot.rig.Humanoid.Health=0 end end
    waitFor(function()return not army().slots.warrior.rig and not army().slots.ranged.rig and not army().slots.camp.rig end,"all fighters await replacement")
@@ -212,8 +216,10 @@ return function(context,player,round)
    order("hold")
    local slots=army().slots;local m=slots.medic.rig
    local claim=service.registry:get(player.UserId)
-   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
-   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   -- The military district is off the road; deployment checks use the
+   -- settlement road heading rather than the relocated Barracks spawn.
+   local settlement=service.world.model.Plots['Plot'..claim.plotId].Foundation.Position
+   local back=Vector3.new(settlement.X-center.X,0,settlement.Z-center.Z).Unit
    freeze(m,center+back*20);m.HumanoidRootPart.Anchored=false
    for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
    local threat=Rig.createNeutral(CFrame.new(floorPoint(m.HumanoidRootPart.Position-back*8)),"warrior")
@@ -241,8 +247,10 @@ return function(context,player,round)
    order("hold")
    local slots=army().slots;local m=slots.medic.rig
    local claim=service.registry:get(player.UserId)
-   local spawn=service.world:getBarracksSpawn(claim.plotId,"warrior","warrior").Position
-   local back=Vector3.new(spawn.X-center.X,0,spawn.Z-center.Z).Unit
+   -- The military district is off the road; deployment checks use the
+   -- settlement road heading rather than the relocated Barracks spawn.
+   local settlement=service.world.model.Plots['Plot'..claim.plotId].Foundation.Position
+   local back=Vector3.new(settlement.X-center.X,0,settlement.Z-center.Z).Unit
    for _,slot in slots do slot.rig.Humanoid.Health=slot.rig.Humanoid.MaxHealth end
    freeze(m,center+back*180);m.HumanoidRootPart.Anchored=false
    freeze(slots.warrior.rig,center+back*330)

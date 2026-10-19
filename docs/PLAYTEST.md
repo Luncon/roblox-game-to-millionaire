@@ -2340,3 +2340,54 @@ The user's main Studio remains open. No real profile store was used by fixtures,
 no imported source templates were mutated and no Roblox publication occurred.
 Published-client, physical phone/controller, multi-owner formation combat and
 real-storage restoration remain separate acceptance boundaries.
+
+## Barracks recruitment and Persian approach — October 18, 2026
+
+Verified in isolated native Studio solo sessions with injected FakeProfileStore;
+no fixture accessed player storage. The user's main session remained separate.
+
+- Standalone Luau logic: **223 cases**; strict OpenSpec: **23 items**; all **236**
+  repository Luau scripts compiled. A generated-copy mutation of the recruitment
+  capacity comparison failed the regression suite, leaving production unchanged.
+- Native modules: **621 cases**, including saved composition/fake-store reload,
+  legacy capacity preservation, ownership/death/write/proximity boundaries,
+  the new Barracks entrance/spawn geometry for all 13 factions and eight plots,
+  initial Advance shield pickup guards and Persian player-style/NPC spear flips.
+- Recruitment runtime: **six scenarios**, including actual E prompt and mouse
+  count-button/save activation; living class/health/identity preservation;
+  disabled and reenabled respawns keeping original deadlines; fresh bare
+  shieldmen holding position, walking to supplies and collecting only nearby;
+  and all four melee slots collecting. **Four bounded screen layouts** passed,
+  including the new recruitment modal. Native screenshot inspection confirmed
+  the displayed counts, unlocked capacity, living totals and future-spawn notice.
+- Existing Spartan/Roman runtime: **17 scenarios** passed with the new recruitment
+  sources, including real road marching, stationary formation attacks/healing,
+  casualties, authority loss and six-stud Roman pace. Persian's first **seven**
+  scenarios passed: actual screen deployment at **29.45 studs**, half-speed final
+  approach observed, **288.05 studs** walked in **102.16 seconds**, arrow damage,
+  medic healing, target-loss latch, bounded guards, visibility, commands and
+  support/frontline casualties. The slower approach uses a route-derived walking
+  time budget. Legacy resupply setup now explicitly equips its initial lives at
+  the rack, while fresh bare-spawn walking is covered by the recruitment suite.
+
+The remaining **three resupply**, **four tactical**, **six crowd movement** and
+**ten medic survival** scenarios passed in focused follow-up runs. This makes
+**53 distinct gameplay scenarios across the isolated runs**, plus the four
+bounded layouts; it is not a claim of one uninterrupted 53-scenario run.
+Medic fixtures now derive deployment headings from the settlement road rather
+than the relocated off-road Barracks. Native results include 30/30 moving medic
+samples without backsteps, 11.87-stud troop-average proximity, zero backtracking
+through actual fighter replacements, and continued healing during pursuit.
+
+Published multi-owner play, physical phone/controller input and real-storage
+restoration remain separate checks. Legacy development
+runner class-button fixtures were updated for the Barracks screen and compiled;
+that separate full progression runner was not rerun during this change.
+
+The user approved stopping the main playtest for installation. Main Studio
+(Clash of Civilizations, place 73839918762778) is now in Edit mode with all 78
+production source scripts installed. Source checks confirmed recruitment UI,
+profile counts, initial supply routing, Persian 30-stud/half-speed settings and
+spear flip, production bootstrap and absence of the diagnostic formation getter.
+The owned fake-store window was stopped, test flags cleared and closed. Production
+and temporary manual-play builds were refreshed; no Roblox publication occurred.

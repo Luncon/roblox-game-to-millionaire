@@ -42,9 +42,8 @@ The version-one profile stores these twenty required scalar fields and three opt
 | `hospitalLevel` | Hospital purchase | 0 or 1; requires settlement 10 and Training Yard I |
 | `shieldLevel` | Shield Training | 0 or 1; requires Sparta, Rome or Persia, settlement/armor 15 and Armorer I |
 | `warCouncilLevel` | War Council purchase | 0 or 1; requires settlement 19 and Training Yard I |
-| `formationLevel` | Civilization formation training | 0 or 1; requires Sparta, Rome or Persia, settlement 20, shields, council, Army Camp II and hospital |
+| `formationLevel` | Civilization formation training | 0 or 1; requires Sparta, Rome or Persia, settlement 20, shields, council, Barracks Capacity II and hospital |
 | `selectedFormation` | Council selection | `none`, purchased `spartan-shieldwall` for Sparta, purchased `roman-shield-guard` for Rome, or purchased `persian-archer-screen` for Persia; missing defaults to `none` |
-
 | `recruitMelee` | Selected future melee count | Optional integer 0–4; selected fighter sum must fit Barracks capacity |
 | `recruitRanged` | Selected future ranged count | Optional integer 0–4; positive counts require Barracks IV |
 | `recruitMedic` | Selected future medic count | Optional integer 0–1; positive count requires Hospital I |
@@ -82,7 +81,7 @@ and capacity rules.
 
 Level-one barracks state is stored even before the building unlocks at settlement
 stage 2. Restoring that stage deploys its automatic melee troop; barracks IV also
-deploys the ranged troop. Army Camp I adds a third slot whose saved class is
+deploys the ranged troop. Barracks Capacity I adds a third slot whose legacy automatic class is
 used at its next spawn. Current NPC models, health, positions, corpses,
 projectiles and replacement countdowns are temporary. Switching civilization or
 rejoining creates the appropriate army again, rather than restoring a battle in

@@ -282,6 +282,15 @@ false for final all-module verification. Neither flag opens player storage.
 Physical phone/controller play, multi-owner formation combat and real storage
 restoration remain separate from these solo fake-store checks.
 
+For Barracks recruitment verification, use the same formation test place and
+set `SoloFormationsTests.RecruitmentOnly=true` before Play. It runs the module
+checks, native recruitment prompt/count-button input, future-spawn continuity,
+preserved deadlines, bare fresh spawns, physical shield collection (including
+four melee), request authority and four bounded screen layouts. Set
+`RuntimeOnly=true` only for a focused runtime repeat. Restore
+`RecruitmentOnly=false` for ordinary formation verification; `FullRegression=true`
+adds combat, crowd movement and medic-survival scenarios. All use FakeProfileStore.
+
 For medic diagnostics in the formation harness, `MedicalOnly=true` selects only
 the existing medic-survival runtime after any enabled module checks. Restore
 false for formation verification. `MedicalFailureEvidence` captures positions,
