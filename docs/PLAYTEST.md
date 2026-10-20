@@ -2438,3 +2438,64 @@ mode and all 78 production sources installed. Source checks confirmed the Viking
 definition/contact integration, production bootstrap and absence of the fixture
 getter/runner. Its 19 equipment, 13 outfit, five NPC and one farmer templates
 remain present. No Roblox publication occurred.
+
+
+## Seneca Focused Volley — October 20, 2026
+
+Verified in one owned native Studio solo place with injected FakeProfileStore;
+no player-storage fixtures or source-template mutations were used.
+
+- Standalone logic: **243 cases**; strict OpenSpec: **25 items**; all **242 Luau
+  files** compiled. Inverting the shared volley deadline in a generated copy
+  failed the shot-spacing regression; production remained unchanged.
+- The final full Seneca run passed **644 native module cases, eight runtime
+  scenarios and four bounded GUI layouts** in one uninterrupted Play session.
+  Native pad purchases left 2,300 coins without armor/workshop/shield upgrades;
+  council E/mouse input selected the formation. Barracks count buttons saved
+  1 melee / 3 ranged / 1 medic, preserving living troops until normal replacement.
+  No Seneca shield pad, rack, charges or shield visuals appeared.
+- All five unanchored lives assembled and crossed the actual road/bridge route
+  at **5.97 studs/second**, deploying with a clear target **38.96 studs** away.
+  Target loss retained the deployed crescent. Three accepted ordinary archer
+  windups started **0.617 and 0.601 seconds apart**, inflicted arrow damage and
+  retargeted after the first enemy died. Cover blocked focus/damage until removed.
+- Local defense observed an archer retreat of **7.63 studs** and guard travel
+  of **5.75 studs**, inside the eight/fourteen-stud bounds; the guard struck and
+  returned. Stationary Hold retained attacks and medic healing. Advance/Regroup,
+  captured-archer/guard deaths, independent replacements, explicit held casualty,
+  lost write authority and civilization-switch selection restoration all passed.
+
+Native testing found that a centered rear medic had its healing ray blocked by
+its own center archer during Hold. The medic now stands five studs to the side
+behind the crescent; the real Hold/heal regression passed, and a geometry check
+protects that sight line for every rotated road. Two fixture observers were also
+corrected: opponents share the registry's single neutral folder, and the defense
+observer waits for the guard's contact rather than stopping at early arrow damage.
+
+Published multiplayer, real storage restoration and physical phone/controller
+input were not rerun; bounded GUI fixtures do not simulate those devices.
+
+The existing **17 Spartan/Roman runtime scenarios** passed together. Their trusted
+remuster helper now stops transient movement before camp placement and starts
+Regroup afterward. Manual shield pickup bypasses the production branch that
+resets ArmyRest; retaining that fixture goal had moved a teleported unit outside
+camp before the next March request. No production order or camp checks were relaxed.
+
+The compatibility rerun also passed **10 Persian/resupply, four tactical combat,
+six crowd/footwork and ten medic-survival scenarios**, plus the four bounded GUI
+layouts, in the same uninterrupted session as the 17 Spartan/Roman scenarios.
+Medic checks retained forward travel past outside replacements, continuing enemy
+avoidance, wounded-ally escape preference, moving bandages and 20%/40% recovery.
+
+A separate focused Viking run passed **four contact/occlusion/Hold/casualty
+scenarios** and the four GUI layouts with the final production sources. Across
+these runs, the feature's eight scenarios and 51 existing runtime scenarios passed.
+
+Production, temporary 3,000-coin manual-play and reproducible fake-store formation
+builds were refreshed. Main Studio (Clash of Civilizations, place 73839918762778)
+was already in Edit mode. All **79 production sources** were installed there;
+byte lengths and weighted byte checksums matched the repository for every source.
+The production bootstrap and absent diagnostic getter/fixture folders were
+confirmed. Its 19 equipment, 13 outfit, five NPC and one farmer templates remain
+present. The owned test was stopped, focused flags cleared and its window closed.
+Main Studio remains ready to play; no Roblox publication occurred.

@@ -10,5 +10,5 @@
 
 ## 3. Native integration
 
-- [ ] 3.1 Add and run isolated fake-store native tests for physical unlock/council and 1/3/1 recruitment, shield absence, road march/deployment, focused staggered arrows, blocked/replaced targets, bounded defense/evasion, Hold/healing, orders/casualties and authority loss; run relevant existing regressions, compile/build/spec checks and record evidence.
+- [x] 3.1 Add and run isolated fake-store native tests for physical unlock/council and 1/3/1 recruitment, shield absence, road march/deployment, focused staggered arrows, blocked/replaced targets, bounded defense/evasion, Hold/healing, orders/casualties and authority loss; run relevant existing regressions, compile/build/spec checks and record evidence.
 - [ ] 3.2 Review the final diff, install verified production sources into main Studio and confirm test-only sources are absent; commit/push the completed work and leave the user's build ready to play.
