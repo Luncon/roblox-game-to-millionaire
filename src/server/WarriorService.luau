@@ -25,6 +25,7 @@ local Topography=require(script.Parent.Topography)
 local ShieldRack=require(script.Parent.ShieldRack)
 local Formation=require(script.Parent.ArmyFormation)
 local FormationConfig=require(Shared.FormationConfig)
+local Volley=require(script.Parent.SenecaVolley)
 local WarriorService = {}
 local COLLISION_GROUP = "CivilizationWarriors"
 local ORDERS = {advance=true,hold=true,regroup=true}
@@ -421,6 +422,10 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
       group.slowApproach=true
      end
      local hasShot=phase=="marching" and Formation.firingOpportunity(group,snapshot.ranged,actors,canShoot)
+     if group.definition.volley then
+      group.volleyTarget=Volley.choose(group,snapshot,actors,canShoot,if phase=='marching' then group.definition.screenRange else Ranged.range)
+      hasShot=phase=='marching' and group.volleyTarget~=nil
+     end
      local hasContact=Formation.contactOpportunity(group,snapshot,actors,function(frontline,target)
       return combat:canAct(frontline.rig) and CombatRules.canDamage(frontline,target,arena,Config.attackRange)
        and combat:visible(frontline,target)
@@ -545,17 +550,22 @@ function WarriorService.start(world, registry, economy, catalog, sharedCombat, s
     local angle=(claim.plotId-1)*math.pi*2/world.plotCount
 				local radius=if slot.id=="reinforcement" then 42 elseif slot.id=="camp" then 32 elseif slot.kind=="ranged" then 22 else 12
 				local home=arena.Position+Vector3.new(math.sin(angle)*radius,4,math.cos(angle)*radius)
-				local guarding=formed and owner.order~="hold" and owner.formation.phase=="screening" and slot.kind=="warrior"
-				local guard=if guarding then {center=formationGoals[slot.id],radius=owner.formation.definition.guardRadius} else nil
+				local volley=formed and owner.formation.definition.volley and (owner.formation.phase=='screening' or owner.formation.phase=='holding')
+				local group=if volley then owner.formation else nil
+				local guarding=formed and owner.order~="hold" and owner.formation.phase=="screening" and (slot.kind=="warrior" or volley)
+				local guard=if guarding then {center=formationGoals[slot.id],radius=if volley and slot.kind=='ranged' then group.definition.archerRadius else owner.formation.definition.guardRadius} else nil
 				local plan=encounters:step(rig,{order=if guarding then "advance" elseif formed then "hold" else ordinaryOrder,
 					formation=formed,guard=guard,homeGoal=if guard then guard.center else home,actors=actors,support=recoveryPlan,
+					focusTarget=if volley and slot.kind=='ranged' then group.volleyTarget else nil,
+					attackReady=if volley and slot.kind=='ranged' then function()return Volley.ready(group,now)end else nil,
+					attackStarted=if volley and slot.kind=='ranged' then function()Volley.started(group,now)end else nil,
 					cancelShots=function() projectiles:cancel(rig) end,
 					fire=function(target)
 						local variant=Ranged.variants[rig:GetAttribute("CivilizationId")]
 						return projectiles:fire(rig,target,variant.projectileKind)
 					end},now)
 				if guarding then
-					plan.speed=formationPace
+					if not volley then plan.speed=formationPace end
 					if not plan.facing then plan.facing=attacker.position+owner.formation.heading*10 end
 				elseif formed and owner.order~="hold" then
 					plan.goal,plan.formation,plan.direct,plan.speed=formationGoals[slot.id],true,false,formationPace

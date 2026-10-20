@@ -170,6 +170,17 @@ function CombatEncounter.new(world,combat)
 		local velocity=root.AssemblyLinearVelocity
 		return Vector3.new(velocity.X,0,velocity.Z).Magnitude>1
 	end
+	local function rangedPoint(record,point,attacker)
+		local guard=record.guard
+		if guard then
+			local delta=Vector3.new(point.X-guard.center.X,0,point.Z-guard.center.Z)
+			if delta.Magnitude>guard.radius then
+				local bounded=guard.center+delta.Unit*math.max(0,guard.radius-.25)
+				point=Vector3.new(bounded.X,point.Y,bounded.Z)
+			end
+		end
+		return ground(point,attacker)
+	end
 	function controller:step(rig,options,now)
 		if not active then return {phase="idle"} end
 		local attacker=combat:actor(rig)
@@ -238,10 +249,17 @@ function CombatEncounter.new(world,combat)
 				if record.guard then
 					candidates={}
 					for _,other in actors do
-						if Tactics.flatDistance(other.position,record.guard.center)<=record.guard.radius+Warrior.attackRange then table.insert(candidates,other)end
+						local reach=if attacker.kind=='ranged'then Ranged.range else Warrior.attackRange
+						if Tactics.flatDistance(other.position,record.guard.center)<=record.guard.radius+reach then table.insert(candidates,other)end
 					end
 				end
 				target=Tactics.chooseTarget(attacker,candidates,record.target,options.order,occupancy)
+				local focus=options.focusTarget
+				if attacker.kind=='ranged' and focus then
+					local current=combat:actor(focus.rig)
+					if current and current.humanoid==focus.humanoid and Rules.canDamage(attacker,current,arena,Ranged.range)
+						and combat:visible(attacker,current)then target=current end
+				end
 			end
 		end
 		if record.target~=(if target then target.rig else nil) then record.reservation=nil end
@@ -349,17 +367,18 @@ function CombatEncounter.new(world,combat)
 					for _,point in choices do
 						local offset=point-record.retreatOrigin
 						if offset.Magnitude>Tuning.retreatLimit then point=record.retreatOrigin+offset.Unit*Tuning.retreatLimit end
-						point=ground(point,attacker)
+						point=rangedPoint(record,point,attacker)
 						if Tactics.flatDistance(point,attacker.position)>.75 and free(point,attacker,target,actors) then plan.goal=point;break end
 					end
 					plan.speed=Tuning.retreatSpeed
-				elseif distance>Tuning.rangedFar then
-					plan.goal=ground(target.position+Tactics.away(attacker,target)*((Tuning.rangedNear+Tuning.rangedFar)/2),attacker)
+				elseif distance>Tuning.rangedFar and (not record.guard or distance>Ranged.range)then
+					local point=rangedPoint(record,target.position+Tactics.away(attacker,target)*((Tuning.rangedNear+Tuning.rangedFar)/2),attacker)
+					if not record.guard or free(point,attacker,target,actors)then plan.goal=point end
 				elseif not canStrike then
 					if not record.sidestepUntil or now>=record.sidestepUntil then
 						record.sidestepGoal=nil
 						for _,point in Tactics.rangedPoints(attacker,target,false) do
-							point=ground(point,attacker)
+							point=rangedPoint(record,point,attacker)
 							local viewpoint={rig=rig,position=point}
 							if free(point,attacker,target,actors) and combat:visible(viewpoint,target) then record.sidestepGoal=point;break end
 						end
@@ -386,11 +405,13 @@ function CombatEncounter.new(world,combat)
 		end
 		plan.direct=plan.goal~=nil and Tactics.flatDistance(plan.goal,attacker.position)<=Tuning.closeDistance
 		supportMovement()
-		if not plan.goal and canStrike and not moving(attacker) and now>=record.nextAttackAt then
+		if not plan.goal and canStrike and not moving(attacker) and now>=record.nextAttackAt
+			and (not options.attackReady or options.attackReady())then
 			local kind=if ranged then "ranged" else "warrior"
 			if combat.skills then combat.skills:lockOrdinary(rig,if ranged then Ranged.attackCooldown else Warrior.attackCooldown) end
 			record.action={target=target.rig,kind=kind,startedAt=now,serverAt=workspace:GetServerTimeNow(),fire=options.fire,resolved=false}
 			record.nextAttackAt=now+(if ranged then Ranged.attackCooldown else Warrior.attackCooldown)
+			if options.attackStarted then options.attackStarted()end
 		end
 		return finishPlan()
 	end

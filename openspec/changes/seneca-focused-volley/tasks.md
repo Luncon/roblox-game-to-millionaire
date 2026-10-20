@@ -6,7 +6,7 @@
 
 ## 2. Focused ranged combat
 
-- [ ] 2.1 Implement captured-life focus selection and stagger gates through ordinary validated attacks, bounded archer evasion and guard interception; verify target/cooldown/order boundaries with policy and encounter tests and document combat behavior.
+- [x] 2.1 Implement captured-life focus selection and stagger gates through ordinary validated attacks, bounded archer evasion and guard interception; verify target/cooldown/order boundaries with policy and encounter tests and document combat behavior.
 
 ## 3. Native integration
 

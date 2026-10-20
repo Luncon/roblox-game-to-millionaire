@@ -370,5 +370,37 @@ return function(moduleOverride)
 			assert(moved>2,"Recovery never selected a footstep")
 		end,kind)end)
 	end
+	test("ranged focus and shared attack gate preserve locked targets and individual cooldowns",function()run(function(f)
+		local farther=f.create(3,"warrior",24,0,"focus")
+		local allowed,starts=false,0
+		f.options.focusTarget=f.combat:actor(farther)
+		f.options.attackReady=function()return allowed end
+		f.options.attackStarted=function()starts+=1 end
+		local waiting=f.encounter:step(f.source,f.options,0)
+		assert(waiting.target==farther and waiting.phase=='idle' and starts==0)
+		allowed=true;assert(f.encounter:step(f.source,f.options,.5).phase=='windup' and starts==1)
+		f.options.focusTarget=f.combat:actor(f.target)
+		assert(f.encounter:step(f.source,f.options,.6).target==farther,'Focus replaced a pending ordinary shot')
+		f.encounter:advance(f.source,.86);assert(f.combat.shots==1)
+		f.encounter:step(f.source,f.options,1);assert(starts==1,'Shared gate bypassed individual cooldown')
+		f.options.order='regroup';f.encounter:step(f.source,f.options,1.1);f.encounter:advance(f.source,2.6)
+		assert(f.combat.shots==1,'Cancelled volley shot survived Regroup')
+	end,'ranged')end)
+	test("ranged screen guards shoot at forty studs without chasing preferred range",function()run(function(f)
+		local center=f.source.HumanoidRootPart.Position
+		f.options.order='advance';f.options.homeGoal=center;f.options.guard={center=center,radius=8}
+		f.target.HumanoidRootPart.Position=center+Vector3.new(40,0,0)
+		local p=f.encounter:step(f.source,f.options,0)
+		assert(p.target==f.target and not p.goal and p.phase=='windup','Bounded archer failed ordinary long-range fire')
+		f.encounter:advance(f.source,.36);assert(f.combat.shots==1)
+	end,'ranged')end)
+	test("ranged screen guards shorten evasive steps to their local boundary and Hold remains stationary",function()run(function(f)
+		local center=f.source.HumanoidRootPart.Position
+		f.options.order='advance';f.options.homeGoal=center;f.options.guard={center=center,radius=8}
+		f.target.HumanoidRootPart.Position=center+Vector3.new(8,0,0)
+		local p=f.encounter:step(f.source,f.options,0)
+		assert(p.goal and (p.goal-center).Magnitude<=8.01 and p.allowsDetour and not p.allowsDetour(center+Vector3.new(9,0,0)))
+		f.options.order='hold';assert(not f.encounter:step(f.source,f.options,.3).goal)
+	end,'ranged')end)
 	return cases
 end

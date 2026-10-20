@@ -406,6 +406,22 @@ The group deploys at a clear 40-stud archer opportunity or its final destination
 The existing per-civilization formation fields save the choice; combat state
 and captured troop lives do not save.
 
+Captured archers retain a shared legal enemy until it becomes invalid, preferring
+a target visible to more archers when choosing anew. Each archer still checks
+ordinary sight, 45-stud reach and current target life independently; blocked
+archers can use ordinary fallback targets and safe sidesteps. Attack starts are
+at least 0.45 seconds apart, without changing damage or individual cooldowns.
+Existing pending contacts keep their locked target and resolve at most once.
+
+Once deployed, the guard intercepts within 14 studs of its slot and returns when
+the threat leaves. Archers may sidestep or make short retreats within eight studs
+of their slots, respecting terrain, arena and troop spacing. The medic keeps
+normal healing and enemy avoidance. Hold suppresses movement but retains attacks,
+coordination and healing. Advance cancels formation control; Regroup also cancels
+pending arrows and bandages. The deployment stays latched without targets.
+Losing the guard or all captured archers releases ordinary Advance unless held;
+individual archer/medic losses do not capture replacement lives.
+
 ### Viking Shield Wedge
 
 Vikings buy Shield Training at settlement/armor 15 with Armorer I for 150 coins.

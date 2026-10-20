@@ -24,6 +24,8 @@ const modules = [
   'tests/specs/PersianFormation.spec.luau',
   'tests/specs/VikingFormation.spec.luau',
   'tests/specs/SenecaFormation.spec.luau',
+  'src/server/SenecaVolley.luau',
+  'tests/specs/SenecaVolley.spec.luau',
   'tests/specs/TestCurrency.spec.luau',
   'tests/specs/ArmyRecruitment.spec.luau',
 ];
