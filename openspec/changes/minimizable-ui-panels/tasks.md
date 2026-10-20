@@ -10,4 +10,4 @@
 
 ## 3. Integration and delivery
 
-- [ ] 3.1 Run relevant native UI regressions, compile/build/spec checks and review/mutation verification; record evidence, install production sources into main Studio, close owned fixtures and commit/push the completed change.
+- [x] 3.1 Run relevant native UI regressions, compile/build/spec checks and review/mutation verification; record evidence, install production sources into main Studio, close owned fixtures and commit/push the completed change.
