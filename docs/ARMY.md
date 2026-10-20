@@ -390,6 +390,22 @@ pilum throws. The same center-arrival/frontline-casualty release, explicit Hold,
 Regroup, support-loss and replacement rules apply. Roman and Spartan selection
 save independently under the existing twenty-field profile.
 
+### Seneca Focused Volley
+
+Seneca fields one melee guard, three archers and one medic, with no shields.
+Buy Focused Volley for 250 coins at settlement 20 after War Council I, Barracks
+Capacity II and Hospital I; Shield Training, armor 15 and Armorer I are not
+prerequisites. Japan also remains shieldless.
+
+Choose 1 melee / 3 ranged / 1 medic at the Barracks, wait for any old classes to
+be replaced, and gather all five current lives in the Training Yard. Select
+Focused Volley at the owned War Council map and press March Formation. Troops
+assemble on the road and march at the shared six-stud pace. A loose crescent
+puts the guard ahead, three archers across the middle and the medic behind.
+The group deploys at a clear 40-stud archer opportunity or its final destination.
+The existing per-civilization formation fields save the choice; combat state
+and captured troop lives do not save.
+
 ### Viking Shield Wedge
 
 Vikings buy Shield Training at settlement/armor 15 with Armorer I for 150 coins.

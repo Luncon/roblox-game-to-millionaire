@@ -9,11 +9,11 @@ local Rack={}
 local pickups={warrior=-4,camp=0,reinforcement=4}
 
 function Rack.unlocked(civ,state)
- return civ and Config.forCivilization(civ.id)~=nil and state and state.shieldLevel==1
+ return civ and Config.usesShields(civ.id) and state and state.shieldLevel==1
 end
 function Rack.needs(rig,state)
  return rig:GetAttribute('WarriorClass')=='warrior' and state and state.shieldLevel==1
-  and Config.forCivilization(rig:GetAttribute('CivilizationId'))~=nil
+  and Config.usesShields(rig:GetAttribute('CivilizationId'))
   and rig:GetAttribute('ShieldCharges')==0 and rig:GetAttribute('SpartanShieldRemaining')==0
 end
 function Rack.build(parent,frame,civ)

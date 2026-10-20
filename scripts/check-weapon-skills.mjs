@@ -23,6 +23,7 @@ const modules = [
   'tests/specs/RomanFormation.spec.luau',
   'tests/specs/PersianFormation.spec.luau',
   'tests/specs/VikingFormation.spec.luau',
+  'tests/specs/SenecaFormation.spec.luau',
   'tests/specs/TestCurrency.spec.luau',
   'tests/specs/ArmyRecruitment.spec.luau',
 ];

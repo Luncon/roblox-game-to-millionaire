@@ -13,12 +13,12 @@ end
 
 function F.ready(state,civilizationId,frame,actors)
  local definition=Config.forCivilization(civilizationId)
- if not definition or state.formationLevel~=1 or state.shieldLevel~=1
+ if not definition or state.formationLevel~=1 or (definition.requiresShields~=false and state.shieldLevel~=1)
   or state.warCouncilLevel~=1 or state.armyCampLevel~=2 or state.hospitalLevel~=1 then return false,'formation_locked' end
  if state.selectedFormation~=definition.id then return false,'formation_unselected' end
  local count=0;for _ in actors do count+=1 end
  if count~=5 then return false,'formation_missing_troops' end
- for id,kind in Config.roles do
+ for id,kind in Config.rolesFor(definition) do
   local a=actors[id]
   if not a or not a.alive or not a.rig or not a.humanoid then return false,'formation_missing_troops' end
   if a.kind~=kind then return false,'formation_wrong_classes' end
@@ -32,7 +32,7 @@ function F.new(anchor,destination,actors,definition)
  assert(definition and Config.byId[definition.id]==definition,'Known formation required')
  local direction=destination-anchor;direction=Vector3.new(direction.X,0,direction.Z)
  assert(direction.Magnitude>.01,'Formation needs a route')
- local members={};for id in Config.roles do
+ local members={};for id in Config.rolesFor(definition) do
   members[id]={rig=actors[id].rig,humanoid=actors[id].humanoid}
  end
  return {definition=definition,anchor=anchor,destination=destination,heading=direction.Unit,members=members,phase='assembling'}
@@ -63,7 +63,7 @@ function F.contactOpportunity(group,members,actors,canContact)
  if not group.definition.breakOnMeleeContact or group.phase=='holding' then return false end
  for id,member in group.members do
   local frontline=members[id]
-  if Config.roles[id]=='warrior' and frontline and frontline.alive and frontline.kind=='warrior'
+  if Config.rolesFor(group.definition)[id]=='warrior' and frontline and frontline.alive and frontline.kind=='warrior'
    and frontline.rig==member.rig and frontline.humanoid==member.humanoid then
    for _,target in actors do if canContact(frontline,target)then return true end end
   end
@@ -75,10 +75,15 @@ function F.step(group,actors,dt,allows,ground,hasShot,hasContact)
  for id,member in group.members do
   local a=actors[id]
   if not a or not a.alive or a.rig~=member.rig or a.humanoid~=member.humanoid then
-   if Config.roles[id]=='warrior' then return nil,'frontline_lost' end
+   if Config.rolesFor(group.definition)[id]=='warrior' then return nil,'frontline_lost' end
    -- Keep the surviving shield line; never capture a replacement support life.
    group.members[id]=nil
   end
+ end
+ if group.definition.volley then
+  local archers=false
+  for id in group.members do if Config.rolesFor(group.definition)[id]=='ranged'then archers=true;break end end
+  if not archers then return nil,'archers_lost'end
  end
  -- A paused attack or lagging member must not prevent the wedge entering combat.
  if group.definition.breakOnMeleeContact and group.phase~='holding' and hasContact then return nil,'melee_contact' end
@@ -94,7 +99,18 @@ function F.step(group,actors,dt,allows,ground,hasShot,hasContact)
  local front=actors.warrior.position
  local right=Vector3.new(-group.heading.Z,0,group.heading.X)
  local definition=group.definition
- local shape=(front-actors.camp.position):Dot(group.heading)>=definition.frontLeadMinimum
+ local shape=true
+ if definition.volley then
+  for id in group.members do
+   if Config.rolesFor(definition)[id]=='ranged'then
+    shape=shape and (front-actors[id].position):Dot(group.heading)>=4
+    if group.members.medic then shape=shape and (actors[id].position-actors.medic.position):Dot(group.heading)>=2 end
+   end
+  end
+  if group.members.camp and group.members.ranged then shape=shape and (actors.ranged.position-actors.camp.position):Dot(right)>=5 end
+  if group.members.reinforcement and group.members.ranged then shape=shape and (actors.reinforcement.position-actors.ranged.position):Dot(right)>=5 end
+ else
+ shape=(front-actors.camp.position):Dot(group.heading)>=definition.frontLeadMinimum
   and (front-actors.reinforcement.position):Dot(group.heading)>=definition.frontLeadMinimum
   and (front-actors.camp.position):Dot(right)>=3
   and (actors.reinforcement.position-front):Dot(right)>=3
@@ -108,8 +124,10 @@ function F.step(group,actors,dt,allows,ground,hasShot,hasContact)
  if group.members.ranged and group.members.medic then
   shape=shape and (actors.medic.position-actors.ranged.position):Dot(right)>=definition.supportSpacingMinimum
  end
+ end
  allArrived=allArrived and shape
  coherent=coherent and shape
+ if definition.volley and group.phase=='marching' and hasShot then group.phase='screening' end
  if group.phase=='assembling' then
   if allArrived then group.phase='marching' end
  elseif group.phase=='marching' and coherent then

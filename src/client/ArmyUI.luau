@@ -41,6 +41,10 @@ function ArmyUI.start(screen: ScreenGui)
 			local ok,result=pcall(function()return remote:InvokeServer(action,value)end)
 			busy=false
 			if not ok or not result.ok then
+				local definition=require(ReplicatedStorage.Shared.FormationConfig).forCivilization(player:GetAttribute('CivilizationId'))
+				local composition=if definition then definition.composition or '3 melee, 1 ranged, 1 medic' else 'the required troops'
+				reasons.formation_missing_troops='All five must be alive: '..composition..'.'
+				reasons.formation_wrong_classes='Recruit '..composition..' at the Barracks; wait for replacements.'
 				feedback.Text=if ok and result.reason=="rate_limited" then "Wait a moment before giving another order."
 					else (if ok then reasons[result.reason] else nil) or "Order unavailable. Check your buildings and saved session."
 			else feedback.Text=if action=="march" then "Order: formation" else "Order: "..value end

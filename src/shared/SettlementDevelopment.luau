@@ -68,9 +68,10 @@ function Development.offer(state,track: string,civilizationId: string?)
 		table.insert(missing,if nextLevel==2 then "Farm II" else "Farm I")
 	end
  if track=="shield" or track=="formation" then
-  if not Formation.forCivilization(civilizationId) then table.insert(missing,"Shield formation unavailable") end
+  if not Formation.forCivilization(civilizationId) then table.insert(missing,"Formation unavailable") end
  end
  if track=="shield" then
+  if not Formation.usesShields(civilizationId) then table.insert(missing,"Shields unavailable")end
   if (state.armorLevel or 1)<Formation.shieldUnlock then table.insert(missing,"Armor 15") end
   if state.armorerLevel~=1 then table.insert(missing,"Armorer I") end
  end
@@ -78,7 +79,8 @@ function Development.offer(state,track: string,civilizationId: string?)
  if track=="armyCamp" and nextLevel==2 and (state.barracksLevel or 1)<6 then table.insert(missing,"Barracks VI") end
  if track=="formation" then
   if state.warCouncilLevel~=1 then table.insert(missing,"War Council I") end
-  if state.shieldLevel~=1 then table.insert(missing,"Shield Training I") end
+  local definition=Formation.forCivilization(civilizationId)
+  if (not definition or definition.requiresShields~=false) and state.shieldLevel~=1 then table.insert(missing,"Shield Training I") end
   if state.armyCampLevel~=2 then table.insert(missing,"Barracks Capacity II") end
   if state.hospitalLevel~=1 then table.insert(missing,"Hospital I") end
  end

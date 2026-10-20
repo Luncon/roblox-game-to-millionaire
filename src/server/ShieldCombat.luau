@@ -4,7 +4,7 @@ local Shield={}
 
 -- A life receives charges once. Equipment rebuilds reuse these server attributes.
 function Shield.refresh(rig,civilizationId,kind,state)
- local eligible=Config.forCivilization(civilizationId)~=nil and (kind=='warrior' or kind=='player') and state and state.shieldLevel==1
+ local eligible=Config.usesShields(civilizationId) and (kind=='warrior' or kind=='player') and state and state.shieldLevel==1
  local remaining=rig:GetAttribute('SpartanShieldRemaining')
  if eligible and remaining==nil then
   remaining=Config.shieldHits;rig:SetAttribute('SpartanShieldRemaining',remaining)
@@ -15,7 +15,7 @@ end
 
 -- Only validated initial-supply or Regroup rack pickup calls this refill.
 function Shield.restock(rig,civilizationId,kind,state)
- if kind~='warrior' or not Config.forCivilization(civilizationId) or not state or state.shieldLevel~=1
+ if kind~='warrior' or not Config.usesShields(civilizationId) or not state or state.shieldLevel~=1
   or rig:GetAttribute('ShieldCharges')~=0 or rig:GetAttribute('SpartanShieldRemaining')~=0 then return false end
  rig:SetAttribute('SpartanShieldRemaining',Config.shieldHits)
  rig:SetAttribute('ShieldCharges',Config.shieldHits)

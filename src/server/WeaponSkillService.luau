@@ -112,7 +112,7 @@ function Skills.new(world,combat,economy,damage,clock,physics)
 		local formation=order=="formation"
 		local definitionForActor=Formation.forCivilization(actor.civilizationId)
 		if formation and (actor.kind~="warrior" or not definitionForActor or family~=definitionForActor.skillFamily
-			or rig:GetAttribute("FormationActive")~=true or Formation.roles[rig:GetAttribute("ArmySlot")]~="warrior") then
+			or rig:GetAttribute("FormationActive")~=true or Formation.rolesFor(definitionForActor)[rig:GetAttribute("ArmySlot")]~="warrior") then
 			return {ok=false,reason="order_locked"}
 		end
 		if order=="regroup" or (family=="spear" and order=="hold") then return {ok=false,reason="order_locked"} end

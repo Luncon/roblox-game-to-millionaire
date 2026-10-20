@@ -17,7 +17,7 @@ return function()
     local map=assert(room:FindFirstChild('MapTable'))
     assert(map:FindFirstChildOfClass('ProximityPrompt') and map:FindFirstChildOfClass('ClickDetector'))
     assert(not plot.Controls:FindFirstChild('WarCouncilButton'))
-    assert((plot.Controls:FindFirstChild('ShieldButton')~=nil)==(require(game.ReplicatedStorage.Shared.FormationConfig).forCivilization(civ.id)~=nil))
+    assert((plot.Controls:FindFirstChild('ShieldButton')~=nil)==require(game.ReplicatedStorage.Shared.FormationConfig).usesShields(civ.id))
     local shield=plot.Controls:FindFirstChild('ShieldButton')
     if shield then assert(shield.Position.Y-shield.Size.Y/2>=plot.Foundation.Position.Y+plot.Foundation.Size.Y/2,'Shield pad is buried in the foundation')end
     local filter=OverlapParams.new();filter.FilterType=Enum.RaycastFilterType.Include
@@ -32,7 +32,7 @@ return function()
   end)
   test('unlocked shield racks have clear supported pickups for every shield faction and rotated plot',function()
    for id=1,8 do for _,civ in require(game.ReplicatedStorage.Shared.Civilizations)do
-    if not require(game.ReplicatedStorage.Shared.FormationConfig).forCivilization(civ.id)then continue end
+    if not require(game.ReplicatedStorage.Shared.FormationConfig).usesShields(civ.id)then continue end
     world:setOwner(id,civ,100+id,'SupplyTester',50)
     world:syncControls(id,{level=50,weaponLevel=20,armorLevel=15,barracksLevel=6,trainingLevel=1,
      armyCampLevel=2,hospitalLevel=1,armorerLevel=1,warCouncilLevel=1,shieldLevel=1,formationLevel=1})

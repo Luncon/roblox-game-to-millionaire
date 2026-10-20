@@ -8,6 +8,15 @@ local Formation={
 }
 -- Negative Z is forward. Each definition owns its geometry and guard headings.
 local definitions={
+ ['seneca-focused-volley']={
+  id='seneca-focused-volley',name='Seneca Focused Volley',civilization='seneca',requiresShields=false,
+  description='1 guard, 3 archers, 1 medic\nConcentrated fire from a loose crescent',
+  composition='1 melee, 3 ranged, 1 medic',volley=true,screenRange=40,guardRadius=14,archerRadius=8,shotSpacing=.45,
+  roles={warrior='warrior',camp='ranged',reinforcement='ranged',ranged='ranged',medic='medic'},
+  offsets={warrior=Vector3.new(0,0,-6),camp=Vector3.new(-10,0,2),reinforcement=Vector3.new(10,0,2),
+   ranged=Vector3.new(0,0,5),medic=Vector3.new(0,0,11)},
+  facingAngles={},
+ },
  ['viking-shield-wedge']={
   id='viking-shield-wedge',name='Viking Shield Wedge',civilization='vikings',
   description='3 shieldmen in a pointed wedge\nBreaks into combat at melee contact',
@@ -45,10 +54,16 @@ local definitions={
 }
 local byCivilization={}
 for _,definition in definitions do
+ if definition.roles then table.freeze(definition.roles)end
  table.freeze(definition.offsets);table.freeze(definition.facingAngles);table.freeze(definition)
  byCivilization[definition.civilization]=definition
 end
 Formation.byId=table.freeze(definitions)
 function Formation.forCivilization(id: string?)return if id then byCivilization[id] else nil end
+function Formation.rolesFor(definition)return definition.roles or Formation.roles end
+function Formation.usesShields(id: string?)
+ local definition=Formation.forCivilization(id)
+ return definition~=nil and definition.requiresShields~=false
+end
 table.freeze(Formation.roles)
 return table.freeze(Formation)

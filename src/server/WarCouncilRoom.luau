@@ -30,7 +30,7 @@ function Room.build(parent,frame,civ)
  part('MapRoad',Vector3.new(.3,.02,4.8),Vector3.new(0,2.84,0),Color3.fromRGB(138,115,70),false)
  local definition=Config.forCivilization(civ.id) or Config.forCivilization('sparta')
  for id,offset in definition.offsets do
-  local support=id=='ranged' or id=='medic'
+  local support=Config.rolesFor(definition)[id]~='warrior'
   part('MapTroop_'..id,Vector3.new(.55,.2,.55),Vector3.new(offset.X*.24,2.96,offset.Z*.24-.6),
    if support then Color3.fromRGB(229,222,189) else civ.color,false)
  end
