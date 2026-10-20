@@ -273,7 +273,7 @@ switch that viewport and prevent client GUI activation. Read
 `ReplicatedStorage.FormationVerificationResult` attributes from Client to monitor
 the run without switching. Detailed `FormationUnitCases`/`FormationEvidence`
 remain on the server DataModel. Default execution includes all module cases,
-ten formation runtime scenarios and four bounded-frame GUI layouts.
+the faction runtime scenarios and four bounded-frame GUI layouts.
 
 Set `SoloFormationsTests.FullRegression` to true before Play to add the existing
 tactical combat, crowd movement and medic-survival native fixtures. For a focused
@@ -289,7 +289,7 @@ run includes Vikings after the earlier factions; restore `VikingOnly=false` for
 that default set.
 For a focused combat repeat, combine `VikingOnly=true`, `VikingCombatOnly=true`
 and `RuntimeOnly=true`; restore the latter two to false for a complete run.
-`PriorFormationsOnly=true` omits the new Viking runtime when repeating the
+`PriorFormationsOnly=true` omits Viking and Seneca runtime when repeating the
 earlier faction scenarios; it leaves module checks enabled unless RuntimeOnly
 is also selected. Restore false for the default full formation run.
 
@@ -301,6 +301,15 @@ four melee), request authority and four bounded screen layouts. Set
 `RuntimeOnly=true` only for a focused runtime repeat. Restore
 `RecruitmentOnly=false` for ordinary formation verification; `FullRegression=true`
 adds combat, crowd movement and medic-survival scenarios. All use FakeProfileStore.
+
+For Seneca Focused Volley, set `SoloFormationsTests.SenecaOnly=true` before Play.
+It exercises native purchases/council, Barracks 1/3/1 selection and future spawns,
+shield absence, the unanchored crescent road march, focused staggered arrows,
+visibility, bounded defense, Hold/healing, casualties and authority loss.
+`SenecaCombatOnly=true` skips purchases/recruitment and the full walking route
+for focused combat repeats; `ModuleOnly=true` runs only module fixtures.
+Clear focused flags for the default run, which includes Seneca after Vikings.
+`PriorFormationsOnly=true` omits both Viking and Seneca runtime scenarios.
 
 For medic diagnostics in the formation harness, `MedicalOnly=true` selects only
 the existing medic-survival runtime after any enabled module checks. Restore

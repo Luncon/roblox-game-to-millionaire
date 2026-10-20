@@ -1,4 +1,6 @@
-return function()
+return function(options)
+ local melee=if options then options.melee or 2 else 2
+ local ranged=4-melee
  local player=game.Players.LocalPlayer
  local screen=player.PlayerGui:WaitForChild('CivilizationSelection',10)
  local overlay=screen:WaitForChild('RecruitmentOverlay',10)
@@ -21,13 +23,13 @@ return function()
   local panel=overlay.BarracksRecruitment;local body=panel.Composition
   assert(body.meleeCount.Text=='3' and body.rangedCount.Text=='1' and body.medicCount.Text=='1')
   assert(not body.meleePlus.Active,'Capacity overflow button must be disabled')
-  click(body.meleeMinus);click(body.rangedPlus)
-  assert(body.meleeCount.Text=='2' and body.rangedCount.Text=='2')
+  for _=1,3-melee do click(body.meleeMinus);click(body.rangedPlus)end
+  assert(body.meleeCount.Text==tostring(melee) and body.rangedCount.Text==tostring(ranged))
   click(panel.ApplyComposition)
-  waitFor(function()return player:GetAttribute('RecruitMelee')==2 and player:GetAttribute('RecruitRanged')==2 end,'saved native count selection')
+  waitFor(function()return player:GetAttribute('RecruitMelee')==melee and player:GetAttribute('RecruitRanged')==ranged end,'saved native count selection')
   assert(body.RecruitmentFeedback.Text:find('saved',1,true))
   click(panel.CloseRecruitment);waitFor(function()return not overlay.Visible end,'native recruitment close')
-  return {ok=true,melee=2,ranged=2,medic=1}
+  return {ok=true,melee=melee,ranged=ranged,medic=1}
  end)
  camera.CameraType=old.kind;camera.CFrame=old.frame;assert(ok,result);return result
 end

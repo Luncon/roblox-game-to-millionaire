@@ -21,7 +21,7 @@ return function()
   waitFor(function()return overlay.Visible end,'physical council prompt')
   local panel=overlay.WarCouncil;local select=panel.SelectShieldwall
   assert(select.Active and select.Visible and select.Selectable)
-  assert(panel.FormationDescription.Text:find('3 shieldmen',1,true))
+  assert(panel.FormationDescription.Text:find(if definition.volley then '1 guard, 3 archers' else '3 shieldmen',1,true))
   local function click(button)
    local inset=game.GuiService:GetGuiInset()
    local point=button.AbsolutePosition+button.AbsoluteSize/2+(if screen.IgnoreGuiInset then Vector2.zero else inset)

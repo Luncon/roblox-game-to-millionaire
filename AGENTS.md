@@ -195,3 +195,16 @@ reach (five studs, hostility, arena, visibility and authority), even during
 assembly or a cohesion stall. Explicit Hold suppresses contact release and
 permits stationary attacks/healing. Center arrival/frontline casualties and
 Advance/Regroup use the existing transitions; no bonuses or new saved fields.
+
+Seneca Focused Volley is shieldless: settlement 20/250 coins requires Council I,
+Barracks Capacity II and Hospital I, with no Shield Training or armor prerequisite.
+Japan and Seneca never receive shield purchases, racks or charges. A captured
+1 melee/3 ranged/1 medic roster assembles and marches at six studs/second in a
+20-stud crescent, deploying on a clear captured-archer shot within 40 studs or at
+center. SenecaVolley retains a current legal shared target and spaces ordinary
+archer windup starts by at least .45 seconds; individual range, cooldown, visibility,
+authority and contact validation remain unchanged. The guard intercepts within
+14 studs of its slot; archers reposition within eight. Hold attacks/heals without
+movement; Advance/Regroup cancel. Guard loss or all captured archers lost releases
+ordinary Advance unless explicitly held. Replacements never join captured lives.
+No bonuses, ranged skills, new save fields or Japan formation are introduced.

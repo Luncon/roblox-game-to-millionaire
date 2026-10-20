@@ -40,6 +40,7 @@ local ok,result=pcall(function()
 		evidence.suites[spec.Name]=count;units+=count;task.wait()
 	end end
 	game:SetAttribute("FormationUnitCases",units)
+ if script:GetAttribute('ModuleOnly')then return {ok=true,cases=units}end
 	local function round(action,options,timeout)
 		sequence+=1;local name="tactical-"..sequence
 		commands:FireClient(player,{round=name,action=action,target=player.UserId,options=options})
@@ -58,6 +59,11 @@ local ok,result=pcall(function()
   return evidence.recruitment
  end
 	stage("Formation runtime")
+ if script:GetAttribute('SenecaOnly')then
+  evidence.seneca=require(game.ServerStorage.RuntimeTests.FocusedVolley)(context,player,round,script:GetAttribute('SenecaCombatOnly'))
+  evidence.layout=round('formationLayout',{},20)
+  return evidence.seneca
+ end
  if script:GetAttribute("VikingOnly")then
   evidence.viking=require(game.ServerStorage.RuntimeTests.VikingWedge)(context,player,round,script:GetAttribute("VikingCombatOnly"))
   evidence.layout=round("formationLayout",{},20)
@@ -72,6 +78,7 @@ local ok,result=pcall(function()
 	evidence.layout=round("formationLayout",{},20)
  if not script:GetAttribute("PriorFormationsOnly")then
   evidence.viking=require(game.ServerStorage.RuntimeTests.VikingWedge)(context,player,round)
+  evidence.seneca=require(game.ServerStorage.RuntimeTests.FocusedVolley)(context,player,round)
  end
 	if script:GetAttribute("FullRegression")then
 		stage("Existing tactical combat and movement regressions")
