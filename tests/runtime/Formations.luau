@@ -32,8 +32,12 @@ return function(context,player,round,onlyRoman)
     local rack=plot.Infrastructure.ShieldRack
     slot.rig:PivotTo(CFrame.new(ShieldRack.goal(rack,id)));assert(ShieldRack.collect(slot.rig,rack,id,'regroup',service.economy:get(player.UserId),true))
    end
-   slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))
   end
+  -- Manual rack collection does not run the production pickup branch that
+  -- resets ArmyRest. Discard any old entrance goal before trusted camp placement.
+  order('hold')
+  for id,slot in army().slots do slot.rig:PivotTo(frame*CFrame.new(Camp.point(Camp.arrivalIndex(id))))end
+  order('regroup')
   task.wait(.5)
  end
  local function march()
