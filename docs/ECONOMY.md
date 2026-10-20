@@ -4,8 +4,8 @@ Choose one of the 13 civilizations and go to your assigned settlement. Tycoon
 earning, purchases and farm collection use real ground buttons. The HUD shows
 progress; it has no earning or purchase controls.
 
-- **Gold coin button:** click it or use its interaction prompt for exactly one
-  coin per accepted activation. Standing on it does not generate income.
+- **Gold coin button:** click it or use its interaction prompt for exactly 50
+  coins per accepted activation. Standing on it does not generate income.
 - **Settlement pad:** click, interact, or walk onto it to expand the settlement.
 - **Weapon pad:** buy the next civilization weapon tier independently.
 - **Armor pad:** buy the next civilization armor tier independently.
@@ -226,7 +226,7 @@ selection costs no coins. Unlocks and selection save separately per civilization
 Existing level-20+ settlements receive no retroactive checkpoint requirements.
 
 The normal Studio build also provides a purple +1,000 TEST COINS pad beside the
-single-coin pad. Only the nearby living owner with writable progress can receive
+50-coin pad. Only the nearby living owner with writable progress can receive
 a fixed 1,000-coin grant, at most once per half second and within the normal
 balance cap. It affects the active civilization and uses normal StudioDevelopment
 saving; the separate temporary-coin test build still uses fake storage. Testing

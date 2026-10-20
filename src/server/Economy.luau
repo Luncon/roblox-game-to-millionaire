@@ -78,7 +78,10 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, 
 		return amount
 	end
 
-	function economy:earn(playerId: number)
+	-- The physical pad supplies its server-owned reward; unit grants default to one.
+	function economy:earn(playerId: number, amount: number?)
+		local reward=if amount==nil then 1 else amount
+		if type(reward)~="number" or reward%1~=0 or reward<1 or reward>MAX_COINS then return rejected(playerId,"invalid") end
 		local account = accounts[playerId]
 		if not account then return rejected(playerId, "not_claimed") end
 		if canMutate and not canMutate(playerId) then return rejected(playerId, "profile_unavailable") end
@@ -86,9 +89,9 @@ function Economy.new(clock: (() -> number)?, canMutate: ((number) -> boolean)?, 
 		account.tokens = math.min(BURST, account.tokens + math.max(0, time - account.updatedAt) * REFILL)
 		account.updatedAt = time
 		if account.tokens < 1 then return rejected(playerId, "rate_limited") end
-		if account.coins >= MAX_COINS then return rejected(playerId, "coin_limit") end
+		if account.coins > MAX_COINS-reward then return rejected(playerId, "coin_limit") end
 		account.tokens -= 1
-		account.coins += 1
+		account.coins += reward
 		account.revision = nextRevision(playerId)
 		return { ok = true, state = self:get(playerId) }
 	end

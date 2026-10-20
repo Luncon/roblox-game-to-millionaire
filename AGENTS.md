@@ -34,7 +34,7 @@ The current prototype offers 13 civilizations, exclusive claims and eight spaced
 plots in a 1,600-stud square world with five biomes. Settlements grow from 60 to
 256 studs through 50 levels with themed districts and landmarks. Weapon and armor
 also have 50 gradual levels: melee damage 10–18 and standard maximum health
-100–140. Physical tycoon pads provide single-coin earning and separate upgrades.
+100–140. Physical tycoon pads provide 50-coin earning and separate upgrades.
 See `docs/WORLD.md` for geometry and construction. The HUD displays progress;
 there is no client earning/purchase remote. Coins, progression, building levels,
 farm reserve and extra troop class

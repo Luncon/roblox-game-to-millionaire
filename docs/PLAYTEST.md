@@ -2499,3 +2499,16 @@ The production bootstrap and absent diagnostic getter/fixture folders were
 confirmed. Its 19 equipment, 13 outfit, five NPC and one farmer templates remain
 present. The owned test was stopped, focused flags cleared and its window closed.
 Main Studio remains ready to play; no Roblox publication occurred.
+
+### Follow-up: regular coin pad payout
+
+At the user's request the regular pad now awards **50 coins per accepted click**.
+`ProgressionConfig.coinsPerClick` owns the setting; server dispatch, pad label and
+HUD read it. One activation still consumes one rate token, and wallet overflow
+and write authority remain guarded. Native Edit-mode verification used fresh
+in-memory economy accounts (no player store): two grants produced 100 coins.
+The standalone suite passed **244 cases**, including the 50-coin rate/isolation/
+authority/overflow regression. Updated physical/controller fixtures compiled;
+their full native input runs were not repeated for this payout-only follow-up.
+All four changed production sources were installed in main Studio and all three
+build files refreshed. No existing player balance was directly edited.

@@ -20,6 +20,7 @@ return function(options)
 	local coin, settlement = controls.CoinButton, controls.UpgradeButton
 	local weapon,armor=nil,nil
 	local cases, clicks = 0, 0
+	local reward=require(game.ReplicatedStorage.Shared.ProgressionConfig).coinsPerClick
 	local mouseDown, keyDown = false, false
 	local activePad = coin
 	local walkTo
@@ -70,13 +71,15 @@ return function(options)
 	local function earn(amount)
 		positionOutside(coin, 1)
 		aim(coin)
-		for _ = 1, amount do
+		local activations=math.ceil(amount/reward)
+		for _ = 1, activations do
 			local before = player:GetAttribute("Coins")
 			click(coin)
 			clicks += 1
-			waitFor(function() return player:GetAttribute("Coins") ~= before end, "one coin from actual click", 3)
-			assert(player:GetAttribute("Coins") == before + 1, "A single actual click did not award exactly one coin")
+			waitFor(function() return player:GetAttribute("Coins") ~= before end, "configured coins from actual click", 3)
+			assert(player:GetAttribute("Coins") == before + reward, "A single actual click did not award the configured coins")
 		end
+		return activations*reward
 	end
 	walkTo = function(position)
 		root.Anchored = false
@@ -99,27 +102,27 @@ return function(options)
 		assert(player:GetAttribute("Coins") == 0 and player:GetAttribute("SettlementLevel") == 1)
 		assert(player:GetAttribute("WeaponLevel") == 1 and player:GetAttribute("ArmorLevel") == 1)
 		local initialCoins = if barracksOnly then 25 else 60
-		earn(initialCoins)
-		assert(player:GetAttribute("Coins") == initialCoins)
+		local balance=earn(initialCoins)
+		assert(player:GetAttribute("Coins") == balance)
 		cases += 1
 		walkTo(center)
 		walkTo(settlement.Position)
 		waitFor(function() return player:GetAttribute("SettlementLevel") == 2 end, "first physical settlement entry")
-		assert(player:GetAttribute("Coins") == initialCoins-25)
+		balance-=25;assert(player:GetAttribute("Coins") == balance)
 		cases += 1
 		if not barracksOnly then
 			task.wait(2)
-			assert(player:GetAttribute("SettlementLevel") == 2 and player:GetAttribute("Coins") == 35,
+			assert(player:GetAttribute("SettlementLevel") == 2 and player:GetAttribute("Coins") == balance,
 				"Remaining on an upgrade pad bought a second tier despite the entry latch")
 			cases += 1
 			walkTo(center)
 			task.wait(.4)
 			walkTo(settlement.Position)
 			waitFor(function() return player:GetAttribute("SettlementLevel") == 3 end, "settlement exit and reentry")
-			assert(player:GetAttribute("Coins") == 0)
+			balance-=35;assert(player:GetAttribute("Coins") == balance)
 			cases += 1
 		end
-		earn(30)
+		balance+=earn(30)
 		weapon=controls:WaitForChild("WeaponButton",10)
 		armor=controls:WaitForChild("ArmorButton",10)
 		assert(weapon and armor,"Settlement upgrade did not create tier-two gear pads")
@@ -127,17 +130,17 @@ return function(options)
 		positionOutsideGear(weapon, -1)
 		aim(weapon)
 		task.wait(.25)
-		assert(player:GetAttribute("Coins") == 30 and player:GetAttribute("WeaponLevel") == 1,
+		assert(player:GetAttribute("Coins") == balance and player:GetAttribute("WeaponLevel") == 1,
 			"Walking to the weapon click position unexpectedly purchased an upgrade")
 		click(weapon)
 		waitFor(function() return player:GetAttribute("WeaponLevel") == 2 end, "actual weapon pad click")
-		assert(player:GetAttribute("Coins") == 15)
+		balance-=15;assert(player:GetAttribute("Coins") == balance)
 		cases += 1
 		-- Keyboard E exercises the engine's ProximityPrompt input route without firing its event.
 		positionOutsideGear(armor, 1)
 		aim(armor)
 		task.wait(.5)
-		assert(player:GetAttribute("Coins") == 15 and player:GetAttribute("ArmorLevel") == 1,
+		assert(player:GetAttribute("Coins") == balance and player:GetAttribute("ArmorLevel") == 1,
 			"Walking to the armor prompt position unexpectedly purchased an upgrade")
 		input:SendKey(true, Enum.KeyCode.E, false)
 		keyDown = true
@@ -145,7 +148,7 @@ return function(options)
 		input:SendKey(false, Enum.KeyCode.E, false)
 		keyDown = false
 		waitFor(function() return player:GetAttribute("ArmorLevel") == 2 end, "actual armor proximity key")
-		assert(player:GetAttribute("Coins") == 0 and math.abs(humanoid.MaxHealth-(100+40/49))<.002)
+		balance-=15;assert(player:GetAttribute("Coins") == balance and math.abs(humanoid.MaxHealth-(100+40/49))<.002)
 		cases += 1
 		return {ok=true,cases=cases,clicks=clicks,coins=player:GetAttribute("Coins"),
 			level=player:GetAttribute("SettlementLevel"),weaponLevel=player:GetAttribute("WeaponLevel"),

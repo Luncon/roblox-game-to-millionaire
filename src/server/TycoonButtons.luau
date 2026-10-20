@@ -3,6 +3,7 @@
 local Players = game:GetService("Players")
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Tracks = require(Shared.UpgradeTracks)
+local Progression = require(Shared.ProgressionConfig)
 local Catalog = require(Shared.PadCatalog)
 local Development = require(Shared.SettlementDevelopment)
 local Skills = require(Shared.WeaponSkillConfig)
@@ -81,7 +82,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 			local enabled = state ~= nil
 			if action == "earn" then
 				bound.pad.Color = Color3.fromRGB(240,191,54)
-				bound.label.Text = if enabled then "+1 COIN\nClick or interact" else "COINS\nClaim this plot first"
+				bound.label.Text = if enabled then string.format("+%d COINS\nClick or interact",Progression.coinsPerClick) else "COINS\nClaim this plot first"
 				bound.prompt.ActionText = "+1 Coin"
 			elseif action=="testCoins" then
 				bound.pad.Color=Color3.fromRGB(134,94,185)
@@ -146,7 +147,7 @@ function TycoonButtons.new(world, registry, economy, civilizations, publishEcono
 		local state = economy:get(player.UserId)
 		if not state then return {ok=false,reason="not_claimed"} end
 		local result
-		if action=="earn" then result=economy:earn(player.UserId)
+		if action=="earn" then result=economy:earn(player.UserId,Progression.coinsPerClick)
 		elseif action=="testCoins" then result=economy:grantTestCoins(player.UserId)
 		elseif action=="collectFarm" then result=economy:collectFarm(player.UserId)
 		else

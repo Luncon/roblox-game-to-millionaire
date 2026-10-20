@@ -204,7 +204,7 @@ function EconomyUI.start(screen: ScreenGui)
 					elseif result.action == "armor" then "Civilization armor upgraded!"
 					elseif result.action == "barracks" then "Barracks upgraded!"
 					elseif result.action == "kill" then "+10 coins · Enemy defeated!"
-					else "Each gold-pad activation earns one coin."
+					else string.format("Each gold-pad activation earns %d coins.",require(ReplicatedStorage.Shared.ProgressionConfig).coinsPerClick)
 			else
 				feedback.Text = errors[result.reason] or "Try your own plot's pad again."
 			end
