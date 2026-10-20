@@ -1,5 +1,12 @@
 # Working in this repository
 
+All five interface panels support client-session minimization through
+PanelVisibility: settlement HUD, army controls, civilization selection, Barracks
+and War Council. Keep logical availability separate from physical visibility.
+Hidden menus retain drafts and continue life/range/building/civilization guards;
+HUD minimization must not revoke army commands. No profile fields or gameplay
+requests are involved. See docs/UI.md and native UI checks in docs/SETUP.md.
+
 This is a Roblox game written in Luau. Node.js runs development tooling only.
 Read `docs/GAME_VISION.md` for the agreed game direction and `docs/SETUP.md`
 for the Windows/WSL workflow.

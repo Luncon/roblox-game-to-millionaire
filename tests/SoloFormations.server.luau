@@ -60,6 +60,8 @@ local ok,result=pcall(function()
  end
 	stage("Formation runtime")
  if script:GetAttribute('UIOnly')then
+  stage('Waiting for UI client viewport')
+  waitFor(function()return responses.uiFocus and responses.uiFocus[player.UserId]end,'focused native UI client',60)
   evidence.ui=require(game.ServerStorage.RuntimeTests.UIPanels)(context,player,round,script:GetAttribute('UIGameplayOnly'))
   return evidence.ui
  end

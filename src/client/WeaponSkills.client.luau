@@ -31,9 +31,19 @@ local function layout()
 	local narrow=size.X<900
 	if beside or narrow then
 		local width=if beside then 180 elseif size.X>=500 then math.min(180,size.X-400) else 180
-		local y=if beside then 152 elseif size.X>=500 then 16 else 222
+		local y=if beside then 212 elseif size.X>=500 then 16 else 222
+		local height=if beside then 44 else 58
+		if size.X<500 and size.Y<500 then
+			local screen=player.PlayerGui:FindFirstChild('CivilizationSelection')
+			local hud=screen and screen:FindFirstChild('SettlementHUD')
+			local army=screen and screen:FindFirstChild('ArmyControls')
+			if hud and army then
+				y=hud.AbsolutePosition.Y-gui.AbsolutePosition.Y+hud.AbsoluteSize.Y+1
+				height=math.clamp(army.AbsolutePosition.Y-gui.AbsolutePosition.Y-y-1,28,44)
+			end
+		end
 		button.AnchorPoint=Vector2.new(1,0)
-		button.Position,button.Size=UDim2.new(1,-16,0,y),UDim2.fromOffset(width,if beside then 44 else 58)
+		button.Position,button.Size=UDim2.new(1,-16,0,y),UDim2.fromOffset(width,height)
 		button.TextSize=if width<180 then 10 else 12
 		feedback.Position,feedback.Size=UDim2.new(1,-width-16,0,y+button.Size.Y.Offset+4),UDim2.fromOffset(width,24)
 	else
@@ -44,6 +54,15 @@ local function layout()
 	end
 end
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+task.spawn(function()
+	local screen=player.PlayerGui:WaitForChild('CivilizationSelection',15);if not screen then return end
+	local hud=screen:WaitForChild('SettlementHUD',15);local army=screen:WaitForChild('ArmyControls',15)
+	if hud and army then
+		hud:GetPropertyChangedSignal('AbsoluteSize'):Connect(layout)
+		army:GetPropertyChangedSignal('AbsolutePosition'):Connect(layout)
+		layout()
+	end
+end)
 layout()
 local feedbackUntil,lastRequest=0,-math.huge
 local playback=Playback.new()
@@ -130,4 +149,8 @@ Run.Heartbeat:Connect(function(dt)
 		elseif not writable then "Progress unavailable" elseif remaining>0 then string.format("Tier %s · %.1fs",Config.tiers[tier].name,remaining) else "Tier "..Config.tiers[tier].name.." · Ready")
 	button.BackgroundColor3=if family and tier>0 and writable and remaining==0 then Color3.fromRGB(72,125,79) else Color3.fromRGB(58,72,68)
 	if os.clock()>feedbackUntil then feedback.Text="" end
+	if gui.AbsoluteSize.X<500 then
+		feedback.Visible=false
+		if feedback.Text~=''then button.Text=feedback.Text end
+	end
 end)

@@ -3,6 +3,7 @@ local Players=game:GetService('Players')
 local Replicated=game:GetService('ReplicatedStorage')
 local Gui=game:GetService('GuiService')
 local Recruitment=require(Replicated.Shared.ArmyRecruitment)
+local Panels=require(script.Parent.PanelVisibility)
 local UI={}
 
 function UI.start(screen)
@@ -20,7 +21,7 @@ function UI.start(screen)
   t.TextXAlignment=Enum.TextXAlignment.Left;t.Font=Enum.Font.GothamBold;t.TextSize=size or 14
   t.TextColor3=Color3.fromRGB(255,239,191);t.ZIndex=33;t.Parent=parent;return t
  end
- local heading=label(panel,'Heading','BARRACKS · RECRUITMENT',10,32,14);heading.Size=UDim2.new(1,-76,0,32)
+ local heading=label(panel,'Heading','BARRACKS · RECRUITMENT',10,32,14);heading.Size=UDim2.new(1,-132,0,32)
  local body=Instance.new('ScrollingFrame');body.Name='Composition';body.Position=UDim2.fromOffset(0,52)
  body.Size=UDim2.new(1,0,1,-114);body.CanvasSize=UDim2.fromOffset(0,300)
  body.BackgroundTransparency=1;body.BorderSizePixel=0;body.ScrollBarThickness=5;body.ZIndex=32;body.Parent=panel
@@ -40,6 +41,8 @@ function UI.start(screen)
  end
  local apply=button(panel,'ApplyComposition','Save Composition',UDim2.new(0,16,1,-54),UDim2.new(1,-32,0,44))
  local close=button(panel,'CloseRecruitment','X',UDim2.new(1,-52,0,8),UDim2.fromOffset(40,40))
+ local visibility=Panels.attach(screen,panel,overlay,'Recruitment','Barracks','context')
+ visibility.button.Position=UDim2.new(1,-100,0,8)
  local feedback=label(body,'RecruitmentFeedback','Changes apply to future spawns. Living troops keep their class and health.',222,48,12)
  local living=label(body,'LivingComposition','',274,26,12)
  local function render()
@@ -72,8 +75,9 @@ function UI.start(screen)
   end)end
  end
  local function hide()
-  overlay.Visible=false;board=nil
-  if Gui.SelectedObject and Gui.SelectedObject:IsDescendantOf(panel)then Gui.SelectedObject=previousFocus end
+  local focused=visibility:ownsSelection()
+  visibility:setVisible(false);board=nil
+  if focused then Gui.SelectedObject=previousFocus end
  end
  close.Activated:Connect(hide)
  apply.Activated:Connect(function()
@@ -89,18 +93,18 @@ function UI.start(screen)
  end
  player:GetAttributeChangedSignal('CivilizationId'):Connect(hide)
  game:GetService('RunService').Heartbeat:Connect(function()
-  if not overlay.Visible then return end
+  if not visibility:isOpen()then return end
   local char=player.Character;local root=char and char:FindFirstChild('HumanoidRootPart');local hum=char and char:FindFirstChildOfClass('Humanoid')
-  if not board or not board:IsDescendantOf(workspace) or not root or not hum or hum.Health<=0 or (root.Position-board.Position).Magnitude>14 then hide()end
+  if not Panels.available(screen.SettlementHUD) or not board or not board:IsDescendantOf(workspace) or not root or not hum or hum.Health<=0 or (root.Position-board.Position).Magnitude>14 then hide()end
  end)
  task.spawn(function()
   local folder=Replicated:WaitForChild('ArmyRemotes',15);if not folder then return end
   remote=folder:WaitForChild('Request',15)
   folder:WaitForChild('RecruitmentOpened').OnClientEvent:Connect(function(data)
-   if data.civilizationId~=player:GetAttribute('CivilizationId')then return end
+   if data.civilizationId~=player:GetAttribute('CivilizationId')or not Panels.available(screen.SettlementHUD)then return end
    board=data.board;draft=Recruitment.counts(state());previousFocus=Gui.SelectedObject
    feedback.Text='Changes apply to future spawns. Living troops keep their class and health.'
-   render();overlay.Visible=true
+   render();visibility:restore();visibility:setVisible(true)
    if game:GetService('UserInputService').GamepadEnabled then Gui.SelectedObject=apply end
   end)
  end)

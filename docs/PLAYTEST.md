@@ -2512,3 +2512,35 @@ authority/overflow regression. Updated physical/controller fixtures compiled;
 their full native input runs were not repeated for this payout-only follow-up.
 All four changed production sources were installed in main Studio and all three
 build files refreshed. No existing player balance was directly edited.
+
+### Minimizable interface panels
+
+All five confirmed panels now expose a minus control and labeled Open restore
+button. Preferences last for the client session; drafts and hidden information
+remain current. See [panel behavior](UI.md).
+
+One uninterrupted native Studio run with injected FakeProfileStore passed
+**17 checks**, including four bounded layouts (320×360, 320×568, 640×360 and
+1024×768). Native mouse/E input covered selector minimize/cancel, independent
+HUD/army visibility, a hidden 50-coin update, focus transfer and unavailable
+focus fallback, recruitment drafts without saving, distance/death/building-loss/
+civilization closure, fresh reopening, and existing progress/medical HUD checks.
+Resize checks retained minimized state and reachable restore controls.
+
+A separate native bounded-frame check executed the production skill layout
+function in a temporary fixture: all four sizes kept its button within bounds
+and clear of HUD, army and restore controls. Expanded/minimized native screenshots
+were inspected. Physical phone/controller input and published multiplayer were
+not rerun; bounded frames do not simulate those devices.
+
+Review covered visibility/focus/context lifetime, server boundaries and connection
+cleanup. Inverting the visibility condition only in the owned test place made
+the native selector check fail; restoring it recovered the passing run. No
+production mutation or player-storage fixture was used. Standalone regressions
+passed **244 cases**, strict OpenSpec validation passed **26 items**, and all
+**245 Luau files** compiled. Production, manual-play and UI fixture builds were
+refreshed. Seven client sources were installed in the main Studio Edit session;
+all **80 production sources** matched repository byte lengths and checksums,
+with no fixture folders and all equipment/outfit/NPC/farmer templates retained.
+The owned fixture was stopped, focus flags cleared and its window closed. Main
+Studio remains open in Edit mode, ready for a fresh playtest; nothing was published.

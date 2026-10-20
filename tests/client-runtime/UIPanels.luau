@@ -41,6 +41,10 @@ return function(options)
   assert(hud.Coins.Text:find(tostring(player:GetAttribute('Coins')),1,true),'Minimized HUD stopped updating')
   restore(hud,'RestoreSettlement');assert(not army.Visible,'Restoring HUD reopened army controls')
   restore(army,'RestoreArmy');assert(gui.SelectedObject==army.Hold,'Restore lost the previous selectable control')
+  gui.SelectedObject=hud.SwitchCivilization;minimize(hud,hud,'RestoreSettlement')
+  hud.SwitchCivilization.Selectable=false;restore(hud,'RestoreSettlement')
+  assert(gui.SelectedObject==hud.MinimizePanel,'Restore selected an unavailable control')
+  hud.SwitchCivilization.Selectable=true;gui.SelectedObject=nil
  elseif action=='selectorCancel'then
   click(hud.SwitchCivilization);waitFor(function()return selector.Visible end,'change civ')
   minimize(selector,selector,'RestoreCivilizations');assert(not hud.Visible and not army.Visible)
@@ -66,6 +70,9 @@ return function(options)
   assert(not screen.RecruitmentOverlay:GetAttribute('PanelOpen')and not screen.RestoreRecruitment.Visible and not screen.RestoreCouncil.Visible)
  elseif action=='layout'then
   return require(script.Parent.FormationLayout)()
+ elseif action=='status'then
+  require(script.Parent.ProgressHUD)({expected={level=20,weaponLevel=20,armorLevel=15,barracksLevel=6}})
+  return require(script.Parent.MedicalHUD)()
  else error('Unknown UI action: '..tostring(action))end
  return {ok=true,cases=1}
 end

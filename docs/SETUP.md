@@ -315,3 +315,19 @@ For medic diagnostics in the formation harness, `MedicalOnly=true` selects only
 the existing medic-survival runtime after any enabled module checks. Restore
 false for formation verification. `MedicalFailureEvidence` captures positions,
 goals, anchoring and navigation state before fixture cleanup on a timeout.
+
+For minimizable panels, set `SoloFormationsTests.UIOnly=true` and
+`RuntimeOnly=true` in the same fake-store formation place. After starting Play,
+select the Client viewport and run this in the Client context:
+
+```lua
+game.ReplicatedStorage:WaitForChild("PrototypeTestControl",10)
+    .Report:FireServer("uiFocus",{ok=true})
+```
+
+The fixture waits for this handshake before sending native input. Keep the
+viewport on Client and monitor the replicated formation result attributes.
+It checks all five panels, independent visibility, hidden updates, focus,
+unsaved recruitment drafts, invalid building contexts and four bounded layouts.
+`UIGameplayOnly=true` skips building-menu scenarios for a focused repeat. Clear
+UIOnly, UIGameplayOnly and RuntimeOnly afterward. See [panel behavior](UI.md).

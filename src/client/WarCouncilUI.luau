@@ -3,6 +3,7 @@ local Players=game:GetService('Players')
 local Replicated=game:GetService('ReplicatedStorage')
 local Gui=game:GetService('GuiService')
 local Config=require(Replicated.Shared.FormationConfig)
+local Panels=require(script.Parent.PanelVisibility)
 local UI={}
 function UI.start(screen)
  local player=Players.LocalPlayer
@@ -19,7 +20,7 @@ function UI.start(screen)
   t.Font=Enum.Font.GothamBold;t.TextSize=size;t.TextColor3=Color3.fromRGB(255,239,191)
   t.ZIndex=22;t.Parent=panel;return t
  end
- text('Heading',12,28,20).Text='WAR COUNCIL'
+ local heading=text('Heading',12,28,20);heading.Text='WAR COUNCIL';heading.Size=UDim2.new(1,-88,0,28)
  local description=text('FormationDescription',48,100,14)
  local status=text('SelectionStatus',150,32,12)
  local function button(name,label,y,color)
@@ -29,10 +30,12 @@ function UI.start(screen)
  end
  local select=button('SelectShieldwall','Select Spartan Shieldwall',188,Color3.fromRGB(113,91,44))
  local close=button('CloseCouncil','Close',234,Color3.fromRGB(80,98,77))
+ local visibility=Panels.attach(screen,panel,overlay,'Council','council','context')
  local map,previousFocus,remote,busy=nil,nil,nil,false
  local function hide()
-  overlay.Visible=false;map=nil
-  if Gui.SelectedObject and Gui.SelectedObject:IsDescendantOf(panel)then Gui.SelectedObject=previousFocus end
+  local focused=visibility:ownsSelection()
+  visibility:setVisible(false);map=nil
+  if focused then Gui.SelectedObject=previousFocus end
  end
  close.Activated:Connect(hide)
  local function render()
@@ -58,16 +61,16 @@ function UI.start(screen)
   if name=='CivilizationId' then hide()end;render()
  end)end
  game:GetService('RunService').Heartbeat:Connect(function()
-  if not overlay.Visible then return end
+  if not visibility:isOpen()then return end
   local char=player.Character;local root=char and char:FindFirstChild('HumanoidRootPart');local hum=char and char:FindFirstChildOfClass('Humanoid')
-  if not map or not map:IsDescendantOf(workspace) or not root or not hum or hum.Health<=0 or (root.Position-map.Position).Magnitude>14 then hide()end
+  if not Panels.available(screen.SettlementHUD) or not map or not map:IsDescendantOf(workspace) or not root or not hum or hum.Health<=0 or (root.Position-map.Position).Magnitude>14 then hide()end
  end)
  task.spawn(function()
   local folder=Replicated:WaitForChild('ArmyRemotes',15);if not folder then return end
   remote=folder:WaitForChild('Request',15)
   folder:WaitForChild('CouncilOpened').OnClientEvent:Connect(function(data)
-   if data.civilizationId~=player:GetAttribute('CivilizationId')then return end
-   map=data.map;previousFocus=Gui.SelectedObject;render();overlay.Visible=true
+   if data.civilizationId~=player:GetAttribute('CivilizationId')or not Panels.available(screen.SettlementHUD)then return end
+   map=data.map;previousFocus=Gui.SelectedObject;render();visibility:restore();visibility:setVisible(true)
    if game:GetService('UserInputService').GamepadEnabled then Gui.SelectedObject=if select.Active then select else close end
   end)
  end)

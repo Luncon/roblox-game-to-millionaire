@@ -36,7 +36,14 @@ return function(context,player,round,gameplayOnly)
   player.Character:PivotTo(plot.Settlement.Barracks.RecruitmentBoard.CFrame*CFrame.new(0,-1,-3));task.wait(.3)
   check('recruitmentReopen');round('civilizationInput',{action='choose',civilization='britain'},30)
   check('contextsClosed')
+  round('civilizationInput',{action='choose',civilization='sparta'},30)
+  task.wait(.4);assert(service.command(player,'order','hold').ok)
+  player.Character:PivotTo(plot.Settlement.Barracks.RecruitmentBoard.CFrame*CFrame.new(0,-1,-3));task.wait(.3)
+  check('recruitmentReopen')
+  local board=plot.Settlement.Barracks.RecruitmentBoard;local parent=board.Parent
+  board.Parent=nil;task.wait(.3);check('recruitmentClosed');board.Parent=parent
  end
+ check('status')
  check('layout')
  return {ok=true,cases=cases}
 end

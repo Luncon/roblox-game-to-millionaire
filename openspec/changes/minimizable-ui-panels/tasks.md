@@ -6,7 +6,7 @@
 
 ## 2. Contextual menus and responsive layout
 
-- [ ] 2.1 Integrate Barracks and War Council with preserved drafts and active minimized context guards; verify native controls, proximity/death/civilization closure and portrait/landscape bounds, and document restoration behavior.
+- [x] 2.1 Integrate Barracks and War Council with preserved drafts and active minimized context guards; verify native controls, proximity/death/civilization closure and portrait/landscape bounds, and document restoration behavior.
 
 ## 3. Integration and delivery
 
