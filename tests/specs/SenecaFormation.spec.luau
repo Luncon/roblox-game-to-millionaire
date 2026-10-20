@@ -52,6 +52,10 @@ return function()
    local heading=Vector3.new(math.sin(i*math.pi/4),0,-math.cos(i*math.pi/4));local g=F.new(Vector3.zero,heading*100,a,def)
    local goals=F.goals(g,function(p)return p end);local right=Vector3.new(-heading.Z,0,heading.X)
    assert((goals.reinforcement-goals.camp):Dot(right)>19.9 and (goals.warrior-goals.ranged):Dot(heading)>10)
+   -- A centered medic would have its guard-healing ray blocked by the center archer.
+   local leg=goals.warrior-goals.medic
+   local t=math.clamp((goals.ranged-goals.medic):Dot(leg)/leg:Dot(leg),0,1)
+   assert((goals.ranged-(goals.medic+leg*t)).Magnitude>2.5,'Center archer blocks medic sight to guard')
    for id,p in goals do a[id].position=p;a[id].phase='idle'end
    assert(F.step(g,a,.2,function()return true end,function(p)return p end) and g.phase=='marching')
    a.ranged.phase='windup';a.medic.position-=heading*20

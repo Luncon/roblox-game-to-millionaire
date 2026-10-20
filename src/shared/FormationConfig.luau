@@ -14,7 +14,7 @@ local definitions={
   composition='1 melee, 3 ranged, 1 medic',volley=true,screenRange=40,guardRadius=14,archerRadius=8,shotSpacing=.45,
   roles={warrior='warrior',camp='ranged',reinforcement='ranged',ranged='ranged',medic='medic'},
   offsets={warrior=Vector3.new(0,0,-6),camp=Vector3.new(-10,0,2),reinforcement=Vector3.new(10,0,2),
-   ranged=Vector3.new(0,0,5),medic=Vector3.new(0,0,11)},
+   ranged=Vector3.new(0,0,5),medic=Vector3.new(5,0,11)},
   facingAngles={},
  },
  ['viking-shield-wedge']={
