@@ -7,6 +7,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local Civilizations = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Civilizations"))
 local CivilizationUI = {}
+local Panels=require(script.Parent.PanelVisibility)
 local INK = Color3.fromRGB(30, 37, 40)
 local TEXT = Color3.fromRGB(246, 240, 223)
 local MUTED = Color3.fromRGB(183, 194, 193)
@@ -55,7 +56,8 @@ function CivilizationUI.start()
 	corner.Parent = panel
 	local content = Instance.new("ScrollingFrame")
 	content.Name = "Content"
-	content.Size = UDim2.fromScale(1, 1)
+	content.Position=UDim2.fromOffset(0,52)
+	content.Size = UDim2.new(1,0,1,-52)
 	content.CanvasSize = UDim2.fromOffset(0, 0)
 	content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	content.ScrollBarThickness = 4
@@ -75,6 +77,7 @@ function CivilizationUI.start()
 	local title = textLabel(content, "Title", "Choose your civilization", 0, 58, 24)
 	title.LayoutOrder = 0
 	title.Font = Enum.Font.GothamBold
+	title.Parent=panel;title.Position=UDim2.fromOffset(16,6);title.Size=UDim2.new(1,-80,0,38);title.TextSize=18
 	local introduction = textLabel(content, "Introduction", "13 civilizations · 8 settlement plots\nContinue your civilization, or begin another settlement.", 0, 42, 14)
 	introduction.LayoutOrder = 1
 	introduction.TextColor3 = MUTED
@@ -123,6 +126,8 @@ function CivilizationUI.start()
 	switchButton.TextColor3 = TEXT
 	switchButton.Text = "Change civ"
 	switchButton.Parent = hud
+	local selectorVisibility=Panels.attach(screen,panel,panel,'Civilizations','civilizations','selector')
+	local hudVisibility=Panels.attach(screen,hud,hud,'Settlement','settlement')
 	local cancel = refresh:Clone()
 	cancel.Name, cancel.Text, cancel.LayoutOrder = "Cancel", "Back to settlement", 3
 	cancel.Parent = content
@@ -166,8 +171,8 @@ function CivilizationUI.start()
 			if entry.id == owned then civilization = entry end
 		end
 		local claimed = civilization ~= nil and typeof(plotId) == "number"
-		panel.Visible = not claimed or choosing
-		hud.Visible = claimed and not choosing
+		selectorVisibility:setVisible(not claimed or choosing)
+		hudVisibility:setVisible(claimed and not choosing)
 		cancel.Visible = claimed
 		cancel.Active, cancel.Selectable = claimed and not busy, claimed and not busy
 		local status = player:GetAttribute("ProgressStatus") or (if profile then profile.status else "loading")
@@ -268,7 +273,7 @@ function CivilizationUI.start()
 		local status=player:GetAttribute("ProgressStatus")
 		send(if (status=="failed" or status=="locked" or status=="closed") and not player:GetAttribute("CivilizationId") then "retry" else "snapshot",nil)
 	end)
-	switchButton.Activated:Connect(function() choosing=true;content.CanvasPosition=Vector2.zero;render();send("snapshot",nil) end)
+	switchButton.Activated:Connect(function() choosing=true;selectorVisibility:restore();content.CanvasPosition=Vector2.zero;render();send("snapshot",nil) end)
 	cancel.Activated:Connect(function() choosing=false;render() end)
 	player:GetAttributeChangedSignal("ProgressStatus"):Connect(render)
 	player:GetAttributeChangedSignal("ProgressError"):Connect(render)

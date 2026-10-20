@@ -16,6 +16,7 @@ commands.OnClientEvent:Connect(function(command)
 		return
 	end
 	local ok, result = pcall(function()
+  if command.action=='panelInput'then return require(ReplicatedStorage:WaitForChild('ClientTests',10):WaitForChild('UIPanels',10))(command.options)end
   if command.action=="recruitmentInput" then return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("RecruitmentInput",10))(command.options)end
 		if command.action=="formationLayout" then return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("FormationLayout",10))()end
 		if command.action=="formationInput" then return require(ReplicatedStorage:WaitForChild("ClientTests",10):WaitForChild("FormationInput",10))()end

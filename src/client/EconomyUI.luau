@@ -38,7 +38,7 @@ function EconomyUI.start(screen: ScreenGui)
 	army.TextColor3 = GOLD
 	notice.Text = "Loading saved progress…"
 	notice.TextColor3 = Color3.fromRGB(183, 194, 193)
-	instruction.Text = "Gold pad: +1 coin · Upgrades beside each building."
+	instruction.Text = string.format("Gold pad: +%d coins · Upgrades beside each building.",require(ReplicatedStorage.Shared.ProgressionConfig).coinsPerClick)
 	local state = { coins = 0, level = 1, weaponLevel = 1, armorLevel = 1, barracksLevel = 1, revision = -1 }
 	local compact = false
 	local function renderArmy()
@@ -114,15 +114,16 @@ function EconomyUI.start(screen: ScreenGui)
 			object.TextSize = size
 		end
 		place(title, if compact then 4 else 6, if compact then 18 else 22, if compact then 14 else 16)
-		title.Size = UDim2.new(1,-124,0,if compact then 18 else 22)
+		title.Size = UDim2.new(1,-168,0,if compact then 18 else 22)
 		local change = hud:FindFirstChild("SwitchCivilization")
 		if change and change:IsA("GuiButton") then
-			change.Position = UDim2.new(1,-100,0,if compact then 4 else 6)
+			change.Position = UDim2.new(1,-144,0,if compact then 4 else 6)
 			change.Size = UDim2.fromOffset(88,if compact then 18 else 22)
 		end
 		title.TextScaled = true
 		title.TextWrapped = false
 		place(coins, if compact then 22 else 30, if compact then 20 else 26, if compact then 18 else 22)
+		coins.Size=UDim2.new(1,-76,0,if compact then 20 else 26)
 		place(progression, if compact then 44 else 58, if compact then 16 else 40, if compact then 10 else 12)
 		place(instruction, if compact then 62 else 100, if compact then 12 else 16, 10)
 		place(feedback, if compact then 74 else 116, if compact then 12 else 16, 10)

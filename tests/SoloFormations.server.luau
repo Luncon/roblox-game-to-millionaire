@@ -59,6 +59,10 @@ local ok,result=pcall(function()
   return evidence.recruitment
  end
 	stage("Formation runtime")
+ if script:GetAttribute('UIOnly')then
+  evidence.ui=require(game.ServerStorage.RuntimeTests.UIPanels)(context,player,round,script:GetAttribute('UIGameplayOnly'))
+  return evidence.ui
+ end
  if script:GetAttribute('SenecaOnly')then
   evidence.seneca=require(game.ServerStorage.RuntimeTests.FocusedVolley)(context,player,round,script:GetAttribute('SenecaCombatOnly'))
   evidence.layout=round('formationLayout',{},20)

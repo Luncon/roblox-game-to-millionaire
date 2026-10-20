@@ -29,7 +29,7 @@ return function(options)
 	end
 	assert(contains(screen,hud),"HUD extends outside the actual client viewport")
 	for _,object in hud:GetDescendants() do
-		if object:IsA("GuiButton") then assert(object==switch,"Currency or upgrade action leaked into the HUD") end
+		if object:IsA("GuiButton") then assert(object==switch or object==hud:FindFirstChild('MinimizePanel'),"Currency or upgrade action leaked into the HUD") end
 		if object:IsA("TextLabel") and object.Visible then
 			assert(contains(hud,object),"HUD clips label "..object.Name)
 			assert(object.TextFits,"HUD text does not fit "..object.Name..": "..object.Text)
