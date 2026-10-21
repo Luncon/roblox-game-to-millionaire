@@ -66,6 +66,14 @@ Inverting the overview render gate only in the owned test place caused the
 native wheel-zoom assertion to fail. Restoring the gate recovered the passing
 input suite. Repository source was not mutated for that experiment.
 
+The stopped verification window was closed. A clean `miniature-preview.rbxlx`
+was opened separately and passed a fresh Play startup: all three buildings, six
+actors and Walk UI appeared with a normal-size avatar and no test remote. Its
+38 mapped source byte lengths/checksums matched the repository, with all source
+equipment/outfit/NPC/farmer templates present. That preview remains open in Edit,
+ready to Play; main Clash of Civilizations remains open separately in Edit. No
+production place sources, player profiles, archived build or publication changed.
+
 The native scene fixture passed a 22-second observation covering complete patrol
 and worker cycles: three quarter-scale buildings, six moving actors, normal
 avatar size, equipped soldiers, ground/route bounds, and unchanged template

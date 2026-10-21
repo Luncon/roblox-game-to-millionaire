@@ -10,4 +10,4 @@
 
 ## 3. Delivery
 
-- [ ] 3.1 Complete native integrated verification, review/mutation, compile/build/spec checks, record evidence, commit/push and leave a clean separate preview ready for user testing with main Studio preserved.
+- [x] 3.1 Complete native integrated verification, review/mutation, compile/build/spec checks, record evidence, commit/push and leave a clean separate preview ready for user testing with main Studio preserved.
