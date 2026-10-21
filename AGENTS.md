@@ -1,5 +1,10 @@
 # Working in this repository
 
+The miniature redesign begins in the separate `miniature.project.json` preview;
+see docs/MINIATURE_PREVIEW.md. It uses normal-sized unarmed commanders and miniature
+Spartan scenery/actors, with no profile/economy/combat bootstrap. Keep experiments
+under prototypes/miniature and preserve the production build and dated backup.
+
 All five interface panels support client-session minimization through
 PanelVisibility: settlement HUD, army controls, civilization selection, Barracks
 and War Council. Keep logical availability separate from physical visibility.

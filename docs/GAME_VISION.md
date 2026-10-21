@@ -1,5 +1,16 @@
 # Civilization Battlefield: game direction
 
+## Miniature redesign direction — October 20, 2026
+
+The user has chosen a new direction inspired by Mini War: normal-sized players
+build and trade while miniature civilization armies handle all fighting.
+The intended economy includes placeable buildings, workers, goods, personal
+restocking shops, selling, research and conquest. A shared Black Market is deferred.
+Civilization identities remain selectable; the first isolated scale preview uses
+Sparta. These economy/conquest systems remain planned. See
+[the miniature preview](MINIATURE_PREVIEW.md) and [the preserved build](BACKUPS.md).
+The existing production game below still describes the prior playable build.
+
 ## Agreed experience
 
 Eight players occupy eight protected settlement plots arranged in a circle

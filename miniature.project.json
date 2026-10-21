@@ -1,0 +1,82 @@
+{
+  "name": "MiniatureCivilizationPreview",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "Miniature": {
+        "$path": "prototypes/miniature/shared"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Game": {
+        "$className": "Folder",
+        "WarriorRig": {
+          "$path": "src/server/WarriorRig.luau"
+        },
+        "Equipment": {
+          "$path": "src/server/Equipment.luau"
+        },
+        "EquipmentVisuals": {
+          "$path": "src/server/EquipmentVisuals.luau"
+        },
+        "OutfitTemplates": {
+          "$path": "src/server/OutfitTemplates.luau"
+        },
+        "ShieldCombat": {
+          "$path": "src/server/ShieldCombat.luau"
+        },
+        "NPCModelTemplates": {
+          "$path": "src/server/NPCModelTemplates.luau"
+        },
+        "TroopAppearance": {
+          "$path": "src/server/TroopAppearance.luau"
+        },
+        "FarmTenders": {
+          "$path": "src/server/FarmTenders.luau"
+        }
+      },
+      "Miniature": {
+        "$path": "prototypes/miniature/server"
+      }
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "NPCTemplates": {
+        "$path": "assets/npc-templates"
+      },
+      "FarmTemplates": {
+        "$path": "assets/farm-templates"
+      },
+      "EquipmentTemplates": {
+        "$path": "assets/equipment-templates"
+      },
+      "OutfitTemplates": {
+        "$path": "assets/outfit-templates"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Miniature": {
+          "$path": "prototypes/miniature/client",
+          "PanelVisibility": {
+            "$path": "src/client/PanelVisibility.luau"
+          }
+        }
+      }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "ClockTime": 14,
+        "Brightness": 2
+      }
+    }
+  }
+}
