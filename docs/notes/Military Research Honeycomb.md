@@ -52,9 +52,51 @@ the two-pixel outlines. The first native geometry assertion incorrectly expected
 fractional UDim offsets; that fixture was corrected without changing geometry.
 Evidence is retained locally in
 [honeycomb-native-verification.json](../../.cache/honeycomb-native-verification.json).
-Publication evidence will be recorded after deployment. Physical phone input and
+Physical phone input and
 the previously pending published-client save/rejoin check remain unverified.
 
 The user's existing reference-note edits are preserved separately. See the
 [implementation change](../../openspec/changes/military-honeycomb-layout/proposal.md)
 and [military rules](Military%20Research%20Rules.md).
+
+## Release status: published version 258
+
+The geometry and UI were committed and pushed in **10441cc** and **30622de**.
+Both the default preview and clean production artifacts were rebuilt. The clean
+production artifact contains **107 matching script sources**, no fake store or
+verification attribute, and only Camera/Terrain in Workspace. Its SHA-256 is
+`b19f2092c04f5b133cd9c7783886c625d990cbd42b20200b6af3b3b542e3e14e`.
+
+Studio Save to Roblox As selected the existing private Clash of Civilizations
+experience and its existing place, **73839918762778 / 10770758443**. Roblox
+requested asset permissions. The Studio log then recorded `PublishCancelled`
+during the permission stage, followed by editor shutdown; both open Studio
+windows exited. The user clarified that they closed the windows because Studio
+froze. Logs show an HTTP 400 from the asset-permission check and 65
+`AssetTypeNotEnabled` grant failures. Those errors alone do not establish that
+65 assets cannot load. Roblox has documented permission issues with external
+place files in its [asset privacy announcement](https://devforum.roblox.com/t/full-release-privacy-for-newly-created-image-mesh-and-decal-assets/4620416).
+
+A fresh read-only cloud open initially reported **draft 256**. Its research UI
+and shared layout matched the new build, but it also contained FakeProfileStore
+and the temporary preview Bootstrap. Both sources were backed up and verified
+byte for byte against their tracked development files. Only that pristine test
+module was removed and Bootstrap was replaced with the tracked production
+bootstrap. No scenery, legacy folders or other objects were deleted. All **107
+production sources then matched the clean artifact**, with no fake store,
+missing/unexpected sources or verification attribute.
+
+Ordinary Publish from the existing target succeeded with one responsive Studio
+window. Creator Hub independently shows **version 258** with the Published
+Version checkmark (October 30, 2026, 11:36 AM local). The screenshot is retained
+locally as
+[military-honeycomb-published-version-258.png](../../.cache/military-honeycomb-published-version-258.png).
+The failed Save As path was not used for the final release. Private visibility,
+place identity and existing persistence settings were not changed.
+An independent Studio `EditPlaceRevision` open explicitly requested **258** and
+opened **Place1 (Version 258)**. All **107 published script sources** match the
+reviewed release, with no unexpected/missing scripts. Historical revision
+DataModels report zero identity/version metadata, so the requested revision and
+window title identify this audit; cached editor metadata is not publication proof.
+See the [release record](../releases/military-honeycomb-v1.json) and local
+[source audit](../../.cache/honeycomb-release-edit-audit.json).

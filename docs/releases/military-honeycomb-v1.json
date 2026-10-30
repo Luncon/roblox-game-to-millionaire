@@ -1,0 +1,38 @@
+{
+  "layoutId": "honeycomb-v1",
+  "runtimeReleaseId": "miniature-live-v1",
+  "status": "published",
+  "sourceCommit": "30622de533ba5f0e63c46dc2f3acc1870e400fbf",
+  "target": {
+    "placeId": 73839918762778,
+    "universeId": 10770758443,
+    "creatorId": 68716649
+  },
+  "sourceArtifact": "build/clash-of-civilizations-release.rbxlx",
+  "sourceArtifactSha256": "b19f2092c04f5b133cd9c7783886c625d990cbd42b20200b6af3b3b542e3e14e",
+  "matchedReleaseScripts": 107,
+  "publishedVersion": 258,
+  "publishedRevisionOpenedIndependently": 258,
+  "matchedPublishedRevisionScripts": 107,
+  "lastIndependentlyConfirmedPublishedVersion": 258,
+  "initialObservedCloudDraft": 256,
+  "initialCloudDraftSafeForPublication": false,
+  "initialCloudDraftProblems": ["temporary preview Bootstrap", "FakeProfileStore"],
+  "finalCloudSourceAudit": "107 matches; production Bootstrap; no FakeProfileStore or verification attribute",
+  "checks": {
+    "developmentGate": "passed",
+    "openSpecItems": 36,
+    "nodeCases": 13,
+    "syntaxFiles": 421,
+    "legacyLogicCases": 244,
+    "miniatureLogicCases": 249,
+    "nativeNodeCenters": 29,
+    "nativePolygonCorners": 29,
+    "nativeLayouts": 4,
+    "nativeTiles": 46,
+    "sharedBorders": 99,
+    "connectorFrames": 0,
+    "physicalPhoneInput": "not-tested",
+    "publishedClientRejoin": "previous-check-still-pending"
+  }
+}

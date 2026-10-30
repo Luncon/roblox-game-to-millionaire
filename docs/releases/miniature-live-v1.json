@@ -1,5 +1,7 @@
 {
   "releaseId": "miniature-live-v1",
+  "recordScope": "initial-miniature-persistence-release",
+  "latestPresentationUpdate": "military-honeycomb-v1.json",
   "status": "published-manual-rejoin-pending",
   "target": {
     "placeId": 73839918762778,

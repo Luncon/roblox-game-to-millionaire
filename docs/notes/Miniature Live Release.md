@@ -1,6 +1,11 @@
 # Miniature Live Release
 
-Status: **PUBLISHED — version 250**. The existing Clash of Civilizations place has
+Current presentation update: the touching research honeycomb was published as
+**version 258** on October 30, 2026. See [Military Research Honeycomb](Military%20Research%20Honeycomb.md)
+for its source audit and native UI evidence. The version 250 evidence below
+records the initial persistent miniature release.
+
+Initial release: **PUBLISHED — version 250** (current update: **258**, linked above). The existing Clash of Civilizations place has
 been replaced with the miniature game. The real Roblox client starts successfully;
 published-client save/rejoin still needs a physical-input check. The approved
 implementation is tracked in

@@ -8,4 +8,4 @@
 ## 2. Verify and deliver
 
 - [x] 2.1 Pass the development gate and focused native UI checks, update the Obsidian implementation note and retain the user's existing reference-note edits.
-- [ ] 2.2 Publish the verified UI update to the authorized existing game, record published-version/source evidence, and commit/push the reviewed changes.
+- [x] 2.2 Publish the verified UI update to the authorized existing game, record published-version/source evidence, and commit/push the reviewed changes.
