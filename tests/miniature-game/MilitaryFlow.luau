@@ -170,11 +170,14 @@ local function run(options: Options?)
 			elseif object:GetAttribute("FutureResearch") then
 				placeholders += 1
 				assert(not object:FindFirstChildWhichIsA("GuiButton", true), "Future hexagon is actionable")
-			elseif string.match(object.Name, "^Connection_") then
+			elseif string.find(object.Name, "Connection", 1, true) then
 				connections += 1
 			end
 		end
-		assert(nodes == 29 and placeholders == 17 and connections == 28, "Military hex graph is incomplete")
+		assert(
+			nodes == 29 and placeholders == 17 and connections == 0 and root:GetAttribute("LayoutId") == "honeycomb-v1",
+			"Touching military honeycomb is incomplete or retains connector lines"
+		)
 		evidence.tree = { nodes = nodes, placeholders = placeholders, connections = connections }
 		local oldPan = graph.CanvasPosition
 		click(root.TreeControls.PanLeft)

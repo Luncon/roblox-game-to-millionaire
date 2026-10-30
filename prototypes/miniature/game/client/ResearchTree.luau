@@ -1,12 +1,14 @@
 --!strict
 local Input = game:GetService("UserInputService")
+local Gui = game:GetService("GuiService")
 local Run = game:GetService("RunService")
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("MiniatureGame")
 local Military = require(Shared:WaitForChild("MilitaryResearch"))
+local Layout = require(Shared:WaitForChild("MilitaryResearchLayout"))
 local Theme = require(script.Parent.Theme)
 local ResearchTree = {}
-local TILE_WIDTH, TILE_HEIGHT = 80, 80 * math.sqrt(3) / 2
-local STEP_X, STEP_Y = 104, 90
+local TILE_WIDTH, TILE_HEIGHT = Layout.width, Layout.height
+local HIT_SIZE = 60
 local completedColor = Color3.fromRGB(91, 112, 68)
 
 local function duration(seconds: number): string
@@ -74,24 +76,17 @@ local function hexagon(parent: Instance, name: string, position: Vector2, color:
 	hex.BackgroundTransparency, hex.Size = 1, UDim2.fromOffset(TILE_WIDTH, TILE_HEIGHT)
 	hex.Position = UDim2.fromOffset(position.X - TILE_WIDTH / 2, position.Y - TILE_HEIGHT / 2)
 	local fills = {}
-	-- Each rectangle spans four corners of the same regular hexagon.
+	-- Three inscribed rectangles paint the same pointy-top regular hexagon.
 	for index, rotation in { 0, 60, -60 } do
 		local fill = Theme.frame(hex, "Fill" .. index, TILE_HEIGHT)
 		fill.AnchorPoint, fill.Position, fill.Size =
-			Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(TILE_WIDTH / 2, TILE_HEIGHT)
+			Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(TILE_WIDTH, TILE_HEIGHT / 2)
 		fill.Rotation, fill.BackgroundColor3 = rotation, color
 		table.insert(fills, fill)
 	end
 	local corners = {}
-	for index = 0, 5 do
-		local radians = math.rad(index * 60)
-		table.insert(
-			corners,
-			Vector2.new(
-				TILE_WIDTH / 2 + math.cos(radians) * TILE_WIDTH / 2,
-				TILE_HEIGHT / 2 + math.sin(radians) * TILE_HEIGHT / math.sqrt(3)
-			)
-		)
+	for _, corner in Layout.vertices() do
+		table.insert(corners, Vector2.new(corner.x, corner.y))
 	end
 	local edges = {}
 	for index, corner in corners do
@@ -105,9 +100,15 @@ function ResearchTree.render(ctx)
 	body.AutomaticCanvasSize, body.CanvasSize, body.ScrollingEnabled = Enum.AutomaticSize.None, UDim2.new(), false
 	drafts.militaryNode = if Military.nodes[drafts.militaryNode] then drafts.militaryNode else Military.order[1]
 	drafts.militaryZoom = drafts.militaryZoom or 1
+	local layoutChanged = drafts.militaryLayout ~= Layout.id
+	if layoutChanged then
+		-- Pan belongs to this presentation, never the profile or research rules.
+		drafts.militaryPan, drafts.militaryLayout = nil, Layout.id
+	end
 	local savedPan = drafts.militaryPan
 	local root = Theme.frame(body, "MilitaryResearchTree", 300)
 	root.Size, root.BackgroundTransparency = UDim2.new(1, -16, 1, -16), 1
+	root:SetAttribute("LayoutId", Layout.id)
 	ctx.order(root)
 	local project = Theme.label(root, "ActiveProject", "", 24)
 	project.TextSize, project.TextColor3 = 12, Theme.gold
@@ -150,19 +151,12 @@ function ResearchTree.render(ctx)
 		end
 	end)
 	start.Position, start.Size = UDim2.new(0, 4, 1, -44), UDim2.new(1, -8, 0, 44)
-	local minX, minY, maxX, maxY = 0, 0, 0, 0
-	for _, id in Military.order do
-		local node = Military.nodes[id]
-		minX, minY, maxX, maxY =
-			math.min(minX, node.x), math.min(minY, node.y), math.max(maxX, node.x), math.max(maxY, node.y)
+	local bounds = Layout.bounds()
+	local function point(cell): Vector2
+		local position = Layout.point(cell.q, cell.r)
+		return Vector2.new(bounds.offsetX + position.x, bounds.offsetY + position.y)
 	end
-	maxX, maxY = math.max(maxX, 10), math.max(maxY, 8)
-	-- The civilian half is visible context; it has no selectable or purchase surface.
-	local offsetX, offsetY = (8 - minX) * STEP_X, (1 - minY) * STEP_Y
-	local function point(x: number, y: number): Vector2
-		return Vector2.new(offsetX + x * STEP_X, offsetY + y * STEP_Y)
-	end
-	local canvasWidth, canvasHeight = (maxX - minX + 10) * STEP_X, (maxY - minY + 2) * STEP_Y
+	local canvasWidth, canvasHeight = bounds.width, bounds.height
 	canvas.Size = UDim2.fromOffset(canvasWidth, canvasHeight)
 	local function setPan(position: Vector2)
 		graph.CanvasPosition = Vector2.new(
@@ -172,8 +166,7 @@ function ResearchTree.render(ctx)
 		drafts.militaryPan = graph.CanvasPosition
 	end
 	local function focusSelected()
-		local node = Military.nodes[drafts.militaryNode]
-		setPan(point(node.x, node.y) * drafts.militaryZoom - graph.AbsoluteWindowSize / 2)
+		setPan(point(Layout.nodes[drafts.militaryNode]) * drafts.militaryZoom - graph.AbsoluteWindowSize / 2)
 	end
 	local function zoom(amount: number)
 		local previous = drafts.militaryZoom
@@ -223,82 +216,50 @@ function ResearchTree.render(ctx)
 		table.insert(buttons, button)
 	end
 	local futureColor = Color3.fromRGB(62, 64, 61)
-	local futurePoints = {}
-	for index, coordinates in
-		{
-			{ -6, 0 },
-			{ -5, -1 },
-			{ -5, 1 },
-			{ -4, -2 },
-			{ -4, 0 },
-			{ -4, 2 },
-			{ -3, -3 },
-			{ -3, -1 },
-			{ -3, 1 },
-			{ -3, 3 },
-		}
-	do
-		local position = point(minX + coordinates[1], coordinates[2])
-		table.insert(futurePoints, position)
-		if index > 1 then
-			line(
-				canvas,
-				"FutureConnection" .. index,
-				futurePoints[math.max(1, math.floor(index / 2))],
-				position,
-				futureColor,
-				2
-			)
-		end
-		local hex = hexagon(canvas, "FutureNode" .. index, position, futureColor)
+	for index, cell in Layout.civilian do
+		local hex = hexagon(canvas, "FutureNode" .. index, point(cell), futureColor)
 		hex:SetAttribute("FutureResearch", true)
 		hex:SetAttribute("FutureFamily", "Civilian")
 		local label = Theme.label(hex, "Placeholder", "?", TILE_HEIGHT)
 		label.TextSize, label.TextXAlignment, label.TextColor3 = 24, Enum.TextXAlignment.Center, Theme.muted
 	end
 	local futureTitle = Theme.label(canvas, "CivilianFuture", "CIVILIAN · FUTURE", 28)
-	futureTitle.Position, futureTitle.Size = UDim2.fromOffset(32, 8), UDim2.fromOffset(400, 28)
+	local futureTitleX = point(Layout.nodes.army_training).X + TILE_WIDTH / 2
+	futureTitle.Position, futureTitle.Size =
+		UDim2.fromOffset(futureTitleX, 0), UDim2.fromOffset(math.max(0, canvasWidth - futureTitleX - 8), 28)
 	futureTitle.TextColor3 = Theme.muted
 	local nodes = {}
-	local lastDrag = 0
-	local futureBranches = {
-		{ parent = "elite_training", coordinates = { { 6, 0 }, { 8, 0 }, { 10, 0 } } },
-		{ parent = "army_size_3", coordinates = { { 2, -6 }, { 4, -6 } } },
-		{ parent = "rider_conditioning", coordinates = { { 4, 8 }, { 6, 8 } } },
-	}
-	local futureIndex = 0
-	for _, branch in futureBranches do
-		local prior = Military.nodes[branch.parent]
-		local previous = point(prior.x, prior.y)
-		for _, coordinates in branch.coordinates do
-			futureIndex += 1
-			local position = point(coordinates[1], coordinates[2])
-			line(canvas, "ReservedConnection" .. futureIndex, previous, position, futureColor, 2)
-			local hex = hexagon(canvas, "ReservedNode" .. futureIndex, position, futureColor)
-			hex:SetAttribute("FutureResearch", true)
-			hex:SetAttribute("FutureFamily", "ReservedMilitary")
-			local label = Theme.label(hex, "Placeholder", "?", TILE_HEIGHT)
-			label.TextSize, label.TextXAlignment, label.TextColor3 = 24, Enum.TextXAlignment.Center, Theme.muted
-			previous = position
-		end
+	local pointerGestureMoved = false
+	for index, cell in Layout.reservedMilitary do
+		local hex = hexagon(canvas, "ReservedNode" .. index, point(cell), futureColor)
+		hex:SetAttribute("FutureResearch", true)
+		hex:SetAttribute("FutureFamily", "ReservedMilitary")
+		local label = Theme.label(hex, "Placeholder", "?", TILE_HEIGHT)
+		label.TextSize, label.TextXAlignment, label.TextColor3 = 24, Enum.TextXAlignment.Center, Theme.muted
+	end
+	local function selectNode(id: string)
+		drafts.militaryNode = id
+		detailScroll.CanvasPosition = Vector2.zero
 	end
 	for _, id in Military.order do
 		local entry = Military.nodes[id]
-		if entry.predecessor then
-			local prior = Military.nodes[entry.predecessor]
-			line(canvas, "Connection_" .. id, point(prior.x, prior.y), point(entry.x, entry.y), Theme.muted, 2)
-		end
-	end
-	for _, id in Military.order do
-		local entry = Military.nodes[id]
-		local hex, fills, edges = hexagon(canvas, "Hex_" .. id, point(entry.x, entry.y), Theme.wood)
-		local button = Theme.button(hex, "Node_" .. id, entry.name, function()
-			if os.clock() - lastDrag > 0.1 then
-				drafts.militaryNode = id
-				detailScroll.CanvasPosition = Vector2.zero
+		local cell = Layout.nodes[id]
+		local hex, fills, edges = hexagon(canvas, "Hex_" .. id, point(cell), Theme.wood)
+		hex:SetAttribute("HexQ", cell.q)
+		hex:SetAttribute("HexR", cell.r)
+		local button = Theme.button(hex, "Node_" .. id, entry.name, function(input)
+			local pointer = input
+				and (
+					input.UserInputType == Enum.UserInputType.MouseButton1
+					or input.UserInputType == Enum.UserInputType.Touch
+				)
+			if not pointer or not pointerGestureMoved then
+				selectNode(id)
 			end
 		end)
-		button.Size, button.BackgroundTransparency, button.TextSize = UDim2.fromScale(1, 1), 1, 11
+		-- An inscribed center cannot steal a diagonal neighbor's corner.
+		button.AnchorPoint, button.Position = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5)
+		button.Size, button.BackgroundTransparency, button.TextSize = UDim2.fromOffset(HIT_SIZE, HIT_SIZE), 1, 11
 		button:SetAttribute("ResearchId", id)
 		nodes[id] = { button = button, fills = fills, edges = edges }
 	end
@@ -325,33 +286,122 @@ function ResearchTree.render(ctx)
 	end
 	local connections = {}
 	local dragging, dragPosition, dragCanvas = false, Vector2.zero, Vector2.zero
+	local pressedInput: InputObject? = nil
+	local screen = graph:FindFirstAncestorWhichIsA("ScreenGui")
+	local playerGui = graph:FindFirstAncestorWhichIsA("PlayerGui")
 	local function visible(): boolean
 		local ancestor = root
 		while ancestor do
 			if ancestor:IsA("GuiObject") and not ancestor.Visible then
 				return false
 			end
+			if ancestor:IsA("ScreenGui") and not ancestor.Enabled then
+				return false
+			end
 			ancestor = ancestor.Parent
 		end
 		return root.Parent ~= nil
 	end
+	local function graphOnTop(position: Vector3): boolean
+		if not playerGui then
+			return false
+		end
+		-- InputObject.Position already accounts for the GUI inset, as does
+		-- BasePlayerGui's hit-query coordinate space. Do not subtract it again.
+		local location = Vector2.new(position.X, position.Y)
+		for _, object in playerGui:GetGuiObjectsAtPosition(location.X, location.Y) do
+			if object == graph or object:IsDescendantOf(graph) then
+				return true
+			elseif not graph:IsDescendantOf(object) then
+				return false
+			end
+		end
+		return false
+	end
+	local function graphPoint(position: Vector3): Vector2?
+		local inset = if screen and screen.IgnoreGuiInset then Gui:GetGuiInset() else Vector2.zero
+		local screenPoint = Vector2.new(position.X, position.Y) + inset
+		local ancestor = graph.Parent
+		while ancestor do
+			if ancestor:IsA("GuiObject") and ancestor.ClipsDescendants then
+				local relative = screenPoint - ancestor.AbsolutePosition
+				if
+					relative.X < 0
+					or relative.Y < 0
+					or relative.X > ancestor.AbsoluteSize.X
+					or relative.Y > ancestor.AbsoluteSize.Y
+				then
+					return nil
+				end
+			end
+			ancestor = ancestor.Parent
+		end
+		local localPoint = screenPoint - graph.AbsolutePosition
+		if
+			localPoint.X < 0
+			or localPoint.Y < 0
+			or localPoint.X > graph.AbsoluteWindowSize.X
+			or localPoint.Y > graph.AbsoluteWindowSize.Y
+		then
+			return nil
+		end
+		return (localPoint + graph.CanvasPosition) / drafts.militaryZoom
+	end
+	local function selectPolygon(position: Vector3)
+		local localPoint = graphPoint(position)
+		if not localPoint then
+			return
+		end
+		for _, id in Military.order do
+			local difference = localPoint - point(Layout.nodes[id])
+			local x, y = math.abs(difference.X), math.abs(difference.Y)
+			if
+				x <= TILE_WIDTH / 2
+				and y <= TILE_HEIGHT / 2
+				and x + math.sqrt(3) * y <= math.sqrt(3) * TILE_HEIGHT / 2
+			then
+				selectNode(id)
+				return
+			end
+		end
+	end
 	table.insert(
 		connections,
-		graph.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 and visible() then
+		Input.InputBegan:Connect(function(input)
+			if
+				(
+					input.UserInputType == Enum.UserInputType.MouseButton1
+					or input.UserInputType == Enum.UserInputType.Touch
+				)
+				and visible()
+				and not Input:GetFocusedTextBox()
+				and not Gui.MenuIsOpen
+				and graphPoint(input.Position)
+				and graphOnTop(input.Position)
+			then
+				pressedInput = input
+				pointerGestureMoved = false
 				dragging, dragPosition, dragCanvas =
-					true, Vector2.new(input.Position.X, input.Position.Y), graph.CanvasPosition
+					input.UserInputType == Enum.UserInputType.MouseButton1,
+					Vector2.new(input.Position.X, input.Position.Y),
+					graph.CanvasPosition
 			end
 		end)
 	)
 	table.insert(
 		connections,
 		Input.InputChanged:Connect(function(input)
-			if dragging and input.UserInputType == Enum.UserInputType.MouseMovement and visible() then
+			if
+				pressedInput
+				and ((dragging and input.UserInputType == Enum.UserInputType.MouseMovement) or input == pressedInput)
+				and visible()
+			then
 				local difference = Vector2.new(input.Position.X, input.Position.Y) - dragPosition
 				if difference.Magnitude > 4 then
-					lastDrag = os.clock()
-					setPan(dragCanvas - difference)
+					pointerGestureMoved = true
+					if dragging then
+						setPan(dragCanvas - difference)
+					end
 				end
 			end
 		end)
@@ -359,7 +409,20 @@ function ResearchTree.render(ctx)
 	table.insert(
 		connections,
 		Input.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if input == pressedInput then
+				local difference = Vector2.new(input.Position.X, input.Position.Y) - dragPosition
+				if
+					visible()
+					and not Gui.MenuIsOpen
+					and not Input:GetFocusedTextBox()
+					and not pointerGestureMoved
+					and graphOnTop(input.Position)
+					and difference.Magnitude <= 4
+					and (graph.CanvasPosition - dragCanvas).Magnitude <= 4
+				then
+					selectPolygon(input.Position)
+				end
+				pressedInput = nil
 				dragging = false
 			end
 		end)
@@ -368,6 +431,9 @@ function ResearchTree.render(ctx)
 		connections,
 		graph:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
 			drafts.militaryPan = graph.CanvasPosition
+			if pressedInput and (graph.CanvasPosition - dragCanvas).Magnitude > 4 then
+				pointerGestureMoved = true
+			end
 		end)
 	)
 	table.insert(connections, root:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
@@ -433,7 +499,9 @@ function ResearchTree.render(ctx)
 	task.spawn(function()
 		Run.Heartbeat:Wait()
 		if graph.Parent then
-			if savedPan then
+			if layoutChanged then
+				setPan(point(Layout.nodes.army_training) * drafts.militaryZoom - graph.AbsoluteWindowSize / 2)
+			elseif savedPan then
 				setPan(savedPan)
 			else
 				focusSelected()

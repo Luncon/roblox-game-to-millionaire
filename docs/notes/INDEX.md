@@ -1,5 +1,7 @@
 # Project notes
 
+- [Military Research Honeycomb — touching hexagons and three left military branches](Military%20Research%20Honeycomb.md)
+
 - [Miniature Live Release — persistent storage, authorized target and verification boundaries](Miniature%20Live%20Release.md)
 
 - [Three Player Conquest Playtest — isolated multiplayer verification in progress](Three%20Player%20Conquest%20Playtest.md)

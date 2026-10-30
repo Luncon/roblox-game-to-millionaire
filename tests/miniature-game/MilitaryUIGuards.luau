@@ -18,10 +18,13 @@ local function run(options: Options?)
 	local modules = player.PlayerScripts.MiniatureGame
 	local UI, Inventory, Army = require(modules.UI), require(modules.Inventory), require(modules.ArmyControls)
 	local Military = require(Replicated.MiniatureGame.MilitaryResearch)
+	local Layout = require(Replicated.MiniatureGame.MilitaryResearchLayout)
 	local Civilizations = require(Replicated.MiniatureGame.Civilizations)
 	local input = Input:CreateVirtualInput()
 	local deadline, authoritative = os.clock() + (options.timeout or 300), nil
 	local requests, contexts = {}, {}
+	local pointerExpected: Vector2? = nil
+	local pointerProof = nil
 	local networkGameplayReceipts = 0
 	local evidence = {
 		localPresentationCopies = true,
@@ -42,6 +45,17 @@ local function run(options: Options?)
 		end
 		if packet.snapshot then
 			authoritative = packet.snapshot
+		end
+	end)
+	local pointerObservation = Input.InputBegan:Connect(function(object)
+		if object.UserInputType == Enum.UserInputType.MouseButton1 and pointerExpected and not pointerProof then
+			local physical, inset = Input:GetMouseLocation(), Gui:GetGuiInset()
+			pointerProof = {
+				input = Vector2.new(object.Position.X, object.Position.Y),
+				expected = pointerExpected,
+				physical = physical,
+				inset = inset,
+			}
 		end
 	end)
 	local function progress(label: string)
@@ -76,16 +90,31 @@ local function run(options: Options?)
 		end
 		return true
 	end
-	local function click(button)
-		waitFor(function()
-			return button and button.Parent and button.Active and shown(button)
-		end, "Local UI button unavailable")
-		local point = button.AbsolutePosition + button.AbsoluteSize / 2 + Gui:GetGuiInset()
+	local function clickPoint(point: Vector2)
 		input:SendMousePosition(point)
 		input:SendMouseButton(point, Enum.UserInputType.MouseButton1, true, 0)
 		task.wait(0.04)
 		input:SendMouseButton(point, Enum.UserInputType.MouseButton1, false, 0)
 		task.wait(0.08)
+	end
+	local function click(button)
+		waitFor(function()
+			return button and button.Parent and button.Active and shown(button)
+		end, "Local UI button unavailable")
+		local point = button.AbsolutePosition + button.AbsoluteSize / 2 + Gui:GetGuiInset()
+		pointerExpected = button.AbsolutePosition + button.AbsoluteSize / 2
+		clickPoint(point)
+		if pointerProof then
+			assert(
+				(pointerProof.input - pointerProof.expected).Magnitude < 2,
+				"Input.Position must already include the GUI inset adjustment"
+			)
+			assert(
+				(pointerProof.physical - pointerProof.input - pointerProof.inset).Magnitude < 2,
+				"Physical and GUI input coordinates differ from measured inset"
+			)
+		end
+		pointerExpected = nil
 	end
 	local function key(code)
 		input:SendKey(true, code, false)
@@ -272,6 +301,14 @@ local function run(options: Options?)
 		task.wait(0.2)
 		local tree = context.frame.Research.Content.MilitaryResearchTree
 		local graph = tree.ResearchGraph
+		local function focusNode(button)
+			graph.CanvasPosition = button.AbsolutePosition
+				- graph.AbsolutePosition
+				+ graph.CanvasPosition
+				+ button.AbsoluteSize / 2
+				- graph.AbsoluteWindowSize / 2
+			task.wait(0.05)
+		end
 		local function prerequisites(id)
 			local result, parent = {}, Military.nodes[id].predecessor
 			while parent do
@@ -282,6 +319,7 @@ local function run(options: Options?)
 		end
 		local functional, future = 0, 0
 		for _, object in tree:GetDescendants() do
+			assert(not string.find(object.Name, "Connection", 1, true), "Honeycomb retains connector lines")
 			if object:GetAttribute("ResearchId") then
 				functional += 1
 			end
@@ -298,16 +336,33 @@ local function run(options: Options?)
 			context.view.state.coins = definition.price
 			context.update(false)
 			local node = graph.HexCanvas["Hex_" .. id]["Node_" .. id]
-			graph.CanvasPosition = node.AbsolutePosition
-				- graph.AbsolutePosition
-				+ graph.CanvasPosition
-				+ node.AbsoluteSize / 2
-				- graph.AbsoluteWindowSize / 2
-			task.wait(0.05)
+			focusNode(node)
 			click(node)
 			waitFor(function()
 				return tree:GetAttribute("SelectedResearch") == id and tree.SelectedNode.StartMilitaryResearch.Active
 			end, "Node selection/availability mismatch: " .. id)
+			-- Select another node first so the corner check cannot pass on old state.
+			local alternateId = if id == "army_training" then "officer_training" else "army_training"
+			local alternate = graph.HexCanvas["Hex_" .. alternateId]["Node_" .. alternateId]
+			focusNode(alternate)
+			click(alternate)
+			waitFor(function()
+				return tree:GetAttribute("SelectedResearch") == alternateId
+			end, "Alternate node was not selected before polygon test")
+			focusNode(node)
+			local selectionRequests = #requests
+			local hex = node.Parent
+			-- Inside this polygon, outside its60px center, and inside the
+			-- diagonal neighbor's rectangular bounds: the old layout stole it.
+			clickPoint(
+				hex.AbsolutePosition
+					+ Vector2.new(hex.AbsoluteSize.X * 0.9, hex.AbsoluteSize.Y * 0.24)
+					+ Gui:GetGuiInset()
+			)
+			waitFor(function()
+				return tree:GetAttribute("SelectedResearch") == id
+			end, "Pointy hex corner selected the wrong neighbor: " .. id)
+			assert(#requests == selectionRequests, "Hex selection issued a gameplay request")
 			assert(tree.SelectedNode.DetailsScroll.ResearchName.Text == definition.name, "Selected node name differs")
 			assert(
 				string.find(tree.SelectedNode.DetailsScroll.ResearchCostTime.Text, tostring(definition.price), 1, true),
@@ -366,10 +421,119 @@ local function run(options: Options?)
 		context.view.state.militaryResearch = { completed = {} }
 		context.view.state.coins = 1000000000
 		context.update(false)
+		local selectedBeforeFuture, requestsBeforeFuture = tree:GetAttribute("SelectedResearch"), #requests
+		local futureTile = graph.HexCanvas.FutureNode1
+		focusNode(futureTile)
+		clickPoint(futureTile.AbsolutePosition + futureTile.AbsoluteSize / 2 + Gui:GetGuiInset())
+		assert(
+			tree:GetAttribute("SelectedResearch") == selectedBeforeFuture and #requests == requestsBeforeFuture,
+			"Grey civilian placeholder selected research or issued a request"
+		)
 		for _ = 1, 8 do
 			click(tree.TreeControls.ZoomOut)
 		end
 		assert(tree:GetAttribute("Zoom") == 0.75, "Zoom minimum was not clamped")
+		for _, id in { "army_size_1", "officer_training", "field_bandages" } do
+			local hex = graph.HexCanvas["Hex_" .. id]
+			focusNode(hex)
+			local count = #requests
+			clickPoint(
+				hex.AbsolutePosition
+					+ Vector2.new(hex.AbsoluteSize.X * 0.9, hex.AbsoluteSize.Y * 0.24)
+					+ Gui:GetGuiInset()
+			)
+			waitFor(function()
+				return tree:GetAttribute("SelectedResearch") == id
+			end, "Minimum-zoom left-face polygon selected a diagonal neighbor")
+			assert(#requests == count, "Zoomed polygon selection sent a research purchase")
+		end
+		-- IgnoreGuiInset changes the tree's absolute origin, while native
+		-- InputObject positions remain in inset-adjusted GUI coordinates.
+		layer.IgnoreGuiInset = true
+		task.wait(0.1)
+		local ignoredHex = graph.HexCanvas.Hex_officer_training
+		focusNode(ignoredHex)
+		clickPoint(
+			ignoredHex.AbsolutePosition + Vector2.new(ignoredHex.AbsoluteSize.X * 0.9, ignoredHex.AbsoluteSize.Y * 0.24)
+		)
+		waitFor(function()
+			return tree:GetAttribute("SelectedResearch") == "officer_training"
+		end, "IgnoreGuiInset polygon used the wrong pointer coordinate space")
+		layer.IgnoreGuiInset = false
+		task.wait(0.1)
+		local centerTargets = {}
+		for _, id in Layout.order do
+			local button = graph.HexCanvas["Hex_" .. id]["Node_" .. id]
+			touchTarget(button)
+			table.insert(centerTargets, button)
+		end
+		for index, button in centerTargets do
+			for otherIndex = index + 1, #centerTargets do
+				local other = centerTargets[otherIndex]
+				local delta = button.AbsolutePosition
+					+ button.AbsoluteSize / 2
+					- other.AbsolutePosition
+					- other.AbsoluteSize / 2
+				assert(
+					math.abs(delta.X) >= (button.AbsoluteSize.X + other.AbsoluteSize.X) / 2 - 0.1
+						or math.abs(delta.Y) >= (button.AbsoluteSize.Y + other.AbsoluteSize.Y) / 2 - 0.1,
+					"Minimum-zoom diagonal hitboxes overlap"
+				)
+			end
+		end
+		local beforeDrag = tree:GetAttribute("SelectedResearch")
+		local dragNode = graph.HexCanvas.Hex_army_training.Node_army_training
+		focusNode(dragNode)
+		local dragStart = dragNode.AbsolutePosition + dragNode.AbsoluteSize / 2 + Gui:GetGuiInset()
+		input:SendMousePosition(dragStart)
+		input:SendMouseButton(dragStart, Enum.UserInputType.MouseButton1, true, 0)
+		for index = 1, 5 do
+			input:SendMousePosition(dragStart + Vector2.new(8 * index, 0))
+			task.wait(0.03)
+		end
+		-- A paused drag can still release inside the moving button. Gesture
+		-- movement must remain latched, rather than timing out before release.
+		task.wait(0.2)
+		input:SendMouseButton(dragStart + Vector2.new(40, 0), Enum.UserInputType.MouseButton1, false, 0)
+		task.wait(0.1)
+		assert(tree:GetAttribute("SelectedResearch") == beforeDrag, "Panning selected an unintended tile")
+		focusNode(dragNode)
+		local returnStart = dragNode.AbsolutePosition + dragNode.AbsoluteSize / 2 + Gui:GetGuiInset()
+		input:SendMousePosition(returnStart)
+		input:SendMouseButton(returnStart, Enum.UserInputType.MouseButton1, true, 0)
+		for _, distance in { 10, 20, 30, 40, 30, 20, 10, 0 } do
+			input:SendMousePosition(returnStart + Vector2.new(distance, 0))
+			task.wait(0.03)
+		end
+		task.wait(0.2)
+		input:SendMouseButton(returnStart, Enum.UserInputType.MouseButton1, false, 0)
+		task.wait(0.1)
+		assert(tree:GetAttribute("SelectedResearch") == beforeDrag, "Returning a drag to its start selected research")
+		focusNode(dragNode)
+		local cover = Instance.new("TextButton")
+		cover.Name, cover.ZIndex, cover.Text = "ResearchPolygonCover", 100, "Overlay"
+		cover.Position = UDim2.fromOffset(
+			dragNode.AbsolutePosition.X - tree.AbsolutePosition.X,
+			dragNode.AbsolutePosition.Y - tree.AbsolutePosition.Y
+		)
+		cover.Size, cover.Parent = UDim2.fromOffset(dragNode.AbsoluteSize.X, dragNode.AbsoluteSize.Y), tree
+		local overlayClicks, beforeOverlayRequests = 0, #requests
+		cover.Activated:Connect(function()
+			overlayClicks += 1
+		end)
+		task.wait(0.05)
+		click(cover)
+		assert(
+			overlayClicks == 1
+				and tree:GetAttribute("SelectedResearch") == beforeDrag
+				and #requests == beforeOverlayRequests,
+			"Higher-Z overlay clicked through to hidden research"
+		)
+		cover:Destroy()
+		layer.Enabled = false
+		clickPoint(returnStart)
+		assert(tree:GetAttribute("SelectedResearch") == beforeDrag, "Disabled ScreenGui still selected a polygon")
+		layer.Enabled = true
 		for _ = 1, 10 do
 			click(tree.TreeControls.ZoomIn)
 		end
@@ -400,6 +564,15 @@ local function run(options: Options?)
 		evidence.researchNavigation = {
 			functional = functional,
 			future = future,
+			polygonCorners = 29,
+			zoomedLeftFaceCorners = 3,
+			ignoreGuiInsetCorner = true,
+			connectorFrames = 0,
+			minimumZoomTargets = #centerTargets,
+			dragSelectionSuppressed = true,
+			outAndBackDragSuppressed = true,
+			disabledScreenGuiSuppressed = true,
+			higherZOverlaySuppressed = true,
 			zoomMin = 0.75,
 			zoomMax = 1.5,
 			minimizedDrafts = true,
@@ -413,6 +586,12 @@ local function run(options: Options?)
 			task.wait(0.3)
 			inside(sample.frame.Research, sample.frame)
 			local localTree = sample.frame.Research.Content.MilitaryResearchTree
+			click(localTree.TreeControls.ZoomOut)
+			click(localTree.TreeControls.ZoomOut)
+			assert(localTree:GetAttribute("Zoom") == 0.75, "Viewport tree did not reach minimum zoom")
+			for _, id in Layout.order do
+				touchTarget(localTree.ResearchGraph.HexCanvas["Hex_" .. id]["Node_" .. id])
+			end
 			inside(localTree, sample.frame.Research)
 			inside(localTree.ResearchGraph, localTree)
 			inside(localTree.SelectedNode, localTree)
@@ -639,6 +818,17 @@ local function run(options: Options?)
 		evidence.previewSourcesImmutable = true
 		guards.destroy()
 		assert(networkGameplayReceipts == 0, "Isolated UI fixture observed an actual network gameplay receipt")
+		assert(pointerProof ~= nil, "Native GUI coordinate observation missing")
+		evidence.pointerCoordinates = {
+			inputX = pointerProof.input.X,
+			inputY = pointerProof.input.Y,
+			guiX = pointerProof.expected.X,
+			guiY = pointerProof.expected.Y,
+			physicalX = pointerProof.physical.X,
+			physicalY = pointerProof.physical.Y,
+			insetX = pointerProof.inset.X,
+			insetY = pointerProof.inset.Y,
+		}
 		progress("Passed")
 	end)
 	for _, code in { Enum.KeyCode.Two, Enum.KeyCode.Three, Enum.KeyCode.B } do
@@ -661,6 +851,7 @@ local function run(options: Options?)
 	end
 	layer:Destroy()
 	receipt:Disconnect()
+	pointerObservation:Disconnect()
 	evidence.actualNetworkGameplayReceipts = networkGameplayReceipts
 	if networkGameplayReceipts ~= 0 then
 		ok, failure = false, "Isolated UI fixture observed an actual network gameplay receipt"
