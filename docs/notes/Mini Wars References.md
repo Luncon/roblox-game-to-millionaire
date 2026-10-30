@@ -61,4 +61,6 @@ or territory systems to the current sandbox automatically.
 ^^ after army control is unlocked, which is in slot 3 of hotbar, you can create individual army groups to act independently from others. whenever an army slot +1 upgrade is made, another individual group can be made.
 
 
-![](../assets/army%20configuation%20process.png)^^ when editing an army group, you click edit, and then can select whichever barrack or troop structure you want included in that army by clicking on it.
+![](../assets/army%20configuation%20process.png)^^ when editing an army group, you click edit, and then can select whichever barrack or troop structure you want included in that army by clicking on it. the inventory button is in slot 1 and the hammer is in slot 2, when clicking slot 1, the inventory pops up in a mincraft stuyle ui, with images of each item in each box, and a count indication in the bottom right (x 4)
+
+when army control is unclocked 
