@@ -57,16 +57,53 @@ local function upgradedRecord(saved)
 end
 
 function Sessions.new(options)
-	assert(options.store and options.store.isFakeProfileStore == true, "Sessions require an injected fake store")
+	local store = options.store
+	assert(
+		store and (store.isFakeProfileStore == true or store.isPersistentProfileStore == true),
+		"Reviewed profile store required"
+	)
+	local persistent = store.isPersistentProfileStore == true
+	local prefix = store.keyPrefix or (if persistent then "player:" else "miniature-development:")
+	assert(type(prefix) == "string" and #prefix > 0 and #prefix <= 24, "Invalid profile key prefix")
 	assert(type(options.clock) == "function" and type(options.token) == "function", "Clock and token source required")
 	local entries = {}
 	local loads = {}
 	local claims = ClaimRegistry.new(Config.plotCount, State.supported)
 	local sessions = {}
+	local function lose(entry, reason)
+		entry.terminal = entry.terminal or reason
+		entry.writable = false
+		entry.profileStatus, entry.profileReason = "lost", entry.terminal
+	end
+	local function key(userId): string
+		return prefix .. tostring(userId)
+	end
+	-- An acquisition can commit even when its acknowledgement throws. Cleanup is
+	-- token-only: an uninitialized session must never write civilization defaults.
+	local function cleanup(userId, loading)
+		local ok = pcall(function()
+			store:UpdateAsync(key(userId), function(current)
+				if not recordValid(current) or not current.lease or current.lease.token ~= loading.token then
+					return nil
+				end
+				local candidate = State.copy(current)
+				candidate.lease = nil
+				return candidate
+			end)
+		end)
+		return { ok = ok, reason = if ok then nil else "save_failed" }
+	end
 
 	function sessions:writable(userId): boolean
 		local entry = entries[userId]
-		return entry ~= nil and entry.writable and not entry.closing and options.clock() < entry.expiresAt
+		if not entry or not entry.writable or entry.terminal then
+			return false
+		end
+		if options.clock() >= entry.expiresAt then
+			lose(entry, "lease_expired")
+			return false
+		end
+		return not entry.closing
 	end
 
 	function sessions:current(userId)
@@ -78,22 +115,36 @@ function Sessions.new(options)
 	end
 
 	function sessions:load(userId)
-		if type(userId) ~= "number" or not State.integer(math.abs(userId), 9007199254740991) then
+		if
+			type(userId) ~= "number"
+			or not State.integer(math.abs(userId), 9007199254740991)
+			or userId == 0
+			or (persistent and userId < 0)
+		then
 			return { ok = false, reason = "invalid_player" }
 		end
 		if entries[userId] then
 			return { ok = self:writable(userId), reason = "already_loaded" }
 		end
-		if loads[userId] then
+		local loading = loads[userId]
+		if loading and (loading.inFlight or loading.cancelled) then
 			return { ok = false, reason = "load_busy" }
 		end
-		local loading = { cancelled = false }
-		loads[userId] = loading
-		local now, token = options.clock(), options.token()
-		assert(type(token) == "string" and #token > 0 and #token <= 128, "Invalid session token")
+		if not loading then
+			local token = options.token()
+			assert(type(token) == "string" and #token > 0 and #token <= 128, "Invalid session token")
+			loading = { cancelled = false, token = token }
+			loads[userId] = loading
+		end
+		loading.inFlight, loading.profileStatus, loading.profileReason = true, "loading", nil
+		local token = loading.token
 		local reason = "load_failed"
 		local ok, record = pcall(function()
-			return options.store:UpdateAsync("miniature-development:" .. userId, function(saved)
+			return store:UpdateAsync(key(userId), function(saved)
+				if loads[userId] ~= loading or loading.cancelled then
+					reason = "load_cancelled"
+					return nil
+				end
 				local candidate = if saved == nil
 					then { schemaVersion = 1, civilizations = {} }
 					else upgradedRecord(saved)
@@ -101,7 +152,8 @@ function Sessions.new(options)
 					reason = "invalid_saved_data"
 					return nil
 				end
-				if candidate.lease and candidate.lease.expiresAt > now then
+				local now = options.clock()
+				if candidate.lease and candidate.lease.token ~= token and candidate.lease.expiresAt > now then
 					reason = "profile_in_use"
 					return nil
 				end
@@ -109,8 +161,19 @@ function Sessions.new(options)
 				return candidate
 			end)
 		end)
-		if not ok or record == nil then
-			loads[userId] = nil
+		loading.inFlight = false
+		if loads[userId] ~= loading or loading.cancelled then
+			loading.inFlight = true
+			local released = cleanup(userId, loading)
+			loading.inFlight = false
+			if released.ok and loads[userId] == loading then
+				loads[userId] = nil
+			end
+			return { ok = false, reason = "load_cancelled", released = released.ok }
+		end
+		if not ok or record == nil or not recordValid(record) or not record.lease or record.lease.token ~= token then
+			loading.profileStatus = if reason == "profile_in_use" then "locked" else "failed"
+			loading.profileReason = reason
 			return { ok = false, reason = reason }
 		end
 		entries[userId] = {
@@ -122,13 +185,12 @@ function Sessions.new(options)
 			saving = false,
 			revision = 0,
 			claimEpoch = 0,
+			profileStatus = "ready",
 		}
-		if loading.cancelled then
-			local released = self:release(userId)
-			loads[userId] = nil
-			return { ok = false, reason = "load_cancelled", released = released.ok }
-		end
 		loads[userId] = nil
+		if not self:writable(userId) then
+			return { ok = false, reason = "lease_expired" }
+		end
 		return { ok = true }
 	end
 
@@ -192,10 +254,15 @@ function Sessions.new(options)
 
 	function sessions:snapshot(userId)
 		local entry = entries[userId]
+		local writable = self:writable(userId)
+		local status = entry or loads[userId]
 		local claim = claims:get(userId)
 		return {
 			loaded = entry ~= nil,
-			writable = self:writable(userId),
+			writable = writable,
+			profileStatus = if status then status.profileStatus else "not_loaded",
+			profileReason = if status then status.profileReason else nil,
+			lastSavedAt = if entry then entry.lastSavedAt else nil,
 			sessionId = if entry then entry.token else nil,
 			claimEpoch = if entry then entry.claimEpoch else 0,
 			revision = if entry then entry.revision else 0,
@@ -207,41 +274,71 @@ function Sessions.new(options)
 
 	local function write(userId, release)
 		local entry = entries[userId]
-		if not entry or not entry.writable or options.clock() >= entry.expiresAt or (entry.closing and not release) then
+		if entry and options.clock() >= entry.expiresAt then
+			lose(entry, "lease_expired")
+		end
+		if not entry or not entry.writable or entry.terminal or (entry.closing and not release) then
 			return { ok = false, reason = "profile_not_writable" }
 		end
 		if entry.saving then
 			return { ok = false, reason = "save_busy" }
 		end
 		if not recordValid(entry.record) then
-			entry.writable = false
+			lose(entry, "invalid_state")
 			return { ok = false, reason = "invalid_state" }
 		end
-		local now = options.clock()
 		local candidate = State.copy(entry.record)
-		candidate.lease = if release then nil else { token = entry.token, expiresAt = now + LEASE_SECONDS }
 		entry.saving = true
+		entry.profileStatus, entry.profileReason = if release then "closing" else "saving", nil
+		local savedAt
 		local ok, saved = pcall(function()
-			return options.store:UpdateAsync("miniature-development:" .. userId, function(current)
+			return store:UpdateAsync(key(userId), function(current)
+				local now = options.clock()
 				if
-					not recordValid(current)
+					entries[userId] ~= entry
+					or entry.terminal
+					or now >= entry.expiresAt
+					or not recordValid(current)
 					or not current.lease
 					or current.lease.token ~= entry.token
-					or current.lease.expiresAt <= options.clock()
+					or current.lease.expiresAt <= now
 				then
 					return nil
 				end
-				return State.copy(candidate)
+				local result = State.copy(candidate)
+				result.lease = if release then nil else { token = entry.token, expiresAt = now + LEASE_SECONDS }
+				savedAt = now
+				return result
 			end)
 		end)
 		entry.saving = false
+		if entries[userId] ~= entry then
+			return { ok = false, reason = "stale_session" }
+		end
+		if options.clock() >= entry.expiresAt then
+			lose(entry, "lease_expired")
+		end
+		if entry.terminal then
+			return { ok = false, reason = entry.terminal }
+		end
 		if not ok then
+			entry.profileStatus, entry.profileReason = if entry.closing then "closing" else "ready", "save_failed"
 			return { ok = false, reason = "save_failed" }
 		end
 		if saved == nil then
-			entry.writable = false
+			lose(entry, "authority_lost")
 			return { ok = false, reason = "authority_lost" }
 		end
+		if
+			not recordValid(saved)
+			or (not release and (not saved.lease or saved.lease.token ~= entry.token))
+			or (release and saved.lease ~= nil)
+		then
+			lose(entry, "invalid_saved_data")
+			return { ok = false, reason = "invalid_saved_data" }
+		end
+		entry.lastSavedAt = savedAt
+		entry.profileStatus, entry.profileReason = if entry.closing then "closing" else "ready", nil
 		if not release then
 			entry.expiresAt = saved.lease.expiresAt
 			entry.record.lease = State.copy(saved.lease)
@@ -254,26 +351,47 @@ function Sessions.new(options)
 	end
 
 	function sessions:release(userId)
-		if loads[userId] then
-			loads[userId].cancelled = true
+		local loading = loads[userId]
+		if loading then
+			loading.cancelled, loading.profileStatus = true, "closing"
 		end
 		local entry = entries[userId]
-		if not entry and loads[userId] then
-			return { ok = false, reason = "load_busy" }
+		if not entry and loading then
+			if loading.inFlight then
+				return { ok = false, reason = "load_busy" }
+			end
+			loading.inFlight = true
+			local result = cleanup(userId, loading)
+			loading.inFlight = false
+			if result.ok and loads[userId] == loading then
+				loads[userId] = nil
+			end
+			return result
 		end
 		if entry then
-			entry.closing = true
+			entry.closing, entry.profileStatus = true, "closing"
+		else
+			return { ok = true }
 		end
 		local result = write(userId, true)
 		if result.reason == "save_busy" or result.reason == "save_failed" then
 			return result
 		end
-		claims:release(userId)
-		entries[userId] = nil
+		if entries[userId] == entry then
+			claims:release(userId)
+			entries[userId] = nil
+		end
 		return result
 	end
 
 	function sessions:abandon(userId)
+		if loads[userId] then
+			loads[userId].cancelled = true
+			loads[userId] = nil
+		end
+		if entries[userId] then
+			lose(entries[userId], "abandoned")
+		end
 		claims:release(userId)
 		entries[userId] = nil
 	end

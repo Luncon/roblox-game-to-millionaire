@@ -237,9 +237,19 @@ and [teleports](https://create.roblox.com/docs/projects/teleport).
 
 ## Saved civilization profiles in the legacy full-size game
 
-The default miniature game uses only temporary FakeProfileStore. The following
-real-storage setup applies to `legacy-fullscale.project.json`, not main miniature
-startup. Original full-size test generators explicitly use that legacy mapping.
+The default local miniature game uses temporary FakeProfileStore. The separate
+live-release mapping uses `MiniatureCivilizationProfilesV1` / `Live`; follow
+[Miniature Live Release](notes/Miniature%20Live%20Release.md) for its target,
+artifact, isolated verification scope and publication status. Generate it with
+`npm run build:miniature-release`; the resulting
+`.cache/miniature-release.project.json` excludes fake storage and test runners.
+Building it does not publish. Its Studio startup fails closed without an explicit
+isolated verification scope and the authorized experience identity. Automated
+miniature test generators continue to inject fake storage.
+
+The following real-storage setup applies to `legacy-fullscale.project.json`.
+Original full-size test generators explicitly use that legacy mapping. Do not
+reuse or convert legacy records into the differently shaped miniature profile.
 
 
 The game saves each player's civilizations separately. In Studio, open **File →

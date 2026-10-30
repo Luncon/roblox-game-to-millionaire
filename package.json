@@ -23,6 +23,9 @@
     "build:test-project": "node scripts/create-test-project.mjs",
     "build:miniature-tests": "node scripts/create-miniature-test-project.mjs",
     "build:miniature-game-tests": "node scripts/create-miniature-game-tests.mjs",
+    "build:miniature-multiplayer-tests": "node scripts/create-miniature-multiplayer-tests.mjs",
+    "build:miniature-multiplayer-visible": "node scripts/create-miniature-multiplayer-tests.mjs --visible",
+    "build:miniature-release": "node scripts/create-miniature-release.mjs",
     "openspec": "openspec",
     "setup:openspec": "openspec init --tools codex --profile core --no-animation",
     "check": "openspec validate --all --strict --no-interactive"

@@ -1,0 +1,41 @@
+{
+  "releaseId": "miniature-live-v1",
+  "status": "verified-cloud-draft",
+  "target": {
+    "placeId": 73839918762778,
+    "universeId": 10770758443,
+    "creatorId": 68716649,
+    "creatorName": "SmithLucas5652",
+    "audience": "private-unchanged",
+    "maxPlayers": 8
+  },
+  "savedDraftVersion": 248,
+  "publishedVersion": null,
+  "sourceArtifact": "build/clash-of-civilizations-release.rbxlx",
+  "sourceArtifactSha256": "4b25c39d8a64118ff79e49b101e368ddb2a151d88727633b369ecbf6e237330f",
+  "rollbackBackup": "assets/place-backups/pre-miniature-live-release-2026-10-30.rbxl",
+  "rollbackBackupSha256": "46173413da0c0b9fcb8638348322861d155967278089df6bae500b60bad03c9a",
+  "checks": {
+    "developmentGate": "passed",
+    "openSpecItems": 35,
+    "nodeCases": 13,
+    "syntaxFiles": 419,
+    "legacyLogicCases": 244,
+    "miniatureLogicCases": 243,
+    "nativeLifecycleCases": 9,
+    "nativeHudStates": 10,
+    "nativeHudLayouts": 4,
+    "realStorageVerificationScope": "Verification_release_1793329791014",
+    "productionRehearsal": "passed-real-storage-Studio-restart",
+    "productionRehearsalScope": "Verification_rehearsal_1793332521422",
+    "matchedCloudSourceScripts": 106,
+    "verificationScopeAbsentBeforePublish": true,
+    "publishedClientRejoin": "pending"
+  },
+  "persistence": {
+    "store": "MiniatureCivilizationProfilesV1",
+    "scope": "Live",
+    "keyPrefix": "player:",
+    "legacyStoreUntouched": "CivilizationProfilesV1"
+  }
+}

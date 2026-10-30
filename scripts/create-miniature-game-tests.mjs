@@ -30,6 +30,7 @@ for (const name of fs.readdirSync('prototypes/miniature/game/server').filter(nam
 project.tree.ServerScriptService.IsolationChecks = { $path: '../tests/miniature-game/Isolation.server.luau' };
 project.tree.ServerStorage.TemplateFingerprint = { $path: '../tests/miniature/Templates.luau' };
 project.tree.ServerStorage.NativeStressChecks = { $path: '../tests/miniature-game/Stress.luau' };
+project.tree.ServerStorage.NativeRuntimeLifecycle = { $path: '../tests/miniature-game/RuntimeLifecycle.luau' };
 project.tree.ServerStorage.NativeOwnershipChecks = { $path: '../tests/miniature-game/Ownership.luau' };
 project.tree.ServerStorage.NativeOutpostScene = { $path: '../tests/miniature-game/OutpostScene.luau' };
 project.tree.ServerStorage.NativeOutpostScenery = { $path: '../tests/miniature-game/OutpostScenery.luau' };
@@ -52,6 +53,7 @@ for (const name of fs.readdirSync('tests/miniature-game')) {
   }
 }
 project.tree.ReplicatedStorage.NativeInputChecks = { $path: '../tests/miniature-game/Input.luau' };
+project.tree.ReplicatedStorage.NativeProfileStatus = { $path: '../tests/miniature-game/ProfileStatus.luau' };
 project.tree.ReplicatedStorage.NativeManagementChecks = { $path: '../tests/miniature-game/Management.luau' };
 project.tree.ReplicatedStorage.NativeKitTour = { $path: '../tests/miniature-game/KitTour.luau' };
 project.tree.ReplicatedStorage.NativeInventoryGuards = { $path: '../tests/miniature-game/InventoryGuards.luau' };

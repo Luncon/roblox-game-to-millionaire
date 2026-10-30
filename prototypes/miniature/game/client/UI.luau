@@ -6,6 +6,7 @@ local Config = require(Replicated:WaitForChild("MiniatureGame").Config)
 local Theme = require(script.Parent.Theme)
 local Panels = require(script.Parent.PanelVisibility)
 local Pages = require(script.Parent.Pages)
+local ProfilePresentation = require(script.Parent.ProfilePresentation)
 local UI = {}
 
 function UI.mount(screen, callbacks)
@@ -23,8 +24,10 @@ function UI.mount(screen, callbacks)
 	local title = Theme.label(hud, "SettlementTitle", "SETTLEMENT", 24)
 	title.Position, title.Size, title.Font, title.TextColor3 =
 		UDim2.fromOffset(8, 0), UDim2.new(1, -56, 0, 24), Enum.Font.GothamBold, Theme.gold
-	local stats = Theme.label(hud, "Resources", "Loading…", 54)
-	stats.Position, stats.Size, stats.TextSize = UDim2.fromOffset(8, 24), UDim2.new(1, -16, 0, 54), 12
+	local stats = Theme.label(hud, "Resources", "Loading…", 40)
+	stats.Position, stats.Size, stats.TextSize = UDim2.fromOffset(8, 24), UDim2.new(1, -16, 0, 40), 11
+	local profile = Theme.label(hud, "ProfileStatus", "Loading saved progress…", 18)
+	profile.Position, profile.Size, profile.TextSize = UDim2.fromOffset(8, 64), UDim2.new(1, -16, 0, 18), 10
 	local change = Theme.button(hud, "ChangeCivilization", "Change civilization", function()
 		controller.navigate("Select")
 	end)
@@ -313,6 +316,14 @@ function UI.mount(screen, callbacks)
 	)
 	function controller.update(nextView, changed)
 		view = nextView
+		local storage = Replicated:GetAttribute("MiniatureSandboxStorage")
+		local status = ProfilePresentation.describe(view, if type(storage) == "string" then storage else nil)
+		profile.Text, profile.TextColor3 = status.text, if status.warning then Theme.gold else Theme.muted
+		profile.Size, profile.TextSize =
+			UDim2.new(1, -16, 0, if status.expanded then 62 else 18), if status.expanded then 11 else 10
+		profile:SetAttribute("ProfileStatus", status.status)
+		profile:SetAttribute("ProfileReason", view.profileReason)
+		change.Visible, hud.ZIndex = not status.expanded, if status.expanded then 60 else 1
 		if changed then
 			controller.closePanels()
 			if not view.state or not view.artReady then

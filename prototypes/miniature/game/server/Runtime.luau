@@ -1,7 +1,7 @@
 --!strict
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
+local DefaultPlayers = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local Shared = ReplicatedStorage.MiniatureGame
 local Config = require(Shared.Config)
@@ -14,14 +14,36 @@ local Economy = require(script.Parent.Economy)
 local Workforce = require(script.Parent.Workforce)
 local Actions = require(script.Parent.Actions)
 local ActiveTime = require(script.Parent.ActiveTime)
-local Transport = require(script.Parent.Transport)
-local World = require(script.Parent.World)
-local CombatController = require(script.Parent.CombatController)
+local DefaultTransport = require(script.Parent.Transport)
+local DefaultWorld = require(script.Parent.World)
+local DefaultCombatController = require(script.Parent.CombatController)
 local Runtime = {}
 
 function Runtime.start(options)
-	assert(RunService:IsStudio(), "Miniature settlement sandbox is Studio-only")
-	assert(options.store and options.store.isFakeProfileStore == true, "An injected fake store is required")
+	local store = options.store
+	local fake = type(store) == "table" and store.isFakeProfileStore == true
+	local persistent = type(store) == "table" and store.isPersistentProfileStore == true
+	assert(
+		fake ~= persistent and type(store.UpdateAsync) == "function",
+		"A trusted miniature profile adapter is required"
+	)
+	assert(not fake or RunService:IsStudio(), "Fake profile adapters are Studio-only")
+	local injected = options.testDependencies
+	assert(injected == nil or fake and RunService:IsStudio(), "Lifecycle doubles require Studio and fake storage")
+	local Players = if injected then injected.players else DefaultPlayers
+	local World = if injected then injected.world else DefaultWorld
+	local CombatController = if injected then injected.combat else DefaultCombatController
+	local Transport = if injected then injected.transport else DefaultTransport
+	local heartbeat = if injected then injected.heartbeat else RunService.Heartbeat
+	local bindToClose = if injected
+		then injected.bindToClose
+		else function(callback)
+			game:BindToClose(callback)
+		end
+	local wait = if injected then injected.wait else task.wait
+	local delay = if injected then injected.delay else task.delay
+	local storageLabel = if fake then "InjectedFakeProfileStore" else store.storageLabel
+	assert(type(storageLabel) == "string" and #storageLabel > 0, "Persistent storage must declare its environment")
 	local clock = options.clock or os.time
 	local monotonic = options.monotonic or os.clock
 	local sessions = Sessions.new({
@@ -35,6 +57,9 @@ function Runtime.start(options)
 	World.installPreviews()
 	local combat = CombatController.start(world)
 	local contexts = {}
+	local shuttingDown, shutdownDeadline = false, nil
+	local releaseFailures = {}
+	local loadSeconds, releaseSeconds = 75, 25
 	local transport, gateway
 	local actionNames = {
 		"select",
@@ -68,6 +93,24 @@ function Runtime.start(options)
 	local function snapshot(player)
 		local view = sessions:snapshot(player.UserId)
 		local context = contexts[player.UserId]
+		view.storageLabel = storageLabel
+		if context then
+			if context.closing or shuttingDown then
+				view.profileStatus, view.profileReason = "closing", context.profileReason
+			elseif view.loaded then
+				if not view.writable then
+					view.profileStatus, view.profileReason = "read_only", view.profileReason or "authority_lost"
+				elseif context.saveReason then
+					view.profileStatus, view.profileReason = "save_retry", context.saveReason
+				else
+					view.profileStatus, view.profileReason = "ready", nil
+				end
+			else
+				view.profileStatus, view.profileReason = context.profileStatus, context.profileReason
+			end
+		else
+			view.profileStatus = if shuttingDown then "closing" else "loading"
+		end
 		view.serverTime = clock()
 		view.productionSpeed = Config.productionSpeed
 		view.researchEnabled = Config.researchEnabled
@@ -275,19 +318,41 @@ function Runtime.start(options)
 		actions = actionNames,
 		snapshot = snapshot,
 		request = function(player, action, intent)
+			if shuttingDown then
+				return { ok = false, reason = "server_closing" }
+			end
+			local context = contexts[player.UserId]
+			if not context or context.player ~= player or context.closing then
+				return { ok = false, reason = "profile_not_writable" }
+			end
 			return gateway:handle(player.UserId, action, intent)
 		end,
 	})
 
-	local function release(userId)
+	local function finishRelease(userId, context, result)
+		if contexts[userId] ~= context then
+			return
+		end
+		if not result.ok then
+			releaseFailures[userId] = result.reason
+			sessions:abandon(userId)
+			warn("Miniature final save unavailable for " .. userId .. ": " .. tostring(result.reason))
+		end
+		gateway:remove(userId)
+		transport:remove(userId)
+		contexts[userId] = nil
+	end
+	local function release(userId, expected)
 		local context = contexts[userId]
-		if not context or context.closing then
+		if not context or context ~= expected or context.closing then
 			return
 		end
 		pause(context)
 		context.closing = true
+		context.profileStatus = "closing"
 		combat:remove(userId)
 		local view = sessions:snapshot(userId)
+		local hadLoaded = view.loaded
 		if view.claim then
 			World.clear(world.plots[view.claim.plotId])
 		end
@@ -297,25 +362,44 @@ function Runtime.start(options)
 		for _, connection in context.characterConnections do
 			connection:Disconnect()
 		end
-		local deadline = monotonic() + 20
+		local deadline = math.min(monotonic() + releaseSeconds, shutdownDeadline or math.huge)
+		delay(math.max(0, deadline - monotonic()), function()
+			if contexts[userId] == context then
+				finishRelease(userId, context, { ok = false, reason = "release_timeout" })
+			end
+		end)
 		local result = sessions:release(userId)
 		while
-			not result.ok
+			contexts[userId] == context
+			and not result.ok
 			and (result.reason == "save_busy" or result.reason == "save_failed" or result.reason == "load_busy")
 			and monotonic() < deadline
 		do
-			task.wait(0.5)
+			wait(0.5)
+			if contexts[userId] ~= context then
+				return
+			end
 			result = sessions:release(userId)
 		end
-		if not result.ok then
-			sessions:abandon(userId)
+		if not hadLoaded and result.reason == "profile_not_writable" then
+			result = { ok = true }
 		end
-		gateway:remove(userId)
-		transport:remove(userId)
-		contexts[userId] = nil
+		finishRelease(userId, context, result)
 	end
 	local function onPlayer(player)
-		if contexts[player.UserId] then
+		local userId = player.UserId
+		local waitingUntil = monotonic() + loadSeconds
+		while contexts[userId] and contexts[userId].player ~= player do
+			if shuttingDown or player.Parent ~= Players then
+				return
+			end
+			if monotonic() >= waitingUntil then
+				warn("Miniature rejoin still waiting for prior release: " .. userId)
+				return
+			end
+			wait(0.1)
+		end
+		if shuttingDown or player.Parent ~= Players or contexts[userId] then
 			return
 		end
 		local context = {
@@ -328,13 +412,61 @@ function Runtime.start(options)
 			wasActive = false,
 			connections = {},
 			characterConnections = {},
+			profileStatus = "loading",
+			profileReason = nil,
+			loadExpired = false,
 		}
-		contexts[player.UserId] = context
-		local loaded = sessions:load(player.UserId)
-		if contexts[player.UserId] ~= context or context.closing or player.Parent ~= Players then
-			if loaded.ok then
-				sessions:release(player.UserId)
+		contexts[userId] = context
+		local function current()
+			return contexts[userId] == context
+				and not context.closing
+				and not shuttingDown
+				and player.Parent == Players
+				and not context.loadExpired
+		end
+		local loadDeadline, attempt = monotonic() + loadSeconds, 0
+		delay(loadSeconds, function()
+			if current() and context.profileStatus ~= "ready" then
+				context.loadExpired = true
+				context.profileStatus, context.profileReason = "error", "load_timeout"
+				sessions:abandon(userId)
+				warn("Miniature profile load timed out for " .. userId .. "; rejoin to retry")
+				transport:send(player)
 			end
+		end)
+		while current() do
+			attempt += 1
+			local loaded = sessions:load(userId)
+			if not current() then
+				return
+			end
+			if loaded.ok then
+				context.profileStatus, context.profileReason = "ready", nil
+				context.lastSave = monotonic()
+				break
+			end
+			local retryable = loaded.reason == "load_failed"
+				or loaded.reason == "profile_in_use"
+				or loaded.reason == "load_busy"
+			if not retryable or monotonic() >= loadDeadline then
+				context.profileStatus, context.profileReason = "error", loaded.reason
+				context.loadExpired = true
+				sessions:abandon(userId)
+				warn(
+					"Miniature profile unavailable for "
+						.. userId
+						.. ": "
+						.. tostring(loaded.reason)
+						.. "; rejoin to retry"
+				)
+				transport:send(player)
+				return
+			end
+			context.profileStatus, context.profileReason = "retrying", loaded.reason
+			transport:send(player)
+			wait(math.min(2 ^ math.min(attempt - 1, 3), math.max(0, loadDeadline - monotonic())))
+		end
+		if not current() then
 			return
 		end
 		local function characterAdded(character)
@@ -405,19 +537,24 @@ function Runtime.start(options)
 		transport:send(player)
 	end
 	local connections = {
-		Players.PlayerAdded:Connect(onPlayer),
+		Players.PlayerAdded:Connect(function(player)
+			task.spawn(onPlayer, player)
+		end),
 		Players.PlayerRemoving:Connect(function(player)
-			release(player.UserId)
+			local context = contexts[player.UserId]
+			if context and context.player == player then
+				release(player.UserId, context)
+			end
 		end),
 	}
-	for _, player in Players:GetPlayers() do
-		onPlayer(player)
-	end
 	local accumulated = 0
 	local combatElapsed = 0
 	table.insert(
 		connections,
-		RunService.Heartbeat:Connect(function(dt)
+		heartbeat:Connect(function(dt)
+			if shuttingDown then
+				return
+			end
 			combatElapsed += dt
 			if combatElapsed < 0.1 then
 				return
@@ -434,7 +571,10 @@ function Runtime.start(options)
 	)
 	table.insert(
 		connections,
-		RunService.Heartbeat:Connect(function(dt)
+		heartbeat:Connect(function(dt)
+			if shuttingDown then
+				return
+			end
 			accumulated += dt
 			if accumulated < 0.25 then
 				return
@@ -472,24 +612,48 @@ function Runtime.start(options)
 					transport:send(context.player)
 					context.lastPush = now
 				end
-				if now - context.lastSave >= 15 then
+				if sessions:writable(userId) and now - context.lastSave >= 15 then
 					context.lastSave = now
 					task.spawn(function()
-						sessions:save(userId)
+						if contexts[userId] ~= context or context.closing or shuttingDown then
+							return
+						end
+						local saved = sessions:save(userId)
+						if contexts[userId] ~= context or context.closing or shuttingDown then
+							return
+						end
+						if saved.ok then
+							context.saveReason = nil
+						elseif saved.reason ~= "save_busy" then
+							if context.saveReason ~= saved.reason then
+								warn("Miniature autosave unavailable for " .. userId .. ": " .. tostring(saved.reason))
+							end
+							context.saveReason = saved.reason
+							if not sessions:writable(userId) then
+								combat:remove(userId)
+							end
+						end
+						transport:send(context.player)
 					end)
 				end
 			end
 		end)
 	)
-	game:BindToClose(function()
-		for userId in contexts do
-			task.spawn(release, userId)
+	local function shutdown()
+		shuttingDown = true
+		shutdownDeadline = shutdownDeadline or monotonic() + 28
+		for userId, context in contexts do
+			task.spawn(release, userId, context)
 		end
-		local deadline = monotonic() + 22
-		while next(contexts) and monotonic() < deadline do
-			task.wait(0.1)
+		while next(contexts) and monotonic() < shutdownDeadline do
+			wait(0.1)
 		end
-	end)
+		for userId, context in contexts do
+			finishRelease(userId, context, { ok = false, reason = "shutdown_timeout" })
+		end
+		return { ok = next(releaseFailures) == nil, failures = table.clone(releaseFailures) }
+	end
+	bindToClose(shutdown)
 	world.scene.Destroying:Once(function()
 		for _, connection in connections do
 			connection:Disconnect()
@@ -497,9 +661,14 @@ function Runtime.start(options)
 		transport:destroy()
 		combat:destroy()
 	end)
-	ReplicatedStorage:SetAttribute("MiniatureSandboxStorage", "InjectedFakeProfileStore")
-	ReplicatedStorage:SetAttribute("MiniatureSandboxReady", true)
-	return { scene = world.scene, sessions = sessions, store = options.store }
+	if not injected then
+		ReplicatedStorage:SetAttribute("MiniatureSandboxStorage", storageLabel)
+		ReplicatedStorage:SetAttribute("MiniatureSandboxReady", true)
+	end
+	for _, player in Players:GetPlayers() do
+		task.spawn(onPlayer, player)
+	end
+	return { scene = world.scene, sessions = sessions, store = store, snapshot = snapshot, shutdown = shutdown }
 end
 
 return Runtime

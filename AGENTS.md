@@ -3,8 +3,10 @@
 The miniature game is now the default Clash of Civilizations development build.
 `default.project.json` maps `prototypes/miniature/game`; the preserved full-size
 game uses `legacy-fullscale.project.json`. Keep the clean `miniature.project.json`
-scale preview and dated backups. Main miniature startup remains Studio-only with
-injected FakeProfileStore; do not silently enable public servers or real storage.
+scale preview and dated backups. The normal local miniature startup remains
+Studio-only with injected FakeProfileStore. The separately generated release uses
+the reviewed persistent adapter and target-bound live bootstrap; see
+`docs/notes/Miniature Live Release.md` before publishing.
 
 The preserved full-size game's five interface panels support client-session minimization through
 PanelVisibility: settlement HUD, army controls, civilization selection, Barracks
@@ -39,6 +41,10 @@ for the Windows/WSL workflow.
   and saved profiles. Never accept client-provided balances or ownership.
 - Keep progress isolated by player and civilization. A failed load must not
   overwrite existing progress with a fresh profile.
+- Live miniature profiles use `MiniatureCivilizationProfilesV1` / `Live` and
+  `player:<UserId>` keys. Preserve all legacy `CivilizationProfilesV1` data.
+  Automated fixtures remain fake-only; real Studio verification requires an
+  explicit isolated `Verification_` scope and separate evidence.
 - Verify game behavior in Studio. A Rojo build or OpenSpec validation alone
   does not demonstrate that gameplay works. Teleports need Roblox client tests.
 - Keep at most two Studio playtests open at a time, allowing the user's playtest

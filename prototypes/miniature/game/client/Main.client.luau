@@ -16,8 +16,19 @@ local screen = Instance.new("ScreenGui")
 screen.Name, screen.ResetOnSpawn, screen.ZIndexBehavior = "MiniatureSandboxHUD", false, Enum.ZIndexBehavior.Sibling
 screen.Parent = player:WaitForChild("PlayerGui")
 InputReadiness.start(screen)
+local startup = Instance.new("TextLabel")
+startup.Name, startup.Text = "StartupStatus", "Starting your settlement…"
+startup.AnchorPoint, startup.Position, startup.Size =
+	Vector2.new(0.5, 0), UDim2.new(0.5, 0, 0, 56), UDim2.new(1, -32, 0, 56)
+startup.BackgroundColor3, startup.TextColor3, startup.TextWrapped =
+	Color3.fromRGB(43, 49, 43), Color3.fromRGB(247, 237, 211), true
+startup.Font, startup.TextSize, startup.BorderSizePixel, startup.Parent = Enum.Font.Gotham, 14, 0, screen
 local actions = Replicated:WaitForChild("MiniatureActions", 20)
-assert(actions, "Miniature sandbox actions did not start")
+if not actions then
+	startup.Text = "Game services could not start. Please rejoin to try again."
+	return
+end
+startup:Destroy()
 local ui, camera, placement, inventory, armyControls
 local view, request = nil, nil
 local retiredSessions = {}

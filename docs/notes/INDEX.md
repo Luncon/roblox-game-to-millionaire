@@ -1,5 +1,9 @@
 # Project notes
 
+- [Miniature Live Release — persistent storage, authorized target and verification boundaries](Miniature%20Live%20Release.md)
+
+- [Three Player Conquest Playtest — isolated multiplayer verification in progress](Three%20Player%20Conquest%20Playtest.md)
+
 - [Main build, military research and army controls](Military%20Research%20and%20Army%20Control.md)
 - [Thorough military regression pass](Military%20Research%20Thorough%20Test%20Pass.md)
 - [Military research rules, modifiers and preserved combat defaults](Military%20Research%20Rules.md)
