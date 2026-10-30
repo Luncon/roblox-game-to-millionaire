@@ -29,6 +29,10 @@ function UI.mount(screen, callbacks)
 		controller.navigate("Select")
 	end)
 	change.Position, change.Size, change.TextSize = UDim2.fromOffset(8, 82), UDim2.new(1, -16, 0, 44), 12
+	local researchButton = Theme.button(screen, "OpenResearch", "Research", function()
+		controller.navigate("Research")
+	end)
+	researchButton.TextSize, researchButton.ZIndex = 13, 20
 	local hudVisibility = Panels.attach(screen, hud, hud, "Settlement", "settlement")
 	hudVisibility:setVisible(true)
 	local feedback = Theme.label(screen, "ActionFeedback", "", 40)
@@ -71,7 +75,7 @@ function UI.mount(screen, callbacks)
 		if not view.claim or not view.state or not view.artReady or not view.plotFrame then
 			return "Choose a civilization"
 		end
-		if action == "travel" then
+		if action == "travel" or action == "militaryResearch" or action == "configureArmy" then
 			return nil
 		end
 		local target, range = nil, Config.interactionRange
@@ -148,7 +152,14 @@ function UI.mount(screen, callbacks)
 		surfaces[name], bodies[name], bindings[name] = surface, body, {}
 		controllers[name] = Panels.attach(screen, surface, surface, name, label)
 	end
-	for _, entry in { { "Select", "Civilizations" }, { "Build", "Building shop" }, { "Trade", "Sell goods" } } do
+	for _, entry in
+		{
+			{ "Select", "Civilizations" },
+			{ "Build", "Building shop" },
+			{ "Trade", "Sell goods" },
+			{ "Research", "Military research" },
+		}
+	do
 		makeSurface(entry[1], entry[2])
 	end
 	function controller.navigate(name)
@@ -157,6 +168,9 @@ function UI.mount(screen, callbacks)
 		end
 		if callbacks.closeInventory then
 			callbacks.closeInventory()
+		end
+		if callbacks.closeArmy then
+			callbacks.closeArmy()
 		end
 		if name ~= "Select" and (not view or not view.state) then
 			name = "Select"
@@ -252,10 +266,15 @@ function UI.mount(screen, callbacks)
 		local navWidth = math.min(324, width - 24)
 		nav.Position, nav.Size = UDim2.fromOffset((width - navWidth) / 2, 8), UDim2.fromOffset(navWidth, 44)
 		hud.Position, hud.Size = UDim2.fromOffset(16, 64), UDim2.fromOffset(math.min(196, width - 32), 130)
+		researchButton.Position, researchButton.Size =
+			UDim2.fromOffset(16, 200), UDim2.fromOffset(math.min(116, width - 32), 44)
 		for name, surface in surfaces do
 			local panelWidth =
 				math.min(if name == "Trade" then 280 elseif name == "Build" then 420 else 296, width - 24)
 			local panelHeight = math.min(if name == "Trade" then 200 else 360, height - 132)
+			if name == "Research" then
+				panelWidth, panelHeight = math.min(1000, width - 24), math.max(180, height - 84)
+			end
 			surface.Position, surface.Size =
 				UDim2.fromOffset((width - panelWidth) / 2, math.max(56, (height - panelHeight) / 2)),
 				UDim2.fromOffset(panelWidth, panelHeight)
@@ -278,6 +297,12 @@ function UI.mount(screen, callbacks)
 			for _, button in travelButtons do
 				Theme.enabled(button, guard("travel") == nil)
 			end
+			Theme.enabled(researchButton, guard("militaryResearch") == nil)
+			local inventoryPanel = screen:FindFirstChild("Inventory")
+			local armyPanel = screen:FindFirstChild("ArmyControls")
+			researchButton.Visible = screen:GetAttribute("OpenMenu") == nil
+				and not (inventoryPanel and inventoryPanel.Visible)
+				and not (armyPanel and armyPanel.Visible)
 			for _, updates in bindings do
 				for _, update in updates do
 					update()

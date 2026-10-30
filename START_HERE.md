@@ -3,12 +3,12 @@
 This repository is our Obsidian vault. Use this page to find the current work,
 record ideas and decisions, and return to the detailed project documentation.
 
-## Current work: miniature redesign
+## Current work: miniature main game and military research
 
 Normal-sized, unarmed commanders oversee miniature civilization scenery and
-actors. The separate playable sandbox now includes all thirteen prototype art
+actors. The default playable game now includes all thirteen prototype art
 kits, building placement, worker production, trade and the first army combat/
-outpost-capture loop. Research is paused and progress is temporary fake data.
+outpost-capture loop. Military research and army controls now follow the updated reference guide. Progress remains temporary fake data.
 Troops now reuse original outfits, models, joint animations and baseline tactics,
 with grounded feet, slower movement and shorter ranged/healing reach. The original Spartan
 scale preview remains a separate launch option.
@@ -16,6 +16,7 @@ scale preview remains a separate launch option.
 The latest sandbox adds smooth troop interpolation, near-peer neutral defenders,
 developed capturable frontier camps and double commander walking speed.
 
+- [Main build, military research and army controls](docs/notes/Military%20Research%20and%20Army%20Control.md)
 - [Game direction](docs/GAME_VISION.md)
 - [Current mounted-army implementation and imported-model audit](docs/notes/Mounted%20Army%20Implementation.md)
 - [Mount refinements, ragdoll deaths and uncapped structures](docs/notes/Mount%20Refinements%20and%20Ragdoll%20Deaths.md)

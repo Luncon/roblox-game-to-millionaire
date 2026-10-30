@@ -4,6 +4,8 @@ local Config = require(Shared.Config)
 local Catalog = require(Shared.Catalog)
 local Placement = require(Shared.Placement)
 local Civilizations = require(Shared.Civilizations)
+local MilitaryResearch = require(Shared.MilitaryResearch)
+local ArmyGroups = require(Shared.ArmyGroups)
 local State = {}
 local supported = {}
 for _, civilization in Civilizations do
@@ -101,6 +103,7 @@ end
 
 function State.troopGroups(state)
 	local groups, total = {}, 0
+	local capacity = MilitaryResearch.capacity(state.militaryResearch.completed)
 	for _, building in state.buildings do
 		local role = if building.kind == "training"
 			then "melee"
@@ -111,7 +114,7 @@ function State.troopGroups(state)
 		if role then
 			local amount = if role == "medic" or role == "mounted" then 1 else 2
 			local capacityCost = amount * (if role == "mounted" then 2 else 1)
-			if total + capacityCost <= Config.troopCap then
+			if total + capacityCost <= capacity then
 				groups[building.id] = { role = role, count = amount, capacityCost = capacityCost }
 				total += capacityCost
 			end
@@ -185,6 +188,8 @@ function State.new(civilizationId: string, now: number)
 		nextWorkerId = 3,
 		hallUpgraded = false,
 		research = { completed = {} },
+		militaryResearch = { completed = {} },
+		armyGroups = ArmyGroups.new(),
 		merchant = { cycle = math.floor(now / Config.restockSeconds), stock = {} },
 		settings = { autoCollect = false, autoSell = false, reserves = State.goods(), preset = {} },
 		roster = { melee = 0, ranged = 0, medic = 0 },
@@ -208,6 +213,8 @@ function State.validate(state, civilizationId): boolean
 			nextWorkerId = true,
 			hallUpgraded = true,
 			research = true,
+			militaryResearch = true,
+			armyGroups = true,
 			merchant = true,
 			settings = true,
 			roster = true,
@@ -225,6 +232,7 @@ function State.validate(state, civilizationId): boolean
 		or not array(state.workers, Config.workerCap)
 		or not keys(state.research, { completed = true, project = true })
 		or not keys(state.research.completed, Catalog.research)
+		or not MilitaryResearch.validate(state.militaryResearch)
 	then
 		return false
 	end
@@ -402,7 +410,7 @@ function State.validate(state, civilizationId): boolean
 	then
 		return false
 	end
-	return true
+	return ArmyGroups.validate(state)
 end
 
 -- Only new catalog keys default when absent. The input is never mutated,
@@ -412,6 +420,12 @@ function State.upgrade(value, civilizationId)
 		return nil
 	end
 	local candidate = State.copy(value)
+	if candidate.militaryResearch == nil then
+		candidate.militaryResearch = { completed = {} }
+	end
+	if candidate.armyGroups == nil then
+		candidate.armyGroups = ArmyGroups.new()
+	end
 	local plans = candidate.plans
 	local stock = if type(candidate.merchant) == "table" then candidate.merchant.stock else nil
 	if type(plans) ~= "table" or type(stock) ~= "table" then

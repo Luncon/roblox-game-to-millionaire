@@ -6,6 +6,7 @@ local Config = require(Shared.Config)
 local Presentation = require(Shared.Presentation)
 local Civilizations = require(Shared.Civilizations)
 local Theme = require(script.Parent.Theme)
+local ResearchTree = require(script.Parent.ResearchTree)
 local Pages = {}
 local buildingOrder =
 	{ "house", "farm", "timber", "material", "workshop", "storehouse", "training", "ranged", "healer", "mount" }
@@ -194,5 +195,8 @@ function Pages.Build(ctx)
 			list.CanvasPosition = ctx.drafts.shopScroll[category] or Vector2.zero
 		end
 	end)
+end
+function Pages.Research(ctx)
+	ResearchTree.render(ctx)
 end
 return Pages

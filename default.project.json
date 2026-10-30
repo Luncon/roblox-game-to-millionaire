@@ -1,47 +1,178 @@
 {
-  "name": "CivilizationBattlefield",
+  "name": "ClashOfCivilizations",
+  "servePort": 34872,
   "tree": {
     "$className": "DataModel",
-    "$ignoreUnknownInstances": true,
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
-      "$ignoreUnknownInstances": true,
+      "MiniatureGame": {
+        "$path": "prototypes/miniature/game/shared",
+        "Civilizations": {
+          "$path": "src/shared/Civilizations.luau"
+        }
+      },
       "Shared": {
-        "$path": "src/shared"
+        "$className": "Folder",
+        "WarriorConfig": {
+          "$path": "src/shared/WarriorConfig.luau"
+        },
+        "RangedConfig": {
+          "$path": "prototypes/miniature/game/shared/OriginalRangedConfig.luau"
+        },
+        "UpgradeTracks": {
+          "$path": "src/shared/UpgradeTracks.luau"
+        },
+        "ProgressionConfig": {
+          "$path": "src/shared/ProgressionConfig.luau"
+        },
+        "SettlementProgression": {
+          "$path": "src/shared/SettlementProgression.luau"
+        },
+        "WeaponSkillPose": {
+          "$path": "src/shared/WeaponSkillPose.luau"
+        },
+        "WeaponSkillConfig": {
+          "$path": "src/shared/WeaponSkillConfig.luau"
+        },
+        "FormationConfig": {
+          "$path": "src/shared/FormationConfig.luau"
+        },
+        "TacticalCombatConfig": {
+          "$path": "src/shared/TacticalCombatConfig.luau"
+        },
+        "MedicalConfig": {
+          "$path": "prototypes/miniature/game/shared/OriginalMedicalConfig.luau"
+        },
+        "WorldConfig": {
+          "$path": "src/shared/WorldConfig.luau"
+        },
+        "SettlementSites": {
+          "$path": "src/shared/SettlementSites.luau"
+        },
+        "TrainingCampConfig": {
+          "$path": "src/shared/TrainingCampConfig.luau"
+        }
+      },
+      "OriginalArmyConfig": {
+        "$className": "Folder",
+        "RangedConfig": {
+          "$path": "src/shared/RangedConfig.luau"
+        },
+        "MedicalConfig": {
+          "$path": "src/shared/MedicalConfig.luau"
+        }
       }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
-      "$ignoreUnknownInstances": true,
-      "Game": {
-        "$path": "src/server"
+      "Sandbox": {
+        "$path": "prototypes/miniature/game/server"
       }
     },
     "ServerStorage": {
       "$className": "ServerStorage",
-      "$ignoreUnknownInstances": true,
-      "NPCTemplates": {
-        "$path": "assets/npc-templates"
+      "ClaimRegistry": {
+        "$path": "src/server/ClaimRegistry.luau"
+      },
+      "OriginalArmy": {
+        "$className": "Folder",
+        "WarriorRig": {
+          "$path": "src/server/WarriorRig.luau"
+        },
+        "Equipment": {
+          "$path": "src/server/Equipment.luau"
+        },
+        "NPCModelTemplates": {
+          "$path": "src/server/NPCModelTemplates.luau"
+        },
+        "TroopAppearance": {
+          "$path": "src/server/TroopAppearance.luau"
+        },
+        "EquipmentVisuals": {
+          "$path": "src/server/EquipmentVisuals.luau"
+        },
+        "OutfitTemplates": {
+          "$path": "src/server/OutfitTemplates.luau"
+        },
+        "ShieldCombat": {
+          "$path": "src/server/ShieldCombat.luau"
+        },
+        "CombatEncounter": {
+          "$path": "src/server/CombatEncounter.luau"
+        },
+        "CombatTactics": {
+          "$path": "src/server/CombatTactics.luau"
+        },
+        "CombatRules": {
+          "$path": "src/server/CombatRules.luau"
+        },
+        "Topography": {
+          "$path": "src/server/Topography.luau"
+        },
+        "TroopFootwork": {
+          "$path": "src/server/TroopFootwork.luau"
+        },
+        "CrowdMovement": {
+          "$path": "src/server/CrowdMovement.luau"
+        },
+        "MedicPlanner": {
+          "$path": "src/server/MedicPlanner.luau"
+        },
+        "MedicalRetreat": {
+          "$path": "src/server/MedicalRetreat.luau"
+        },
+        "MedicalService": {
+          "$path": "src/server/MedicalService.luau"
+        },
+        "YardRecovery": {
+          "$path": "src/server/YardRecovery.luau"
+        },
+        "MedicalRules": {
+          "$path": "src/server/MedicalRules.luau"
+        }
+      },
+      "Appearance": {
+        "$className": "Folder",
+        "FarmTenders": {
+          "$path": "src/server/FarmTenders.luau"
+        }
       },
       "FarmTemplates": {
         "$path": "assets/farm-templates"
+      },
+      "NPCTemplates": {
+        "$path": "assets/npc-templates"
       },
       "EquipmentTemplates": {
         "$path": "assets/equipment-templates"
       },
       "OutfitTemplates": {
         "$path": "assets/outfit-templates"
+      },
+      "MountTemplates": {
+        "$path": "assets/mount-templates"
+      },
+      "FakeProfileStore": {
+        "$path": "tests/runtime/FakeProfileStore.luau"
       }
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
-      "$ignoreUnknownInstances": true,
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
-        "$ignoreUnknownInstances": true,
-        "Game": {
-          "$path": "src/client"
+        "MiniatureGame": {
+          "$path": "prototypes/miniature/game/client",
+          "PanelVisibility": {
+            "$path": "src/client/PanelVisibility.luau"
+          }
         }
+      }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "ClockTime": 14,
+        "Brightness": 2
       }
     }
   }

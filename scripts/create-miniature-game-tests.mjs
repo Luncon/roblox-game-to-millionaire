@@ -7,6 +7,8 @@ const services = process.argv.includes('--services');
 const shop = process.argv.includes('--shop');
 const mounts = process.argv.includes('--mounts');
 const review = process.argv.includes('--review');
+const research = process.argv.includes('--research');
+if (research && [advanced, services, shop, mounts, review].some(Boolean)) throw new Error('--research must run by itself');
 if (review && !mounts) throw new Error('--review requires --mounts');
 const project = JSON.parse(fs.readFileSync(path.join(root, 'miniature-playtest.project.json'), 'utf8'));
 function relocate(node) {
@@ -16,7 +18,7 @@ function relocate(node) {
   }
 }
 relocate(project.tree);
-project.name += mounts ? 'MountedTests' : shop ? 'ShopTests' : services ? 'ServicesTests' : advanced ? 'AdvancedTests' : 'Tests';
+project.name += research ? 'ResearchTests' : mounts ? 'MountedTests' : shop ? 'ShopTests' : services ? 'ServicesTests' : advanced ? 'AdvancedTests' : 'Tests';
 // A child next to a directory $path is additive in Rojo, even with the same
 // name. Enumerate server sources so funded modes replace, rather than duplicate,
 // the normal Bootstrap script.
@@ -42,6 +44,7 @@ if (!advanced && !services) project.tree.ServerScriptService.SceneChecks = { $pa
 if (advanced) project.tree.ServerScriptService.Sandbox.Bootstrap = { $path: '../tests/miniature-game/AdvancedBootstrap.server.luau' };
 if (shop) project.tree.ServerScriptService.Sandbox.Bootstrap = { $path: '../tests/miniature-game/ShopBootstrap.server.luau' };
 if (mounts) project.tree.ServerScriptService.Sandbox.Bootstrap = { $path: '../tests/miniature-game/MountedBootstrap.server.luau' };
+if (research) project.tree.ServerScriptService.Sandbox.Bootstrap = { $path: '../tests/miniature-game/ResearchBootstrap.server.luau' };
 if (services) project.tree.ServerScriptService.Sandbox.Bootstrap = { $path: '../tests/miniature-game/ServicesBootstrap.server.luau' };
 for (const name of fs.readdirSync('tests/miniature-game')) {
   if (name !== 'Scene.server.luau' && name.endsWith('Scene.server.luau')) {
@@ -53,6 +56,7 @@ project.tree.ReplicatedStorage.NativeManagementChecks = { $path: '../tests/minia
 project.tree.ReplicatedStorage.NativeKitTour = { $path: '../tests/miniature-game/KitTour.luau' };
 project.tree.ReplicatedStorage.NativeInventoryGuards = { $path: '../tests/miniature-game/InventoryGuards.luau' };
 project.tree.ReplicatedStorage.NativeInventoryFlow = { $path: '../tests/miniature-game/InventoryFlow.luau' };
+project.tree.ReplicatedStorage.NativeMilitaryBaselineFlow = { $path: '../tests/miniature-game/MilitaryBaselineFlow.luau' };
 project.tree.ReplicatedStorage.NativeSimpleShopGuards = { $path: '../tests/miniature-game/SimpleShopGuards.luau' };
 project.tree.ReplicatedStorage.NativeSimpleShopFlow = { $path: '../tests/miniature-game/SimpleShopFlow.luau' };
 project.tree.ReplicatedStorage.NativeOutpostFlow = { $path: '../tests/miniature-game/OutpostFlow.luau' };
@@ -66,6 +70,13 @@ project.tree.StarterPlayer.StarterPlayerScripts.NativeArmySmoothingRunner = { $p
 project.tree.ReplicatedStorage.NativeServicesChecks = { $path: '../tests/miniature-game/Services.luau' };
 project.tree.ReplicatedStorage.NativeLifecycleChecks = { $path: '../tests/miniature-game/Lifecycle.luau' };
 project.tree.ReplicatedStorage.NativeResearchSwitch = { $path: '../tests/miniature-game/ResearchSwitch.luau' };
+if (research) {
+  project.tree.ServerScriptService = { Sandbox: project.tree.ServerScriptService.Sandbox, IsolationChecks: project.tree.ServerScriptService.IsolationChecks };
+  project.tree.ReplicatedStorage.NativeMilitaryFlow = { $path: '../tests/miniature-game/MilitaryFlow.luau' };
+  project.tree.ReplicatedStorage.NativeMilitaryLayouts = { $path: '../tests/miniature-game/MilitaryLayouts.luau' };
+  project.tree.ReplicatedStorage.NativeArmyControlFlow = { $path: '../tests/miniature-game/ArmyControlFlow.luau' };
+  delete project.tree.StarterPlayer.StarterPlayerScripts.NativeArmySmoothingRunner;
+}
 if (review) {
   // Player review retains the Coin-only seed without autorunning diagnostic
   // scenes that require a particular civilization or a timed test sequence.
@@ -80,6 +91,6 @@ if (review) {
 }
 fs.mkdirSync('.cache', { recursive: true });
 fs.mkdirSync('build', { recursive: true });
-const target = review ? '.cache/miniature-game-mounted-review.project.json' : mounts ? '.cache/miniature-game-mounted-test.project.json' : shop ? '.cache/miniature-game-shop-test.project.json' : services ? '.cache/miniature-game-services-test.project.json' : advanced ? '.cache/miniature-game-advanced-test.project.json' : '.cache/miniature-game-test.project.json';
+const target = research ? '.cache/miniature-game-research-test.project.json' : review ? '.cache/miniature-game-mounted-review.project.json' : mounts ? '.cache/miniature-game-mounted-test.project.json' : shop ? '.cache/miniature-game-shop-test.project.json' : services ? '.cache/miniature-game-services-test.project.json' : advanced ? '.cache/miniature-game-advanced-test.project.json' : '.cache/miniature-game-test.project.json';
 fs.writeFileSync(target, JSON.stringify(project, null, 2) + '\n');
 console.log(`Created ${target}; build with Rojo and run one isolated Studio Play.`);

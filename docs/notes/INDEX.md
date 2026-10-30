@@ -1,5 +1,9 @@
 # Project notes
 
+- [Main build, military research and army controls](Military%20Research%20and%20Army%20Control.md)
+- [Military research rules, modifiers and preserved combat defaults](Military%20Research%20Rules.md)
+- [Army Control groups, editing and deployment](Army%20Control.md)
+
 - [Mount Refinements and Ragdoll Deaths](Mount%20Refinements%20and%20Ragdoll%20Deaths.md) — corrected mounts, species speeds, uncapped structure counts and verified physical death presentation.
 - [Mounted Army Implementation](Mounted%20Army%20Implementation.md) — supplied animal imports, 5,000-Coin facilities, two-slot riders and verification status.
 

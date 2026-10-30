@@ -24,7 +24,7 @@ end
 
 local function bounded(value, depth, budget): boolean
 	budget.nodes += 1
-	if budget.nodes > 128 then
+	if budget.nodes > 256 then
 		return false
 	end
 	local kind = type(value)
@@ -41,7 +41,9 @@ local function bounded(value, depth, budget): boolean
 	local count = 0
 	for key, child in value do
 		count += 1
-		if count > 32 or type(key) ~= "string" or #key > 32 or not bounded(child, depth + 1, budget) then
+		local validKey = (type(key) == "string" and #key <= 32)
+			or (type(key) == "number" and key >= 1 and key <= 128 and key % 1 == 0)
+		if count > 128 or not validKey or not bounded(child, depth + 1, budget) then
 			return false
 		end
 	end

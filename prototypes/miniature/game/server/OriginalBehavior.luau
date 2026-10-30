@@ -33,7 +33,7 @@ local function flat(vector: Vector3): Vector3
 end
 
 local function profile(actor: Battle.Actor): Config.RoleStats
-	return Config.getProfile(actor.role, actor.civilizationId, actor.garrisonId ~= nil)
+	return actor.profile or Config.getProfile(actor.role, actor.civilizationId, actor.garrisonId ~= nil)
 end
 
 local function createIdentity(actor: Battle.Actor): Model
@@ -252,6 +252,22 @@ function Original.new(options: Options?): Behavior
 		function combat:visible(first, second)
 			return visible(first, second)
 		end
+		function combat:reach(proxy)
+			local record = byRig[proxy.rig]
+			if not record then
+				return if proxy.kind == "ranged" then Ranged.range else Warrior.attackRange
+			end
+			local actor = record.actor
+			if actor.role == "ranged" then
+				return profile(actor).reach / scale
+			end
+			local base = Config.getProfile(actor.role, actor.civilizationId, actor.garrisonId ~= nil)
+			return Warrior.attackRange * (profile(actor).reach / base.reach)
+		end
+		function combat:healRange(proxy)
+			local record = byRig[proxy.rig]
+			return if record then profile(record.actor).healRange / scale else Medicine.range
+		end
 		function combat:hit(sourceRig, targetRig)
 			local source, target = byRig[sourceRig], byRig[targetRig]
 			local hooks = context.hooks
@@ -261,8 +277,8 @@ function Original.new(options: Options?): Behavior
 				or hooks == nil
 				or not current(source)
 				or not current(target)
-				or not Rules.canDamage(source.proxy, target.proxy, arena, Warrior.attackRange)
-				or not hooks.hit(source.actor, target.actor, Warrior.attackRange * scale)
+				or not Rules.canDamage(source.proxy, target.proxy, arena, self:reach(source.proxy))
+				or not hooks.hit(source.actor, target.actor, self:reach(source.proxy) * scale)
 			then
 				return { ok = false }
 			end
@@ -541,7 +557,8 @@ function Original.new(options: Options?): Behavior
 						end,
 						function(point)
 							return Rules.containsArena(pool.arena, point)
-						end
+						end,
+						pool.combat:healRange(record.proxy)
 					)
 					record.nextThink = now + Warrior.thinkInterval
 				end
@@ -560,7 +577,7 @@ function Original.new(options: Options?): Behavior
 						record.proxy,
 						representatives,
 						{ hospitalLevel = 1 },
-						Medicine.range,
+						pool.combat:healRange(record.proxy),
 						function(candidate)
 							return candidate.position == targetPosition
 								and pool.combat:canAct(candidate.rig)
@@ -589,7 +606,10 @@ function Original.new(options: Options?): Behavior
 								Rules.containsArena(pool.arena, record.proxy.position)
 							)
 						end,
-						visible
+						visible,
+						function(medic)
+							return pool.combat:healRange(medic)
+						end
 					)
 					metrics.encounterPlans += 1
 					record.plan = pool.encounter:step(record.rig, {

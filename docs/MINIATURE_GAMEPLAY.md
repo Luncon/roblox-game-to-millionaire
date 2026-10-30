@@ -1,7 +1,9 @@
-# Miniature settlement gameplay sandbox
+# Clash of Civilizations miniature gameplay
 
-This is a separate Studio-only development project. The clean scale sample
-remains `miniature.project.json`; production remains `default.project.json`.
+This is now the default Clash of Civilizations development project.
+`default.project.json` launches miniature gameplay; the full-size game is preserved
+in `legacy-fullscale.project.json`. The clean scale sample remains
+`miniature.project.json`. Main startup is still Studio-only.
 The sandbox injects FakeProfileStore and never opens player DataStores. Its
 ordinary starter has **200 Coins**, a council, house, farm and four civilians
 (two farm jobs and two initially idle). Funded verification modes are separate
@@ -23,13 +25,14 @@ remain gameplay interpretations with source gaps recorded in the
 From Windows PowerShell at the repository root:
 
 ```powershell
-& "C:\Users\smitl\Downloads\rojo-7.7.1-windows-x86_64\rojo.exe" build miniature-playtest.project.json -o build\miniature-playtest.rbxlx
+& "C:\Users\smitl\Downloads\rojo-7.7.1-windows-x86_64\rojo.exe" build default.project.json -o build\clash-of-civilizations-main.rbxlx
 ```
 
-Open `build/miniature-playtest.rbxlx` in its own Studio window and press Play.
+Open `build/clash-of-civilizations-main.rbxlx` in its own Studio window and press Play.
 Rebuilt `.rbxlx` files already contain the code; do not click Rojo Sync for this
 workflow. Sync is only needed during an explicitly served live connection using
-`miniature-playtest.project.json`. The latest ordinary review copy is
+`default.project.json` on port34872. The optional miniature alias still uses
+port34874. The earlier ordinary review copy is
 `build/miniature-mount-refinements-playtest.rbxlx`, with80×64starting plots, decorated
 capturable outposts, original troop rigs with smooth client poses, near-peer
 neutral defenders, attached face decals and32stud/second commander walking. Already running
@@ -39,9 +42,33 @@ one of the thirteen civilizations 20,000 test Coins so its mount facility can be
 tried immediately. This player review copy runs gameplay without diagnostic
 scenes or a required Spartan test sequence. The ordinary build starts at 200 Coins.
 Fake progress survives civilization switches and rejoining that same Play server,
-then resets when the server stops. It cannot replace production or preview
-progress. The sandbox uses port 34874 if explicitly served; never connect it to
-the production or scale-preview window.
+then resets when the server stops. Legacy full-size and preview progress remain
+separate. Open a fresh matching place; do not sync miniature code into a legacy
+place with an existing full-size bootstrap.
+
+## Military research and army groups
+
+Open the side **Research** button for the connected hex tree. The military half
+has29themed projects; grey civilian/future hexes stay unavailable. Select a node
+for its Coins, active time, effect and prerequisite, then Research. One project
+per civilization advances during living, writable selected play. Research does
+not gate any building purchase. Damage/health/speed/reach tiers add together;
+army-size tiers raise weighted capacity10→12→15→20. Mounts still use two slots.
+
+Army Control unlocks hotbar3 and one editable army; following control projects
+unlock Armies3and4. Army1always includes every military building. Edit a custom
+army, minimize its panel if needed, click owned military structures, restore and
+Save group. Custom groups cannot overlap. Reset changes membership without
+redirecting troops. E at an outpost opens Deploy after Army Control; before
+research it retains the whole-army command. See [research rules](notes/Military%20Research%20Rules.md)
+and [army controls](notes/Army%20Control.md).
+
+For research acceptance, generate `npm run build:miniature-game-tests -- --research`
+and build `.cache/miniature-game-research-test.project.json`. Its explicit seed is
+100,000Coins per civilization with no completed projects or troops. This is
+separate from ordinary200Coins and the unchanged20,000-Coin mounted review.
+[Current evidence](notes/Military%20Research%20and%20Army%20Control.md) records exact
+native timers, layout sizes, independent deployment and runtime damage.
 
 ## Play the current slice
 
@@ -49,8 +76,8 @@ Choose a civilization. The three top buttons are **Buy / Civilization / Sell**.
 Buy travels to the shared building stall and opens the compact shop; Sell travels
 to the shared goods stall and opens Sell All; Civilization returns to your owned
 plot and closes popups. The small HUD's Change civilization button opens the
-civilization chooser. No Inspect, research, upgrade-hall or training-roster pages
-are needed.
+civilization chooser. Research opens from the small side button. Inspect,
+upgrade-hall and training-roster pages remain removed.
 
 The shop has exactly **Homes / Production / Military** tabs and scrolling rows:
 structure image, Coin price, brief function and stock. Every building is available
@@ -58,7 +85,9 @@ without research. Military stock starts/restocks at two of each type; farm/house
 stock is two and other advanced stock one, on180-second private owner/civilization
 cycles. Prices use Coins only. Goods are inventory items or recipe inputs.
 
-**B** opens inventory. Select a building item or hotbar slot to place it; **R**
+**1 / B** opens the image-grid inventory, **2** selects the Destroy Hammer, and
+**3** opens Army Control after research. Held goods/buildings show stack counts.
+Select a building item or hotbar slot4–9 to place it; **R**
 rotates and Confirm commits. Cancel keeps the item. Select the Destroy Hammer to
 return an eligible clicked building to inventory without another purchase fee.
 Stored output transfers first; full inventory/dependency checks refuse rather

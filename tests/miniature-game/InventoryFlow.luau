@@ -390,7 +390,7 @@ return function(options)
 		probeGui = nil
 		evidence.textBoxHotkeyGuard = true
 		step("hammer hotbar selection cancels placement without consuming item")
-		click(screen.Hotbar.Content.Slot1)
+		click(screen.Hotbar.Content.Slot2)
 		assert(
 			screen:GetAttribute("HammerSelected")
 				and not screen:GetAttribute("PlacingKind")
@@ -428,7 +428,7 @@ return function(options)
 		local farmPlans = latest.state.plans.farm
 		closePanels()
 		if not screen:GetAttribute("HammerSelected") then
-			click(screen.Hotbar.Content.Slot1)
+			click(screen.Hotbar.Content.Slot2)
 		end
 		click(screen.CameraControls.Overview)
 		task.wait(0.3)

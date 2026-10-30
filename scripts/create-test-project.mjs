@@ -29,7 +29,7 @@ if (navigation && !solo) throw new Error('--navigation requires --solo');
 if (formations && !solo) throw new Error('--formations requires --solo');
 if (skills && !solo) throw new Error('--skills requires --solo');
 if ([development, expansion, neutral, training, farmers, combat, geometry, skills, medical, navigation, formations].filter(Boolean).length > 1) throw new Error('Choose one solo test mode');
-const project = JSON.parse(fs.readFileSync('default.project.json', 'utf8'));
+const project = JSON.parse(fs.readFileSync('legacy-fullscale.project.json', 'utf8'));
 
 function relocatePaths(instance) {
   for (const [key, value] of Object.entries(instance)) {

@@ -1,0 +1,48 @@
+{
+  "name": "CivilizationBattlefield",
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$ignoreUnknownInstances": true,
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$ignoreUnknownInstances": true,
+      "Game": {
+        "$path": "src/server"
+      }
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$ignoreUnknownInstances": true,
+      "NPCTemplates": {
+        "$path": "assets/npc-templates"
+      },
+      "FarmTemplates": {
+        "$path": "assets/farm-templates"
+      },
+      "EquipmentTemplates": {
+        "$path": "assets/equipment-templates"
+      },
+      "OutfitTemplates": {
+        "$path": "assets/outfit-templates"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$ignoreUnknownInstances": true,
+        "Game": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}

@@ -9,12 +9,14 @@ type View = {
 	writable: boolean?,
 	claim: { civilizationId: string, plotId: number }?,
 	capabilities: { [string]: boolean? }?,
+	armyControlsUnlocked: boolean?,
 }
 export type Callbacks = {
 	getView: () -> View?,
 	guard: (action: string, targetId: string?) -> string?,
 	send: (action: string, args: { outpostId: string }) -> boolean,
 	message: (text: string) -> (),
+	deploy: (outpostId: string) -> (),
 }
 export type Controller = { destroy: () -> () }
 local OutpostClient = {}
@@ -76,7 +78,10 @@ function OutpostClient.start(screen: ScreenGui, callbacks: Callbacks): Controlle
 				callbacks.message(blocked)
 				return
 			end
-			if callbacks.send("targetOutpost", { outpostId = id }) then
+			local view = callbacks.getView()
+			if view and view.armyControlsUnlocked then
+				callbacks.deploy(id)
+			elseif callbacks.send("targetOutpost", { outpostId = id }) then
 				callbacks.message("Army target requested")
 			end
 		end)

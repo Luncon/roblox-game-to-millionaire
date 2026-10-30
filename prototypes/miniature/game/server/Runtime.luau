@@ -6,6 +6,7 @@ local HttpService = game:GetService("HttpService")
 local Shared = ReplicatedStorage.MiniatureGame
 local Config = require(Shared.Config)
 local Catalog = require(Shared.Catalog)
+local MilitaryResearch = require(Shared.MilitaryResearch)
 local State = require(script.Parent.State)
 local Sessions = require(script.Parent.Sessions)
 local Requests = require(script.Parent.Requests)
@@ -44,6 +45,8 @@ function Runtime.start(options)
 		"place",
 		"reclaim",
 		"targetOutpost",
+		"militaryResearch",
+		"configureArmy",
 	}
 
 	local function living(player)
@@ -68,10 +71,14 @@ function Runtime.start(options)
 		view.serverTime = clock()
 		view.productionSpeed = Config.productionSpeed
 		view.researchEnabled = Config.researchEnabled
-		view.troopCapacity = Config.troopCap
+		local completed = if view.state then view.state.militaryResearch.completed else {}
+		view.militaryResearchEnabled = true
+		view.armySlots = MilitaryResearch.groupSlots(completed)
+		view.armyControlsUnlocked = view.armySlots > 1
+		view.troopCapacity = MilitaryResearch.capacity(completed)
 		view.troopCapacityUsed = if view.state then State.troopCapacityUsed(view.state) else 0
 		view.troops = if view.state then State.troops(view.state) else { melee = 0, ranged = 0, medic = 0, mounted = 0 }
-		view.outposts, view.army = combat:snapshot(player.UserId)
+		view.outposts, view.army, view.armyGroups = combat:snapshot(player.UserId)
 		view.buyShopPosition, view.sellShopPosition = world.buyShopPosition, world.sellShopPosition
 		view.artReady = view.claim ~= nil and World.supports(view.claim.civilizationId)
 		view.artKits = World.availableKits()
@@ -123,7 +130,7 @@ function Runtime.start(options)
 		if not view.claim or not view.state or not World.supports(view.claim.civilizationId) then
 			return { alive = true, inRange = false }
 		end
-		if action == "travel" then
+		if action == "travel" or action == "militaryResearch" or action == "configureArmy" then
 			return { alive = true, inRange = true }
 		end
 		local plot = world.plots[view.claim.plotId]
@@ -259,7 +266,7 @@ function Runtime.start(options)
 			end
 			combat:sync(userId, sessions:snapshot(userId), monotonic())
 			if action == "targetOutpost" then
-				local command = combat:command(userId, result.outpostId)
+				local command = combat:command(userId, result.outpostId, result.armyId)
 				assert(command.ok, "Validated army command failed: " .. tostring(command.reason))
 			end
 		end,

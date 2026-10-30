@@ -3,6 +3,7 @@
 -- removeArmy immediately when that authority ends. No player, civilian, Humanoid,
 -- saved economy or production service is registered here.
 local Config = require(game:GetService("ReplicatedStorage").MiniatureGame.BattleConfig)
+local Military = require(game:GetService("ReplicatedStorage").MiniatureGame.MilitaryResearch)
 
 export type Team = string | number
 export type Role = "melee" | "ranged" | "medic" | "mounted"
@@ -14,6 +15,7 @@ export type Actor = {
 	team: Team,
 	civilizationId: string,
 	role: Role,
+	profile: Config.RoleStats?,
 	buildingId: string?,
 	index: number,
 	formationIndex: number,
@@ -53,6 +55,11 @@ export type Army = {
 	targetId: string?,
 	manual: boolean,
 	slots: { [string]: string },
+	completedResearch: Military.Completed,
+	capacity: number,
+	profiles: { [string]: Config.RoleStats },
+	buildingTargets: { [string]: string },
+	knownBuildings: { [string]: boolean },
 }
 export type Outpost = {
 	id: string,
@@ -100,6 +107,7 @@ export type Behavior = {
 	destroy: (Behavior) -> (),
 }
 export type Options = { visible: ((Actor, Actor) -> boolean)?, behavior: Behavior? }
+export type OrderOptions = { buildingTargets: { [string]: string }, knownMilitaryBuildingIds: { string } }
 export type Simulation = BattleView & {
 	events: { Event },
 	_postOrder: { string },
@@ -107,9 +115,9 @@ export type Simulation = BattleView & {
 	_time: number?,
 	_visible: (Actor, Actor) -> boolean,
 	_behavior: Behavior?,
-	syncArmy: (Simulation, Team, string, Team, { Slot }, number) -> Result,
+	syncArmy: (Simulation, Team, string, Team, { Slot }, number, Military.Completed?, OrderOptions?) -> Result,
 	removeArmy: (Simulation, Team) -> (),
-	command: (Simulation, Team, string) -> Result,
+	command: (Simulation, Team, string, { string }?) -> Result,
 	step: (Simulation, number, number) -> Result,
 }
 
@@ -152,7 +160,7 @@ local function orderedActors(self: Simulation): { Actor }
 end
 
 local function stats(actor: Actor): Config.RoleStats
-	return Config.getProfile(actor.role, actor.civilizationId, actor.garrisonId ~= nil)
+	return actor.profile or Config.getProfile(actor.role, actor.civilizationId, actor.garrisonId ~= nil)
 end
 
 local function life(self: Simulation): number
@@ -189,12 +197,16 @@ local function makeActor(
 	index: number,
 	garrisonId: string?
 ): Actor
-	local profile = Config.getProfile(role, civilizationId, garrisonId ~= nil)
+	local army = self.armies[team]
+	local profile = if army and garrisonId == nil
+		then army.profiles[role]
+		else Config.getProfile(role, civilizationId, garrisonId ~= nil)
 	local actor: Actor = {
 		id = id,
 		team = team,
 		civilizationId = civilizationId,
 		role = role,
+		profile = profile,
 		index = index,
 		formationIndex = index,
 		garrisonId = garrisonId,
@@ -277,15 +289,15 @@ local function autoTarget(self: Simulation, team: Team, lineId: Team): string?
 end
 
 local function setTarget(self: Simulation, army: Army, target: string?)
-	local changed = army.targetId ~= target
 	army.targetId = target
 	for _, id in army.slots do
 		local actor = self.actors[id]
 		if actor ~= nil then
-			if changed then
+			local nextTarget = army.buildingTargets[actor.buildingId or ""] or target
+			if actor.targetOutpostId ~= nextTarget then
 				cancelContact(actor)
 			end
-			actor.targetOutpostId = target
+			actor.targetOutpostId = nextTarget
 		end
 	end
 end
@@ -337,7 +349,9 @@ function Battle.syncArmy(
 	civilizationId: string,
 	lineId: Team,
 	slots: { Slot },
-	now: number
+	now: number,
+	completedResearch: Military.Completed?,
+	options: OrderOptions?
 ): Result
 	if
 		not validTeam(team)
@@ -346,12 +360,85 @@ function Battle.syncArmy(
 		or not finite(now)
 		or now < 0
 		or type(slots) ~= "table"
-		or #slots > Config.troopCap
 	then
 		return { ok = false, reason = "invalid_army" }
 	end
 	local army = self.armies[team]
 	local sameIdentity = army ~= nil and army.civilizationId == civilizationId and army.lineId == lineId
+	local completed = completedResearch or (if sameIdentity and army then army.completedResearch else {})
+	if not Military.validateCompleted(completed) then
+		return { ok = false, reason = "invalid_research" }
+	end
+	local sameResearch = sameIdentity and army ~= nil
+	if sameResearch and army then
+		for _, id in Military.order do
+			if army.completedResearch[id] ~= completed[id] then
+				sameResearch = false
+				break
+			end
+		end
+	end
+	local profiles = if sameResearch and army then army.profiles else {}
+	if not sameResearch then
+		for _, role in { "melee", "ranged", "medic", "mounted" } do
+			profiles[role] = Military.profile(role, civilizationId, completed)
+		end
+		table.freeze(profiles)
+	end
+	local capacity = Military.capacity(completed)
+	if #slots > capacity then
+		return { ok = false, reason = "invalid_army" }
+	end
+	local known, targets = {}, {}
+	if sameIdentity and army then
+		for id in army.knownBuildings do
+			known[id] = true
+		end
+		for id, target in army.buildingTargets do
+			targets[id] = target
+		end
+	end
+	if options ~= nil then
+		if
+			type(options) ~= "table"
+			or type(options.knownMilitaryBuildingIds) ~= "table"
+			or type(options.buildingTargets) ~= "table"
+		then
+			return { ok = false, reason = "invalid_orders" }
+		end
+		for key in options do
+			if key ~= "knownMilitaryBuildingIds" and key ~= "buildingTargets" then
+				return { ok = false, reason = "invalid_orders" }
+			end
+		end
+		known, targets = {}, {}
+		local total = 0
+		for key, id in options.knownMilitaryBuildingIds do
+			total += 1
+			if
+				type(key) ~= "number"
+				or key % 1 ~= 0
+				or key < 1
+				or key > #options.knownMilitaryBuildingIds
+				or not identifier(id)
+				or known[id]
+			then
+				return { ok = false, reason = "invalid_orders" }
+			end
+			known[id] = true
+		end
+		if total ~= #options.knownMilitaryBuildingIds then
+			return { ok = false, reason = "invalid_orders" }
+		end
+		for id, target in options.buildingTargets do
+			if not identifier(id) or not identifier(target) or self.outposts[target] == nil then
+				return { ok = false, reason = "invalid_orders" }
+			end
+			if known[id] then
+				targets[id] = target
+			end
+		end
+	end
 	local ids, count, capacityUsed = {}, 0, 0
 	for key, slot in slots do
 		count += 1
@@ -371,20 +458,24 @@ function Battle.syncArmy(
 			or math.abs(slot.z) > 1000000
 			or not finite(slot.index)
 			or slot.index < 1
-			or slot.index > Config.troopCap
+			or slot.index > capacity
 			or slot.index % 1 ~= 0
 		then
 			return { ok = false, reason = "invalid_slot" }
 		end
+		if options ~= nil and not known[slot.buildingId] then
+			return { ok = false, reason = "invalid_orders" }
+		end
+		known[slot.buildingId] = true
 		capacityUsed += if slot.role == "mounted" then 2 else 1
-		if capacityUsed > Config.troopCap then
+		if capacityUsed > capacity then
 			return { ok = false, reason = "invalid_army" }
 		end
 		ids[slot.id] = true
-		local previousId = if sameIdentity and army ~= nil then army.slots[slot.id] else nil
-		local previous = if previousId ~= nil then self.actors[previousId] else nil
+		local previousId = if sameIdentity and army then army.slots[slot.id] else nil
+		local previous = if previousId then self.actors[previousId] else nil
 		if
-			previous ~= nil
+			previous
 			and (previous.role ~= slot.role or previous.buildingId ~= slot.buildingId or previous.index ~= slot.index)
 		then
 			return { ok = false, reason = "slot_identity_changed" }
@@ -393,15 +484,31 @@ function Battle.syncArmy(
 	if count ~= #slots then
 		return { ok = false, reason = "invalid_slot" }
 	end
-	if army ~= nil and not sameIdentity then
+	-- Every validation above precedes changes to authority, lives or orders.
+	if army and not sameIdentity then
 		self:removeArmy(team)
 		army = nil
 	end
-	if army == nil then
-		army = { civilizationId = civilizationId, lineId = lineId, manual = false, slots = {} }
+	if not army then
+		army = {
+			civilizationId = civilizationId,
+			lineId = lineId,
+			manual = false,
+			slots = {},
+			completedResearch = {},
+			capacity = capacity,
+			profiles = profiles,
+			buildingTargets = {},
+			knownBuildings = {},
+		}
 		army.targetId = autoTarget(self, team, lineId)
 		self.armies[team] = army
 	end
+	if not sameResearch then
+		army.completedResearch = table.freeze(table.clone(completed))
+	end
+	army.profiles = profiles
+	army.capacity, army.buildingTargets, army.knownBuildings = capacity, targets, known
 	for slotId, actorId in army.slots do
 		if not ids[slotId] then
 			self.actors[actorId] = nil
@@ -411,11 +518,19 @@ function Battle.syncArmy(
 	for formationIndex, slot in slots do
 		local id = "army:" .. type(team) .. ":" .. tostring(team) .. ":" .. slot.id
 		local actor = self.actors[id]
-		if actor == nil then
+		if not actor then
 			actor = makeActor(self, id, team, civilizationId, slot.role, slot.x, slot.z, slot.index, nil)
 			actor.buildingId, actor.slotId = slot.buildingId, slot.id
 		end
-		actor.homeX, actor.homeZ, actor.targetOutpostId = slot.x, slot.z, army.targetId
+		actor.profile = profiles[actor.role]
+		actor.maxHealth = actor.profile.health
+		actor.health = math.min(actor.health, actor.maxHealth)
+		actor.homeX, actor.homeZ = slot.x, slot.z
+		local nextTarget = targets[slot.buildingId] or army.targetId
+		if actor.targetOutpostId ~= nextTarget then
+			cancelContact(actor)
+		end
+		actor.targetOutpostId = nextTarget
 		actor.formationIndex = formationIndex
 		current[slot.id] = id
 	end
@@ -448,16 +563,46 @@ function Battle.removeArmy(self: Simulation, team: Team): ()
 	end
 end
 
-function Battle.command(self: Simulation, team: Team, outpostId: string): Result
+function Battle.command(self: Simulation, team: Team, outpostId: string, buildingIds: { string }?): Result
 	local army = self.armies[team]
-	if army == nil then
+	if not army then
 		return { ok = false, reason = "army_not_registered" }
 	end
 	if self.outposts[outpostId] == nil then
 		return { ok = false, reason = "invalid_outpost" }
 	end
-	army.manual = true
-	setTarget(self, army, outpostId)
+	if buildingIds ~= nil then
+		if type(buildingIds) ~= "table" or #buildingIds == 0 then
+			return { ok = false, reason = "invalid_group" }
+		end
+		local seen, count = {}, 0
+		for key, id in buildingIds do
+			count += 1
+			if
+				type(key) ~= "number"
+				or key % 1 ~= 0
+				or key < 1
+				or key > #buildingIds
+				or not identifier(id)
+				or seen[id]
+				or not army.knownBuildings[id]
+			then
+				return { ok = false, reason = "invalid_group" }
+			end
+			seen[id] = true
+		end
+		if count ~= #buildingIds then
+			return { ok = false, reason = "invalid_group" }
+		end
+		for id in seen do
+			army.buildingTargets[id] = outpostId
+		end
+		setTarget(self, army, army.targetId)
+	else
+		army.buildingTargets = {}
+		army.manual = true
+		setTarget(self, army, outpostId)
+	end
 	return { ok = true }
 end
 

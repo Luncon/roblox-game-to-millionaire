@@ -4,6 +4,24 @@ import path from 'node:path';
 import { test } from 'node:test';
 import { execFileSync } from 'node:child_process';
 
+test('main project launches ordinary miniature gameplay and preserves full-size tooling', () => {
+  const main = JSON.parse(fs.readFileSync('default.project.json', 'utf8'));
+  const miniature = JSON.parse(fs.readFileSync('miniature-playtest.project.json', 'utf8'));
+  const legacy = JSON.parse(fs.readFileSync('legacy-fullscale.project.json', 'utf8'));
+  assert.equal(main.name, 'ClashOfCivilizations');
+  assert.equal(main.servePort, 34872);
+  assert.deepEqual(main.tree, miniature.tree);
+  assert.equal(main.tree.ServerScriptService.Sandbox.$path, 'prototypes/miniature/game/server');
+  assert.equal(main.tree.ServerScriptService.Game, undefined);
+  assert.equal(legacy.tree.ServerScriptService.Game.$path, 'src/server');
+  assert.equal(legacy.tree.StarterPlayer.StarterPlayerScripts.Game.$path, 'src/client');
+  assert.equal(legacy.tree.ReplicatedStorage.Shared.$path, 'src/shared');
+  execFileSync(process.execPath, ['scripts/create-test-project.mjs', '--local-playtest']);
+  const generated = JSON.parse(fs.readFileSync('.cache/local-playtest.project.json', 'utf8'));
+  assert.equal(generated.tree.ServerScriptService.Sandbox, undefined);
+  assert.equal(generated.tree.ServerScriptService.Game.Bootstrap.$path, '../tests/LocalPlaytest.server.luau');
+});
+
 test('playable miniature mapping isolates production services and the scale preview', () => {
   const project = JSON.parse(fs.readFileSync('miniature-playtest.project.json', 'utf8'));
   const mapped = [];
@@ -87,4 +105,15 @@ test('funded player review preserves the seed without autorunning native diagnos
   }
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.NativeArmySmoothingRunner, undefined);
   assert.equal(project.tree.ServerStorage.MountTemplates.$path, '../assets/mount-templates');
+});
+
+test('military research fixture declares separate funding and one bootstrap', () => {
+  execFileSync(process.execPath, ['scripts/create-miniature-game-tests.mjs', '--research']);
+  const project = JSON.parse(fs.readFileSync('.cache/miniature-game-research-test.project.json', 'utf8'));
+  assert.equal(project.tree.ServerScriptService.Sandbox.$path, undefined);
+  assert.equal(project.tree.ServerScriptService.Sandbox.Bootstrap.$path, '../tests/miniature-game/ResearchBootstrap.server.luau');
+  assert.deepEqual(Object.keys(project.tree.ServerScriptService).sort(), ['IsolationChecks', 'Sandbox']);
+  assert.equal(project.tree.ReplicatedStorage.NativeMilitaryFlow.$path, '../tests/miniature-game/MilitaryFlow.luau');
+  assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.NativeArmySmoothingRunner, undefined);
+  assert.throws(() => execFileSync(process.execPath, ['scripts/create-miniature-game-tests.mjs', '--research', '--mounts'], { stdio: 'pipe' }));
 });

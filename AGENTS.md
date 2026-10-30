@@ -1,11 +1,12 @@
 # Working in this repository
 
-The miniature redesign begins in the separate `miniature.project.json` preview;
-see docs/MINIATURE_PREVIEW.md. It uses normal-sized unarmed commanders and miniature
-Spartan scenery/actors, with no profile/economy/combat bootstrap. Keep experiments
-under prototypes/miniature and preserve the production build and dated backup.
+The miniature game is now the default Clash of Civilizations development build.
+`default.project.json` maps `prototypes/miniature/game`; the preserved full-size
+game uses `legacy-fullscale.project.json`. Keep the clean `miniature.project.json`
+scale preview and dated backups. Main miniature startup remains Studio-only with
+injected FakeProfileStore; do not silently enable public servers or real storage.
 
-All five interface panels support client-session minimization through
+The preserved full-size game's five interface panels support client-session minimization through
 PanelVisibility: settlement HUD, army controls, civilization selection, Barracks
 and War Council. Keep logical availability separate from physical visibility.
 Hidden menus retain drafts and continue life/range/building/civilization guards;
@@ -31,8 +32,9 @@ for the Windows/WSL workflow.
   edits these same Markdown files; do not maintain duplicate specifications.
   Use `START_HERE.md` as the vault home; add project notes under `docs/notes/`
   and link new notes from `docs/notes/INDEX.md`.
-- `default.project.json` maps `src/server`, `src/client`, and `src/shared`
-  into Studio. Edit managed scripts in the repository and sync them with Rojo.
+- `default.project.json` maps miniature server/client/shared code into Studio.
+  `legacy-fullscale.project.json` retains `src/server`, `src/client`, `src/shared`.
+  Edit managed scripts in the repository; use a fresh matching place when switching builds.
 - Keep server authority over currency, purchases, damage, civilization claims,
   and saved profiles. Never accept client-provided balances or ownership.
 - Keep progress isolated by player and civilization. A failed load must not
@@ -48,7 +50,11 @@ for the Windows/WSL workflow.
 - Keep dependency installation scripts disabled. Review the known OpenSpec
   dependency finding in `docs/DEPENDENCY_REVIEW.md` before tool upgrades.
 
-The current prototype offers 13 civilizations, exclusive claims and eight spaced
+The following details describe the preserved full-size game in
+`legacy-fullscale.project.json`. Current miniature behavior and native evidence
+are documented in `docs/MINIATURE_GAMEPLAY.md` and its linked notes.
+
+The preserved full-size prototype offers 13 civilizations, exclusive claims and eight spaced
 plots in a 1,600-stud square world with five biomes. Settlements grow from 60 to
 256 studs through 50 levels with themed districts and landmarks. Weapon and armor
 also have 50 gradual levels: melee damage 10–18 and standard maximum health

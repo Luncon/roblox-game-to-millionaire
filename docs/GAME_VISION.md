@@ -1,11 +1,20 @@
 # Civilization Battlefield: game direction
 
-## Current prototype revision — October29,2026
+## Current main-game revision — October29,2026
+
+The miniature game is the default `default.project.json` build. The original
+full-size game is preserved as `legacy-fullscale.project.json`. Military
+research, hex-tree UI and building-based army controls follow the updated
+reference notes; see [the current change and evidence](notes/Military%20Research%20and%20Army%20Control.md).
+Studio startup continues to use temporary injected fake profiles.
+
+### Earlier miniature baseline
 
 The compact shop now has Homes/Production/Military tabs and every building is
 available without research. Military buildings automatically provide2melee,
 2ranged or1medic per building under a fixed total cap10, including medics;
-civilians remain separate. Research is paused, and inspect/roster controls are
+civilians remain separate. Civilian/building research is paused; military research
+adds capacity and stat upgrades. Inspect/roster controls are
 removed. The1200-stud map spaces eight current plots on a400-stud radius with
 future expansion room. See [current controls and evidence](notes/Simple%20Shop%20and%20Automatic%20Troops.md).
 Starting settlements are now80×64studs, four times their former area, following

@@ -6,6 +6,8 @@ local Placement = require(Shared.Placement)
 local State = require(script.Parent.State)
 local Economy = require(script.Parent.Economy)
 local Research = require(script.Parent.Research)
+local MilitaryResearch = require(script.Parent.MilitaryResearch)
+local ArmyGroups = require(Shared.ArmyGroups)
 local Workforce = require(script.Parent.Workforce)
 local Actions = {}
 
@@ -133,6 +135,7 @@ function handlers.unpack(state, args)
 			state.settings.preset[workerId] = false
 		end
 	end
+	ArmyGroups.reconcile(state)
 	return { ok = true, buildingId = building.id, resetProduction = true, resetBuildings = { building.id } }
 end
 
@@ -172,6 +175,7 @@ function handlers.reclaim(state, args)
 	end
 	state.plans[building.kind] += 1
 	Workforce.reconcile(state)
+	ArmyGroups.reconcile(state)
 	return {
 		ok = true,
 		buildingId = building.id,
@@ -244,6 +248,19 @@ end
 
 function handlers.research(state, args)
 	return Research.start(state, args.id)
+end
+
+function handlers.militaryResearch(state, args)
+	for key in args do
+		if key ~= "id" then
+			return fail("invalid_research")
+		end
+	end
+	return MilitaryResearch.start(state, args.id)
+end
+
+function handlers.configureArmy(state, args)
+	return ArmyGroups.configure(state, args)
 end
 
 function handlers.roster(state, args)

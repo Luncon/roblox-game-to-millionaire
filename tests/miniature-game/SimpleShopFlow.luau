@@ -444,7 +444,7 @@ return function(options)
 		travel("Civilization", "civilization")
 		walkTo(melee)
 		if not screen:GetAttribute("HammerSelected") then
-			click(screen.Hotbar.Content.Slot1)
+			click(screen.Hotbar.Content.Slot2)
 		end
 		click(screen.CameraControls.Overview)
 		task.wait(0.3)

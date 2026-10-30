@@ -158,9 +158,9 @@ Reference: [Obsidian vaults](https://obsidian.md/help/vault).
 
 ## Rojo on Windows
 
-The new, isolated miniature economy work uses
-[the gameplay sandbox instructions](MINIATURE_GAMEPLAY.md); the original scale
-preview and production mappings remain separate.
+The default project is now the miniature Clash of Civilizations game. Follow
+[main gameplay instructions](MINIATURE_GAMEPLAY.md). The full-size game is preserved
+in `legacy-fullscale.project.json`, and `miniature.project.json` remains the clean preview.
 
 The user installed the Studio plugin and extracted Rojo 7.7.1 to:
 
@@ -189,9 +189,9 @@ Keep PowerShell running. In Studio:
 
 | Repository folder | Studio destination |
 | --- | --- |
-| `src/server/` | `ServerScriptService/Game` |
-| `src/client/` | `StarterPlayer/StarterPlayerScripts/Game` |
-| `src/shared/` | `ReplicatedStorage/Shared` |
+| `prototypes/miniature/game/server/` | `ServerScriptService/Sandbox` |
+| `prototypes/miniature/game/client/` | `StarterPlayer/StarterPlayerScripts/MiniatureGame` |
+| `prototypes/miniature/game/shared/` | `ReplicatedStorage/MiniatureGame` |
 
 The mapping leaves Workspace and other services under Studio's control, so you
 can build the map there. Edit mapped scripts in the repository; normal live sync
@@ -202,7 +202,7 @@ An offline script build can be produced with:
 
 ```powershell
 New-Item -ItemType Directory -Force build
-& "C:\Users\smitl\Downloads\rojo-7.7.1-windows-x86_64\rojo.exe" build default.project.json -o build\civilization-battlefield.rbxlx
+& "C:\Users\smitl\Downloads\rojo-7.7.1-windows-x86_64\rojo.exe" build default.project.json -o build\clash-of-civilizations-main.rbxlx
 ```
 
 This build contains the mapped scripts; the Studio-built map is saved separately.
@@ -235,7 +235,12 @@ and close owned test windows before the next run.
 References: [data stores](https://create.roblox.com/docs/cloud-services/data-stores)
 and [teleports](https://create.roblox.com/docs/projects/teleport).
 
-## Saved civilization profiles
+## Saved civilization profiles in the legacy full-size game
+
+The default miniature game uses only temporary FakeProfileStore. The following
+real-storage setup applies to `legacy-fullscale.project.json`, not main miniature
+startup. Original full-size test generators explicitly use that legacy mapping.
+
 
 The game saves each player's civilizations separately. In Studio, open **File →
 Experience Settings → Security**, enable **Enable Studio Access to API Services**,
@@ -302,7 +307,7 @@ Each civilization starts with **3,000 coins**; progress resets when Play stops.
 The HUD labels the session as temporary. This generated project replaces the
 production bootstrap with `tests/LocalPlaytest.server.luau`, injects only
 FakeProfileStore and excludes automated test runners. Use `--local-playtest` by
-itself. Normal `default.project.json` startup and existing saved balances are
+itself. Normal `legacy-fullscale.project.json` startup and existing saved balances are
 unchanged; use the normal project when returning to persistent-data testing.
 
 Medical logic and isolated native checks:

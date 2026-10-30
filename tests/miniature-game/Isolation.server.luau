@@ -37,6 +37,8 @@ local ok, message = pcall(function()
 		place = true,
 		reclaim = true,
 		targetOutpost = true,
+		militaryResearch = true,
+		configureArmy = true,
 	}
 	for name in allowed do
 		local remote = actions:FindFirstChild(name)

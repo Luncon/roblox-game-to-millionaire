@@ -294,7 +294,7 @@ local function run(options: Options?)
 		local reclaimId = built[1].id
 		local walked = walkTo(latest.plotFrame:PointToWorldSpace(Vector3.new(built[1].x, 3, built[1].z + 5)))
 		if not screen:GetAttribute("HammerSelected") then
-			click(screen.Hotbar.Content.Slot1)
+			click(screen.Hotbar.Content.Slot2)
 		end
 		click(screen.CameraControls.Overview)
 		task.wait(0.3)
@@ -366,7 +366,7 @@ local function run(options: Options?)
 		}
 		if options.capture then
 			if screen:GetAttribute("HammerSelected") then
-				click(screen.Hotbar.Content.Slot1)
+				click(screen.Hotbar.Content.Slot2)
 			end
 			local targetId
 			for id, post in latest.outposts do

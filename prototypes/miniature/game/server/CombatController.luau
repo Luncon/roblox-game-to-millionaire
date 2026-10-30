@@ -6,12 +6,14 @@ local Battle = require(script.Parent.Battle)
 local OutpostWorld = require(script.Parent.OutpostWorld)
 local OriginalBehavior = require(script.Parent.OriginalBehavior)
 local State = require(script.Parent.State)
+local ArmyGroups = require(ReplicatedStorage.MiniatureGame.ArmyGroups)
 local Controller = {}
 
 function Controller.start(world)
 	local visuals = OutpostWorld.create(world)
 	local behavior = OriginalBehavior.new()
 	local owners = {}
+	local contexts, orders = {}, {}
 	local filter = RaycastParams.new()
 	filter.FilterType = Enum.RaycastFilterType.Exclude
 	local battle = Battle.new(visuals.definitions, {
@@ -39,6 +41,7 @@ function Controller.start(world)
 			battle:removeArmy(team)
 			owners[userId] = nil
 		end
+		contexts[userId], orders[userId] = nil, nil
 	end
 
 	function controller:sync(userId: number, view, now: number)
@@ -52,6 +55,19 @@ function Controller.start(world)
 			self:remove(userId)
 		end
 		owners[userId] = team
+		local known = ArmyGroups.members(state, 1) or {}
+		local military = {}
+		for _, id in known do
+			military[id] = true
+		end
+		local targets = orders[userId] or {}
+		for id, target in targets do
+			if not military[id] or not battle.outposts[target] then
+				targets[id] = nil
+			end
+		end
+		orders[userId] = targets
+		contexts[userId] = { state = state, known = known }
 		local slots = {}
 		local plot = world.plots[claim.plotId]
 		local groups = State.troopGroups(state)
@@ -75,7 +91,15 @@ function Controller.start(world)
 				end
 			end
 		end
-		local result = battle:syncArmy(team, claim.civilizationId, claim.plotId, slots, now)
+		local result = battle:syncArmy(
+			team,
+			claim.civilizationId,
+			claim.plotId,
+			slots,
+			now,
+			state.militaryResearch.completed,
+			{ buildingTargets = targets, knownMilitaryBuildingIds = known }
+		)
 		assert(result.ok, "Invalid server-generated army: " .. tostring(result.reason))
 	end
 
@@ -89,19 +113,53 @@ function Controller.start(world)
 			return { ok = false, reason = "invalid_outpost" }
 		end
 		for key in args do
-			if key ~= "outpostId" then
+			if key ~= "outpostId" and key ~= "armyId" then
 				return { ok = false, reason = "invalid_outpost" }
 			end
 		end
 		if not self:position(args.outpostId) or not owners[userId] then
 			return { ok = false, reason = "invalid_outpost" }
 		end
-		return { ok = true, outpostId = args.outpostId }
+		local context = contexts[userId]
+		local armyId = if args.armyId == nil then 1 else args.armyId
+		if not context or type(armyId) ~= "number" or armyId % 1 ~= 0 or armyId < 1 or armyId > 4 then
+			return { ok = false, reason = "invalid_army_group" }
+		end
+		local members = ArmyGroups.members(context.state, armyId)
+		if not members then
+			return { ok = false, reason = "army_locked" }
+		end
+		if armyId ~= 1 and #members == 0 then
+			return { ok = false, reason = "empty_army" }
+		end
+		return { ok = true, outpostId = args.outpostId, armyId = armyId }
 	end
 
-	function controller:command(userId: number, outpostId: string)
+	function controller:command(userId: number, outpostId: string, armyId: number?)
 		local team = owners[userId]
-		return if team then battle:command(team, outpostId) else { ok = false, reason = "no_army" }
+		local context = contexts[userId]
+		if not team or not context then
+			return { ok = false, reason = "no_army" }
+		end
+		local selected = armyId or 1
+		local members = ArmyGroups.members(context.state, selected)
+		if not members then
+			return { ok = false, reason = "army_locked" }
+		end
+		if selected ~= 1 and #members == 0 then
+			return { ok = false, reason = "empty_army" }
+		end
+		local result = battle:command(team, outpostId, if selected == 1 then nil else members)
+		if result.ok then
+			if selected == 1 then
+				orders[userId] = {}
+			else
+				for _, id in members do
+					orders[userId][id] = outpostId
+				end
+			end
+		end
+		return result
 	end
 
 	function controller:snapshot(userId: number)
@@ -122,12 +180,51 @@ function Controller.start(world)
 		local army = if team then battle.armies[team] else nil
 		local alive = { melee = 0, ranged = 0, medic = 0, mounted = 0 }
 		local capacityUsed = 0
+		local aliveByBuilding = {}
 		for _, actor in battle.actors do
 			if actor.team == team then
 				capacityUsed += if actor.role == "mounted" then 2 else 1
 			end
 			if actor.team == team and actor.alive then
 				alive[actor.role] += 1
+				aliveByBuilding[actor.buildingId] = (aliveByBuilding[actor.buildingId] or 0) + 1
+			end
+		end
+		local cards = {}
+		local context = contexts[userId]
+		if context then
+			local allocated = State.troopGroups(context.state)
+			for armyId = 1, 4 do
+				local members = ArmyGroups.members(context.state, armyId) or {}
+				local count, living, used, waiting = 0, 0, 0, 0
+				local targetId, seenTarget, mixed = nil, false, false
+				for _, id in members do
+					local allocation = allocated[id]
+					if allocation then
+						count += allocation.count
+						used += allocation.count * (if allocation.role == "mounted" then 2 else 1)
+					else
+						waiting += 1
+					end
+					living += aliveByBuilding[id] or 0
+					local target = (orders[userId] and orders[userId][id]) or (army and army.targetId)
+					if seenTarget and target ~= targetId then
+						mixed = true
+					end
+					if not seenTarget then
+						targetId, seenTarget = target, true
+					end
+				end
+				table.insert(cards, {
+					armyId = armyId,
+					buildingIds = members,
+					count = count,
+					alive = living,
+					capacityUsed = used,
+					waitingBuildings = waiting,
+					targetId = if mixed then nil else targetId,
+					mixedTargets = mixed,
+				})
 			end
 		end
 		return outposts,
@@ -136,7 +233,8 @@ function Controller.start(world)
 				manual = army and army.manual == true,
 				alive = alive,
 				capacityUsed = capacityUsed,
-			}
+			},
+			cards
 	end
 
 	function controller:step(dt: number, now: number)
@@ -147,6 +245,8 @@ function Controller.start(world)
 
 	function controller:destroy()
 		table.clear(owners)
+		table.clear(contexts)
+		table.clear(orders)
 		behavior:destroy()
 		visuals:destroy()
 		ReplicatedStorage:SetAttribute("MiniatureCombatReady", false)

@@ -9,6 +9,7 @@ local OutpostClient = require(script.Parent.OutpostClient)
 local TroopRenderer = require(script.Parent.TroopRenderer)
 local Placement = require(script.Parent.Placement)
 local Inventory = require(script.Parent.Inventory)
+local ArmyControls = require(script.Parent.ArmyControls)
 local Catalog = require(Replicated.MiniatureGame.Catalog)
 local player = Players.LocalPlayer
 local screen = Instance.new("ScreenGui")
@@ -17,7 +18,7 @@ screen.Parent = player:WaitForChild("PlayerGui")
 InputReadiness.start(screen)
 local actions = Replicated:WaitForChild("MiniatureActions", 20)
 assert(actions, "Miniature sandbox actions did not start")
-local ui, camera, placement, inventory
+local ui, camera, placement, inventory, armyControls
 local view, request = nil, nil
 local retiredSessions = {}
 local generation, counter = Http:GenerateGUID(false):sub(1, 12), 0
@@ -66,6 +67,11 @@ ui = UI.mount(screen, {
 			inventory.close()
 		end
 	end,
+	closeArmy = function()
+		if armyControls then
+			armyControls.clear()
+		end
+	end,
 	camera = function(mode)
 		if mode == "Walk" then
 			camera.walk()
@@ -84,6 +90,9 @@ local outpostClient = OutpostClient.start(screen, {
 	send = send,
 	guard = ui.guard,
 	message = ui.message,
+	deploy = function(id)
+		armyControls.deploy(id)
+	end,
 })
 local troopRenderer = TroopRenderer.start(screen)
 placement = Placement.start(screen, function()
@@ -91,13 +100,37 @@ placement = Placement.start(screen, function()
 end, send, ui.guard)
 inventory = Inventory.start(screen, {
 	guard = ui.guard,
-	closePanels = ui.closePanels,
+	closePanels = function()
+		ui.closePanels()
+		if armyControls then
+			armyControls.clear()
+		end
+	end,
+	army = function()
+		armyControls.toggle()
+	end,
 	message = ui.message,
 	cancelPlacement = function()
 		placement.cancel()
 	end,
 	place = function(kind)
 		placement.begin(kind)
+	end,
+})
+armyControls = ArmyControls.start(screen, {
+	getView = function()
+		return view
+	end,
+	send = send,
+	guard = ui.guard,
+	message = ui.message,
+	closePanels = function()
+		ui.closePanels()
+		inventory.close()
+	end,
+	cancelSelection = function()
+		placement.cancel()
+		inventory.clear()
 	end,
 })
 local function contextSame(a, b)
@@ -133,6 +166,7 @@ local function receipt(packet)
 	screen:SetAttribute("CivilizationId", view.claim and view.claim.civilizationId)
 	ui.update(view, changed)
 	inventory.update(view, changed)
+	armyControls.update(view, changed)
 	if changed then
 		placement.cancel()
 	end
@@ -153,6 +187,7 @@ local function receipt(packet)
 				inventory.clear()
 			end
 		elseif action == "travel" and accepted then
+			armyControls.clear()
 			placement.cancel()
 			inventory.clear()
 			inventory.close()
@@ -177,12 +212,21 @@ local ownedPrompts = setmetatable({}, { __mode = "k" })
 local function updatePromptLabels()
 	for prompt, original in ownedPrompts do
 		if prompt.Parent and original.model:GetAttribute("OwnerId") == player.UserId then
-			prompt.ActionText = if inventory.hammerSelected() then "Return to inventory" else original.actionText
-			prompt.Enabled = if original.reclaimOnly then inventory.hammerSelected() else original.enabled
+			local editing = armyControls.isEditing()
+			local kind = original.model:GetAttribute("Kind")
+			local military = kind == "training" or kind == "ranged" or kind == "healer" or kind == "mount"
+			prompt.ActionText = if editing and military
+				then "Toggle army assignment"
+				elseif inventory.hammerSelected() then "Return to inventory"
+				else original.actionText
+			prompt.Enabled = if editing
+				then military
+				else if original.reclaimOnly then inventory.hammerSelected() else original.enabled
 		end
 	end
 end
 table.insert(connections, screen:GetAttributeChangedSignal("HammerSelected"):Connect(updatePromptLabels))
+table.insert(connections, screen:GetAttributeChangedSignal("ArmyEditingId"):Connect(updatePromptLabels))
 local function bind(instance)
 	if bound[instance] then
 		return
@@ -224,6 +268,9 @@ local function bind(instance)
 		if type(id) ~= "string" then
 			return
 		end
+		if armyControls.building(id) then
+			return
+		end
 		if inventory.hammerSelected() then
 			send("reclaim", { buildingId = id })
 		elseif instance:IsA("ProximityPrompt") then
@@ -263,10 +310,12 @@ table.insert(
 	player.CharacterAdded:Connect(function()
 		placement.cancel()
 		inventory.clear()
+		armyControls.clear()
 	end)
 )
 screen.Destroying:Connect(function()
 	outpostClient.destroy()
+	armyControls.destroy()
 	troopRenderer.destroy()
 	for _, connection in connections do
 		connection:Disconnect()

@@ -1,3 +1,16 @@
+# Clash of Civilizations
+
+The default build is the miniature civilization game: place buildings, produce
+and sell goods, and send small armies to conquer outposts. Build
+`default.project.json`; see [launch and controls](docs/MINIATURE_GAMEPLAY.md).
+Development is Studio-only with temporary injected fake profiles.
+Military research includes29themed upgrades, a hex tree, editable army groups
+and outpost deployment. [Rules and native evidence](docs/notes/Military%20Research%20and%20Army%20Control.md)
+are maintained in the shared Obsidian vault.
+
+The original full-size game remains available through
+`legacy-fullscale.project.json`. The description below records that legacy build.
+
 # Civilization Battlefield
 
 A Roblox game in which eight players build civilization-themed settlements
