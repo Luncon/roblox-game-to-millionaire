@@ -75,6 +75,10 @@ if (research) {
   project.tree.ReplicatedStorage.NativeMilitaryFlow = { $path: '../tests/miniature-game/MilitaryFlow.luau' };
   project.tree.ReplicatedStorage.NativeMilitaryLayouts = { $path: '../tests/miniature-game/MilitaryLayouts.luau' };
   project.tree.ReplicatedStorage.NativeArmyControlFlow = { $path: '../tests/miniature-game/ArmyControlFlow.luau' };
+  project.tree.ReplicatedStorage.NativeMilitaryLifecycle = { $path: '../tests/miniature-game/MilitaryLifecycle.luau' };
+  project.tree.ReplicatedStorage.NativeMilitaryUIGuards = { $path: '../tests/miniature-game/MilitaryUIGuards.luau' };
+  project.tree.ReplicatedStorage.NativeMilitaryRemoteGuards = { $path: '../tests/miniature-game/MilitaryRemoteGuards.luau' };
+  project.tree.ServerStorage.NativeMilitaryMatrix = { $path: '../tests/miniature-game/MilitaryNativeMatrix.luau' };
   delete project.tree.StarterPlayer.StarterPlayerScripts.NativeArmySmoothingRunner;
 }
 if (review) {

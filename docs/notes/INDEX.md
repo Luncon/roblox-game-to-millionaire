@@ -1,6 +1,7 @@
 # Project notes
 
 - [Main build, military research and army controls](Military%20Research%20and%20Army%20Control.md)
+- [Thorough military regression pass](Military%20Research%20Thorough%20Test%20Pass.md)
 - [Military research rules, modifiers and preserved combat defaults](Military%20Research%20Rules.md)
 - [Army Control groups, editing and deployment](Army%20Control.md)
 

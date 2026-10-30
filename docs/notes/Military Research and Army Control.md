@@ -86,6 +86,10 @@ native research/combat matrix remain separate checks.
 
 ## Review builds
 
+The follow-up [thorough regression pass](Military%20Research%20Thorough%20Test%20Pass.md)
+adds48logic cases and broader native all-civilization, UI, lifecycle, network
+and ragdoll checks. Current results:225miniature and244original logic cases pass.
+
 - `build/clash-of-civilizations-main.rbxlx`: ordinary200Coins; default project.
 - `build/clash-of-civilizations-funded-review.rbxlx`:20,000testCoins for all13civilizations; no diagnostic autorunners.
 - `build/clash-of-civilizations-military-research-test.rbxlx`: explicit100,000Coin research fixture; no completed-project injection.
