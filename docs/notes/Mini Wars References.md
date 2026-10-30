@@ -48,7 +48,7 @@ or territory systems to the current sandbox automatically.
 ![](../assets/Pasted%20image%2020261028150304.jpg)![](../assets/Pasted%20image%2020261028150336.jpg)
 
 
-^ research tree format
+^ research tree format (since army controls are being added now, you only need to do the military side of the research at the moment)
 
 
 
@@ -63,4 +63,6 @@ or territory systems to the current sandbox automatically.
 
 ![](../assets/army%20configuation%20process.png)^^ when editing an army group, you click edit, and then can select whichever barrack or troop structure you want included in that army by clicking on it. the inventory button is in slot 1 and the hammer is in slot 2, when clicking slot 1, the inventory pops up in a mincraft stuyle ui, with images of each item in each box, and a count indication in the bottom right (x 4)
 
-when army control is unclocked 
+![](../assets/army%20deploy%20ui.png)
+
+when army control is unlocked, and a player presses E on a target settlement, an army deploy UI pops up, and the player can select whichever one of the armies they would like to target that settlememnt, Army 1 will alwasy be all the troops, while the rest can be edited
