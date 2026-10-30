@@ -15,5 +15,5 @@
 
 ## 3. Publish and verify
 
-- [ ] 3.1 Publish the reviewed artifact to the existing authorized Clash of Civilizations place and record confirmed published version evidence.
+- [x] 3.1 Publish the reviewed artifact to the existing authorized Clash of Civilizations place and record confirmed published version evidence.
 - [ ] 3.2 Verify fresh published-server startup and a real save/rejoin flow, then record results and any remaining runtime limitations without marking unverified checks complete.

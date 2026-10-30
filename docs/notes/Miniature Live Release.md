@@ -1,8 +1,9 @@
 # Miniature Live Release
 
-Status: **IN PROGRESS**. The user authorized replacing the existing published
-Clash of Civilizations place. Publication and a published-client save/rejoin have
-not yet been verified. The approved implementation is tracked in
+Status: **PUBLISHED — version 250**. The existing Clash of Civilizations place has
+been replaced with the miniature game. The real Roblox client starts successfully;
+published-client save/rejoin still needs a physical-input check. The approved
+implementation is tracked in
 [miniature-live-release](../../openspec/changes/miniature-live-release/proposal.md).
 
 The authorized target is place **73839918762778**, universe **10770758443**,
@@ -173,7 +174,36 @@ slot defaults were retained. Before publishing, all **106 mapped script sources*
 in the cloud editor matched the reviewed release artifact by byte length and
 Adler-32, with no missing/unexpected sources and no verification attribute.
 
-There is no confirmed published version or published-client leave/rejoin result
-yet. Existing private audience/access settings have not been changed. The
-structured [release manifest](../releases/miniature-live-v1.json) distinguishes the
-saved draft from publication and links the rollback backup.
+Authenticated Studio Publish completed. Creator Hub Version History independently
+shows **version 250** with the **Published Version** checkmark (October 29, 2026,
+11:59 PM local). Version 248 was the initial clean saved draft; the release is
+250. The publication audit screenshot is saved locally as
+[miniature-published-version-250.png](../../.cache/miniature-published-version-250.png).
+The implementation and rollback backup were committed and pushed in **2da7b0f**.
+
+A separate authenticated Studio **EditPlaceRevision** open explicitly requested
+place 73839918762778 / universe 10770758443 / **version 250**. The resulting
+historical window is named **Place1 (Version 250)**; its isolated DataModel reports
+zero identity/version metadata, so that metadata is not presented as a live-server
+version reading. All **106 script sources** nevertheless match the reviewed
+release exactly, with no unexpected/missing scripts, legacy bootstrap, fake
+store or verification attribute. This independently checks the exact published
+revision selected above. Audit:
+[miniature-published-source-audit.json](../../.cache/miniature-published-source-audit.json).
+
+The actual installed Roblox client launched the authorized private place through
+its normal Play button. It renders the miniature world, outposts, top travel
+buttons, inventory hotbar and civilization chooser. The owner-facing Roblox
+**Ready to playtest?** notice appears. The client is responsive at the Windows
+process level, but desktop automation clicks/key presses did not dismiss that
+notice or select a civilization reliably, including standard SendInput events
+with confirmed foreground focus. That is not sufficient evidence of a gameplay
+input defect; a physical click is needed to distinguish it from automation input
+delivery. The user has been asked to check the notice and choose Sparta.
+No published-client earning, purchase or leave/rejoin pass is claimed yet.
+
+Existing private visibility is retained, with the confirmed eight-player limit.
+The structured [release manifest](../releases/miniature-live-v1.json) distinguishes
+saved drafts, publication, native real-storage rehearsal and the remaining
+published-client check. Rollback uses the validated fresh backup above; do not
+assume an intermediate miniature draft is the old full-size version.
