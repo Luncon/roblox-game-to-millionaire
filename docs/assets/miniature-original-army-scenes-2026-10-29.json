@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-29",
+  "fixture": "miniature-original-army-test.rbxlx",
+  "proof": {
+    "outposts": {
+      "captureSeconds": 20,
+      "initialNeutralActors": 24,
+      "fakeSeconds": 43.40000000000035,
+      "events": {
+        "capture": 2,
+        "death": 9,
+        "shot": 9,
+        "hit": 18
+      },
+      "firstOwner": "sparta",
+      "simulatedRivalTeams": true,
+      "recapturedOwner": "rome",
+      "fakeClock": true,
+      "actualMultiplayer": false,
+      "projectileTravelTTL": true,
+      "nativeLifeSync": true,
+      "outposts": 8,
+      "livePlayerMutation": false
+    },
+    "rigs": {
+      "raycastSupportAndHumanoidExclusion": true,
+      "styles": {
+        "chop": 2,
+        "firearm": 4,
+        "throw": 17,
+        "slash": 8,
+        "bow": 6,
+        "thrust": 4
+      },
+      "medicHealRange": 7,
+      "scale": 0.25,
+      "groundedPoses": 518,
+      "neutralRangedReach": 9,
+      "civilizations": 13,
+      "customMelee": 5,
+      "neutralRoles": 2,
+      "neutralSpeed": 4,
+      "ownedSpeed": 6,
+      "roles": 39,
+      "liveArmyMutation": false,
+      "sourceTemplatesImmutable": true,
+      "ownedRangedReach": 10
+    }
+  },
+  "scope": "Native source-rig/pose/grounding fixtures and isolated simulated-team outpost adapter fixture. Actual player-input original-tactics flow is recorded separately; rivalry is simulated, not real multiplayer."
+}

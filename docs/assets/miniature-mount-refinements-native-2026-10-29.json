@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-29",
+  "ok": true,
+  "change": "miniature-mount-refinements",
+  "studioId": "83c431b2-0b3d-4991-9f61-4f3b2bbeb3b9",
+  "datamodel": "Edit",
+  "method": {
+    "nativeEngine": true,
+    "playStarted": false,
+    "actualClientSession": false,
+    "fixture": "tests/miniature-game/MountedScene.luau",
+    "hotload": "Fresh uniquely named ModuleScript clones loaded current MountedTroops, MountKinematics, RigKinematics, OriginalTroops and MountConfig. Only the temporary fixture boundary changed from injected fake-store Play to RunService:IsStudio()/IsEdit(); the checked-in fixture keeps its normal injected-store guard.",
+    "isolation": "All geometry tests use fresh cloned rigs in a temporary ServerStorage folder. No Battle registration, DataStores, profile writes, purchases, player input or user Play changes.",
+    "red": "New focused assertions first failed against the old factory: Wolf/rhino is missing its pair of black eyes.",
+    "green": "All thirteen original-rider appearances, animal ground contacts, native source/shared-client-module pose parity, source immutability and new focused visual/gait assertions passed.",
+    "poseParity": "Shared client RigKinematics executed directly in native Edit, compared against server-produced mounted poses; this is not network or running-client evidence.",
+    "gallery": "An owned temporary NativeMountedGallery displayed fresh factory clones on a marked support slab. Its pose-only gait has no combat authority; seven closeups were captured with Studio MCP and uniformly scaled to 1280px-wide JPEG.",
+    "cleanup": {
+      "galleryRemoved": true,
+      "ownedModulesRemoved": 11,
+      "noPlayStarted": true
+    }
+  },
+  "result": {
+    "clientPoses": 294,
+    "crocodileResting": true,
+    "lionSeated": true,
+    "civilizations": 13,
+    "crocodileMinimumFootSweep": 0.7403505444526672,
+    "wolfEyes": 2,
+    "originalRiders": 13,
+    "anatomyJoints": 129,
+    "bullBlockLegs": 4,
+    "rhinoFace": true,
+    "groundPoses": 156,
+    "parts": 921
+  },
+  "focused": {
+    "lion": {
+      "saddleCenterAboveTorso": 0.4469113349914551,
+      "previousGap": 0.7115172237014346,
+      "visibleBackSeatingReviewed": true
+    },
+    "bull": {
+      "shortBlockLegs": 4,
+      "blockHooves": 4,
+      "legDimensionsXYZ": [
+        0.43490493297576904,
+        0.5027231574058533,
+        0.37426215410232544
+      ]
+    },
+    "wolf": {
+      "visibleBlackEyes": 2
+    },
+    "rhino": {
+      "visibleBlackEyes": 2,
+      "blockSnout": 1,
+      "nostrils": 2,
+      "originalHornsPreserved": true
+    },
+    "elk": {
+      "overallLength": 2.9,
+      "previousLength": 3.6
+    },
+    "bear": {
+      "overallLength": 3.25,
+      "previousLength": 3.5
+    },
+    "crocodile": {
+      "minimumFourFootHorizontalSweep": 0.7403505444526672,
+      "requiredMinimum": 0.12,
+      "stationaryFeetStable": true
+    }
+  },
+  "sourcePreservation": {
+    "animalTemplates": 11,
+    "importedTemplateParts": 523,
+    "animalSourceImmutable": true,
+    "originalNpcEquipmentOutfitSourcesImmutable": true,
+    "originalRiderAppearancesPreserved": 13
+  },
+  "photos": [
+    {
+      "animal": "elk",
+      "file": "miniature-mount-refinements-2026-10-29/elk.jpg"
+    },
+    {
+      "animal": "bear",
+      "file": "miniature-mount-refinements-2026-10-29/bear.jpg"
+    },
+    {
+      "animal": "lion",
+      "file": "miniature-mount-refinements-2026-10-29/lion.jpg"
+    },
+    {
+      "animal": "bull",
+      "file": "miniature-mount-refinements-2026-10-29/bull.jpg"
+    },
+    {
+      "animal": "crocodile",
+      "file": "miniature-mount-refinements-2026-10-29/crocodile.jpg"
+    },
+    {
+      "animal": "wolf",
+      "file": "miniature-mount-refinements-2026-10-29/wolf.jpg"
+    },
+    {
+      "animal": "rhino",
+      "file": "miniature-mount-refinements-2026-10-29/rhino.jpg"
+    }
+  ],
+  "limits": [
+    "Running-client integration, network behavior, paid combat and physical ragdoll checks are separate parent-owned verification.",
+    "Native Edit gallery photos establish fit and facial/shape changes; sampled gait motion and grounding are established by the native FK checks."
+  ]
+}

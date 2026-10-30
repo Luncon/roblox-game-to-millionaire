@@ -1,0 +1,39 @@
+{
+  "applied": true,
+  "actors": 25,
+  "escapedSourceDecals": 0,
+  "green": {
+    "ok": true
+  },
+  "hiddenSourceDecals": 27,
+  "native": {
+    "ok": true,
+    "result": {
+      "sourceRateProof": false,
+      "nativeClient": true,
+      "isolated": {
+        "idempotentCleanup": true,
+        "visibleFaceOnSmoothedHead": true,
+        "sourceRemovalCleanup": true,
+        "grounded": true,
+        "healthDisplayUnique": true,
+        "originalDecalsRestored": true,
+        "lateDecalsAndTexturesHidden": true,
+        "freshLifeReplaced": true,
+        "gripPreserved": true,
+        "staleLifeRejected": true,
+        "geometryReadiness": true,
+        "originalSourceRestored": true,
+        "staleTimestampRejected": true,
+        "sourceDecalsHidden": true
+      },
+      "authoritativeMutation": false,
+      "controllerModuleLoaded": false
+    }
+  },
+  "visibleAttachedFaces": 25,
+  "red": {
+    "ok": false,
+    "error": "ReplicatedStorage.NativeFaceRegressionRed:468: ReplicatedStorage.NativeFaceRegressionRed:219: Hidden source face remains visible ahead of its troop"
+  }
+}

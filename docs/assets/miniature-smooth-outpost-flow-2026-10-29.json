@@ -1,0 +1,312 @@
+{
+  "ok": true,
+  "result": {
+    "initial": {
+      "neutralRanged": 1,
+      "neutralMelee": 2,
+      "outposts": 8,
+      "coins": 5000
+    },
+    "combat": {
+      "rangedShot": true,
+      "healthBar": true,
+      "meleeAttack": true,
+      "resumedAfterPause": true,
+      "barProgress": true,
+      "walking": true,
+      "neutralRespawn": true,
+      "damagedHealth": true,
+      "pausedForDefenders": true,
+      "projectile": true,
+      "defendedZero": true
+    },
+    "walkToOwnOutpost": 125.75,
+    "walkToOtherOutpost": 221.7654151916504,
+    "placements": [
+      {
+        "rotation": 90,
+        "x": 6,
+        "z": 8,
+        "id": "b4",
+        "kind": "training"
+      },
+      {
+        "rotation": 90,
+        "x": 16,
+        "z": 8,
+        "id": "b5",
+        "kind": "ranged"
+      },
+      {
+        "rotation": 0,
+        "x": 16,
+        "z": -8,
+        "id": "b6",
+        "kind": "healer"
+      },
+      {
+        "rotation": 90,
+        "x": 6,
+        "z": 20,
+        "id": "b7",
+        "kind": "training"
+      },
+      {
+        "rotation": 90,
+        "x": 26,
+        "z": 8,
+        "id": "b8",
+        "kind": "ranged"
+      }
+    ],
+    "contestedNative": false,
+    "fundedFakeBootstrap": true,
+    "attempts": [
+      {
+        "ok": true,
+        "action": "select Sparta",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:1"
+      },
+      {
+        "ok": true,
+        "action": "travel buy",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:2"
+      },
+      {
+        "ok": true,
+        "action": "buy training",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:3"
+      },
+      {
+        "ok": true,
+        "action": "buy ranged",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:4"
+      },
+      {
+        "ok": true,
+        "action": "buy healer",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:5"
+      },
+      {
+        "ok": true,
+        "action": "buy training",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:6"
+      },
+      {
+        "ok": true,
+        "action": "buy ranged",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:7"
+      },
+      {
+        "ok": true,
+        "action": "travel civilization",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:8"
+      },
+      {
+        "ok": true,
+        "action": "place training",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:9"
+      },
+      {
+        "ok": true,
+        "action": "place ranged",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:10"
+      },
+      {
+        "ok": true,
+        "action": "place healer",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:11"
+      },
+      {
+        "ok": true,
+        "action": "place training",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:12"
+      },
+      {
+        "ok": true,
+        "action": "place ranged",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:13"
+      },
+      {
+        "ok": true,
+        "action": "E target other outpost",
+        "attempt": 1,
+        "requestId": "14c59f2a-545:14"
+      }
+    ],
+    "capture": {
+      "civilizationId": "sparta",
+      "label": "Sparta outpost\nCaptured",
+      "outpostId": "outpost_1",
+      "progress": 20,
+      "observedSeconds": 59.332413299998734
+    },
+    "nativeVirtualInput": true,
+    "ok": true,
+    "manualTarget": {
+      "outpostId": "outpost_2",
+      "manual": true,
+      "requestId": "14c59f2a-545:14"
+    },
+    "effectsAfter": {
+      "captures": 1,
+      "shots": 75,
+      "deaths": 19,
+      "hits": 128
+    },
+    "neutralRespawns": [
+      {
+        "at": 88.7108353000076,
+        "actorId": "garrison:outpost_1:3",
+        "afterLife": 34,
+        "progress": 4.40045984943884,
+        "beforeLife": 3
+      },
+      {
+        "at": 91.36014930001693,
+        "actorId": "garrison:outpost_1:1",
+        "afterLife": 35,
+        "progress": 4.40045984943884,
+        "beforeLife": 1
+      },
+      {
+        "at": 92.24487720002071,
+        "actorId": "garrison:outpost_1:2",
+        "afterLife": 36,
+        "progress": 4.40045984943884,
+        "beforeLife": 2
+      },
+      {
+        "at": 100.71160150002106,
+        "actorId": "garrison:outpost_1:3",
+        "afterLife": 38,
+        "progress": 6.874153633893323,
+        "beforeLife": 34
+      },
+      {
+        "at": 105.22938460001023,
+        "actorId": "garrison:outpost_1:1",
+        "afterLife": 39,
+        "progress": 9.183902162989117,
+        "beforeLife": 35
+      },
+      {
+        "at": 106.24607260001358,
+        "actorId": "garrison:outpost_1:2",
+        "afterLife": 40,
+        "progress": 9.250085562968614,
+        "beforeLife": 36
+      },
+      {
+        "at": 110.94311520000338,
+        "actorId": "garrison:outpost_1:3",
+        "afterLife": 41,
+        "progress": 11.77500990647301,
+        "beforeLife": 38
+      },
+      {
+        "at": 114.12840580000193,
+        "actorId": "garrison:outpost_1:1",
+        "afterLife": 42,
+        "progress": 13.867791025207413,
+        "beforeLife": 39
+      },
+      {
+        "at": 116.34504970000125,
+        "actorId": "garrison:outpost_1:2",
+        "afterLife": 43,
+        "progress": 15.045542298269797,
+        "beforeLife": 40
+      },
+      {
+        "at": 120.02835980002419,
+        "actorId": "garrison:outpost_1:3",
+        "afterLife": 44,
+        "progress": 15.876857101301123,
+        "beforeLife": 41
+      },
+      {
+        "at": 123.16276740000467,
+        "actorId": "garrison:outpost_1:1",
+        "afterLife": 45,
+        "progress": 15.876857101301123,
+        "beforeLife": 42
+      },
+      {
+        "at": 127.25880920002237,
+        "actorId": "garrison:outpost_1:2",
+        "afterLife": 46,
+        "progress": 15.876857101301123,
+        "beforeLife": 43
+      },
+      {
+        "at": 131.77508180000586,
+        "actorId": "garrison:outpost_1:3",
+        "afterLife": 47,
+        "progress": 15.876857101301123,
+        "beforeLife": 44
+      },
+      {
+        "at": 139.24257100000978,
+        "actorId": "garrison:outpost_1:2",
+        "afterLife": 48,
+        "progress": 18.251510730595736,
+        "beforeLife": 46
+      }
+    ],
+    "army": {
+      "ranged": 4,
+      "purchaseCoins": 1200,
+      "melee": 4,
+      "medic": 1
+    },
+    "final": {
+      "alive": {
+        "ranged": 4,
+        "melee": 4,
+        "medic": 1
+      },
+      "targetId": "outpost_2",
+      "allocated": {
+        "ranged": 4,
+        "melee": 4,
+        "medic": 1
+      },
+      "troopCapacity": 10,
+      "coins": 3800
+    },
+    "captureResume": {
+      "at": 98.3606989000109,
+      "progress": 4.517455500713765
+    },
+    "autoTarget": "outpost_1",
+    "homeInvasionNative": false,
+    "capturePause": {
+      "progress": 4.40045984943884,
+      "defenders": 1,
+      "secondsUnchanged": 0.21632159998989664
+    },
+    "lastStep": "walk to another outpost center and order the whole army with E",
+    "localRelocation": false,
+    "localStateInjection": false,
+    "effectsBefore": {
+      "captures": 0,
+      "shots": 0,
+      "deaths": 0,
+      "hits": 0
+    }
+  }
+}

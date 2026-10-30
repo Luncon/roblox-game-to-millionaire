@@ -1,0 +1,24 @@
+{
+  "before": {
+    "keyboard": "nil",
+    "controller": "table: 0x17e8414e5de24cf3",
+    "userComputer": "Enum.ComputerMovementMode.Default",
+    "preferred": "Enum.PreferredInput.KeyboardAndMouse",
+    "hasHumanoid": true,
+    "controlsEnabled": true,
+    "computer": "Enum.DevComputerMovementMode.UserChoice"
+  },
+  "after": "table: 0xc3e739a93d5bafff",
+  "gameMove": "0, 0, -1",
+  "capability": {
+    "preferred": "Enum.PreferredInput.KeyboardAndMouse",
+    "success": true,
+    "keyboard": true,
+    "gamepad": false,
+    "selected": "table: 0x2fb7d6852be74dbd",
+    "isKeyboard": true
+  },
+  "humanoidMove": "-0.05434630438685417, 0, -0.998522162437439",
+  "userConfirmedPhysicalAfterRefresh": true,
+  "fix": "Actual LocalScript calls the default ControlModule.UpdateMovementMode; no Disable/Enable or replacement movement bindings"
+}

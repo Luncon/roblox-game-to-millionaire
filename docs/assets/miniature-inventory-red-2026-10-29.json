@@ -1,0 +1,51 @@
+{
+  "ok": false,
+  "result": "ReplicatedStorage.NativeInventoryFlow:383: Hammer did not return farm item",
+  "evidence": {
+    "nativeVirtualInput": true,
+    "textBoxHotkeyGuard": true,
+    "fakeFunding": false,
+    "steps": [
+      "select fresh civilization",
+      "retain starter state for native scene observation",
+      "walk and collect all with E",
+      "server travel to shared sell stand and sell all",
+      "server travel to shared buy stand and buy house item",
+      "return to civilization and select inventory item",
+      "focused TextBox guards inventory, supported number and rotate hotkeys",
+      "hammer hotbar selection cancels placement without consuming item",
+      "hammer reclaim nonempty farm into goods and building inventory"
+    ],
+    "secondWalkDistance": 26.399961471557617,
+    "expandedPopulation": {
+      "total": 8,
+      "idle": 6,
+      "assigned": 2
+    },
+    "localRelocation": false,
+    "sale": {
+      "coinsAfter": 320,
+      "coinsBefore": 200,
+      "earned": 120
+    },
+    "purchase": {
+      "price": 80,
+      "plansAfter": 1,
+      "coinsAfter": 240
+    },
+    "localRenderInjection": false,
+    "walkDistance": 26.399620056152344,
+    "collection": {
+      "goodsAfter": 60,
+      "outputAfter": 0,
+      "amount": 60
+    },
+    "serverTravelButtons": true,
+    "initialPopulation": {
+      "total": 4,
+      "idle": 2,
+      "assigned": 2
+    },
+    "lastStep": "hammer reclaim nonempty farm into goods and building inventory"
+  }
+}

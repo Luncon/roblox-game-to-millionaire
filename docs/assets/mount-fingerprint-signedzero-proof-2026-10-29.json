@@ -1,0 +1,56 @@
+{
+  "studioId": "d4af24c9-d731-4448-ba3c-41c2ab3173dd",
+  "datamodel": "Server",
+  "baselineEditFingerprint": "262338:2766188858",
+  "rawPlayFingerprint": "262351:2986941515",
+  "readOnlyDiagnosticCanonicalZeroFingerprint": "262338:2766188858",
+  "diagnosticReplacements": 13,
+  "sourcePartsNumericallyCompared": 523,
+  "sizeAndCFrameTolerance": 1e-10,
+  "numericDifferencesAboveTolerance": 0,
+  "mountModelScales": {
+    "count": 19,
+    "all": 1
+  },
+  "affectedParts": [
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverfootfrontleft",
+      "negativeZeroEntries": 1
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.lover legfront left",
+      "negativeZeroEntries": 2
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverlegbackleft",
+      "negativeZeroEntries": 2
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverfootbackleft",
+      "negativeZeroEntries": 1
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverlegbackright",
+      "negativeZeroEntries": 2
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverlegfrontright",
+      "negativeZeroEntries": 2
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverfootfrontright",
+      "negativeZeroEntries": 1
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.loverfootbackright",
+      "negativeZeroEntries": 1
+    },
+    {
+      "path": "ServerStorage.MountTemplates.bull.uppertail",
+      "negativeZeroEntries": 1
+    }
+  ],
+  "method": "Read-only runtime property extraction compared to original repository RBXM assets through pinned Lune. Separate read-only reconstruction of all source fingerprint rows replaced only standalone negative-zero CFrame tokens in MountTemplates; no Instance properties, source assets, tests, or fingerprint module changed.",
+  "resolution": "Canonicalize only complete comma-delimited CFrame text tokens equal to -0 into 0. Preserve every bank, descendant, class, Size, Model scale, and all nonzero numeric text. No source Instance or asset mutation.",
+  "regression": ".lune/template-fingerprint.luau executes the actual module with isolated source-bank doubles; scripts/tests/template-fingerprint.test.mjs includes it in Node tests. Signed-zero equivalence passes; nonzero and tiny negative coordinates, size, scale, other-bank changes remain detectable."
+}

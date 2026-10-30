@@ -61,3 +61,36 @@ runtime gameplay verification.
 - **WHEN** a developer runs `npm run check`
 - **THEN** OpenSpec validates specifications in strict mode
 - **AND** the setup guide identifies the separate Studio connection check
+
+### Requirement: Pinned Luau development tools
+
+The repository SHALL pin Selene, StyLua and Lune release versions and archive
+SHA-256 digests, and SHALL provide an explicit local installer without enabling
+npm installation scripts or changing production project mappings.
+
+#### Scenario: Install native tools
+
+- **WHEN** a developer runs `npm run setup:tools` on a supported platform
+- **THEN** official archives are verified against committed digests before extraction
+- **AND** tools are installed in ignored project-local storage
+- **AND** subsequent checks do not require tool downloads
+
+### Requirement: Automated offline development gate
+
+The repository SHALL provide automated syntax and deterministic logic tests plus
+strict changed-file lint and formatting checks, and SHALL run them with strict
+OpenSpec validation on GitHub pushes and pull requests.
+
+#### Scenario: Check a working change
+
+- **WHEN** a developer runs `npm run check:dev`
+- **THEN** changed, staged and untracked first-party Luau files are linted and format-checked
+- **AND** the test command compiles all first-party Luau source and runs the standalone logic suite
+- **AND** a failed selected-file check or test produces a nonzero exit status
+- **AND** separate full-scan commands expose existing lint and formatting diagnostics
+
+#### Scenario: Preserve runtime verification boundaries
+
+- **WHEN** offline tests pass
+- **THEN** fixtures use explicit engine doubles and injected fake profile storage
+- **AND** documentation still requires Studio or Roblox client checks for native gameplay

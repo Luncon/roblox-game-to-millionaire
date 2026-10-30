@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "studioId": "d0bcc178-9312-4b88-b85e-8e1aad333609",
+  "build": "build/miniature-mount-refinements-funded-review.rbxlx",
+  "nativeClient": {
+    "nativeChooser": true,
+    "civilization": "egypt",
+    "coins": 20000,
+    "capacity": 10,
+    "heldMounts": 0
+  },
+  "nativeServer": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"diagnosticAutoruns\":0,\"funding\":\"20000 Coins per civilization; zero goods, no research or army injection\",\"serverChildren\":{\"1\":\"Sandbox\",\"2\":\"ChatServiceRunner\"},\"ready\":true}"
+      }
+    ],
+    "isError": false
+  },
+  "note": "Counts project diagnostic runners by their Checks names. A preliminary probe incorrectly counted Studio's inserted ChatServiceRunner as a project diagnostic; the corrected check excludes that built-in service. Gameplay selection/funding and every delivered source match passed."
+}

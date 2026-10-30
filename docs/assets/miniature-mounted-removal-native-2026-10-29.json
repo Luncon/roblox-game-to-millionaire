@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-29",
+  "studioId": "7157911d-ba39-4523-9e81-a4225d359fad",
+  "datamodel": "Client",
+  "fixture": "tests/miniature-game/MountedRemoval.luau",
+  "setup": "Continued the completed 20,000-Coin extended UI run: 9,050 Coins, two mounted troops, nine weighted slots. No further funding or state injection.",
+  "method": "Actual top Civilization travel, native W walking, hotbar hammer selection, Overview and owned-facility world click. Source/local-clone cleanup and unaffected mount identity were observed; original extended flow result was preserved.",
+  "native": {
+    "ok": true,
+    "result": {
+      "before": {
+        "mounted": 2,
+        "targetBuildingId": "b8",
+        "mountPlans": 0,
+        "capacityUsed": 9,
+        "coins": 9050,
+        "otherHealth": 300,
+        "otherActorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b9:1",
+        "otherLife": 33,
+        "sourceActorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b8:1",
+        "sourceLife": 32
+      },
+      "nativeVirtualInput": true,
+      "after": {
+        "mounted": 1,
+        "otherMountedLifePreserved": true,
+        "extendedResultPreserved": true,
+        "commanderWalkDistance": 37.936466217041016,
+        "mountPlans": 1,
+        "buildingRemoved": true,
+        "coins": 9050,
+        "otherHealth": 300,
+        "hud": "9050 coins\nGoods 0/200 · Mounted 1\nPeople 4 · Army 7/10",
+        "localCloneRemoved": true,
+        "sourceRemoved": true,
+        "capacityUsed": 7,
+        "otherLocalClonePreserved": true
+      },
+      "authoritativeMutation": false,
+      "attempts": [
+        {
+          "ok": true,
+          "revision": 33,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "47239f7e-f7a:18"
+        },
+        {
+          "ok": true,
+          "revision": 34,
+          "label": "hammer reclaim mounted facility",
+          "attempt": 1,
+          "requestId": "47239f7e-f7a:19"
+        }
+      ],
+      "localRelocation": false
+    }
+  }
+}

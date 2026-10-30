@@ -1,0 +1,324 @@
+{
+  "date": "2026-10-29",
+  "scope": "Isolated Studio; funded fake setup 5000 Coins/80 Timber/20 Material; real clocks; virtual input; relocation/caret selection are fixture setup",
+  "server": {
+    "MiniatureRomeSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 3.82214057026431e-06,
+        "cardinalRotations": 4,
+        "buildings": 9,
+        "buildingParts": 333,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MiniatureIsolationResult": "passed",
+    "VikingSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 405
+    },
+    "EgyptSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 254
+    },
+    "MongolSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 508
+    },
+    "SenecaSceneResult": "9 buildings / 3 inert roles",
+    "MiniatureMauryaSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 2.8709398520732066e-06,
+        "cardinalRotations": 4,
+        "buildings": 9,
+        "buildingParts": 309,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MingSceneResult": "9 buildings / 3 inert roles",
+    "MiniatureOwnershipResult": {
+      "ok": true,
+      "result": {
+        "privateStock": true,
+        "physicalMulticlientTest": false,
+        "foreignRequestsRejected": true,
+        "originalPlot": 1,
+        "restoredCoins": 120,
+        "exclusiveClaims": true,
+        "simulatedOwners": 3,
+        "fakeStoreOnly": true,
+        "restoredHouseStock": 1,
+        "concurrentOwners": 2,
+        "restoredHousePlans": 1,
+        "restoredPlot": 3
+      }
+    },
+    "PersiaSceneResult": "9 buildings / 3 inert roles"
+  },
+  "client": {
+    "ok": true,
+    "result": {
+      "ok": true,
+      "moveUnpack": {
+        "returnedPlans": 1,
+        "coins": 4920,
+        "buildingId": "b4"
+      },
+      "relocationWasFixtureSetup": true,
+      "research": {
+        "sale": {
+          "coinsAfter": 4030,
+          "goodsBefore": 1,
+          "amount": 1,
+          "goodsAfter": 0,
+          "coinsBefore": 4015,
+          "cursorSelectionWasFixtureSetup": true,
+          "nativeTextEntry": true
+        },
+        "pottery": 1,
+        "workSeconds": 30.433173700002953,
+        "craftSeconds": 60.63359139999375,
+        "workshopId": "b6"
+      },
+      "receipts": [
+        {
+          "action": "select Sparta",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "sparta",
+              "plotId": 1
+            }
+          },
+          "requestId": "06b05e04-f0c:1"
+        },
+        {
+          "action": "buy house",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "kind": "house"
+          },
+          "requestId": "06b05e04-f0c:2"
+        },
+        {
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b4"
+            ],
+            "buildingId": "b4"
+          },
+          "action": "place house",
+          "requestId": "06b05e04-f0c:3"
+        },
+        {
+          "result": {
+            "ok": true,
+            "buildingId": "b4"
+          },
+          "action": "move house",
+          "requestId": "06b05e04-f0c:4"
+        },
+        {
+          "action": "unpack house",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "resetBuildings": [
+              "b4"
+            ],
+            "buildingId": "b4"
+          },
+          "requestId": "06b05e04-f0c:5"
+        },
+        {
+          "action": "hire worker",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "workerId": "w3"
+          },
+          "requestId": "06b05e04-f0c:6"
+        },
+        {
+          "action": "buy material",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "kind": "material"
+          },
+          "requestId": "06b05e04-f0c:7"
+        },
+        {
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b5"
+            ],
+            "buildingId": "b5"
+          },
+          "action": "place material",
+          "requestId": "06b05e04-f0c:8"
+        },
+        {
+          "action": "assign w1 to clay",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w1"
+          },
+          "requestId": "06b05e04-f0c:9"
+        },
+        {
+          "action": "collect clay",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "amount": 1
+          },
+          "requestId": "06b05e04-f0c:10"
+        },
+        {
+          "action": "unassign clay worker",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w1"
+          },
+          "requestId": "06b05e04-f0c:11"
+        },
+        {
+          "action": "reassign clay worker",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w1"
+          },
+          "requestId": "06b05e04-f0c:12"
+        },
+        {
+          "action": "upgrade hall",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true
+          },
+          "requestId": "06b05e04-f0c:13"
+        },
+        {
+          "action": "start Organized Work",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "researchId": "work"
+          },
+          "requestId": "06b05e04-f0c:14"
+        },
+        {
+          "action": "start Craft Traditions",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "researchId": "craft"
+          },
+          "requestId": "06b05e04-f0c:15"
+        },
+        {
+          "action": "buy workshop",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "kind": "workshop"
+          },
+          "requestId": "06b05e04-f0c:16"
+        },
+        {
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b6"
+            ],
+            "buildingId": "b6"
+          },
+          "action": "place workshop",
+          "requestId": "06b05e04-f0c:17"
+        },
+        {
+          "action": "assign hired potter",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w3"
+          },
+          "requestId": "06b05e04-f0c:18"
+        },
+        {
+          "action": "collect pottery",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "amount": 1
+          },
+          "requestId": "06b05e04-f0c:19"
+        },
+        {
+          "action": "sell pottery",
+          "attempt": 1,
+          "retry": false,
+          "result": {
+            "ok": true,
+            "amount": 1,
+            "coins": 15
+          },
+          "requestId": "06b05e04-f0c:20"
+        }
+      ],
+      "realClocks": true,
+      "fundedFakeSetup": true,
+      "material": {
+        "secondsToFirstBatch": 15.566297700017458,
+        "goodsAfter": 21,
+        "output": 1,
+        "workerId": "w1",
+        "buildingId": "b5"
+      },
+      "lastStep": "sell pottery attempt 1"
+    }
+  }
+}

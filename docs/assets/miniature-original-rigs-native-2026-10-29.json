@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "fixture": "miniature-original-rigs-v3-test.rbxlx",
+  "result": {
+    "raycastSupportAndHumanoidExclusion": true,
+    "styles": {
+      "chop": 2,
+      "firearm": 4,
+      "throw": 17,
+      "slash": 8,
+      "bow": 6,
+      "thrust": 4
+    },
+    "medicHealRange": 7,
+    "scale": 0.25,
+    "groundedPoses": 518,
+    "neutralRangedReach": 9,
+    "civilizations": 13,
+    "customMelee": 5,
+    "neutralRoles": 2,
+    "neutralSpeed": 4,
+    "ownedSpeed": 6,
+    "roles": 39,
+    "liveArmyMutation": false,
+    "sourceTemplatesImmutable": true,
+    "ownedRangedReach": 10
+  },
+  "scope": "Isolated native original-rig/outfit/animation/support fixture; live armies were not mutated. Full original-behavior UI verification is recorded separately."
+}

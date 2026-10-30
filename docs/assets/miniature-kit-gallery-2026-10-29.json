@@ -1,0 +1,760 @@
+{
+  "date": "2026-10-29",
+  "scope": "Native Edit renders of original quarter-scale models; three-by-three building layout plus melee/missile/support row; roles compacted for close-up photography; no player state mutation",
+  "kits": [
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "sparta",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 308,
+      "buildings": 9,
+      "buildingParts": 226,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 59
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "rome",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 440,
+      "buildings": 9,
+      "buildingParts": 333,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 84
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "persia",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 322,
+      "buildings": 9,
+      "buildingParts": 235,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 64
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "egypt",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 325,
+      "buildings": 9,
+      "buildingParts": 254,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 48
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "maurya",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 389,
+      "buildings": 9,
+      "buildingParts": 309,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 57
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "seneca",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 435,
+      "buildings": 9,
+      "buildingParts": 362,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 50
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "vikings",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 492,
+      "buildings": 9,
+      "buildingParts": 405,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 64
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "mongols",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 597,
+      "buildings": 9,
+      "buildingParts": 508,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 66
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "japan",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 358,
+      "buildings": 9,
+      "buildingParts": 262,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 73
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "ming",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 384,
+      "buildings": 9,
+      "buildingParts": 296,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 65
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "ottomans",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 388,
+      "buildings": 9,
+      "buildingParts": 296,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 69
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "spain",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 315,
+      "buildings": 9,
+      "buildingParts": 232,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 60
+    },
+    {
+      "actors": 3,
+      "fieldOfView": 50,
+      "civilizationId": "britain",
+      "views": {
+        "roles": {
+          "lookAt": {
+            "1": 0,
+            "2": 1.2,
+            "3": 24
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 4.5,
+            "3": 35
+          }
+        },
+        "side": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 48,
+            "2": 27,
+            "3": 4
+          }
+        },
+        "front": {
+          "lookAt": {
+            "1": 0,
+            "2": 2,
+            "3": 2
+          },
+          "cameraPosition": {
+            "1": 0,
+            "2": 23,
+            "3": 55
+          }
+        }
+      },
+      "cameraPosition": {
+        "1": 24,
+        "2": 34,
+        "3": 42
+      },
+      "partCount": 375,
+      "buildings": 9,
+      "buildingParts": 289,
+      "lookAt": {
+        "1": 0,
+        "2": 2,
+        "3": 2
+      },
+      "gallery": "MiniatureKitEvidenceGallery",
+      "actorParts": 63
+    }
+  ]
+}

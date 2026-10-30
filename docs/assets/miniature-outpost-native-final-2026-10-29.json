@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-29",
+  "fixture": "miniature-outpost-final-test.rbxlx",
+  "funding": "5000 Coins only, zero goods, no research; ordinary starts200",
+  "flow": {
+    "ok": true,
+    "result": {
+      "captureResume": {
+        "at": 73.33444060001057,
+        "progress": 6.788557511609123
+      },
+      "combat": {
+        "rangedShot": true,
+        "healthBar": true,
+        "meleeAttack": true,
+        "resumedAfterPause": true,
+        "barProgress": true,
+        "walking": true,
+        "neutralRespawn": true,
+        "damagedHealth": true,
+        "pausedForDefenders": true,
+        "projectile": true,
+        "defendedZero": true
+      },
+      "walkToOwnOutpost": 126.13140869140625,
+      "walkToOtherOutpost": 220.79757690429688,
+      "placements": [
+        {
+          "rotation": 90,
+          "x": 6,
+          "z": 8,
+          "id": "b4",
+          "kind": "training"
+        },
+        {
+          "rotation": 90,
+          "x": 16,
+          "z": 8,
+          "id": "b5",
+          "kind": "ranged"
+        },
+        {
+          "rotation": 0,
+          "x": 16,
+          "z": -8,
+          "id": "b6",
+          "kind": "healer"
+        }
+      ],
+      "contestedNative": false,
+      "fundedFakeBootstrap": true,
+      "attempts": [
+        {
+          "ok": true,
+          "action": "select Sparta",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:1"
+        },
+        {
+          "ok": true,
+          "action": "travel buy",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:2"
+        },
+        {
+          "ok": true,
+          "action": "buy training",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:3"
+        },
+        {
+          "ok": true,
+          "action": "buy ranged",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:4"
+        },
+        {
+          "ok": true,
+          "action": "buy healer",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:5"
+        },
+        {
+          "ok": true,
+          "action": "travel civilization",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:6"
+        },
+        {
+          "ok": true,
+          "action": "place training",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:7"
+        },
+        {
+          "ok": true,
+          "action": "place ranged",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:8"
+        },
+        {
+          "ok": true,
+          "action": "place healer",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:9"
+        },
+        {
+          "ok": true,
+          "action": "E target other outpost",
+          "attempt": 1,
+          "requestId": "feeb795a-6c5:10"
+        }
+      ],
+      "capture": {
+        "civilizationId": "sparta",
+        "label": "Sparta outpost\nCaptured",
+        "outpostId": "outpost_1",
+        "progress": 20,
+        "observedSeconds": 24.44861399999354
+      },
+      "nativeVirtualInput": true,
+      "manualTarget": {
+        "outpostId": "outpost_2",
+        "manual": true,
+        "requestId": "feeb795a-6c5:10"
+      },
+      "effectsAfter": {
+        "captures": 1,
+        "shots": 16,
+        "deaths": 10,
+        "hits": 28
+      },
+      "neutralRespawns": [
+        {
+          "at": 73.03267200000118,
+          "actorId": "garrison:outpost_1:1",
+          "afterLife": 30,
+          "progress": 6.738343335729162,
+          "beforeLife": 1
+        },
+        {
+          "at": 73.4483792000101,
+          "actorId": "garrison:outpost_1:2",
+          "afterLife": 31,
+          "progress": 6.788557511609123,
+          "beforeLife": 2
+        },
+        {
+          "at": 74.19795010000234,
+          "actorId": "garrison:outpost_1:3",
+          "afterLife": 32,
+          "progress": 6.788557511609123,
+          "beforeLife": 3
+        },
+        {
+          "at": 81.33187640001415,
+          "actorId": "garrison:outpost_1:1",
+          "afterLife": 33,
+          "progress": 13.144324775378434,
+          "beforeLife": 30
+        },
+        {
+          "at": 82.41498780000256,
+          "actorId": "garrison:outpost_1:2",
+          "afterLife": 34,
+          "progress": 13.826057995390864,
+          "beforeLife": 31
+        },
+        {
+          "at": 82.9653607000073,
+          "actorId": "garrison:outpost_1:3",
+          "afterLife": 35,
+          "progress": 13.826057995390864,
+          "beforeLife": 32
+        },
+        {
+          "at": 89.69820640000398,
+          "actorId": "garrison:outpost_1:1",
+          "afterLife": 36,
+          "progress": 19.288416569646092,
+          "beforeLife": 33
+        }
+      ],
+      "ok": true,
+      "final": {
+        "alive": {
+          "ranged": 2,
+          "melee": 2,
+          "medic": 1
+        },
+        "targetId": "outpost_2",
+        "allocated": {
+          "ranged": 2,
+          "melee": 2,
+          "medic": 1
+        },
+        "troopCapacity": 10,
+        "coins": 4300
+      },
+      "initial": {
+        "neutralRanged": 1,
+        "neutralMelee": 2,
+        "outposts": 8,
+        "coins": 5000
+      },
+      "autoTarget": "outpost_1",
+      "homeInvasionNative": false,
+      "capturePause": {
+        "progress": 6.738343335729162,
+        "defenders": 1,
+        "secondsUnchanged": 0.20054150000214577
+      },
+      "lastStep": "walk to another outpost center and order the whole army with E",
+      "localRelocation": false,
+      "localStateInjection": false,
+      "effectsBefore": {
+        "captures": 0,
+        "shots": 0,
+        "deaths": 0,
+        "hits": 0
+      }
+    }
+  },
+  "additionalEvidence": "miniature-outpost-native-first-2026-10-29.json contains separate native simulated-rival fixture, five remote-refusal probes, source immutability and bounded desktop frame sample.",
+  "limits": "Solo actual client-input flow. Rival recapture is a simulated-team native fixture, not a real multi-client or published multiplayer acceptance.",
+  "finalServer": {
+    "scene": {
+      "ok": true,
+      "result": {
+        "housing": 4,
+        "assigned": 2,
+        "idle": 2,
+        "workers": 4,
+        "troops": {
+          "ranged": 2,
+          "melee": 4,
+          "medic": 1,
+          "cappedBackfill": true,
+          "perBuildingCleanup": true,
+          "retainedUnrelatedActors": true,
+          "troopCap": 10
+        },
+        "ranges": 13,
+        "observedSeconds": 14,
+        "previews": 10
+      }
+    },
+    "storage": "InjectedFakeProfileStore",
+    "isolation": "passed",
+    "sourceUnchanged": true
+  }
+}

@@ -1,0 +1,317 @@
+{
+  "date": "2026-10-29",
+  "fixture": "miniature-original-army-test.rbxlx",
+  "funding": "5000 Coins only, zero goods and research. Ordinary build starts200Coins.",
+  "flow": {
+    "ok": true,
+    "result": {
+      "captureResume": {
+        "at": 126.21956009999849,
+        "progress": 5.461385045794573
+      },
+      "combat": {
+        "rangedShot": true,
+        "healthBar": true,
+        "meleeAttack": true,
+        "resumedAfterPause": true,
+        "barProgress": true,
+        "walking": true,
+        "neutralRespawn": true,
+        "damagedHealth": true,
+        "pausedForDefenders": true,
+        "projectile": true,
+        "defendedZero": true
+      },
+      "walkToOwnOutpost": 126.26473999023438,
+      "walkToOtherOutpost": 220.93222618103027,
+      "placements": [
+        {
+          "rotation": 90,
+          "x": 6,
+          "z": 8,
+          "id": "b4",
+          "kind": "training"
+        },
+        {
+          "rotation": 90,
+          "x": 16,
+          "z": 8,
+          "id": "b5",
+          "kind": "ranged"
+        },
+        {
+          "rotation": 0,
+          "x": 16,
+          "z": -8,
+          "id": "b6",
+          "kind": "healer"
+        }
+      ],
+      "contestedNative": false,
+      "fundedFakeBootstrap": true,
+      "attempts": [
+        {
+          "ok": true,
+          "action": "select Sparta",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:1"
+        },
+        {
+          "ok": true,
+          "action": "travel buy",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:2"
+        },
+        {
+          "ok": true,
+          "action": "buy training",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:3"
+        },
+        {
+          "ok": true,
+          "action": "buy ranged",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:4"
+        },
+        {
+          "ok": true,
+          "action": "buy healer",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:5"
+        },
+        {
+          "ok": true,
+          "action": "travel civilization",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:6"
+        },
+        {
+          "ok": true,
+          "action": "place training",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:7"
+        },
+        {
+          "ok": true,
+          "action": "place ranged",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:8"
+        },
+        {
+          "ok": true,
+          "action": "place healer",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:9"
+        },
+        {
+          "ok": true,
+          "action": "E target other outpost",
+          "attempt": 1,
+          "requestId": "7942e49b-5c8:10"
+        }
+      ],
+      "capture": {
+        "civilizationId": "sparta",
+        "label": "Sparta outpost\nCaptured",
+        "outpostId": "outpost_1",
+        "progress": 20,
+        "observedSeconds": 30.464556499995524
+      },
+      "nativeVirtualInput": true,
+      "manualTarget": {
+        "outpostId": "outpost_2",
+        "manual": true,
+        "requestId": "7942e49b-5c8:10"
+      },
+      "effectsAfter": {
+        "captures": 1,
+        "shots": 17,
+        "deaths": 12,
+        "hits": 34
+      },
+      "neutralRespawns": [
+        {
+          "at": 125.45204340000055,
+          "actorId": "garrison:outpost_1:3",
+          "afterLife": 30,
+          "progress": 5.345792845770742,
+          "beforeLife": 3
+        },
+        {
+          "at": 126.76993179999408,
+          "actorId": "garrison:outpost_1:1",
+          "afterLife": 31,
+          "progress": 5.89290167051978,
+          "beforeLife": 1
+        },
+        {
+          "at": 127.98690479999641,
+          "actorId": "garrison:outpost_1:2",
+          "afterLife": 32,
+          "progress": 6.640167027293098,
+          "beforeLife": 2
+        },
+        {
+          "at": 134.1363378999813,
+          "actorId": "garrison:outpost_1:3",
+          "afterLife": 33,
+          "progress": 11.153796713210824,
+          "beforeLife": 30
+        },
+        {
+          "at": 135.23769019998144,
+          "actorId": "garrison:outpost_1:1",
+          "afterLife": 34,
+          "progress": 11.319058984645558,
+          "beforeLife": 31
+        },
+        {
+          "at": 137.53788049999275,
+          "actorId": "garrison:outpost_1:2",
+          "afterLife": 35,
+          "progress": 13.027925484259917,
+          "beforeLife": 32
+        },
+        {
+          "at": 143.0516867999977,
+          "actorId": "garrison:outpost_1:3",
+          "afterLife": 36,
+          "progress": 16.24373332470859,
+          "beforeLife": 33
+        },
+        {
+          "at": 143.93384689997765,
+          "actorId": "garrison:outpost_1:1",
+          "afterLife": 37,
+          "progress": 16.24373332470859,
+          "beforeLife": 34
+        },
+        {
+          "at": 147.7703526999976,
+          "actorId": "garrison:outpost_1:2",
+          "afterLife": 38,
+          "progress": 18.964182691698998,
+          "beforeLife": 35
+        }
+      ],
+      "ok": true,
+      "final": {
+        "alive": {
+          "ranged": 2,
+          "melee": 2,
+          "medic": 1
+        },
+        "targetId": "outpost_2",
+        "allocated": {
+          "ranged": 2,
+          "melee": 2,
+          "medic": 1
+        },
+        "troopCapacity": 10,
+        "coins": 4300
+      },
+      "initial": {
+        "neutralRanged": 1,
+        "neutralMelee": 2,
+        "outposts": 8,
+        "coins": 5000
+      },
+      "autoTarget": "outpost_1",
+      "homeInvasionNative": false,
+      "capturePause": {
+        "progress": 5.345792845770742,
+        "defenders": 1,
+        "secondsUnchanged": 0.2161263999878429
+      },
+      "lastStep": "walk to another outpost center and order the whole army with E",
+      "localRelocation": false,
+      "localStateInjection": false,
+      "effectsBefore": {
+        "captures": 0,
+        "shots": 0,
+        "deaths": 0,
+        "hits": 0
+      }
+    }
+  },
+  "server": {
+    "settings": {
+      "ownedSpeed": 6,
+      "neutralRange": 9,
+      "neutralSpeed": 4,
+      "medicRange": 7,
+      "ownedRange": 10
+    },
+    "storage": "InjectedFakeProfileStore",
+    "bandages": 32,
+    "scene": {
+      "ok": true,
+      "result": {
+        "housing": 4,
+        "assigned": 2,
+        "idle": 2,
+        "workers": 4,
+        "troops": {
+          "ranged": 2,
+          "melee": 4,
+          "medic": 1,
+          "cappedBackfill": true,
+          "perBuildingCleanup": true,
+          "retainedUnrelatedActors": true,
+          "troopCap": 10
+        },
+        "ranges": 13,
+        "observedSeconds": 14,
+        "previews": 10
+      }
+    },
+    "originalScene": {
+      "ok": true,
+      "result": {
+        "raycastSupportAndHumanoidExclusion": true,
+        "styles": {
+          "chop": 2,
+          "firearm": 4,
+          "throw": 17,
+          "slash": 8,
+          "bow": 6,
+          "thrust": 4
+        },
+        "medicHealRange": 7,
+        "scale": 0.25,
+        "groundedPoses": 518,
+        "neutralRangedReach": 9,
+        "civilizations": 13,
+        "customMelee": 5,
+        "neutralRoles": 2,
+        "neutralSpeed": 4,
+        "ownedSpeed": 6,
+        "roles": 39,
+        "liveArmyMutation": false,
+        "sourceTemplatesImmutable": true,
+        "ownedRangedReach": 10
+      }
+    },
+    "isolation": "passed",
+    "sourceUnchanged": true
+  },
+  "frames": {
+    "p95Ms": 19.412299618124962,
+    "medianMs": 16.65640063583851,
+    "samples": 90,
+    "scope": "Warm solo original-rig desktop fixture after capture alongside user combat Play; not phone/combat-storm/published multiplayer",
+    "actors": 23
+  },
+  "assetWarnings": [
+    {
+      "id": 203785492,
+      "scope": "Existing farmer asset-type warning"
+    },
+    {
+      "id": 6989384332,
+      "scope": "Original NPCTemplates.sparta.Torso.roblox decal: asset is not approved for requester. Original source preserved; no replacement texture invented."
+    }
+  ],
+  "limits": "Solo actual UI/keyboard/walking and original-helper combat. Rival scene uses simulated teams/time; no actual multiplayer, physical-device or live-store claim."
+}

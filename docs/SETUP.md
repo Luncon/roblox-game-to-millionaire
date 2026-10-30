@@ -49,7 +49,81 @@ In the desktop app, select the corresponding skill in the Skills sidebar.
 Roblox client tests are separate evidence. See the [OpenSpec setup guide](https://openspec.dev/docs/setup).
 
 Dependency installation scripts are disabled in `.npmrc`. See the
-[dependency review](DEPENDENCY_REVIEW.md) for the known upstream audit finding.
+[dependency review](DEPENDENCY_REVIEW.md) for the current audit result and
+historical upstream finding.
+
+## Selene, StyLua, Lune and automated checks
+
+From the repository root, using the pinned Node/npm installation:
+
+```bash
+npm ci
+npm run setup:tools
+npm run check:dev
+```
+
+`setup:tools` explicitly downloads official Selene **0.32.0**, StyLua **2.6.0**
+and Lune **0.11.1** release archives, verifies their SHA-256 digests and installs
+them under ignored `.cache/dev-tools/`. Versions, URLs and digests live in
+[`dev-tools.lock.json`](../dev-tools.lock.json). No global installation, shell
+startup change or npm installation hook is needed. The reviewed downloads cover
+WSL/Linux x64 and Windows x64; WSL/Linux needs `unzip`, and Windows uses built-in
+PowerShell extraction. Run setup separately in each environment. Other platforms
+need reviewed release entries before the installer will accept them.
+
+| Command | What it checks or changes |
+| --- | --- |
+| `npm run lint` | Selene on changed/new first-party Luau files |
+| `npm run format:check` | StyLua formatting on those same files |
+| `npm run format` | Formats those files, with StyLua AST verification |
+| `npm run lint:all` | Full first-party lint scan |
+| `npm run format:check:all` | Full first-party formatting scan |
+| `npm test` | Tooling regressions, all-file Luau syntax compilation, then standalone logic cases |
+| `npm run check:dev` | Strict OpenSpec validation, changed-file lint/format checks and `npm test` |
+
+First-party scope is `src/`, `tests/`, `prototypes/miniature/` and `.lune/`.
+Backups, imported assets, vendor skill examples and generated bundles are outside
+that scope. Selene uses the committed `roblox.yml` API snapshot for offline,
+repeatable Roblox globals; refresh it deliberately with the pinned Selene's
+`generate-roblox-std` command. StyLua uses explicit Luau syntax and preserves
+require order. Neither tool provides Roblox-aware type checking.
+
+Local lint/format checks compare the worktree and index with `HEAD`, including
+untracked files. To check committed branch changes in WSL, set
+`LUAU_CHECK_BASE=origin/main` before the command. GitHub Actions compares against
+the PR base or previous push SHA; a newly pushed branch uses its common ancestor
+with the default branch, falling back to the last commit's parent when necessary
+(an initial root commit checks all files). Missing comparison refs fail
+the check. Any diagnostic or format drift in selected files fails the gate.
+
+The initial full scan found 8,536 lint diagnostics and 250 files requiring
+formatting. These remain visible through the full-scan commands; no rules are
+disabled. Adoption checks changed files so tooling setup does not rewrite the
+preserved production game. When editing an existing Luau file, its entire lint
+and formatting check must pass.
+
+Lune runs the existing explicit-engine-double suite: **244 logic cases** at setup.
+The syntax smoke check compiles source without executing game bootstraps. Logic
+fixtures use the injected FakeProfileStore; no player storage, Roblox credentials
+or Studio window is used. Physics, rendering, UI input, teleports and native
+replication still need the Studio/client checks documented below. GitHub Actions
+runs these same offline checks on pushes and pull requests; it does not publish
+the game. Node remains development tooling only.
+
+### Project agent skills
+
+Four skills from [afrxo/roblox-agent-skills](https://github.com/afrxo/roblox-agent-skills)
+are installed locally: `luau-expert`, `roblox-dev`, `roblox-toolchain` and
+`roblox-ui`. The core [Caveman skill](https://github.com/JuliusBrussee/caveman)
+is also installed for optional concise replies. Invoke `$caveman` explicitly;
+installation does not activate it. Its proxy, hooks, compression tools and other
+skills are not installed.
+
+These skills will be available on the next turn. The source revisions, licenses
+and integration notes are recorded in
+[the third-party skill record](../.agents/third-party/README.md). Repository
+instructions and existing patterns take priority; verify skill API examples
+against official documentation before using them.
 
 ## Obsidian on Windows
 
@@ -65,9 +139,28 @@ Open `START_HERE.md`. New notes go to `docs/notes/`, attachments go to
 Personal window/workspace state is ignored by Git; shared vault settings are tracked.
 The notes and OpenSpec files are the actual repository files, not a synchronized copy.
 
+### Everyday use
+
+Start at [the vault home](../START_HERE.md), then follow the current-work links
+or open [the project notes index](notes/INDEX.md). Use **Ctrl+O** to find an
+existing note and **Ctrl+N** to create a note in `docs/notes/`. Give new notes a
+descriptive title and add a relative Markdown link to the notes index. Record
+ideas, decisions, references and playtest observations, including evidence and
+unresolved questions where relevant.
+
+Edit existing topic documentation when decisions change it. Keep approved
+requirements in `openspec/changes/` and implemented behavior in
+`openspec/specs/`; link to them rather than copying their contents into notes.
+Obsidian saves the Markdown files locally; Git tracks those edits with the
+rest of the project.
+
 Reference: [Obsidian vaults](https://obsidian.md/help/vault).
 
 ## Rojo on Windows
+
+The new, isolated miniature economy work uses
+[the gameplay sandbox instructions](MINIATURE_GAMEPLAY.md); the original scale
+preview and production mappings remain separate.
 
 The user installed the Studio plugin and extracted Rojo 7.7.1 to:
 
@@ -176,9 +269,10 @@ The optional Luau 0.740 command-line tools are installed on this Mac at
 [Official Luau releases](https://github.com/luau-lang/luau/releases/tag/0.740)
 provide binaries for other machines.
 
-Run `npm run check:skills` for deterministic logic tests, including skills,
-economy, profile validation and fake-store restoration. The runner detects the
-Mac install or uses `luau` from PATH; `LUAU_CLI` can specify another executable.
+Run `npm run setup:tools` once, then `npm run check:skills` for deterministic logic tests, including skills,
+economy, profile validation and fake-store restoration. The runner uses the
+pinned project-local Lune install; `LUAU_CLI` can explicitly select the standalone
+Luau CLI instead for compatibility with existing installations.
 Explicit engine doubles support this CLI suite; physics, rigs and native input
 require Studio. No player DataStores are opened.
 

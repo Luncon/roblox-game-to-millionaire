@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-29",
+  "method": "Native Edit probe executes the exact funded Bootstrap with Runtime.start replaced by a store-capturing stub. Only the injected FakeProfileStore is exercised; no gameplay world, live storage or active player session is modified.",
+  "result": {
+    "ok": true,
+    "baseline": "262336:2729502414",
+    "ordinaryStarter": 200,
+    "onlyInjectedFakeStore": true,
+    "civilizations": {
+      "1": {
+        "civilizationId": "sparta",
+        "coins": 20000
+      },
+      "2": {
+        "civilizationId": "britain",
+        "coins": 20000
+      },
+      "3": {
+        "civilizationId": "seneca",
+        "coins": 20000
+      },
+      "4": {
+        "civilizationId": "mongols",
+        "coins": 20000
+      },
+      "5": {
+        "civilizationId": "vikings",
+        "coins": 20000
+      },
+      "6": {
+        "civilizationId": "persia",
+        "coins": 20000
+      },
+      "7": {
+        "civilizationId": "japan",
+        "coins": 20000
+      },
+      "8": {
+        "civilizationId": "maurya",
+        "coins": 20000
+      },
+      "9": {
+        "civilizationId": "spain",
+        "coins": 20000
+      },
+      "10": {
+        "civilizationId": "egypt",
+        "coins": 20000
+      },
+      "11": {
+        "civilizationId": "rome",
+        "coins": 20000
+      },
+      "12": {
+        "civilizationId": "ottomans",
+        "coins": 20000
+      },
+      "13": {
+        "civilizationId": "ming",
+        "coins": 20000
+      }
+    },
+    "independentPlayer": 20000,
+    "spentSparta": 15000,
+    "noWorldBootstrap": true,
+    "unspentBritain": 20000
+  }
+}

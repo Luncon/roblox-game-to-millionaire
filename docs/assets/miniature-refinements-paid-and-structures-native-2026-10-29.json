@@ -1,0 +1,525 @@
+{
+  "date": "2026-10-29",
+  "studioId": "e5bbe0df-d8e5-4327-bfeb-8a74e907cb08",
+  "scope": "Actual native shop/buttons, placement clicks, automatic combat/death and replacement; no profile/actor/damage/position injection. Separate isolated initial ragdoll check included as RED for the crocodile settling issue.",
+  "result": {
+    "structures": {
+      "ok": true,
+      "result": {
+        "purchases": [
+          {
+            "plans": 1,
+            "kind": "house",
+            "aggregatePlans": 1,
+            "coins": 14920
+          },
+          {
+            "plans": 2,
+            "kind": "house",
+            "aggregatePlans": 2,
+            "coins": 14840
+          },
+          {
+            "plans": 1,
+            "kind": "farm",
+            "aggregatePlans": 3,
+            "coins": 14720
+          },
+          {
+            "plans": 2,
+            "kind": "farm",
+            "aggregatePlans": 4,
+            "coins": 14600
+          },
+          {
+            "plans": 1,
+            "kind": "timber",
+            "aggregatePlans": 5,
+            "coins": 14440
+          },
+          {
+            "plans": 1,
+            "kind": "material",
+            "aggregatePlans": 6,
+            "coins": 14240
+          },
+          {
+            "plans": 1,
+            "kind": "workshop",
+            "aggregatePlans": 7,
+            "coins": 14000
+          },
+          {
+            "plans": 1,
+            "kind": "training",
+            "aggregatePlans": 8,
+            "coins": 13750
+          },
+          {
+            "plans": 2,
+            "kind": "training",
+            "aggregatePlans": 9,
+            "coins": 13500
+          },
+          {
+            "plans": 1,
+            "kind": "ranged",
+            "aggregatePlans": 10,
+            "coins": 13250
+          },
+          {
+            "plans": 2,
+            "kind": "ranged",
+            "aggregatePlans": 11,
+            "coins": 13000
+          },
+          {
+            "plans": 1,
+            "kind": "healer",
+            "aggregatePlans": 12,
+            "coins": 12800
+          },
+          {
+            "plans": 2,
+            "kind": "healer",
+            "aggregatePlans": 13,
+            "coins": 12600
+          }
+        ],
+        "nativeVirtualInput": true,
+        "after": {
+          "mounted": 1,
+          "heldPlans": 3,
+          "buildings": 14,
+          "physicalBuildings": 14,
+          "capacityUsed": 8,
+          "troopCapacity": 10,
+          "coins": 12600
+        },
+        "localRelocation": false,
+        "before": {
+          "plans": 0,
+          "capacityUsed": 2,
+          "buildings": 4,
+          "coins": 15000
+        },
+        "fundingInjected": false,
+        "heldPlans": {
+          "totalPrice": 2400,
+          "count": 13,
+          "coins": 12600
+        },
+        "authoritativeMutation": false,
+        "placements": [
+          {
+            "rotation": 0,
+            "x": -34,
+            "count": 5,
+            "z": -28,
+            "id": "b5",
+            "kind": "training",
+            "capacityUsed": 4
+          },
+          {
+            "rotation": 0,
+            "x": -24,
+            "count": 6,
+            "z": -28,
+            "id": "b6",
+            "kind": "training",
+            "capacityUsed": 6
+          },
+          {
+            "rotation": 0,
+            "x": -14,
+            "count": 7,
+            "z": -28,
+            "id": "b7",
+            "kind": "ranged",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 6,
+            "count": 8,
+            "z": -28,
+            "id": "b8",
+            "kind": "farm",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 14,
+            "count": 9,
+            "z": -28,
+            "id": "b9",
+            "kind": "farm",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 90,
+            "x": -6,
+            "count": 10,
+            "z": -28,
+            "id": "b10",
+            "kind": "timber",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 22,
+            "count": 11,
+            "z": -28,
+            "id": "b11",
+            "kind": "material",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 30,
+            "count": 12,
+            "z": -28,
+            "id": "b12",
+            "kind": "workshop",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 22,
+            "count": 13,
+            "z": -22,
+            "id": "b13",
+            "kind": "house",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 28,
+            "count": 14,
+            "z": -22,
+            "id": "b14",
+            "kind": "house",
+            "capacityUsed": 8
+          }
+        ],
+        "attempts": [
+          {
+            "ok": true,
+            "revision": 22,
+            "label": "travel buy",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:6"
+          },
+          {
+            "ok": true,
+            "revision": 23,
+            "label": "buy house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:7"
+          },
+          {
+            "ok": true,
+            "revision": 24,
+            "label": "buy house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:8"
+          },
+          {
+            "ok": true,
+            "revision": 25,
+            "label": "buy farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:9"
+          },
+          {
+            "ok": true,
+            "revision": 26,
+            "label": "buy farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:10"
+          },
+          {
+            "ok": true,
+            "revision": 27,
+            "label": "buy timber",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:11"
+          },
+          {
+            "ok": true,
+            "revision": 28,
+            "label": "buy material",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:12"
+          },
+          {
+            "ok": true,
+            "revision": 29,
+            "label": "buy workshop",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:13"
+          },
+          {
+            "ok": true,
+            "revision": 30,
+            "label": "buy training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:14"
+          },
+          {
+            "ok": true,
+            "revision": 31,
+            "label": "buy training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:15"
+          },
+          {
+            "ok": true,
+            "revision": 32,
+            "label": "buy ranged",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:16"
+          },
+          {
+            "ok": true,
+            "revision": 33,
+            "label": "buy ranged",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:17"
+          },
+          {
+            "ok": true,
+            "revision": 34,
+            "label": "buy healer",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:18"
+          },
+          {
+            "ok": true,
+            "revision": 35,
+            "label": "buy healer",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:19"
+          },
+          {
+            "ok": true,
+            "revision": 36,
+            "label": "travel civilization",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:20"
+          },
+          {
+            "ok": true,
+            "revision": 37,
+            "label": "place training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:21"
+          },
+          {
+            "ok": true,
+            "revision": 38,
+            "label": "place training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:22"
+          },
+          {
+            "ok": true,
+            "revision": 39,
+            "label": "place ranged",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:23"
+          },
+          {
+            "ok": true,
+            "revision": 40,
+            "label": "place farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:24"
+          },
+          {
+            "ok": true,
+            "revision": 43,
+            "label": "place farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:25"
+          },
+          {
+            "ok": true,
+            "revision": 47,
+            "label": "place timber",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:26"
+          },
+          {
+            "ok": true,
+            "revision": 50,
+            "label": "place material",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:27"
+          },
+          {
+            "ok": true,
+            "revision": 53,
+            "label": "place workshop",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:28"
+          },
+          {
+            "ok": true,
+            "revision": 57,
+            "label": "place house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:29"
+          },
+          {
+            "ok": true,
+            "revision": 60,
+            "label": "place house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:30"
+          }
+        ]
+      }
+    },
+    "ragdollInitial": {
+      "ok": false,
+      "result": "ReplicatedStorage.NativeRagdollClient:182: Physics did not actually settle/articulate",
+      "evidence": {
+        "authorityMutation": false,
+        "replacementLifeIndependent": true,
+        "roles": [
+          {
+            "rotation": 1.6212457418441772,
+            "role": "melee",
+            "movement": 0.6954470872879028,
+            "torsoY": 0.6116037368774414,
+            "sockets": 5,
+            "limbRotation": 0.8394776582717896,
+            "colliders": 6
+          },
+          {
+            "rotation": 0.04405183345079422,
+            "role": "ranged",
+            "movement": 0.17056848108768463,
+            "torsoY": 1.0743184089660645,
+            "sockets": 5,
+            "limbRotation": 0.659569263458252,
+            "colliders": 6
+          },
+          {
+            "rotation": 1.5714983940124512,
+            "role": "medic",
+            "movement": 0.9531849026679993,
+            "torsoY": 0.4922167956829071,
+            "sockets": 5,
+            "limbRotation": 0.783598005771637,
+            "colliders": 6
+          },
+          {
+            "rotation": 1.1850851774215698,
+            "role": "mounted",
+            "movement": 1.0420658588409424,
+            "torsoY": 1.1947354078292847,
+            "sockets": 24,
+            "limbRotation": 0.32122740149497986,
+            "colliders": 18
+          }
+        ],
+        "reclaimNoCorpse": true,
+        "isolatedTemplates": true
+      }
+    },
+    "paid": {
+      "ok": true,
+      "result": {
+        "purchase": {
+          "before": {
+            "plans": 0,
+            "capacity": 10,
+            "capacityUsed": 0,
+            "coins": 20000
+          },
+          "nativeVirtualInput": true,
+          "purchase": {
+            "plans": 1,
+            "capacityUsed": 0,
+            "coins": 15000
+          },
+          "placement": {
+            "mounted": 1,
+            "plans": 0,
+            "capacityUsed": 2,
+            "coins": 15000,
+            "hud": "15000 coins\nGoods 0/200 · Mounted 1\nPeople 4 · Army 2/10",
+            "x": 26,
+            "actorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b4:1",
+            "z": -8,
+            "life": 25,
+            "animal": "lion",
+            "capacity": 10,
+            "buildingId": "b4"
+          },
+          "authoritativeMutation": false,
+          "attempts": [
+            {
+              "ok": true,
+              "revision": 3,
+              "label": "choose Sparta",
+              "requestId": "f7ee13c9-6e4:1"
+            },
+            {
+              "ok": true,
+              "revision": 4,
+              "label": "travel buy",
+              "requestId": "f7ee13c9-6e4:2"
+            },
+            {
+              "ok": true,
+              "revision": 6,
+              "label": "buy mounted building",
+              "requestId": "f7ee13c9-6e4:3"
+            },
+            {
+              "ok": true,
+              "revision": 7,
+              "label": "travel civilization",
+              "requestId": "f7ee13c9-6e4:4"
+            },
+            {
+              "ok": true,
+              "revision": 10,
+              "label": "place mounted facility",
+              "requestId": "f7ee13c9-6e4:5"
+            }
+          ],
+          "localRelocation": false
+        },
+        "death": {
+          "physicalParts": 102,
+          "notice": {
+            "life": 25,
+            "actorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b4:1",
+            "time": 1793316501.88543
+          },
+          "rotatedParts": 102,
+          "life": 25,
+          "actorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b4:1",
+          "combatSeconds": 20.30812890001107,
+          "sockets": 24,
+          "movedParts": 102,
+          "colliders": 18
+        },
+        "normalPurchase": true,
+        "authoritativeMutation": false,
+        "replacement": {
+          "life": 28,
+          "health": 300,
+          "oldCorpseRemoved": true,
+          "weightedCapacity": 2,
+          "oldSourceRemoved": true
+        },
+        "localRelocation": false
+      }
+    }
+  }
+}

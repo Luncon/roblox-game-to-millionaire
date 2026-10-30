@@ -1,0 +1,813 @@
+{
+  "flow": {
+    "ok": true,
+    "evidence": {
+      "lastWalkDistance": 10.932376861572266,
+      "retry": [],
+      "troops": {
+        "ranged": 2,
+        "melee": 2,
+        "medic": 1
+      },
+      "localRelocation": false,
+      "localRenderInjection": false,
+      "expectedStartingCoins": 5000,
+      "fundedFakeBootstrap": true,
+      "attempts": {
+        "1": {
+          "ok": true,
+          "revision": 3,
+          "label": "select Sparta",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:1"
+        },
+        "2": {
+          "ok": true,
+          "revision": 19,
+          "label": "E collect all",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:2"
+        },
+        "3": {
+          "ok": true,
+          "revision": 20,
+          "label": "travel sell",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:3"
+        },
+        "4": {
+          "ok": true,
+          "revision": 22,
+          "label": "Sell all",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:4"
+        },
+        "5": {
+          "ok": true,
+          "revision": 23,
+          "label": "travel buy",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:5"
+        },
+        "6": {
+          "ok": true,
+          "revision": 26,
+          "label": "buy training",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:6"
+        },
+        "7": {
+          "ok": true,
+          "revision": 27,
+          "label": "buy ranged",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:7"
+        },
+        "8": {
+          "ok": true,
+          "revision": 28,
+          "label": "buy healer",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:8"
+        },
+        "9": {
+          "ok": true,
+          "revision": 29,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:9"
+        },
+        "10": {
+          "ok": true,
+          "revision": 33,
+          "label": "place training",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:10"
+        },
+        "11": {
+          "ok": true,
+          "revision": 36,
+          "label": "place ranged",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:11"
+        },
+        "12": {
+          "ok": true,
+          "revision": 39,
+          "label": "place healer",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:12"
+        },
+        "13": {
+          "ok": true,
+          "revision": 40,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:13"
+        },
+        "14": {
+          "ok": true,
+          "revision": 44,
+          "label": "hammer melee barracks",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:14"
+        },
+        "15": {
+          "ok": true,
+          "revision": 45,
+          "label": "place training",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:15"
+        }
+      },
+      "ok": true,
+      "perBuildingRemoval": true,
+      "steps": {
+        "1": "choose fresh Sparta without research",
+        "2": "native farm collection and shared sale",
+        "3": "buy eligible military items using coins only",
+        "4": "place three military building types",
+        "5": "hammer reclaim only one barracks and retain unrelated troops",
+        "6": "replace barracks item without extra cost"
+      },
+      "earningCycles": 1,
+      "placements": {
+        "1": {
+          "rotation": 90,
+          "x": 6,
+          "z": 8,
+          "id": "b4",
+          "kind": "training"
+        },
+        "2": {
+          "rotation": 90,
+          "x": 16,
+          "z": 8,
+          "id": "b5",
+          "kind": "ranged"
+        },
+        "3": {
+          "rotation": 0,
+          "x": 16,
+          "z": -8,
+          "id": "b6",
+          "kind": "healer"
+        },
+        "4": {
+          "rotation": 90,
+          "x": 6,
+          "z": 8,
+          "id": "b7",
+          "kind": "training"
+        }
+      },
+      "lastStep": "replace barracks item without extra cost",
+      "firstSale": 120,
+      "noResearchRequired": true,
+      "multipleMilitary": false,
+      "researchInjected": false,
+      "retainedUnrelatedActors": true,
+      "replacementNoCharge": true
+    },
+    "result": {
+      "lastWalkDistance": 10.932376861572266,
+      "retry": [],
+      "troops": {
+        "ranged": 2,
+        "melee": 2,
+        "medic": 1
+      },
+      "localRelocation": false,
+      "localRenderInjection": false,
+      "expectedStartingCoins": 5000,
+      "fundedFakeBootstrap": true,
+      "attempts": {
+        "1": {
+          "ok": true,
+          "revision": 3,
+          "label": "select Sparta",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:1"
+        },
+        "2": {
+          "ok": true,
+          "revision": 19,
+          "label": "E collect all",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:2"
+        },
+        "3": {
+          "ok": true,
+          "revision": 20,
+          "label": "travel sell",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:3"
+        },
+        "4": {
+          "ok": true,
+          "revision": 22,
+          "label": "Sell all",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:4"
+        },
+        "5": {
+          "ok": true,
+          "revision": 23,
+          "label": "travel buy",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:5"
+        },
+        "6": {
+          "ok": true,
+          "revision": 26,
+          "label": "buy training",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:6"
+        },
+        "7": {
+          "ok": true,
+          "revision": 27,
+          "label": "buy ranged",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:7"
+        },
+        "8": {
+          "ok": true,
+          "revision": 28,
+          "label": "buy healer",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:8"
+        },
+        "9": {
+          "ok": true,
+          "revision": 29,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:9"
+        },
+        "10": {
+          "ok": true,
+          "revision": 33,
+          "label": "place training",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:10"
+        },
+        "11": {
+          "ok": true,
+          "revision": 36,
+          "label": "place ranged",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:11"
+        },
+        "12": {
+          "ok": true,
+          "revision": 39,
+          "label": "place healer",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:12"
+        },
+        "13": {
+          "ok": true,
+          "revision": 40,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:13"
+        },
+        "14": {
+          "ok": true,
+          "revision": 44,
+          "label": "hammer melee barracks",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:14"
+        },
+        "15": {
+          "ok": true,
+          "revision": 45,
+          "label": "place training",
+          "attempt": 1,
+          "requestId": "4a67a9a4-9f2:15"
+        }
+      },
+      "ok": true,
+      "perBuildingRemoval": true,
+      "steps": {
+        "1": "choose fresh Sparta without research",
+        "2": "native farm collection and shared sale",
+        "3": "buy eligible military items using coins only",
+        "4": "place three military building types",
+        "5": "hammer reclaim only one barracks and retain unrelated troops",
+        "6": "replace barracks item without extra cost"
+      },
+      "earningCycles": 1,
+      "placements": {
+        "1": {
+          "rotation": 90,
+          "x": 6,
+          "z": 8,
+          "id": "b4",
+          "kind": "training"
+        },
+        "2": {
+          "rotation": 90,
+          "x": 16,
+          "z": 8,
+          "id": "b5",
+          "kind": "ranged"
+        },
+        "3": {
+          "rotation": 0,
+          "x": 16,
+          "z": -8,
+          "id": "b6",
+          "kind": "healer"
+        },
+        "4": {
+          "rotation": 90,
+          "x": 6,
+          "z": 8,
+          "id": "b7",
+          "kind": "training"
+        }
+      },
+      "lastStep": "replace barracks item without extra cost",
+      "firstSale": 120,
+      "noResearchRequired": true,
+      "multipleMilitary": false,
+      "researchInjected": false,
+      "retainedUnrelatedActors": true,
+      "replacementNoCharge": true
+    }
+  },
+  "guards": {
+    "ok": true,
+    "evidence": {
+      "ok": true,
+      "nativeVirtualInput": true,
+      "layouts": {
+        "1": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "2": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 568,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "3": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 640
+        },
+        "4": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 768,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 1024
+        }
+      },
+      "localRelocation": false,
+      "localStateMutation": false,
+      "death": {
+        "after": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4340,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 7,
+          "plans": {
+            "ranged": 0,
+            "training": 0,
+            "workshop": 0,
+            "house": 1,
+            "healer": 0,
+            "farm": 0,
+            "material": 0,
+            "storehouse": 0,
+            "timber": 0
+          }
+        },
+        "progressPreserved": true,
+        "troops": {
+          "groups": {
+            "b5": {
+              "ranged": 2,
+              "melee": 0,
+              "medic": 0
+            },
+            "b7": {
+              "ranged": 0,
+              "melee": 2,
+              "medic": 0
+            },
+            "b6": {
+              "ranged": 0,
+              "melee": 0,
+              "medic": 1
+            }
+          },
+          "counts": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          }
+        },
+        "selectionCleared": true,
+        "before": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4340,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 4,
+          "plans": {
+            "ranged": 0,
+            "timber": 0,
+            "workshop": 0,
+            "storehouse": 0,
+            "farm": 0,
+            "training": 0,
+            "material": 0,
+            "house": 1,
+            "healer": 0
+          }
+        },
+        "moveDirection": {
+          "y": 0,
+          "x": 0,
+          "z": -1
+        },
+        "gameOwnedInputOnly": true,
+        "verticalChange": 0.40000009536743164,
+        "ghostCleared": true,
+        "horizontalWalk": 16.26641845703125
+      },
+      "deathPurchase": {
+        "coinsAfter": 4340,
+        "coinsBefore": 4420,
+        "plansAfter": 1
+      },
+      "switch": {
+        "before": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4420,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 2,
+          "plans": {
+            "ranged": 0,
+            "timber": 0,
+            "workshop": 0,
+            "storehouse": 0,
+            "healer": 0,
+            "training": 0,
+            "material": 0,
+            "house": 0,
+            "farm": 0
+          }
+        },
+        "preserved": true,
+        "after": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4420,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 4,
+          "plans": {
+            "ranged": 0,
+            "timber": 0,
+            "workshop": 0,
+            "storehouse": 0,
+            "healer": 0,
+            "training": 0,
+            "material": 0,
+            "house": 0,
+            "farm": 0
+          }
+        },
+        "troops": {
+          "groups": {
+            "b5": {
+              "ranged": 2,
+              "melee": 0,
+              "medic": 0
+            },
+            "b7": {
+              "ranged": 0,
+              "melee": 2,
+              "medic": 0
+            },
+            "b6": {
+              "ranged": 0,
+              "melee": 0,
+              "medic": 1
+            }
+          },
+          "counts": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          }
+        }
+      },
+      "lastStep": "actual new-life W movement"
+    },
+    "result": {
+      "ok": true,
+      "nativeVirtualInput": true,
+      "layouts": {
+        "1": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "2": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 568,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "3": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 640
+        },
+        "4": {
+          "topButtons": 3,
+          "shopRows": 9,
+          "height": 768,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 1024
+        }
+      },
+      "localRelocation": false,
+      "localStateMutation": false,
+      "death": {
+        "after": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4340,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 7,
+          "plans": {
+            "ranged": 0,
+            "training": 0,
+            "workshop": 0,
+            "house": 1,
+            "healer": 0,
+            "farm": 0,
+            "material": 0,
+            "storehouse": 0,
+            "timber": 0
+          }
+        },
+        "progressPreserved": true,
+        "troops": {
+          "groups": {
+            "b5": {
+              "ranged": 2,
+              "melee": 0,
+              "medic": 0
+            },
+            "b7": {
+              "ranged": 0,
+              "melee": 2,
+              "medic": 0
+            },
+            "b6": {
+              "ranged": 0,
+              "melee": 0,
+              "medic": 1
+            }
+          },
+          "counts": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          }
+        },
+        "selectionCleared": true,
+        "before": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4340,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 4,
+          "plans": {
+            "ranged": 0,
+            "timber": 0,
+            "workshop": 0,
+            "storehouse": 0,
+            "farm": 0,
+            "training": 0,
+            "material": 0,
+            "house": 1,
+            "healer": 0
+          }
+        },
+        "moveDirection": {
+          "y": 0,
+          "x": 0,
+          "z": -1
+        },
+        "gameOwnedInputOnly": true,
+        "verticalChange": 0.40000009536743164,
+        "ghostCleared": true,
+        "horizontalWalk": 16.26641845703125
+      },
+      "deathPurchase": {
+        "coinsAfter": 4340,
+        "coinsBefore": 4420,
+        "plansAfter": 1
+      },
+      "switch": {
+        "before": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4420,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 2,
+          "plans": {
+            "ranged": 0,
+            "timber": 0,
+            "workshop": 0,
+            "storehouse": 0,
+            "healer": 0,
+            "training": 0,
+            "material": 0,
+            "house": 0,
+            "farm": 0
+          }
+        },
+        "preserved": true,
+        "after": {
+          "civilianCount": 4,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "buildingCount": 6,
+          "coins": 4420,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 0
+          },
+          "troopCapacity": 10,
+          "troops": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "claimEpoch": 4,
+          "plans": {
+            "ranged": 0,
+            "timber": 0,
+            "workshop": 0,
+            "storehouse": 0,
+            "healer": 0,
+            "training": 0,
+            "material": 0,
+            "house": 0,
+            "farm": 0
+          }
+        },
+        "troops": {
+          "groups": {
+            "b5": {
+              "ranged": 2,
+              "melee": 0,
+              "medic": 0
+            },
+            "b7": {
+              "ranged": 0,
+              "melee": 2,
+              "medic": 0
+            },
+            "b6": {
+              "ranged": 0,
+              "melee": 0,
+              "medic": 1
+            }
+          },
+          "counts": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          }
+        }
+      },
+      "lastStep": "actual new-life W movement"
+    }
+  },
+  "engine": "0.745.0.7451137"
+}

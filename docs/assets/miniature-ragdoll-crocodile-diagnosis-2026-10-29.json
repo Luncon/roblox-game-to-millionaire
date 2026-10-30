@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-29",
+  "studioId": "e5bbe0df-d8e5-4327-bfeb-8a74e907cb08",
+  "corePhysicsChanged": false,
+  "rootCause": "The flat crocodile starts with its belly supported. Whole-body fall is not required for its articulated legs to collapse. Measuring the baseline after the death notice also misses its fast first physics step.",
+  "firstFailure": {
+    "torsoMovement": 0.004572625737637281,
+    "torsoRotation": 0.010311916470527649,
+    "riderLimbRotation": 0.4624025821685791,
+    "torsoY": 1.1163842678070068,
+    "sockets": 11,
+    "colliders": 13
+  },
+  "independentPreDeathAnatomyProbe": {
+    "legRotations": [
+      0.5805710554,
+      0.5070486069,
+      0.5121463537,
+      0.6438313127
+    ],
+    "headRotation": 0.1324218512,
+    "tailRotation": 0.2672007084
+  },
+  "fixtureCorrection": "Capture anchored live-clone relative transforms before the valid death notice. For crocodile require all four marked leg rotations >0.1 radians, plus rider articulation, intact rigid gear, grounding, fade, TTL and budgets. Other four roles retain whole-body movement/rotation checks.",
+  "passingV4": {
+    "animalLegs": [
+      {
+        "rotation": 0.1460154950618744,
+        "movement": 0.024642575532197952
+      },
+      {
+        "rotation": 0.3604077398777008,
+        "movement": 0.08508099615573883
+      },
+      {
+        "rotation": 0.14146079123020172,
+        "movement": 0.02309892512857914
+      },
+      {
+        "rotation": 0.40475326776504517,
+        "movement": 0.08895943313837051
+      }
+    ],
+    "linearSpeed": 0,
+    "torsoY": 1.1166746616363525,
+    "rotation": 0.054735735058784485,
+    "role": "crocodile",
+    "movement": 0.25371772050857544,
+    "angularSpeed": 0,
+    "limbDisplacement": 0.15307272970676422,
+    "sockets": 11,
+    "limbRotation": 0.9959109425544739,
+    "colliders": 13
+  },
+  "regressionScope": "Fixture-only correction. No impulse, friction, constraint, source artwork, collision or gameplay changes were made for this diagnosis."
+}

@@ -1,0 +1,37 @@
+{
+  "nativeClientLifecycle": {
+    "ok": true,
+    "result": {
+      "sourceRateProof": false,
+      "nativeClient": true,
+      "isolated": {
+        "idempotentCleanup": true,
+        "staleTimestampRejected": true,
+        "sourceRemovalCleanup": true,
+        "grounded": true,
+        "healthDisplayUnique": true,
+        "gripPreserved": true,
+        "geometryReadiness": true,
+        "originalSourceRestored": true,
+        "staleLifeRejected": true,
+        "freshLifeReplaced": true
+      },
+      "authoritativeMutation": false,
+      "controllerModuleLoaded": false
+    }
+  },
+  "commanderWalking": {
+    "ok": true,
+    "seconds": 1.0162239999917801,
+    "configuredSpeed": 32,
+    "studs": 31.75670051574707,
+    "controllerModuleLoaded": false,
+    "nativeW": true
+  },
+  "commanderRespawn": {
+    "ok": true,
+    "spawnSpeed": 32,
+    "ownedFakePlayOnly": true,
+    "respawnSpeed": 32
+  }
+}

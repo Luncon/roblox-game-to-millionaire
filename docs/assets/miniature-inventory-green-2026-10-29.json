@@ -1,0 +1,325 @@
+{
+  "ok": true,
+  "result": {
+    "secondWalkDistance": 26.399961471557617,
+    "retry": [
+      {
+        "explicitNativePress": true,
+        "label": "travel civilization",
+        "attempt": 2,
+        "freshRevision": 28,
+        "reason": "stale_revision"
+      }
+    ],
+    "fakeFunding": false,
+    "localRelocation": false,
+    "localRenderInjection": false,
+    "collection": {
+      "goodsAfter": 60,
+      "outputAfter": 0,
+      "amount": 60
+    },
+    "walkDistance": 26.399620056152344,
+    "attempts": [
+      {
+        "ok": true,
+        "revision": 3,
+        "label": "select Sparta",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:1"
+      },
+      {
+        "ok": true,
+        "revision": 20,
+        "label": "E collect all",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:2"
+      },
+      {
+        "ok": true,
+        "revision": 21,
+        "label": "travel sell",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:3"
+      },
+      {
+        "ok": true,
+        "revision": 23,
+        "label": "SellAll",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:4"
+      },
+      {
+        "ok": true,
+        "revision": 24,
+        "label": "travel buy",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:5"
+      },
+      {
+        "ok": true,
+        "revision": 27,
+        "label": "buy house item",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:6"
+      },
+      {
+        "ok": false,
+        "revision": 28,
+        "label": "travel civilization",
+        "attempt": 1,
+        "reason": "stale_revision",
+        "requestId": "c2f14858-7e5:7"
+      },
+      {
+        "ok": true,
+        "revision": 29,
+        "label": "travel civilization",
+        "attempt": 2,
+        "requestId": "c2f14858-7e5:8"
+      },
+      {
+        "ok": true,
+        "revision": 34,
+        "label": "place house item",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:9"
+      },
+      {
+        "ok": true,
+        "revision": 38,
+        "label": "hammer farm reclaim",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:10"
+      },
+      {
+        "ok": true,
+        "revision": 39,
+        "label": "replace farm item",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:11"
+      }
+    ],
+    "ok": true,
+    "nativeVirtualInput": true,
+    "textBoxHotkeyGuard": true,
+    "nativeSharedShops": true,
+    "initialPopulation": {
+      "total": 4,
+      "idle": 2,
+      "assigned": 2
+    },
+    "hotbarCancellation": true,
+    "steps": [
+      "select fresh civilization",
+      "retain starter state for native scene observation",
+      "walk and collect all with E",
+      "server travel to shared sell stand and sell all",
+      "server travel to shared buy stand and buy house item",
+      "return to civilization and select inventory item",
+      "focused TextBox guards inventory, supported number and rotate hotkeys",
+      "hammer hotbar selection cancels placement without consuming item",
+      "hammer reclaim nonempty farm into goods and building inventory",
+      "replace reclaimed farm without extra cost and restore automatic jobs"
+    ],
+    "restoredPopulation": {
+      "total": 8,
+      "idle": 6,
+      "assigned": 2
+    },
+    "sale": {
+      "coinsAfter": 320,
+      "coinsBefore": 200,
+      "earned": 120
+    },
+    "reclaim": {
+      "outputBefore": 40,
+      "farmPlans": 1,
+      "amount": 48
+    },
+    "purchase": {
+      "price": 80,
+      "plansAfter": 1,
+      "coinsAfter": 240
+    },
+    "expandedPopulation": {
+      "total": 8,
+      "idle": 6,
+      "assigned": 2
+    },
+    "reclaimedPopulation": {
+      "total": 8,
+      "idle": 8,
+      "assigned": 0
+    },
+    "serverTravelButtons": true,
+    "replacement": {
+      "coinsUnchanged": true,
+      "x": 8,
+      "z": -8,
+      "buildingId": "b5"
+    },
+    "lastStep": "replace reclaimed farm without extra cost and restore automatic jobs"
+  },
+  "evidence": {
+    "secondWalkDistance": 26.399961471557617,
+    "retry": [
+      {
+        "explicitNativePress": true,
+        "label": "travel civilization",
+        "attempt": 2,
+        "freshRevision": 28,
+        "reason": "stale_revision"
+      }
+    ],
+    "fakeFunding": false,
+    "localRelocation": false,
+    "localRenderInjection": false,
+    "collection": {
+      "goodsAfter": 60,
+      "outputAfter": 0,
+      "amount": 60
+    },
+    "walkDistance": 26.399620056152344,
+    "attempts": [
+      {
+        "ok": true,
+        "revision": 3,
+        "label": "select Sparta",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:1"
+      },
+      {
+        "ok": true,
+        "revision": 20,
+        "label": "E collect all",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:2"
+      },
+      {
+        "ok": true,
+        "revision": 21,
+        "label": "travel sell",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:3"
+      },
+      {
+        "ok": true,
+        "revision": 23,
+        "label": "SellAll",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:4"
+      },
+      {
+        "ok": true,
+        "revision": 24,
+        "label": "travel buy",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:5"
+      },
+      {
+        "ok": true,
+        "revision": 27,
+        "label": "buy house item",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:6"
+      },
+      {
+        "ok": false,
+        "revision": 28,
+        "label": "travel civilization",
+        "attempt": 1,
+        "reason": "stale_revision",
+        "requestId": "c2f14858-7e5:7"
+      },
+      {
+        "ok": true,
+        "revision": 29,
+        "label": "travel civilization",
+        "attempt": 2,
+        "requestId": "c2f14858-7e5:8"
+      },
+      {
+        "ok": true,
+        "revision": 34,
+        "label": "place house item",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:9"
+      },
+      {
+        "ok": true,
+        "revision": 38,
+        "label": "hammer farm reclaim",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:10"
+      },
+      {
+        "ok": true,
+        "revision": 39,
+        "label": "replace farm item",
+        "attempt": 1,
+        "requestId": "c2f14858-7e5:11"
+      }
+    ],
+    "ok": true,
+    "nativeVirtualInput": true,
+    "textBoxHotkeyGuard": true,
+    "nativeSharedShops": true,
+    "initialPopulation": {
+      "total": 4,
+      "idle": 2,
+      "assigned": 2
+    },
+    "hotbarCancellation": true,
+    "steps": [
+      "select fresh civilization",
+      "retain starter state for native scene observation",
+      "walk and collect all with E",
+      "server travel to shared sell stand and sell all",
+      "server travel to shared buy stand and buy house item",
+      "return to civilization and select inventory item",
+      "focused TextBox guards inventory, supported number and rotate hotkeys",
+      "hammer hotbar selection cancels placement without consuming item",
+      "hammer reclaim nonempty farm into goods and building inventory",
+      "replace reclaimed farm without extra cost and restore automatic jobs"
+    ],
+    "restoredPopulation": {
+      "total": 8,
+      "idle": 6,
+      "assigned": 2
+    },
+    "sale": {
+      "coinsAfter": 320,
+      "coinsBefore": 200,
+      "earned": 120
+    },
+    "reclaim": {
+      "outputBefore": 40,
+      "farmPlans": 1,
+      "amount": 48
+    },
+    "purchase": {
+      "price": 80,
+      "plansAfter": 1,
+      "coinsAfter": 240
+    },
+    "expandedPopulation": {
+      "total": 8,
+      "idle": 6,
+      "assigned": 2
+    },
+    "reclaimedPopulation": {
+      "total": 8,
+      "idle": 8,
+      "assigned": 0
+    },
+    "serverTravelButtons": true,
+    "replacement": {
+      "coinsUnchanged": true,
+      "x": 8,
+      "z": -8,
+      "buildingId": "b5"
+    },
+    "lastStep": "replace reclaimed farm without extra cost and restore automatic jobs"
+  }
+}

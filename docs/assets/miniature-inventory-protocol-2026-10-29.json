@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "explicitNativeProtocolProbes": true,
+  "results": [
+    {"action": "buy", "reason": "out_of_range", "coinsUnchanged": true},
+    {"action": "sellAll", "reason": "out_of_range", "coinsUnchanged": true},
+    {"action": "travel", "reason": "invalid_destination", "coinsUnchanged": true},
+    {"action": "reclaim", "reason": "out_of_range", "coinsUnchanged": true}
+  ],
+  "scope": "Protocol refusals in the native owned Play; full goods/plan conservation and stale/replay/authority checks are additionally covered by deterministic fixtures."
+}

@@ -1,0 +1,11 @@
+{
+  "build": "miniature-original-army-playtest.rbxlx",
+  "observer": "Read-only Client PreRender observation; no position, state or input injection",
+  "seconds": 4,
+  "renderedFrames": 242,
+  "ownedMelee": [
+    { "changedFrames": 26, "distanceStuds": 11.728425096720457, "maximumStepStuds": 0.7070266008377075 },
+    { "changedFrames": 26, "distanceStuds": 11.203642785549164, "maximumStepStuds": 0.7073392868041992 }
+  ],
+  "interpretation": "Anchored server poses change on a minority of rendered frames. Rendering FPS does not prove smooth movement."
+}

@@ -1,0 +1,607 @@
+{
+  "flow": {
+    "ok": true,
+    "evidence": {
+      "secondWalkDistance": 26.399961471557617,
+      "retry": [],
+      "fakeFunding": false,
+      "localRelocation": false,
+      "localRenderInjection": false,
+      "collection": {
+        "goodsAfter": 60,
+        "outputAfter": 0,
+        "amount": 60
+      },
+      "walkDistance": 26.399961471557617,
+      "lastStep": "replace reclaimed farm without extra cost and restore automatic jobs",
+      "ok": true,
+      "nativeVirtualInput": true,
+      "textBoxHotkeyGuard": true,
+      "attempts": {
+        "1": {
+          "ok": true,
+          "revision": 3,
+          "label": "select Sparta",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:1"
+        },
+        "2": {
+          "ok": true,
+          "revision": 19,
+          "label": "E collect all",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:2"
+        },
+        "3": {
+          "ok": true,
+          "revision": 20,
+          "label": "travel sell",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:3"
+        },
+        "4": {
+          "ok": true,
+          "revision": 22,
+          "label": "SellAll",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:4"
+        },
+        "5": {
+          "ok": true,
+          "revision": 23,
+          "label": "travel buy",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:5"
+        },
+        "6": {
+          "ok": true,
+          "revision": 25,
+          "label": "buy house item",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:6"
+        },
+        "7": {
+          "ok": true,
+          "revision": 26,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:7"
+        },
+        "8": {
+          "ok": true,
+          "revision": 30,
+          "label": "place house item",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:8"
+        },
+        "9": {
+          "ok": true,
+          "revision": 34,
+          "label": "hammer farm reclaim",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:9"
+        },
+        "10": {
+          "ok": true,
+          "revision": 35,
+          "label": "replace farm item",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:10"
+        }
+      },
+      "initialPopulation": {
+        "assigned": 2,
+        "idle": 2,
+        "total": 4
+      },
+      "expandedPopulation": {
+        "assigned": 2,
+        "idle": 6,
+        "total": 8
+      },
+      "hotbarCancellation": true,
+      "restoredPopulation": {
+        "assigned": 2,
+        "idle": 6,
+        "total": 8
+      },
+      "sale": {
+        "coinsAfter": 320,
+        "coinsBefore": 200,
+        "earned": 120
+      },
+      "reclaimedPopulation": {
+        "assigned": 0,
+        "idle": 8,
+        "total": 8
+      },
+      "reclaim": {
+        "farmPlans": 1,
+        "outputBefore": 40,
+        "amount": 48
+      },
+      "purchase": {
+        "price": 80,
+        "plansAfter": 1,
+        "coinsAfter": 240
+      },
+      "nativeSharedShops": true,
+      "serverTravelButtons": true,
+      "replacement": {
+        "buildingId": "b5",
+        "x": 8,
+        "z": -8,
+        "coinsUnchanged": true
+      },
+      "steps": {
+        "1": "select fresh civilization",
+        "2": "retain starter state for native scene observation",
+        "3": "walk and collect all with E",
+        "4": "server travel to shared sell stand and sell all",
+        "5": "server travel to shared buy stand and buy house item",
+        "6": "return to civilization and select inventory item",
+        "7": "focused TextBox guards inventory, supported number and rotate hotkeys",
+        "8": "hammer hotbar selection cancels placement without consuming item",
+        "9": "hammer reclaim nonempty farm into goods and building inventory",
+        "10": "replace reclaimed farm without extra cost and restore automatic jobs"
+      }
+    },
+    "result": {
+      "secondWalkDistance": 26.399961471557617,
+      "retry": [],
+      "fakeFunding": false,
+      "localRelocation": false,
+      "localRenderInjection": false,
+      "collection": {
+        "goodsAfter": 60,
+        "outputAfter": 0,
+        "amount": 60
+      },
+      "walkDistance": 26.399961471557617,
+      "lastStep": "replace reclaimed farm without extra cost and restore automatic jobs",
+      "ok": true,
+      "nativeVirtualInput": true,
+      "textBoxHotkeyGuard": true,
+      "attempts": {
+        "1": {
+          "ok": true,
+          "revision": 3,
+          "label": "select Sparta",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:1"
+        },
+        "2": {
+          "ok": true,
+          "revision": 19,
+          "label": "E collect all",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:2"
+        },
+        "3": {
+          "ok": true,
+          "revision": 20,
+          "label": "travel sell",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:3"
+        },
+        "4": {
+          "ok": true,
+          "revision": 22,
+          "label": "SellAll",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:4"
+        },
+        "5": {
+          "ok": true,
+          "revision": 23,
+          "label": "travel buy",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:5"
+        },
+        "6": {
+          "ok": true,
+          "revision": 25,
+          "label": "buy house item",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:6"
+        },
+        "7": {
+          "ok": true,
+          "revision": 26,
+          "label": "travel civilization",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:7"
+        },
+        "8": {
+          "ok": true,
+          "revision": 30,
+          "label": "place house item",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:8"
+        },
+        "9": {
+          "ok": true,
+          "revision": 34,
+          "label": "hammer farm reclaim",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:9"
+        },
+        "10": {
+          "ok": true,
+          "revision": 35,
+          "label": "replace farm item",
+          "attempt": 1,
+          "requestId": "fede67ae-ab5:10"
+        }
+      },
+      "initialPopulation": {
+        "assigned": 2,
+        "idle": 2,
+        "total": 4
+      },
+      "expandedPopulation": {
+        "assigned": 2,
+        "idle": 6,
+        "total": 8
+      },
+      "hotbarCancellation": true,
+      "restoredPopulation": {
+        "assigned": 2,
+        "idle": 6,
+        "total": 8
+      },
+      "sale": {
+        "coinsAfter": 320,
+        "coinsBefore": 200,
+        "earned": 120
+      },
+      "reclaimedPopulation": {
+        "assigned": 0,
+        "idle": 8,
+        "total": 8
+      },
+      "reclaim": {
+        "farmPlans": 1,
+        "outputBefore": 40,
+        "amount": 48
+      },
+      "purchase": {
+        "price": 80,
+        "plansAfter": 1,
+        "coinsAfter": 240
+      },
+      "nativeSharedShops": true,
+      "serverTravelButtons": true,
+      "replacement": {
+        "buildingId": "b5",
+        "x": 8,
+        "z": -8,
+        "coinsUnchanged": true
+      },
+      "steps": {
+        "1": "select fresh civilization",
+        "2": "retain starter state for native scene observation",
+        "3": "walk and collect all with E",
+        "4": "server travel to shared sell stand and sell all",
+        "5": "server travel to shared buy stand and buy house item",
+        "6": "return to civilization and select inventory item",
+        "7": "focused TextBox guards inventory, supported number and rotate hotkeys",
+        "8": "hammer hotbar selection cancels placement without consuming item",
+        "9": "hammer reclaim nonempty farm into goods and building inventory",
+        "10": "replace reclaimed farm without extra cost and restore automatic jobs"
+      }
+    }
+  },
+  "guards": {
+    "ok": true,
+    "evidence": {
+      "ok": true,
+      "nativeVirtualInput": true,
+      "layouts": {
+        "1": {
+          "topButtons": 3,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "2": {
+          "topButtons": 3,
+          "height": 568,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "3": {
+          "topButtons": 3,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 640
+        },
+        "4": {
+          "topButtons": 3,
+          "height": 768,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 1024
+        }
+      },
+      "localRelocation": false,
+      "localStateMutation": false,
+      "death": {
+        "after": {
+          "coins": 160,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 1,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "storehouse": 0,
+            "material": 0,
+            "healer": 0,
+            "training": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 7,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        },
+        "progressPreserved": true,
+        "horizontalWalk": 16.266441345214844,
+        "selectionCleared": true,
+        "before": {
+          "coins": 160,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 1,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "healer": 0,
+            "material": 0,
+            "training": 0,
+            "storehouse": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 4,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        },
+        "moveDirection": {
+          "y": 0,
+          "x": 0,
+          "z": -1
+        },
+        "defaultMovementUntouched": true,
+        "verticalChange": 0.40000009536743164,
+        "ghostCleared": true
+      },
+      "deathPurchase": {
+        "coinsAfter": 160,
+        "coinsBefore": 240,
+        "plansAfter": 1
+      },
+      "switch": {
+        "before": {
+          "coins": 240,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 0,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "storehouse": 0,
+            "material": 0,
+            "healer": 0,
+            "training": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 2,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        },
+        "preserved": true,
+        "after": {
+          "coins": 240,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 0,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "training": 0,
+            "material": 0,
+            "healer": 0,
+            "storehouse": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 4,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        }
+      },
+      "lastStep": "actual new-life W movement"
+    },
+    "result": {
+      "ok": true,
+      "nativeVirtualInput": true,
+      "layouts": {
+        "1": {
+          "topButtons": 3,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "2": {
+          "topButtons": 3,
+          "height": 568,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 320
+        },
+        "3": {
+          "topButtons": 3,
+          "height": 360,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 640
+        },
+        "4": {
+          "topButtons": 3,
+          "height": 768,
+          "planControls": 9,
+          "hotbarSlots": 9,
+          "width": 1024
+        }
+      },
+      "localRelocation": false,
+      "localStateMutation": false,
+      "death": {
+        "after": {
+          "coins": 160,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 1,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "storehouse": 0,
+            "material": 0,
+            "healer": 0,
+            "training": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 7,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        },
+        "progressPreserved": true,
+        "horizontalWalk": 16.266441345214844,
+        "selectionCleared": true,
+        "before": {
+          "coins": 160,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 1,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "healer": 0,
+            "material": 0,
+            "training": 0,
+            "storehouse": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 4,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        },
+        "moveDirection": {
+          "y": 0,
+          "x": 0,
+          "z": -1
+        },
+        "defaultMovementUntouched": true,
+        "verticalChange": 0.40000009536743164,
+        "ghostCleared": true
+      },
+      "deathPurchase": {
+        "coinsAfter": 160,
+        "coinsBefore": 240,
+        "plansAfter": 1
+      },
+      "switch": {
+        "before": {
+          "coins": 240,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 0,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "storehouse": 0,
+            "material": 0,
+            "healer": 0,
+            "training": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 2,
+          "goods": {
+            "material": 0,
+            "timber": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        },
+        "preserved": true,
+        "after": {
+          "coins": 240,
+          "civilianCount": 8,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "plans": {
+            "house": 0,
+            "timber": 0,
+            "workshop": 0,
+            "farm": 0,
+            "training": 0,
+            "material": 0,
+            "healer": 0,
+            "storehouse": 0
+          },
+          "buildingCount": 4,
+          "claimEpoch": 4,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 48
+          }
+        }
+      },
+      "lastStep": "actual new-life W movement"
+    }
+  },
+  "engine": "0.745.0.7451137"
+}

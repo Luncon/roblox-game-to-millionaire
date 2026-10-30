@@ -1,0 +1,11 @@
+{
+  "context": "Owned Studio inventory verification Play",
+  "actualLocalScriptControls": "table: 0xf895be82e2958ecb",
+  "executeLuauToolControls": "table: 0x13d9ba226dfee783",
+  "actualLocalScriptKeyboard": "table: 0xaaae5ecda0ea6d82",
+  "executeLuauToolKeyboard": "table: 0x0445e0e7045448bf",
+  "actualLocalScriptMoveVectorDuringW": "0, 0, -1",
+  "executeLuauToolMoveVectorDuringW": "0, 0, 0",
+  "humanoidMoveVectorDuringW": "0, 0, 0",
+  "finding": "Requiring PlayerModule from the tool context created a separate singleton and overwrote the named default control render binding. Fixture interference caused the observed blocked movement."
+}

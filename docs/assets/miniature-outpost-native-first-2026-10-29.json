@@ -1,0 +1,414 @@
+{
+  "date": "2026-10-29",
+  "client": {
+    "flow": {
+      "ok": true,
+      "result": {
+        "initial": {
+          "neutralRanged": 1,
+          "neutralMelee": 2,
+          "outposts": 8,
+          "coins": 5000
+        },
+        "combat": {
+          "rangedShot": true,
+          "healthBar": true,
+          "meleeAttack": true,
+          "resumedAfterPause": true,
+          "barProgress": true,
+          "walking": true,
+          "damagedHealth": true,
+          "pausedForDefenders": true,
+          "projectile": true,
+          "defendedZero": true
+        },
+        "walkToOwnOutpost": 126.13140869140625,
+        "walkToOtherOutpost": 220.79758644104004,
+        "placements": [
+          {
+            "rotation": 90,
+            "x": 6,
+            "z": 8,
+            "id": "b4",
+            "kind": "training"
+          },
+          {
+            "rotation": 90,
+            "x": 16,
+            "z": 8,
+            "id": "b5",
+            "kind": "ranged"
+          },
+          {
+            "rotation": 0,
+            "x": 16,
+            "z": -8,
+            "id": "b6",
+            "kind": "healer"
+          }
+        ],
+        "contestedNative": false,
+        "fundedFakeBootstrap": true,
+        "attempts": [
+          {
+            "ok": true,
+            "action": "select Sparta",
+            "attempt": 1,
+            "requestId": "5390df04-70a:1"
+          },
+          {
+            "ok": true,
+            "action": "travel buy",
+            "attempt": 1,
+            "requestId": "5390df04-70a:2"
+          },
+          {
+            "ok": true,
+            "action": "buy training",
+            "attempt": 1,
+            "requestId": "5390df04-70a:3"
+          },
+          {
+            "ok": true,
+            "action": "buy ranged",
+            "attempt": 1,
+            "requestId": "5390df04-70a:4"
+          },
+          {
+            "ok": true,
+            "action": "buy healer",
+            "attempt": 1,
+            "requestId": "5390df04-70a:5"
+          },
+          {
+            "ok": true,
+            "action": "travel civilization",
+            "attempt": 1,
+            "requestId": "5390df04-70a:6"
+          },
+          {
+            "ok": true,
+            "action": "place training",
+            "attempt": 1,
+            "requestId": "5390df04-70a:7"
+          },
+          {
+            "ok": true,
+            "action": "place ranged",
+            "attempt": 1,
+            "requestId": "5390df04-70a:8"
+          },
+          {
+            "ok": true,
+            "action": "place healer",
+            "attempt": 1,
+            "requestId": "5390df04-70a:9"
+          },
+          {
+            "ok": true,
+            "action": "E target other outpost",
+            "attempt": 1,
+            "requestId": "5390df04-70a:10"
+          }
+        ],
+        "capture": {
+          "civilizationId": "sparta",
+          "label": "Sparta outpost\nCaptured",
+          "outpostId": "outpost_1",
+          "progress": 20,
+          "observedSeconds": 23.231702399993083
+        },
+        "nativeVirtualInput": true,
+        "manualTarget": {
+          "outpostId": "outpost_2",
+          "manual": true,
+          "requestId": "5390df04-70a:10"
+        },
+        "effectsAfter": {
+          "captures": 1,
+          "shots": 13,
+          "deaths": 9,
+          "hits": 25
+        },
+        "final": {
+          "alive": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "targetId": "outpost_2",
+          "allocated": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "troopCapacity": 10,
+          "coins": 4300
+        },
+        "autoTarget": "outpost_1",
+        "localStateInjection": false,
+        "ok": true,
+        "lastStep": "walk to another outpost center and order the whole army with E",
+        "localRelocation": false,
+        "homeInvasionNative": false,
+        "effectsBefore": {
+          "captures": 0,
+          "shots": 0,
+          "deaths": 0,
+          "hits": 0
+        }
+      },
+      "evidence": {
+        "initial": {
+          "neutralRanged": 1,
+          "neutralMelee": 2,
+          "outposts": 8,
+          "coins": 5000
+        },
+        "combat": {
+          "rangedShot": true,
+          "healthBar": true,
+          "meleeAttack": true,
+          "resumedAfterPause": true,
+          "barProgress": true,
+          "walking": true,
+          "damagedHealth": true,
+          "pausedForDefenders": true,
+          "projectile": true,
+          "defendedZero": true
+        },
+        "walkToOwnOutpost": 126.13140869140625,
+        "walkToOtherOutpost": 220.79758644104004,
+        "placements": [
+          {
+            "rotation": 90,
+            "x": 6,
+            "z": 8,
+            "id": "b4",
+            "kind": "training"
+          },
+          {
+            "rotation": 90,
+            "x": 16,
+            "z": 8,
+            "id": "b5",
+            "kind": "ranged"
+          },
+          {
+            "rotation": 0,
+            "x": 16,
+            "z": -8,
+            "id": "b6",
+            "kind": "healer"
+          }
+        ],
+        "contestedNative": false,
+        "fundedFakeBootstrap": true,
+        "attempts": [
+          {
+            "ok": true,
+            "action": "select Sparta",
+            "attempt": 1,
+            "requestId": "5390df04-70a:1"
+          },
+          {
+            "ok": true,
+            "action": "travel buy",
+            "attempt": 1,
+            "requestId": "5390df04-70a:2"
+          },
+          {
+            "ok": true,
+            "action": "buy training",
+            "attempt": 1,
+            "requestId": "5390df04-70a:3"
+          },
+          {
+            "ok": true,
+            "action": "buy ranged",
+            "attempt": 1,
+            "requestId": "5390df04-70a:4"
+          },
+          {
+            "ok": true,
+            "action": "buy healer",
+            "attempt": 1,
+            "requestId": "5390df04-70a:5"
+          },
+          {
+            "ok": true,
+            "action": "travel civilization",
+            "attempt": 1,
+            "requestId": "5390df04-70a:6"
+          },
+          {
+            "ok": true,
+            "action": "place training",
+            "attempt": 1,
+            "requestId": "5390df04-70a:7"
+          },
+          {
+            "ok": true,
+            "action": "place ranged",
+            "attempt": 1,
+            "requestId": "5390df04-70a:8"
+          },
+          {
+            "ok": true,
+            "action": "place healer",
+            "attempt": 1,
+            "requestId": "5390df04-70a:9"
+          },
+          {
+            "ok": true,
+            "action": "E target other outpost",
+            "attempt": 1,
+            "requestId": "5390df04-70a:10"
+          }
+        ],
+        "capture": {
+          "civilizationId": "sparta",
+          "label": "Sparta outpost\nCaptured",
+          "outpostId": "outpost_1",
+          "progress": 20,
+          "observedSeconds": 23.231702399993083
+        },
+        "nativeVirtualInput": true,
+        "manualTarget": {
+          "outpostId": "outpost_2",
+          "manual": true,
+          "requestId": "5390df04-70a:10"
+        },
+        "effectsAfter": {
+          "captures": 1,
+          "shots": 13,
+          "deaths": 9,
+          "hits": 25
+        },
+        "final": {
+          "alive": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "targetId": "outpost_2",
+          "allocated": {
+            "ranged": 2,
+            "melee": 2,
+            "medic": 1
+          },
+          "troopCapacity": 10,
+          "coins": 4300
+        },
+        "autoTarget": "outpost_1",
+        "localStateInjection": false,
+        "ok": true,
+        "lastStep": "walk to another outpost center and order the whole army with E",
+        "localRelocation": false,
+        "homeInvasionNative": false,
+        "effectsBefore": {
+          "captures": 0,
+          "shots": 0,
+          "deaths": 0,
+          "hits": 0
+        }
+      }
+    },
+    "guards": {
+      "beforeTarget": "outpost_2",
+      "afterCoins": 4300,
+      "refusals": [
+        {
+          "name": "distant",
+          "reason": "out_of_range"
+        },
+        {
+          "name": "home",
+          "reason": "out_of_range"
+        },
+        {
+          "name": "client_progress",
+          "reason": "invalid_outpost"
+        },
+        {
+          "name": "stale_life",
+          "reason": "stale_session"
+        },
+        {
+          "name": "foreign_session",
+          "reason": "stale_session"
+        }
+      ],
+      "mode": "NativeRemoteRefusalProbes",
+      "beforeCoins": 4300,
+      "afterTarget": "outpost_2"
+    },
+    "frames": {
+      "p95Milliseconds": 18.04330013692379,
+      "medianMilliseconds": 16.686100512742996,
+      "scope": "Solo owned desktop fixture after capture, concurrent existing Studio playtest; not phone or published performance",
+      "samples": 90,
+      "actors": 23
+    }
+  },
+  "server": {
+    "wave": {
+      "completed": true,
+      "readOnlyObservation": true,
+      "paused": true,
+      "resumeProgress": 19.936157568517082,
+      "outpostId": "outpost_2",
+      "pauseProgress": 18.722494203640302,
+      "resumed": true,
+      "respawns": []
+    },
+    "scene": {
+      "ok": true,
+      "result": {
+        "housing": 4,
+        "assigned": 2,
+        "idle": 2,
+        "workers": 4,
+        "troops": {
+          "ranged": 2,
+          "melee": 4,
+          "medic": 1,
+          "cappedBackfill": true,
+          "perBuildingCleanup": true,
+          "retainedUnrelatedActors": true,
+          "troopCap": 10
+        },
+        "ranges": 13,
+        "observedSeconds": 14,
+        "previews": 10
+      }
+    },
+    "outpostScene": {
+      "ok": true,
+      "result": {
+        "captureSeconds": 20,
+        "initialNeutralActors": 24,
+        "fakeSeconds": 44.000000000000355,
+        "events": {
+          "capture": 2,
+          "death": 9,
+          "shot": 9,
+          "hit": 21
+        },
+        "firstOwner": "sparta",
+        "simulatedRivalTeams": true,
+        "recapturedOwner": "rome",
+        "fakeClock": true,
+        "actualMultiplayer": false,
+        "projectileTravelTTL": true,
+        "nativeLifeSync": true,
+        "outposts": 8,
+        "livePlayerMutation": false
+      }
+    },
+    "storage": "InjectedFakeProfileStore",
+    "isolation": "passed",
+    "sourceUnchanged": true
+  },
+  "scope": "First actual UI flow plus isolated fake-clock rival fixture and remote refusal probes. Runtime source later changes were formatting only; stricter life-wave observation fixture pending."
+}

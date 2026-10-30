@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-29",
+  "scope": "Automatic default movement-controller rebind on new character; actual native W after server death; no direct movement/stat override",
+  "result": {
+    "ok": true,
+    "result": {
+      "walkBefore": {
+        "rootAnchored": false,
+        "sit": false,
+        "state": "Running",
+        "cameraSubjectIsNewHumanoid": true,
+        "position": {
+          "y": 3.257154703140259,
+          "x": 4.547473508864641e-13,
+          "z": 122
+        },
+        "cameraMode": "Walk",
+        "walkSpeed": 16,
+        "platformStand": false
+      },
+      "cameraMode": "Walk",
+      "deathObserved": true,
+      "characterChanged": true,
+      "placementOpened": true,
+      "before": {
+        "revision": 24,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "plans": {
+          "house": 1,
+          "timber": 0,
+          "workshop": 0,
+          "farm": 0,
+          "storehouse": 0,
+          "material": 0,
+          "training": 0,
+          "healer": 0
+        },
+        "coins": 4920,
+        "buildings": {
+          "b1": {
+            "rotation": 90,
+            "kind": "civic",
+            "x": -6,
+            "z": -10
+          },
+          "b2": {
+            "rotation": 0,
+            "kind": "house",
+            "x": -16,
+            "z": 6
+          },
+          "b3": {
+            "rotation": 0,
+            "kind": "farm",
+            "x": 6,
+            "z": -10
+          }
+        },
+        "sessionId": "8f139010-866a-4ac9-9aad-d9fdb847c488",
+        "claimEpoch": 5,
+        "goods": {
+          "material": 20,
+          "timber": 80,
+          "crafted": 0,
+          "food": 0
+        }
+      },
+      "cameraSubjectIsNewHumanoid": true,
+      "walkDuring": {
+        "state": "Running",
+        "moveDirection": {
+          "y": 0,
+          "x": 0,
+          "z": -1
+        },
+        "walkSpeed": 16
+      },
+      "oldDraftClickWasInert": true,
+      "serverDeathIsExplicitFixtureSetup": true,
+      "ok": true,
+      "nativeVirtualInput": true,
+      "after": {
+        "revision": 27,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "plans": {
+          "house": 1,
+          "timber": 0,
+          "workshop": 0,
+          "farm": 0,
+          "healer": 0,
+          "material": 0,
+          "training": 0,
+          "storehouse": 0
+        },
+        "coins": 4920,
+        "buildings": {
+          "b1": {
+            "rotation": 90,
+            "kind": "civic",
+            "x": -6,
+            "z": -10
+          },
+          "b2": {
+            "rotation": 0,
+            "kind": "house",
+            "x": -16,
+            "z": 6
+          },
+          "b3": {
+            "rotation": 0,
+            "kind": "farm",
+            "x": 6,
+            "z": -10
+          }
+        },
+        "sessionId": "8f139010-866a-4ac9-9aad-d9fdb847c488",
+        "claimEpoch": 8,
+        "goods": {
+          "timber": 80,
+          "material": 20,
+          "crafted": 0,
+          "food": 0
+        }
+      },
+      "relocationWasFixtureSetup": true,
+      "draftValidBeforeDeath": true,
+      "newLifeVerticalChange": 0,
+      "draftSite": {
+        "z": 6,
+        "x": -6
+      },
+      "newLifeWalkDistance": 15.999763488769531,
+      "ghostCleared": true,
+      "progressPreserved": true,
+      "oldPlacementControlsHidden": true,
+      "lastStep": "native W-key movement on new life"
+    }
+  }
+}

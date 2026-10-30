@@ -1,0 +1,113 @@
+{
+  "build": "miniature-smooth-army-test.rbxlx",
+  "templateFingerprint": "92214:3573182113",
+  "checks": {
+    "SmoothServerVerification": {
+      "ok": true
+    },
+    "MiniatureOutpostSceneResult": {
+      "ok": true,
+      "result": {
+        "captureSeconds": 20,
+        "initialNeutralActors": 24,
+        "fakeSeconds": 51.000000000000455,
+        "events": {
+          "capture": 2,
+          "death": 12,
+          "shot": 23,
+          "hit": 83
+        },
+        "firstOwner": "sparta",
+        "simulatedRivalTeams": true,
+        "recapturedOwner": "rome",
+        "fakeClock": true,
+        "actualMultiplayer": false,
+        "projectileTravelTTL": true,
+        "nativeLifeSync": true,
+        "outposts": 8,
+        "livePlayerMutation": false
+      }
+    },
+    "MiniatureOriginalArmySceneResult": {
+      "ok": true,
+      "result": {
+        "neutralRangedReach": 10,
+        "scale": 0.25,
+        "civilizations": 13,
+        "customMelee": 5,
+        "sourceTemplatesImmutable": true,
+        "ownedRangedReach": 10,
+        "raycastSupportAndHumanoidExclusion": true,
+        "medicHealRange": 7,
+        "neutralSpeed": 5.7,
+        "groundedPoses": 518,
+        "neutralRoles": 2,
+        "ownedSpeed": 6,
+        "clientSolverPoses": 518,
+        "roles": 39,
+        "liveArmyMutation": false,
+        "styles": {
+          "chop": 2,
+          "firearm": 4,
+          "throw": 17,
+          "slash": 8,
+          "bow": 6,
+          "thrust": 4
+        },
+        "neutralStatRatio": 0.95
+      }
+    },
+    "MiniatureOutpostSceneryResult": {
+      "ok": true,
+      "scale": 0.25,
+      "partBudget": 139,
+      "sitesChecked": [
+        {
+          "id": "outpost_1",
+          "index": 1,
+          "parts": 134
+        },
+        {
+          "id": "outpost_2",
+          "index": 2,
+          "parts": 134
+        },
+        {
+          "id": "outpost_3",
+          "index": 3,
+          "parts": 134
+        },
+        {
+          "id": "outpost_4",
+          "index": 4,
+          "parts": 134
+        },
+        {
+          "id": "outpost_5",
+          "index": 5,
+          "parts": 134
+        },
+        {
+          "id": "outpost_6",
+          "index": 6,
+          "parts": 134
+        },
+        {
+          "id": "outpost_7",
+          "index": 7,
+          "parts": 134
+        },
+        {
+          "id": "outpost_8",
+          "index": 8,
+          "parts": 134
+        }
+      ],
+      "sites": 8,
+      "corridorHalfWidth": 5,
+      "geometryInert": true,
+      "captureRadius": 22,
+      "totalParts": 1072
+    }
+  }
+}

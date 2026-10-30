@@ -1,10 +1,8 @@
 // Run real Luau modules with explicit engine doubles. This does not run Roblox physics.
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
 import { spawnSync } from 'node:child_process';
-const installed=path.join(os.homedir(),'.local/bin/luau');
-const luau = process.env.LUAU_CLI || (fs.existsSync(installed) ? installed : 'luau');
+import { runTool } from './dev-tools.mjs';
 const modules = [
   'src/shared/ProgressionConfig.luau', 'src/shared/SettlementProgression.luau',
   'src/shared/UpgradeTracks.luau', 'src/shared/Civilizations.luau',
@@ -67,6 +65,8 @@ source += 'print("Standalone logic cases passed: "..total.." (explicit engine do
 fs.mkdirSync('.cache', { recursive:true });
 const output=path.resolve('.cache/weapon-skills-logic.luau');
 fs.writeFileSync(output, source);
-const result=spawnSync(luau,[output],{stdio:'inherit'});
-if(result.error) { console.error(`Cannot run Luau CLI: ${result.error.message}. Set LUAU_CLI to its installed path.`);process.exit(1); }
+const result = process.env.LUAU_CLI
+  ? spawnSync(process.env.LUAU_CLI, [output], { stdio: 'inherit' })
+  : runTool('lune', ['run', output]);
+if(result.error) { console.error(`Cannot run Luau CLI: ${result.error.message}`);process.exit(1); }
 process.exit(result.status ?? 1);

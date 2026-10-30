@@ -20,6 +20,21 @@ npm's proposed forced downgrade to OpenSpec 0.17.2 would replace the selected
 workflow rather than provide a compatible patched release. No forced downgrade
 or unverified dependency override has been applied.
 
-`npm audit` remains nonzero. Recheck it with `npm audit` when reviewing tool
+At the original review, `npm audit` remained nonzero. Recheck it with `npm audit` when reviewing tool
 upgrades. This record does not suppress or change the audit result.
 Installation scripts remain disabled through `.npmrc`.
+
+## October 28, 2026 tooling setup
+
+`npm ci` and a separate `npm audit` both reported **zero vulnerabilities** with
+the existing lockfile. OpenSpec remains 1.14.1; no npm dependency upgrade,
+override or lockfile change was made. The earlier finding above is retained as
+the historical review rather than the current audit result.
+
+Selene 0.32.0, StyLua 2.6.0 and Lune 0.11.1 are explicit native development
+downloads, not npm dependencies. `dev-tools.lock.json` records official GitHub
+release URLs and archive SHA-256 digests; the installer verifies these before
+extraction into ignored local storage. A clean WSL installation and tool versions
+were checked. Windows release digests are pinned but Windows installation was
+not executed in this session. Third-party skills are separately pinned and
+licensed in [their review record](../.agents/third-party/README.md).

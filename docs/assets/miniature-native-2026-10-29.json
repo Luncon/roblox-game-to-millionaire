@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-29",
+  "scope": "Isolated native Studio; injected FakeProfileStore; virtual mouse/key input; physical relocation is fixture setup; no live stores/publication/physical device",
+  "server": {
+    "persia": "9 buildings / 3 inert roles",
+    "scene": {
+      "ok": true,
+      "result": {
+        "housing": 4,
+        "roster": 5,
+        "observedSeconds": 14,
+        "workers": 2,
+        "previews": 9
+      }
+    },
+    "persiaPassed": true,
+    "isolation": "passed"
+  },
+  "client": {
+    "ok": true,
+    "result": {
+      "ok": true,
+      "nativeResearchPresentationInputs": true,
+      "layouts": 4,
+      "relocationWasFixtureSetup": true,
+      "nativeEditFlow": true,
+      "nativeMinimization": true,
+      "nativeWalkAndCamera": true,
+      "nativeEconomyLoop": true,
+      "economy": {
+        "outputAfterCollect": 2,
+        "goodsBefore": 0,
+        "goodsAfterCollect": 10,
+        "goodsAfterSale": 0,
+        "coinsBefore": 200,
+        "coinsAfterSale": 220,
+        "outputBefore": 12
+      },
+      "edit": {
+        "buildingsAfter": 4,
+        "plansBefore": 0,
+        "placement": {
+          "rotation": 90,
+          "x": 12,
+          "z": 10,
+          "id": "b4",
+          "kind": "house"
+        },
+        "buildingsBefore": 3,
+        "plansAfterPurchase": 1,
+        "plansAfterPlacement": 0,
+        "coinsAfterPurchase": 140
+      },
+      "researchPresentationLayouts": 4
+    }
+  }
+}

@@ -1,15 +1,71 @@
 # Civilization Battlefield: game direction
 
+## Current prototype revision — October29,2026
+
+The compact shop now has Homes/Production/Military tabs and every building is
+available without research. Military buildings automatically provide2melee,
+2ranged or1medic per building under a fixed total cap10, including medics;
+civilians remain separate. Research is paused, and inspect/roster controls are
+removed. The1200-stud map spaces eight current plots on a400-stud radius with
+future expansion room. See [current controls and evidence](notes/Simple%20Shop%20and%20Automatic%20Troops.md).
+Starting settlements are now80×64studs, four times their former area, following
+playtest feedback. Additional expansion purchases remain future work.
+The first [combat and conquest slice](notes/Miniature%20Combat%20and%20Outposts.md)
+adds a neutral2melee/1ranged outpost in front of every plot. Building-owned armies
+fight automatically, medics support allies,20clear seconds capture the outpost
+and E at its center redirects the whole army. Rival capture is supported;
+home plots, commanders and civilians remain protected. The miniature now reuses
+the original baseline combat, outfits, rigs and joint animations at quarter scale,
+with grounded feet,6/5.7 owned/neutral movement and10/10/7 ranged/healing limits. Progression-gated
+formations/shields/skills remain later work. See the
+[original-army evidence](notes/Original%20Miniature%20Army.md). Deeper objectives,
+public servers and real storage remain future work.
+
+The mounted army slice adds the supplied animals, original civilization riders,
+anatomical strides, saddles and faction saddlecloths. Each civilization has a
+distinct named animal facility in the Military shop for **5,000 Coins**. A facility
+supplies one mounted troop costing **two army slots** under the unchanged cap of
+ten. Queued groups backfill automatically; ordinary inventory placement and the
+Destroy Hammer apply. Mounted troops share a prototype budget of 300 HP and 48
+melee damage. Elephant/camel speed is 5.5 studs per second, below infantry at 6;
+other mounts use 9. Placed structures and held building items have no fixed count
+ceiling, with legal plot space and the ten-slot army cap preserved. See
+[mounted implementation and evidence](notes/Mounted%20Army%20Implementation.md) and
+[current refinements and ragdolls](notes/Mount%20Refinements%20and%20Ragdoll%20Deaths.md).
+
 ## Miniature redesign direction — October 20, 2026
 
 The user has chosen a new direction inspired by Mini War: normal-sized players
 build and trade while miniature civilization armies handle all fighting.
 The intended economy includes placeable buildings, workers, goods, personal
 restocking shops, selling, research and conquest. A shared Black Market is deferred.
-Civilization identities remain selectable; the first isolated scale preview uses
-Sparta. These economy/conquest systems remain planned. See
-[the miniature preview](MINIATURE_PREVIEW.md) and [the preserved build](BACKUPS.md).
-The existing production game below still describes the prior playable build.
+Civilization identities remain selectable; the original isolated scale preview
+uses Sparta. The separate fake-store gameplay sandbox now includes the shared
+production, trade, placement and research loop with all thirteen original
+quarter-scale architecture kits and passive roster presentations. Native factory
+checks, the all-thirteen selector/preview/walking tour and gallery review passed
+for prototype kit delivery; active miniature combat and conquest remain planned.
+See [the gameplay sandbox](MINIATURE_GAMEPLAY.md),
+[the evidence sheets](notes/Miniature%20Civilization%20Evidence%20Sheets.md),
+[the original miniature preview](MINIATURE_PREVIEW.md) and
+[the preserved build](BACKUPS.md). The existing production game below still
+describes the prior playable build.
+
+On October 28, the user confirmed retaining all thirteen civilizations for the
+miniature redesign. Their existing period windows continue to govern architecture
+and troop references. The user's [Mini Wars reference collection](notes/Mini%20Wars%20References.md)
+now informs the [proposed economy/research/UI adaptation](notes/Miniature%20Civilization%20Redesign.md)
+and [civilization building/army matrix](notes/Civilization%20Building%20and%20Army%20Reference.md).
+These plans are tracked in the
+[miniature redesign change](../openspec/changes/miniature-civilization-redesign/proposal.md);
+the earlier scale preview, separate fake-store gameplay foundation and thirteen
+prototype art kits are implemented. All cultures currently share Food, Timber,
+clay/material and pottery/crafted-good budgets; alternative pastoral, hide or
+felt recipes remain future ideas. Historical evidence gaps and provisional
+worker clothing remain explicit in the culture cards; delivery does not certify
+archaeological reconstruction. Detailed native evidence, economy features and
+remaining work are recorded in
+[the implementation log](notes/2026-10-29-miniature-implementation.md).
 
 ## Agreed experience
 

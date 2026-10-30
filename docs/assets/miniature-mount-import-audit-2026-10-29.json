@@ -1,0 +1,445 @@
+{
+  "sourcePlace": "miniature-smooth-army-playtest.rbxlx",
+  "date": "2026-10-29",
+  "rawBackup": "assets/mount-source-backups/user-imports-2026-10-29.rbxm",
+  "rawBackupMapped": false,
+  "templates": [
+    {
+      "chunks": 8,
+      "originalName": " ",
+      "removedObjects": 532,
+      "id": "elephant",
+      "length": 90804,
+      "sourceParts": 39,
+      "parts": 37
+    },
+    {
+      "chunks": 2,
+      "originalName": "Horse",
+      "removedObjects": 25,
+      "id": "horse",
+      "length": 13640,
+      "sourceParts": 27,
+      "parts": 26
+    },
+    {
+      "chunks": 3,
+      "originalName": "Elk",
+      "removedObjects": 924,
+      "id": "elk",
+      "length": 28948,
+      "sourceParts": 29,
+      "parts": 29
+    },
+    {
+      "chunks": 2,
+      "originalName": "Bear",
+      "removedObjects": 37,
+      "id": "bear",
+      "length": 15388,
+      "sourceParts": 7,
+      "parts": 7
+    },
+    {
+      "chunks": 1,
+      "originalName": "Bengal Tiger Model",
+      "removedObjects": 0,
+      "id": "tiger",
+      "length": 8960,
+      "sourceParts": 85,
+      "parts": 85
+    },
+    {
+      "chunks": 3,
+      "originalName": "BullModel",
+      "removedObjects": 129,
+      "id": "bull",
+      "length": 29284,
+      "sourceParts": 18,
+      "parts": 18
+    },
+    {
+      "chunks": 2,
+      "originalName": "crocodile",
+      "removedObjects": 21,
+      "id": "crocodile",
+      "length": 21300,
+      "sourceParts": 203,
+      "parts": 203
+    },
+    {
+      "chunks": 1,
+      "originalName": "WolfRig",
+      "removedObjects": 138,
+      "id": "wolf",
+      "length": 10628,
+      "sourceParts": 29,
+      "parts": 29
+    },
+    {
+      "chunks": 2,
+      "originalName": "Model",
+      "removedObjects": 2,
+      "id": "camel",
+      "length": 15440,
+      "sourceParts": 28,
+      "parts": 28
+    },
+    {
+      "chunks": 2,
+      "originalName": "Rhino",
+      "removedObjects": 31,
+      "id": "rhino",
+      "length": 12956,
+      "sourceParts": 21,
+      "parts": 20
+    },
+    {
+      "chunks": 5,
+      "originalName": "Lion Rig",
+      "removedObjects": 47,
+      "id": "lion",
+      "length": 57768,
+      "sourceParts": 41,
+      "parts": 41
+    }
+  ],
+  "scriptsReviewed": [
+    {
+      "path": "Workspace. .HumanoidRootPart.AnimIssue",
+      "class": "Script",
+      "length": 200,
+      "flags": []
+    },
+    {
+      "path": "Workspace. .RightTusk.Script",
+      "class": "Script",
+      "length": 99,
+      "flags": [
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace. .RightTusk.Script",
+      "class": "Script",
+      "length": 474,
+      "flags": [
+        "TakeDamage",
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace. .LeftTusk.Script",
+      "class": "Script",
+      "length": 474,
+      "flags": [
+        "TakeDamage",
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace. .LeftTusk.Script",
+      "class": "Script",
+      "length": 99,
+      "flags": [
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace. .RidingScript",
+      "class": "Script",
+      "length": 6818,
+      "flags": [
+        "Remote",
+        "PlayerGui",
+        "BodyVelocity",
+        "Seat",
+        "Destroy"
+      ]
+    },
+    {
+      "path": "Workspace. .RidingScript.InteractiveControl",
+      "class": "LocalScript",
+      "length": 1812,
+      "flags": []
+    },
+    {
+      "path": "Workspace. .DeathAnim",
+      "class": "Script",
+      "length": 830,
+      "flags": []
+    },
+    {
+      "path": "Workspace. .DespawnDontDeleteBruh]",
+      "class": "Script",
+      "length": 106,
+      "flags": [
+        "Destroy"
+      ]
+    },
+    {
+      "path": "Workspace.Horse.DragonScript",
+      "class": "Script",
+      "length": 10024,
+      "flags": [
+        "BodyVelocity",
+        "Seat"
+      ]
+    },
+    {
+      "path": "Workspace.Horse.DragonScript.DragonControl",
+      "class": "LocalScript",
+      "length": 3248,
+      "flags": [
+        "BodyVelocity"
+      ]
+    },
+    {
+      "path": "Workspace.Horse.Eye Control",
+      "class": "Script",
+      "length": 869,
+      "flags": []
+    },
+    {
+      "path": "Workspace.Bear.DeathAnim",
+      "class": "Script",
+      "length": 451,
+      "flags": []
+    },
+    {
+      "path": "Workspace.Bear.Drop Pelt",
+      "class": "Script",
+      "length": 236,
+      "flags": []
+    },
+    {
+      "path": "Workspace.Bear.Aniamtion",
+      "class": "Script",
+      "length": 158,
+      "flags": []
+    },
+    {
+      "path": "Workspace.Bear.Attack",
+      "class": "Script",
+      "length": 1196,
+      "flags": [
+        "TakeDamage",
+        "Touched",
+        "MoveTo"
+      ]
+    },
+    {
+      "path": "Workspace.Bear.Script",
+      "class": "Script",
+      "length": 75,
+      "flags": []
+    },
+    {
+      "path": "Workspace.Bear.Respawn",
+      "class": "Script",
+      "length": 227,
+      "flags": []
+    },
+    {
+      "path": "Workspace.crocodile. .SCP049AnimationScript",
+      "class": "Script",
+      "length": 369,
+      "flags": []
+    },
+    {
+      "path": "Workspace.crocodile. .SCP049HeadSoundScript",
+      "class": "Script",
+      "length": 668,
+      "flags": []
+    },
+    {
+      "path": "Workspace.crocodile. .SCP049AttackScript",
+      "class": "Script",
+      "length": 2073,
+      "flags": [
+        "TakeDamage"
+      ]
+    },
+    {
+      "path": "Workspace.crocodile. .SCP049TargetScript",
+      "class": "Script",
+      "length": 2583,
+      "flags": [
+        "MoveTo",
+        "Destroy"
+      ]
+    },
+    {
+      "path": "Workspace.crocodile. .Weld",
+      "class": "Script",
+      "length": 721,
+      "flags": [
+        "Seat"
+      ]
+    },
+    {
+      "path": "Workspace.crocodile. .Weld Script",
+      "class": "Script",
+      "length": 698,
+      "flags": [
+        "Seat"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.DragonScript",
+      "class": "Script",
+      "length": 8161,
+      "flags": [
+        "BodyVelocity",
+        "Seat"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.DragonScript.DragonControl",
+      "class": "LocalScript",
+      "length": 3203,
+      "flags": [
+        "BodyVelocity"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.FrontRight.Script",
+      "class": "Script",
+      "length": 183,
+      "flags": [
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.Death.Script",
+      "class": "Script",
+      "length": 183,
+      "flags": [
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.Death.Damage Script",
+      "class": "Script",
+      "length": 268,
+      "flags": [
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.TrueLegs.Script",
+      "class": "Script",
+      "length": 183,
+      "flags": [
+        "Touched"
+      ]
+    },
+    {
+      "path": "Workspace.Rhino.Weld",
+      "class": "Script",
+      "length": 538,
+      "flags": []
+    },
+    {
+      "path": "Workspace.Rhino.FrontLeft.Script",
+      "class": "Script",
+      "length": 183,
+      "flags": [
+        "Touched"
+      ]
+    }
+  ],
+  "removedRuntimeCode": true,
+  "sourceWorkbenchScriptsDisabled": true,
+  "animationProvenance": [
+    {
+      "name": " ",
+      "animations": [
+        {
+          "name": "Idle",
+          "id": "rbxassetid://6492068314"
+        },
+        {
+          "name": "Rearing",
+          "id": "rbxassetid://6492072274"
+        },
+        {
+          "name": "Jump",
+          "id": "rbxassetid://801883339"
+        },
+        {
+          "name": "Ride",
+          "id": "rbxassetid://4801884653"
+        },
+        {
+          "name": "Walk",
+          "id": "rbxassetid://6492066477"
+        }
+      ]
+    },
+    {
+      "name": "Horse",
+      "animations": []
+    },
+    {
+      "name": "Elk",
+      "animations": [
+        {
+          "name": "TestAnim",
+          "id": "74d1ce05abefb0642efdffa27c0c89a0"
+        }
+      ]
+    },
+    {
+      "name": "Bear",
+      "animations": [
+        {
+          "name": "Animation",
+          "id": "rbxassetid://9446931302"
+        }
+      ]
+    },
+    {
+      "name": "Bengal Tiger Model",
+      "animations": []
+    },
+    {
+      "name": "BullModel",
+      "animations": []
+    },
+    {
+      "name": "crocodile",
+      "animations": [
+        {
+          "name": "WalkAnim",
+          "id": "http://www.roblox.com/asset/?id=189040478"
+        },
+        {
+          "name": "ArmOutAnim",
+          "id": "http://www.roblox.com/item.aspx?id=189040829"
+        }
+      ]
+    },
+    {
+      "name": "WolfRig",
+      "animations": []
+    },
+    {
+      "name": "Model",
+      "animations": []
+    },
+    {
+      "name": "Rhino",
+      "animations": []
+    },
+    {
+      "name": "Lion Rig",
+      "animations": [
+        {
+          "name": "TestAnim",
+          "id": "25dd8df30511092b45a8e8e37b77e7fb"
+        }
+      ]
+    }
+  ]
+}

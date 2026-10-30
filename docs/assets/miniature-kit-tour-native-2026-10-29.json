@@ -1,0 +1,909 @@
+{
+  "date": "2026-10-29",
+  "scope": "13 live native chooser switches; actual model previews and labels; W-key walking; relocation setup; no local render-state injection",
+  "result": {
+    "ok": true,
+    "result": {
+      "initial": {
+        "revision": 51,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "goods": {
+          "material": 20,
+          "timber": 21,
+          "crafted": 0,
+          "food": 9
+        },
+        "claimEpoch": 2,
+        "coins": 4171
+      },
+      "sparta": {
+        "before": {
+          "revision": 52,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "goods": {
+            "material": 20,
+            "timber": 21,
+            "crafted": 0,
+            "food": 9
+          },
+          "claimEpoch": 3,
+          "coins": 4171
+        },
+        "researchBefore": {
+          "completed": {
+            "drill": true,
+            "craft": true,
+            "records": true,
+            "supply": true,
+            "trade": true,
+            "work": true,
+            "porters": true,
+            "store": true,
+            "muster": true
+          }
+        },
+        "after": {
+          "revision": 65,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "goods": {
+            "material": 20,
+            "timber": 21,
+            "crafted": 0,
+            "food": 9
+          },
+          "claimEpoch": 16,
+          "coins": 4171
+        },
+        "progressPreserved": true,
+        "buildingCount": 7,
+        "researchAfter": {
+          "completed": {
+            "drill": true,
+            "craft": true,
+            "records": true,
+            "porters": true,
+            "trade": true,
+            "work": true,
+            "muster": true,
+            "store": true,
+            "supply": true
+          }
+        },
+        "naturalProductionAndAutomationMaySettle": true,
+        "workerCount": 3
+      },
+      "relocationWasFixtureSetup": true,
+      "civilizations": [
+        {
+          "farmWorldInspection": true,
+          "revision": 52,
+          "civilizationId": "sparta",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 4171,
+          "previewCivilizationId": "sparta",
+          "commanderScale": 1,
+          "walkDistance": 16.133094787597656,
+          "unarmed": true,
+          "houseLabel": "Laconian Courtyard House",
+          "worldBuildings": 7,
+          "claimEpoch": 3,
+          "goods": {
+            "timber": 21,
+            "material": 20,
+            "crafted": 0,
+            "food": 9
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 53,
+          "civilizationId": "britain",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "britain",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Worker Cottage",
+          "worldBuildings": 3,
+          "claimEpoch": 4,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 54,
+          "civilizationId": "seneca",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "seneca",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Bark Longhouse",
+          "worldBuildings": 3,
+          "claimEpoch": 5,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 55,
+          "civilizationId": "mongols",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "mongols",
+          "commanderScale": 1,
+          "walkDistance": 15.999763488769531,
+          "unarmed": true,
+          "houseLabel": "Family Ger",
+          "worldBuildings": 3,
+          "claimEpoch": 6,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 56,
+          "civilizationId": "vikings",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "vikings",
+          "commanderScale": 1,
+          "walkDistance": 15.999763488769531,
+          "unarmed": true,
+          "houseLabel": "Household Longhall",
+          "worldBuildings": 3,
+          "claimEpoch": 7,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 57,
+          "civilizationId": "persia",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "persia",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Earth-Roof Courtyard House",
+          "worldBuildings": 3,
+          "claimEpoch": 8,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 58,
+          "civilizationId": "japan",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "japan",
+          "commanderScale": 1,
+          "walkDistance": 15.999763488769531,
+          "unarmed": true,
+          "houseLabel": "Timber Town House",
+          "worldBuildings": 3,
+          "claimEpoch": 9,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 59,
+          "civilizationId": "maurya",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "maurya",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Timber and Earthen House",
+          "worldBuildings": 3,
+          "claimEpoch": 10,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 60,
+          "civilizationId": "spain",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "spain",
+          "commanderScale": 1,
+          "walkDistance": 15.999763488769531,
+          "unarmed": true,
+          "houseLabel": "Patio House",
+          "worldBuildings": 3,
+          "claimEpoch": 11,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 61,
+          "civilizationId": "egypt",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "egypt",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Mudbrick Roof House",
+          "worldBuildings": 3,
+          "claimEpoch": 12,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 62,
+          "civilizationId": "rome",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "rome",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Courtyard House",
+          "worldBuildings": 3,
+          "claimEpoch": 13,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 63,
+          "civilizationId": "ottomans",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "ottomans",
+          "commanderScale": 1,
+          "walkDistance": 16.26642608642578,
+          "unarmed": true,
+          "houseLabel": "Timber and Plaster House",
+          "worldBuildings": 3,
+          "claimEpoch": 14,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        },
+        {
+          "farmWorldInspection": true,
+          "revision": 64,
+          "civilizationId": "ming",
+          "plotId": 1,
+          "verticalChange": 0,
+          "rolePreviews": 3,
+          "coins": 200,
+          "previewCivilizationId": "ming",
+          "commanderScale": 1,
+          "walkDistance": 15.999763488769531,
+          "unarmed": true,
+          "houseLabel": "Skywell Courtyard House",
+          "worldBuildings": 3,
+          "claimEpoch": 15,
+          "goods": {
+            "timber": 0,
+            "material": 0,
+            "crafted": 0,
+            "food": 0
+          }
+        }
+      ],
+      "ok": true,
+      "localRenderInjection": false,
+      "available": 13,
+      "nativeVirtualInput": true,
+      "verified": 13,
+      "transitions": [
+        {
+          "before": {
+            "revision": 51,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "goods": {
+              "material": 20,
+              "timber": 21,
+              "crafted": 0,
+              "food": 9
+            },
+            "claimEpoch": 2,
+            "coins": 4171
+          },
+          "after": {
+            "revision": 52,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "goods": {
+              "timber": 21,
+              "material": 20,
+              "crafted": 0,
+              "food": 9
+            },
+            "claimEpoch": 3,
+            "coins": 4171
+          },
+          "civilization": "sparta",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "sparta",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:31"
+        },
+        {
+          "before": {
+            "revision": 52,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "goods": {
+              "timber": 21,
+              "material": 20,
+              "crafted": 0,
+              "food": 9
+            },
+            "claimEpoch": 3,
+            "coins": 4171
+          },
+          "after": {
+            "revision": 53,
+            "civilizationId": "britain",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 4,
+            "coins": 200
+          },
+          "civilization": "britain",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "britain",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:32"
+        },
+        {
+          "before": {
+            "revision": 53,
+            "civilizationId": "britain",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 4,
+            "coins": 200
+          },
+          "after": {
+            "revision": 54,
+            "civilizationId": "seneca",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 5,
+            "coins": 200
+          },
+          "civilization": "seneca",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "seneca",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:33"
+        },
+        {
+          "before": {
+            "revision": 54,
+            "civilizationId": "seneca",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 5,
+            "coins": 200
+          },
+          "after": {
+            "revision": 55,
+            "civilizationId": "mongols",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 6,
+            "coins": 200
+          },
+          "civilization": "mongols",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "mongols",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:34"
+        },
+        {
+          "before": {
+            "revision": 55,
+            "civilizationId": "mongols",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 6,
+            "coins": 200
+          },
+          "after": {
+            "revision": 56,
+            "civilizationId": "vikings",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 7,
+            "coins": 200
+          },
+          "civilization": "vikings",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "vikings",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:35"
+        },
+        {
+          "before": {
+            "revision": 56,
+            "civilizationId": "vikings",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 7,
+            "coins": 200
+          },
+          "after": {
+            "revision": 57,
+            "civilizationId": "persia",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 8,
+            "coins": 200
+          },
+          "civilization": "persia",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "persia",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:36"
+        },
+        {
+          "before": {
+            "revision": 57,
+            "civilizationId": "persia",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 8,
+            "coins": 200
+          },
+          "after": {
+            "revision": 58,
+            "civilizationId": "japan",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 9,
+            "coins": 200
+          },
+          "civilization": "japan",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "japan",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:37"
+        },
+        {
+          "before": {
+            "revision": 58,
+            "civilizationId": "japan",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 9,
+            "coins": 200
+          },
+          "after": {
+            "revision": 59,
+            "civilizationId": "maurya",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 10,
+            "coins": 200
+          },
+          "civilization": "maurya",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "maurya",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:38"
+        },
+        {
+          "before": {
+            "revision": 59,
+            "civilizationId": "maurya",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 10,
+            "coins": 200
+          },
+          "after": {
+            "revision": 60,
+            "civilizationId": "spain",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 11,
+            "coins": 200
+          },
+          "civilization": "spain",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "spain",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:39"
+        },
+        {
+          "before": {
+            "revision": 60,
+            "civilizationId": "spain",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 11,
+            "coins": 200
+          },
+          "after": {
+            "revision": 61,
+            "civilizationId": "egypt",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 12,
+            "coins": 200
+          },
+          "civilization": "egypt",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "egypt",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:40"
+        },
+        {
+          "before": {
+            "revision": 61,
+            "civilizationId": "egypt",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 12,
+            "coins": 200
+          },
+          "after": {
+            "revision": 62,
+            "civilizationId": "rome",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 13,
+            "coins": 200
+          },
+          "civilization": "rome",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "rome",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:41"
+        },
+        {
+          "before": {
+            "revision": 62,
+            "civilizationId": "rome",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 13,
+            "coins": 200
+          },
+          "after": {
+            "revision": 63,
+            "civilizationId": "ottomans",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 14,
+            "coins": 200
+          },
+          "civilization": "ottomans",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "ottomans",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:42"
+        },
+        {
+          "before": {
+            "revision": 63,
+            "civilizationId": "ottomans",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 14,
+            "coins": 200
+          },
+          "after": {
+            "revision": 64,
+            "civilizationId": "ming",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 15,
+            "coins": 200
+          },
+          "civilization": "ming",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "ming",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:43"
+        },
+        {
+          "before": {
+            "revision": 64,
+            "civilizationId": "ming",
+            "plotId": 1,
+            "goods": {
+              "timber": 0,
+              "material": 0,
+              "crafted": 0,
+              "food": 0
+            },
+            "claimEpoch": 15,
+            "coins": 200
+          },
+          "after": {
+            "revision": 65,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "goods": {
+              "material": 20,
+              "timber": 21,
+              "crafted": 0,
+              "food": 9
+            },
+            "claimEpoch": 16,
+            "coins": 4171
+          },
+          "civilization": "sparta",
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "sparta",
+              "plotId": 1
+            }
+          },
+          "requestId": "21537123-00f:44"
+        }
+      ],
+      "lastStep": "restore Sparta"
+    }
+  }
+}

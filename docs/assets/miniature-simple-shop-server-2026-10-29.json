@@ -1,0 +1,50 @@
+{
+  "kits": {
+    "rome": true,
+    "sparta": true,
+    "ming": true,
+    "spain": true,
+    "britain": true,
+    "vikings": true,
+    "maurya": true,
+    "mongols": true,
+    "egypt": true,
+    "persia": true,
+    "ottomans": true,
+    "japan": true,
+    "seneca": true
+  },
+  "storage": "InjectedFakeProfileStore",
+  "scene": {
+    "ok": true,
+    "result": {
+      "housing": 4,
+      "assigned": 2,
+      "ranges": 13,
+      "workers": 4,
+      "troops": {
+        "ranged": 2,
+        "melee": 4,
+        "medic": 1,
+        "cappedBackfill": true,
+        "perBuildingCleanup": true,
+        "retainedUnrelatedActors": true,
+        "troopCap": 10
+      },
+      "observedSeconds": 14,
+      "idle": 2,
+      "previews": 10
+    }
+  },
+  "sourceTemplatesUnchanged": true,
+  "isolation": "passed",
+  "world": {
+    "buildWidth": 40,
+    "futureWidth": 160,
+    "futureDepth": 128,
+    "buildDepth": 32,
+    "plotCount": 8,
+    "plotRadius": 400,
+    "size": 1200
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-29",
+  "studioId": "e5bbe0df-d8e5-4327-bfeb-8a74e907cb08",
+  "context": "Owned isolated client-only fixture; no live Battle actors, authority, UI or commander inputs changed.",
+  "fixture": "tests/miniature-game/RagdollClient.luau",
+  "module": "NativeRagdollClientV4",
+  "ok": true,
+  "result": {
+    "fadeAndTTL": true,
+    "partBudget": {
+      "maximumParts": 1125,
+      "evictions": 9,
+      "maximumModels": 5
+    },
+    "isolatedTemplates": true,
+    "modelBudget": {
+      "maximumParts": 588,
+      "evictions": 2,
+      "maximumModels": 12
+    },
+    "authorityMutation": false,
+    "replacementLifeIndependent": true,
+    "folderReplacementCleanup": true,
+    "roles": [
+      {
+        "linearSpeed": 0,
+        "torsoY": 0.5638956427574158,
+        "rotation": 1.6883000135421753,
+        "role": "melee",
+        "movement": 0.8169189095497131,
+        "angularSpeed": 0,
+        "limbDisplacement": 0.11279100924730301,
+        "sockets": 5,
+        "limbRotation": 0.6925563812255859,
+        "colliders": 6
+      },
+      {
+        "linearSpeed": 0,
+        "torsoY": 1.0738754272460938,
+        "rotation": 0.020543022081255913,
+        "role": "ranged",
+        "movement": 0.19293132424354553,
+        "angularSpeed": 0,
+        "limbDisplacement": 0.14082962274551392,
+        "sockets": 5,
+        "limbRotation": 0.966393232345581,
+        "colliders": 6
+      },
+      {
+        "linearSpeed": 0,
+        "torsoY": 0.4904070496559143,
+        "rotation": 1.5808886289596558,
+        "role": "medic",
+        "movement": 1.037903070449829,
+        "angularSpeed": 0,
+        "limbDisplacement": 0.14088352024555206,
+        "sockets": 5,
+        "limbRotation": 0.8277338147163391,
+        "colliders": 6
+      },
+      {
+        "linearSpeed": 0.008471588604152203,
+        "torsoY": 1.3047573566436768,
+        "rotation": 0.988048255443573,
+        "role": "mounted",
+        "movement": 1.253952980041504,
+        "angularSpeed": 0.018396932631731033,
+        "limbDisplacement": 0.043424926698207855,
+        "sockets": 24,
+        "limbRotation": 0.27557262778282166,
+        "colliders": 18
+      },
+      {
+        "animalLegs": [
+          {
+            "rotation": 0.1460154950618744,
+            "movement": 0.024642575532197952
+          },
+          {
+            "rotation": 0.3604077398777008,
+            "movement": 0.08508099615573883
+          },
+          {
+            "rotation": 0.14146079123020172,
+            "movement": 0.02309892512857914
+          },
+          {
+            "rotation": 0.40475326776504517,
+            "movement": 0.08895943313837051
+          }
+        ],
+        "linearSpeed": 0,
+        "torsoY": 1.1166746616363525,
+        "rotation": 0.054735735058784485,
+        "role": "crocodile",
+        "movement": 0.25371772050857544,
+        "angularSpeed": 0,
+        "limbDisplacement": 0.15307272970676422,
+        "sockets": 11,
+        "limbRotation": 0.9959109425544739,
+        "colliders": 13
+      }
+    ],
+    "reclaimNoCorpse": true,
+    "budgetAndCleanup": true,
+    "supportBudget": {
+      "maximumSupports": 8
+    }
+  }
+}

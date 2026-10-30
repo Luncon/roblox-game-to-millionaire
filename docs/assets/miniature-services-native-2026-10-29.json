@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-29",
+  "scope": "Pre-unlocked funded fake-state fixture; all nine research nodes were seeded, not completed natively; virtual input and physical relocation setup",
+  "result": {
+    "ok": true,
+    "result": {
+      "ok": true,
+      "timber": {
+        "amount": 1,
+        "workerId": "w3",
+        "secondsToFirstBatch": 9.65033279999625,
+        "buildingId": "b4"
+      },
+      "relocationWasFixtureSetup": true,
+      "preset": {
+        "unassigned": true,
+        "workers": 3,
+        "restored": true,
+        "saved": true
+      },
+      "preUnlockedFakeSetup": true,
+      "realClocks": true,
+      "roster": {
+        "ranged": 1,
+        "workersRetained": 3,
+        "melee": 3,
+        "medic": 1,
+        "presentationOnly": true
+      },
+      "storage": {
+        "serverPlacementAccepted": true,
+        "displayedGoodsCapacity": 400,
+        "buildingId": "b5"
+      },
+      "automation": {
+        "nativeReserveEntry": true,
+        "soldFood": 2,
+        "collectedFood": 12,
+        "collectedTimber": 0,
+        "saleCoins": 4,
+        "reserveFood": 10
+      },
+      "receipts": [
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "sparta",
+              "plotId": 1
+            }
+          },
+          "action": "select Sparta",
+          "requestId": "21537123-00f:1"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "kind": "timber"
+          },
+          "action": "buy timber",
+          "requestId": "21537123-00f:2"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b4"
+            ],
+            "buildingId": "b4"
+          },
+          "action": "place timber",
+          "requestId": "21537123-00f:3"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "kind": "storehouse"
+          },
+          "action": "buy storehouse",
+          "requestId": "21537123-00f:4"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": false,
+            "reason": "stale_revision"
+          },
+          "action": "place storehouse",
+          "requestId": "21537123-00f:5"
+        },
+        {
+          "attempt": 2,
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b5"
+            ],
+            "buildingId": "b5"
+          },
+          "action": "place storehouse",
+          "requestId": "21537123-00f:6"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "kind": "training"
+          },
+          "action": "buy training",
+          "requestId": "21537123-00f:7"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b6"
+            ],
+            "buildingId": "b6"
+          },
+          "action": "place training",
+          "requestId": "21537123-00f:8"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "kind": "healer"
+          },
+          "action": "buy healer",
+          "requestId": "21537123-00f:9"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetBuildings": [
+              "b7"
+            ],
+            "buildingId": "b7"
+          },
+          "action": "place healer",
+          "requestId": "21537123-00f:10"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "workerId": "w3"
+          },
+          "action": "hire service worker",
+          "requestId": "21537123-00f:11"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w3"
+          },
+          "action": "assign timber worker",
+          "requestId": "21537123-00f:12"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "amount": 1
+          },
+          "action": "collect timber",
+          "requestId": "21537123-00f:13"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "apply 3/1/1 roster",
+          "requestId": "21537123-00f:14"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "save assignments",
+          "requestId": "21537123-00f:15"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w3"
+          },
+          "action": "clear timber assignment",
+          "requestId": "21537123-00f:16"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true
+          },
+          "action": "restore assignments",
+          "requestId": "21537123-00f:17"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "set food reserve",
+          "requestId": "21537123-00f:18"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "set timber reserve",
+          "requestId": "21537123-00f:19"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "set material reserve",
+          "requestId": "21537123-00f:20"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "set crafted reserve",
+          "requestId": "21537123-00f:21"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w1"
+          },
+          "action": "pause first farm worker",
+          "requestId": "21537123-00f:22"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w2"
+          },
+          "action": "pause second farm worker",
+          "requestId": "21537123-00f:23"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true,
+            "workerId": "w3"
+          },
+          "action": "pause timber worker",
+          "requestId": "21537123-00f:24"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "enable Porter collection",
+          "requestId": "21537123-00f:25"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "enable Trade Steward",
+          "requestId": "21537123-00f:26"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "amount": 1,
+            "coins": 2
+          },
+          "action": "manual sale with services enabled",
+          "requestId": "21537123-00f:27"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "disable Trade Steward",
+          "requestId": "21537123-00f:28"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true
+          },
+          "action": "disable Porter collection",
+          "requestId": "21537123-00f:29"
+        },
+        {
+          "attempt": 1,
+          "result": {
+            "ok": true,
+            "resetProduction": true
+          },
+          "action": "restore producing preset",
+          "requestId": "21537123-00f:30"
+        }
+      ],
+      "manualActions": {
+        "saleWhileBothEnabled": true,
+        "servicesRestoredOff": true,
+        "collectionControlWhileEnabled": true
+      },
+      "lastStep": "restore producing preset attempt 1"
+    }
+  }
+}

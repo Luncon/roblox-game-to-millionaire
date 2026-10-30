@@ -1,0 +1,41 @@
+name: Development checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install pinned npm
+        run: npm install --global npm@12.0.2 --ignore-scripts
+      - run: npm ci
+      - run: npm run setup:tools
+      - name: Select changed-file comparison
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          base="${PR_BASE:-$PUSH_BASE}"
+          if [ -z "$base" ] || [ "$base" = '0000000000000000000000000000000000000000' ]; then
+            base="$(git merge-base HEAD "origin/$DEFAULT_BRANCH" 2>/dev/null || git rev-parse HEAD)"
+          fi
+          if [ "$base" = "$(git rev-parse HEAD)" ]; then
+            base="$(git rev-parse --verify HEAD^ 2>/dev/null || git hash-object -t tree /dev/null)"
+          fi
+          echo "LUAU_CHECK_BASE=$base" >> "$GITHUB_ENV"
+      - run: npm run check:dev

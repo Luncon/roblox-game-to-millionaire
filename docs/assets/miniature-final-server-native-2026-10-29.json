@@ -1,0 +1,129 @@
+{
+  "bootstrapCount": 1,
+  "templateFingerprintUnchanged": true,
+  "fingerprint": "13546:4088439198",
+  "baseline": "13546:4088439198",
+  "stressModelCleaned": true,
+  "results": {
+    "MiniatureRomeSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.00000382214057026431,
+        "cardinalRotations": 4,
+        "buildings": 9,
+        "buildingParts": 333,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MiniatureIsolationResult": "passed",
+    "VikingSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 405
+    },
+    "MingSceneResult": "9 buildings / 3 inert roles",
+    "PersiaSceneResult": "9 buildings / 3 inert roles",
+    "MongolSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 508
+    },
+    "EgyptSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 254
+    },
+    "MiniatureBritainSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.000003396941792743746,
+        "cardinalRotations": 4,
+        "buildings": 9,
+        "buildingParts": 289,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "SpainSceneResult": "9 buildings / 3 inert roles",
+    "OttomanSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 36,
+      "buildings": 9,
+      "parts": 296
+    },
+    "MiniatureJapanSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.0000026973982585332124,
+        "cardinalRotations": 4,
+        "buildings": 9,
+        "buildingParts": 262,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MiniatureMauryaSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.0000028709398520732066,
+        "cardinalRotations": 4,
+        "buildings": 9,
+        "buildingParts": 309,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MiniatureStressResult": {
+      "ok": true,
+      "result": {
+        "seconds": 3.0036147000209894,
+        "presentations": 40,
+        "workers": 64,
+        "poseUpdates": 48,
+        "geometryOnly": true,
+        "repeatedCivilizationsAllowedOnlyInThisGeometryFixture": true,
+        "heartbeatMax": 0.14532656967639923,
+        "buildings": 96,
+        "settlements": 8,
+        "heartbeatP95": 0.0626986175775528,
+        "kitVarieties": 8,
+        "heartbeatMedian": 0.02545957826077938,
+        "parts": 5472
+      }
+    },
+    "MiniatureOwnershipResult": {
+      "ok": true,
+      "result": {
+        "privateStock": true,
+        "physicalMulticlientTest": false,
+        "foreignRequestsRejected": true,
+        "originalPlot": 1,
+        "restoredCoins": 120,
+        "exclusiveClaims": true,
+        "simulatedOwners": 3,
+        "fakeStoreOnly": true,
+        "restoredHouseStock": 1,
+        "concurrentOwners": 2,
+        "restoredHousePlans": 1,
+        "restoredPlot": 3
+      }
+    },
+    "SenecaSceneResult": "9 buildings / 3 inert roles"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-29",
+  "kind": "native Studio client gallery closeups",
+  "studioId": "d4af24c9-d731-4448-ba3c-41c2ab3173dd",
+  "gallery": "workspace.NativeMountedGallery; client MiniatureClientActors_Actors",
+  "isolation": "Visual gallery only; no live army, profile, currency or combat mutations. Gait uses pose-only snapshots.",
+  "capture": "Roblox Studio MCP screen_capture; scaled uniformly to 1280px wide JPEG with ffmpeg. Engine capture omits BillboardGui labels.",
+  "review": "All thirteen imported animals/rider fits reviewed; Mauryan howdah seat corrected and native thirteen-culture geometry/FK checks rerun. Static photos complement numerical gait checks; they are not combat or multiplayer evidence.",
+  "entries": [
+    {
+      "civilizationId": "sparta",
+      "file": "sparta.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "britain",
+      "file": "britain.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "seneca",
+      "file": "seneca.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "mongols",
+      "file": "mongols.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "vikings",
+      "file": "vikings.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "persia",
+      "file": "persia.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "japan",
+      "file": "japan.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "maurya",
+      "file": "maurya-fixed.jpg",
+      "seatCorrection": true
+    },
+    {
+      "civilizationId": "spain",
+      "file": "spain.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "egypt",
+      "file": "egypt.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "rome",
+      "file": "rome.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "ottomans",
+      "file": "ottomans.jpg",
+      "seatCorrection": false
+    },
+    {
+      "civilizationId": "ming",
+      "file": "ming.jpg",
+      "seatCorrection": false
+    }
+  ]
+}

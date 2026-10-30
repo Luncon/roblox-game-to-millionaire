@@ -1,0 +1,39 @@
+{
+  "execution": "Actual LocalScript in owned fake-store Play, window foreground confirmed; unchanged fixture thresholds",
+  "ok": true,
+  "result": {
+    "sourceRateProof": true,
+    "nativeClient": true,
+    "movement": {
+      "frameDurationMax": 0.02152390033006668,
+      "frameDurationTotal": 3.0184181090444326,
+      "framesPerSecond": 59.96518489524328,
+      "maximumSourceStep": 0.7059047222137451,
+      "sourceUpdatesPerSecond": 8.613783465615057,
+      "frames": 181,
+      "sourceUpdates": 26,
+      "intermediateSteps": 154,
+      "frameDurationAverage": 0.016676343143891895,
+      "skippedSlowFrames": 0,
+      "maximumLocalStep": 0.1278463900089264,
+      "sourceDistance": 17.35326474905014,
+      "localDistance": 17.958444207906723,
+      "frameDurationMin": 0.012762299738824368,
+      "intermediateAllFrames": 154
+    },
+    "isolated": {
+      "idempotentCleanup": true,
+      "staleTimestampRejected": true,
+      "sourceRemovalCleanup": true,
+      "grounded": true,
+      "healthDisplayUnique": true,
+      "gripPreserved": true,
+      "geometryReadiness": true,
+      "originalSourceRestored": true,
+      "staleLifeRejected": true,
+      "freshLifeReplaced": true
+    },
+    "authoritativeMutation": false,
+    "controllerModuleLoaded": false
+  }
+}

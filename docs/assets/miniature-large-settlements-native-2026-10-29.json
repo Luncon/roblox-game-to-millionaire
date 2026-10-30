@@ -1,0 +1,41 @@
+{
+  "isolation": "passed",
+  "native": {
+    "ok": true,
+    "plots": 8,
+    "plotDepth": 64,
+    "unchangedCaps": {
+      "troops": 10,
+      "buildings": 12,
+      "civilians": 8
+    },
+    "cultures": 13,
+    "mode": "IsolatedStateAndWorldFactory",
+    "plotWidth": 80,
+    "corners": 3784
+  },
+  "scene": {
+    "ok": true,
+    "result": {
+      "housing": 4,
+      "assigned": 2,
+      "idle": 2,
+      "workers": 4,
+      "troops": {
+        "ranged": 2,
+        "melee": 4,
+        "medic": 1,
+        "cappedBackfill": true,
+        "perBuildingCleanup": true,
+        "retainedUnrelatedActors": true,
+        "troopCap": 10
+      },
+      "ranges": 13,
+      "observedSeconds": 14,
+      "previews": 10
+    }
+  },
+  "sourceUnchanged": true,
+  "date": "2026-10-29",
+  "scope": "Isolated Studio fake-store test and State/Actions/World factory placement; no player storage or physical-device claim."
+}

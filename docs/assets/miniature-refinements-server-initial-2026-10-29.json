@@ -1,0 +1,12 @@
+{
+  "phase": "Initial native server checks; precedes the additional same-tick capture-death regression and direct source-folder replacement fix.",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"NativeOutpostScene\":{\"ok\":true,\"result\":{\"captureSeconds\":20,\"initialNeutralActors\":24,\"fakeSeconds\":51.000000000000458,\"events\":{\"capture\":2,\"death\":12,\"shot\":23,\"hit\":83},\"firstOwner\":\"sparta\",\"simulatedRivalTeams\":true,\"recapturedOwner\":\"rome\",\"fakeClock\":true,\"actualMultiplayer\":false,\"projectileTravelTTL\":true,\"nativeLifeSync\":true,\"outposts\":8,\"livePlayerMutation\":false}},\"NativeSupportCollision\":{\"ok\":true,\"result\":{\"plots\":8,\"commanderUnblocked\":true,\"corpseGroundHeight\":0.2407716065645218,\"defaultGroundHeight\":0.2407716065645218,\"rayAndOverlapExcluded\":true}},\"NativeRagdollSources\":{\"ok\":true,\"result\":{\"boundedRetirement\":true,\"originalSourcesImmutable\":true,\"templates\":5,\"authorityAndRespawnUnchanged\":true,\"exactLifeDeath\":true,\"staleLifeRejected\":true,\"ordinaryRemovalNotDeath\":true}},\"NativeMountedScene\":{\"ok\":true,\"result\":{\"clientPoses\":294,\"anatomyJoints\":129,\"lionSeated\":true,\"civilizations\":13,\"crocodileResting\":true,\"crocodileMinimumFootSweep\":0.740482747554779,\"originalRiders\":13,\"rhinoFace\":true,\"bullBlockLegs\":4,\"wolfEyes\":2,\"groundPoses\":156,\"parts\":921}},\"NativeOriginalArmyScene\":{\"ok\":true,\"result\":{\"neutralRangedReach\":10,\"scale\":0.25,\"civilizations\":13,\"customMelee\":5,\"sourceTemplatesImmutable\":true,\"ownedRangedReach\":10,\"raycastSupportAndHumanoidExclusion\":true,\"medicHealRange\":7,\"neutralSpeed\":5.7,\"groundedPoses\":518,\"neutralRoles\":2,\"ownedSpeed\":6,\"clientSolverPoses\":518,\"roles\":39,\"liveArmyMutation\":false,\"styles\":{\"chop\":2,\"firearm\":4,\"throw\":17,\"slash\":8,\"bow\":6,\"thrust\":4},\"neutralStatRatio\":0.95}}}"
+      }
+    ],
+    "isError": false
+  }
+}

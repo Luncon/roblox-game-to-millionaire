@@ -1,0 +1,265 @@
+{
+  "date": "2026-10-29",
+  "scope": "Fresh funded fake store; actual UI and real clocks; research pauses in another civilization; one accepted payment/completion",
+  "result": {
+    "ok": true,
+    "result": {
+      "initial": {
+        "timber": 80,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 5000,
+        "at": 109.97939900000347,
+        "hallUpgraded": false,
+        "revision": 2,
+        "claimEpoch": 2,
+        "workCompleted": false
+      },
+      "explicitRomeWait": 3.0665736999944784,
+      "afterHall": {
+        "timber": 70,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 4840,
+        "at": 111.13096360000782,
+        "hallUpgraded": true,
+        "revision": 3,
+        "claimEpoch": 2,
+        "workCompleted": false
+      },
+      "ok": true,
+      "lastStep": "verify completion remains stable without another payment",
+      "beforeSwitch": {
+        "timber": 70,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 4740,
+        "at": 114.8633009000041,
+        "hallUpgraded": true,
+        "project": {
+          "id": "work",
+          "remaining": 28.849987599998713
+        },
+        "revision": 4,
+        "claimEpoch": 2,
+        "workCompleted": false
+      },
+      "nativeVirtualInput": true,
+      "romeEntered": {
+        "timber": 0,
+        "civilizationId": "rome",
+        "plotId": 1,
+        "coins": 200,
+        "at": 116.23020829999587,
+        "hallUpgraded": false,
+        "revision": 5,
+        "claimEpoch": 3,
+        "workCompleted": false
+      },
+      "started": {
+        "timber": 70,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 4740,
+        "at": 113.6809197999828,
+        "hallUpgraded": true,
+        "project": {
+          "id": "work",
+          "remaining": 30
+        },
+        "revision": 4,
+        "claimEpoch": 2,
+        "workCompleted": false
+      },
+      "completionTransitions": 1,
+      "acceptedResearchStarts": 1,
+      "receipts": [
+        {
+          "receivedAt": 109.97939900000347,
+          "action": "select sparta",
+          "dispatchedAt": 109.76339459998417,
+          "attempt": 1,
+          "snapshot": {
+            "timber": 80,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "coins": 5000,
+            "at": 109.97939900000347,
+            "hallUpgraded": false,
+            "revision": 2,
+            "claimEpoch": 2,
+            "workCompleted": false
+          },
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "sparta",
+              "plotId": 1
+            }
+          },
+          "requestId": "aaa471f0-54a:1"
+        },
+        {
+          "receivedAt": 111.13096360000782,
+          "action": "improve council",
+          "dispatchedAt": 110.93067979998887,
+          "attempt": 1,
+          "snapshot": {
+            "timber": 70,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "coins": 4840,
+            "at": 111.13096360000782,
+            "hallUpgraded": true,
+            "revision": 3,
+            "claimEpoch": 2,
+            "workCompleted": false
+          },
+          "result": {
+            "ok": true
+          },
+          "requestId": "aaa471f0-54a:2"
+        },
+        {
+          "receivedAt": 113.6809197999828,
+          "action": "start Organized Work",
+          "dispatchedAt": 113.4801945000072,
+          "attempt": 1,
+          "snapshot": {
+            "timber": 70,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "coins": 4740,
+            "at": 113.6809197999828,
+            "hallUpgraded": true,
+            "project": {
+              "id": "work",
+              "remaining": 30
+            },
+            "revision": 4,
+            "claimEpoch": 2,
+            "workCompleted": false
+          },
+          "result": {
+            "ok": true,
+            "researchId": "work"
+          },
+          "requestId": "aaa471f0-54a:3"
+        },
+        {
+          "receivedAt": 116.23020829999587,
+          "action": "select rome",
+          "dispatchedAt": 115.99764099999447,
+          "attempt": 1,
+          "snapshot": {
+            "timber": 0,
+            "civilizationId": "rome",
+            "plotId": 1,
+            "coins": 200,
+            "at": 116.23020829999587,
+            "hallUpgraded": false,
+            "revision": 5,
+            "claimEpoch": 3,
+            "workCompleted": false
+          },
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "rome",
+              "plotId": 1
+            }
+          },
+          "requestId": "aaa471f0-54a:4"
+        },
+        {
+          "receivedAt": 120.73213190000388,
+          "action": "select sparta",
+          "dispatchedAt": 120.51400439999998,
+          "attempt": 1,
+          "snapshot": {
+            "timber": 70,
+            "civilizationId": "sparta",
+            "plotId": 1,
+            "coins": 4740,
+            "at": 120.73213190000388,
+            "hallUpgraded": true,
+            "project": {
+              "id": "work",
+              "remaining": 27.483594899997115
+            },
+            "revision": 6,
+            "claimEpoch": 4,
+            "workCompleted": false
+          },
+          "result": {
+            "ok": true,
+            "claim": {
+              "civilizationId": "sparta",
+              "plotId": 1
+            }
+          },
+          "requestId": "aaa471f0-54a:5"
+        }
+      ],
+      "realClocks": true,
+      "restored": {
+        "timber": 70,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 4740,
+        "at": 120.73213190000388,
+        "hallUpgraded": true,
+        "project": {
+          "id": "work",
+          "remaining": 27.483594899997115
+        },
+        "revision": 6,
+        "claimEpoch": 4,
+        "workCompleted": false
+      },
+      "wallSeconds": 34.89922699998715,
+      "relocationWasFixtureSetup": true,
+      "afterCompletion": {
+        "timber": 70,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 4740,
+        "at": 150.4952792999975,
+        "hallUpgraded": true,
+        "revision": 10,
+        "claimEpoch": 4,
+        "workCompleted": true
+      },
+      "completed": {
+        "timber": 70,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "coins": 4740,
+        "at": 148.37942149999435,
+        "hallUpgraded": true,
+        "revision": 10,
+        "claimEpoch": 4,
+        "workCompleted": true
+      },
+      "fundedFakeSetup": true,
+      "pause": {
+        "inactiveSecondsLowerBound": 4.2837961000041105,
+        "receiptTimingTolerance": 0.5,
+        "returnAcceptedAt": 120.73213190000388,
+        "remainingLost": 1.3663927000015974,
+        "activeBeforeLeavingUpper": 1.36690739999176
+      },
+      "romeAfterWait": {
+        "timber": 0,
+        "civilizationId": "rome",
+        "plotId": 1,
+        "coins": 200,
+        "at": 119.4129605999915,
+        "hallUpgraded": false,
+        "revision": 5,
+        "claimEpoch": 3,
+        "workCompleted": false
+      }
+    }
+  }
+}

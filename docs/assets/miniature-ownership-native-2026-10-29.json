@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "afterSoloPlayStopped": true,
+  "fakeLeasesCleaned": true,
+  "result": {
+    "simulatedOwners": 3,
+    "concurrentOwners": 2,
+    "exclusiveClaims": true,
+    "privateStock": true,
+    "foreignRequestsRejected": true,
+    "originalPlot": 1,
+    "restoredPlot": 3,
+    "restoredCoins": 120,
+    "restoredHousePlans": 1,
+    "restoredHouseStock": 1,
+    "physicalMulticlientTest": false,
+    "fakeStoreOnly": true
+  }
+}

@@ -1,0 +1,847 @@
+{
+  "date": "2026-10-29",
+  "studioId": "e5bbe0df-d8e5-4327-bfeb-8a74e907cb08",
+  "setup": "Fresh all-civilization Coin-only fake seed. Normal UI acquired and placed one lion, followed by automatic combat/death/replacement; normal UI then bought13plans and placed10. Isolated clone fixtures separately test server death transport, physics and hard budgets.",
+  "server": {
+    "MiniatureRomeSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.00000382214057026431,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 391,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "VikingSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 448
+    },
+    "EgyptSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 286
+    },
+    "outpostOwner": "sparta",
+    "MiniatureGameSceneResult": {
+      "ok": true,
+      "result": {
+        "housing": 4,
+        "assigned": 2,
+        "idle": 2,
+        "workers": 4,
+        "troops": {
+          "ranged": 2,
+          "melee": 4,
+          "medic": 1,
+          "cappedBackfill": true,
+          "perBuildingCleanup": true,
+          "retainedUnrelatedActors": true,
+          "troopCap": 10
+        },
+        "ranges": 13,
+        "observedSeconds": 14,
+        "previews": 11
+      }
+    },
+    "OttomanSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 357
+    },
+    "MingSceneResult": "10 buildings / 3 inert roles",
+    "NativeRefinementServerResults": {
+      "NativeOriginalArmyScene": {
+        "ok": true,
+        "result": {
+          "neutralRangedReach": 10,
+          "scale": 0.25,
+          "civilizations": 13,
+          "customMelee": 5,
+          "sourceTemplatesImmutable": true,
+          "ownedRangedReach": 10,
+          "raycastSupportAndHumanoidExclusion": true,
+          "medicHealRange": 7,
+          "neutralSpeed": 5.7,
+          "groundedPoses": 518,
+          "neutralRoles": 2,
+          "ownedSpeed": 6,
+          "clientSolverPoses": 518,
+          "roles": 39,
+          "liveArmyMutation": false,
+          "styles": {
+            "chop": 2,
+            "firearm": 4,
+            "throw": 17,
+            "slash": 8,
+            "bow": 6,
+            "thrust": 4
+          },
+          "neutralStatRatio": 0.95
+        }
+      },
+      "NativeSupportCollision": {
+        "ok": true,
+        "result": {
+          "plots": 8,
+          "commanderUnblocked": true,
+          "corpseGroundHeight": 0.2407716065645218,
+          "defaultGroundHeight": 0.2407716065645218,
+          "rayAndOverlapExcluded": true
+        }
+      },
+      "NativeMountedScene": {
+        "ok": true,
+        "result": {
+          "clientPoses": 294,
+          "anatomyJoints": 129,
+          "lionSeated": true,
+          "civilizations": 13,
+          "crocodileResting": true,
+          "crocodileMinimumFootSweep": 0.7408406138420105,
+          "originalRiders": 13,
+          "rhinoFace": true,
+          "bullBlockLegs": 4,
+          "wolfEyes": 2,
+          "groundPoses": 156,
+          "parts": 921
+        }
+      },
+      "NativeRagdollSources": {
+        "ok": true,
+        "result": {
+          "originalSourcesImmutable": true,
+          "boundedRetirement": true,
+          "authorityAndRespawnUnchanged": true,
+          "templates": 5,
+          "staleLifeRejected": true,
+          "exactLifeDeath": true,
+          "ordinaryRemovalNotDeath": true,
+          "captureRemovedActorDeath": true
+        }
+      }
+    },
+    "OttomanScenePassed": true,
+    "currentFingerprint": "262336:2729502414",
+    "MiniatureMauryaSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.0000028709398520732066,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 351,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "SenecaScenePassed": true,
+    "MiniatureOriginalArmySceneResult": {
+      "ok": true,
+      "result": {
+        "neutralRangedReach": 10,
+        "scale": 0.25,
+        "civilizations": 13,
+        "customMelee": 5,
+        "sourceTemplatesImmutable": true,
+        "ownedRangedReach": 10,
+        "raycastSupportAndHumanoidExclusion": true,
+        "medicHealRange": 7,
+        "neutralSpeed": 5.7,
+        "groundedPoses": 518,
+        "neutralRoles": 2,
+        "ownedSpeed": 6,
+        "clientSolverPoses": 518,
+        "roles": 39,
+        "liveArmyMutation": false,
+        "styles": {
+          "chop": 2,
+          "firearm": 4,
+          "throw": 17,
+          "slash": 8,
+          "bow": 6,
+          "thrust": 4
+        },
+        "neutralStatRatio": 0.95
+      }
+    },
+    "PersiaSceneResult": "10 buildings / 3 inert roles",
+    "EgyptScenePassed": true,
+    "SpainScenePassed": true,
+    "VikingScenePassed": true,
+    "MiniatureIsolationResult": "passed",
+    "PersiaScenePassed": true,
+    "MiniatureMountedSceneResult": {
+      "ok": true,
+      "result": {
+        "clientPoses": 294,
+        "anatomyJoints": 129,
+        "lionSeated": true,
+        "civilizations": 13,
+        "crocodileResting": true,
+        "crocodileMinimumFootSweep": 0.7408406138420105,
+        "originalRiders": 13,
+        "rhinoFace": true,
+        "bullBlockLegs": 4,
+        "wolfEyes": 2,
+        "groundPoses": 156,
+        "parts": 921
+      }
+    },
+    "MongolSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 598
+    },
+    "OriginalSandboxTemplates": "262336:2729502414",
+    "MiniatureRagdollSourcesResult": {
+      "ok": true,
+      "result": {
+        "originalSourcesImmutable": true,
+        "boundedRetirement": true,
+        "authorityAndRespawnUnchanged": true,
+        "templates": 5,
+        "staleLifeRejected": true,
+        "exactLifeDeath": true,
+        "ordinaryRemovalNotDeath": true,
+        "captureRemovedActorDeath": true
+      }
+    },
+    "SpainSceneResult": "10 buildings / 3 inert roles",
+    "MongolScenePassed": true,
+    "MiniatureJapanSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.0000027033186142944032,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 304,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MingScenePassed": true,
+    "MiniatureBritainSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.000003396941792743746,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 333,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "SenecaSceneResult": "10 buildings / 3 inert roles",
+    "MiniatureSupportCollisionResult": {
+      "plots": 8,
+      "commanderUnblocked": true,
+      "corpseGroundHeight": 0.2407716065645218,
+      "defaultGroundHeight": 0.2407716065645218,
+      "rayAndOverlapExcluded": true
+    }
+  },
+  "client": {
+    "NativeRefinementWalkingResult": {
+      "nativeW": true,
+      "distance": 32.60643768310547,
+      "walkSpeed": 32
+    },
+    "MiniatureMountedDeathFlowResult": {
+      "ok": true,
+      "result": {
+        "purchase": {
+          "before": {
+            "plans": 0,
+            "capacity": 10,
+            "capacityUsed": 0,
+            "coins": 20000
+          },
+          "nativeVirtualInput": true,
+          "purchase": {
+            "plans": 1,
+            "capacityUsed": 0,
+            "coins": 15000
+          },
+          "placement": {
+            "mounted": 1,
+            "plans": 0,
+            "capacityUsed": 2,
+            "coins": 15000,
+            "hud": "15000 coins\nGoods 0/200 · Mounted 1\nPeople 4 · Army 2/10",
+            "x": 26,
+            "actorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b4:1",
+            "z": -8,
+            "life": 25,
+            "animal": "lion",
+            "capacity": 10,
+            "buildingId": "b4"
+          },
+          "authoritativeMutation": false,
+          "attempts": [
+            {
+              "ok": true,
+              "revision": 3,
+              "label": "choose Sparta",
+              "requestId": "f7ee13c9-6e4:1"
+            },
+            {
+              "ok": true,
+              "revision": 4,
+              "label": "travel buy",
+              "requestId": "f7ee13c9-6e4:2"
+            },
+            {
+              "ok": true,
+              "revision": 6,
+              "label": "buy mounted building",
+              "requestId": "f7ee13c9-6e4:3"
+            },
+            {
+              "ok": true,
+              "revision": 7,
+              "label": "travel civilization",
+              "requestId": "f7ee13c9-6e4:4"
+            },
+            {
+              "ok": true,
+              "revision": 10,
+              "label": "place mounted facility",
+              "requestId": "f7ee13c9-6e4:5"
+            }
+          ],
+          "localRelocation": false
+        },
+        "death": {
+          "physicalParts": 102,
+          "notice": {
+            "life": 25,
+            "actorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b4:1",
+            "time": 1793316501.88543
+          },
+          "rotatedParts": 102,
+          "life": 25,
+          "actorId": "army:string:68716649:sparta:1:army:68716649:sparta:1:b4:1",
+          "combatSeconds": 20.30812890001107,
+          "sockets": 24,
+          "movedParts": 102,
+          "colliders": 18
+        },
+        "normalPurchase": true,
+        "authoritativeMutation": false,
+        "replacement": {
+          "life": 28,
+          "health": 300,
+          "oldCorpseRemoved": true,
+          "weightedCapacity": 2,
+          "oldSourceRemoved": true
+        },
+        "localRelocation": false
+      }
+    },
+    "MiniatureStructureFlowResult": {
+      "ok": true,
+      "result": {
+        "purchases": [
+          {
+            "plans": 1,
+            "kind": "house",
+            "aggregatePlans": 1,
+            "coins": 14920
+          },
+          {
+            "plans": 2,
+            "kind": "house",
+            "aggregatePlans": 2,
+            "coins": 14840
+          },
+          {
+            "plans": 1,
+            "kind": "farm",
+            "aggregatePlans": 3,
+            "coins": 14720
+          },
+          {
+            "plans": 2,
+            "kind": "farm",
+            "aggregatePlans": 4,
+            "coins": 14600
+          },
+          {
+            "plans": 1,
+            "kind": "timber",
+            "aggregatePlans": 5,
+            "coins": 14440
+          },
+          {
+            "plans": 1,
+            "kind": "material",
+            "aggregatePlans": 6,
+            "coins": 14240
+          },
+          {
+            "plans": 1,
+            "kind": "workshop",
+            "aggregatePlans": 7,
+            "coins": 14000
+          },
+          {
+            "plans": 1,
+            "kind": "training",
+            "aggregatePlans": 8,
+            "coins": 13750
+          },
+          {
+            "plans": 2,
+            "kind": "training",
+            "aggregatePlans": 9,
+            "coins": 13500
+          },
+          {
+            "plans": 1,
+            "kind": "ranged",
+            "aggregatePlans": 10,
+            "coins": 13250
+          },
+          {
+            "plans": 2,
+            "kind": "ranged",
+            "aggregatePlans": 11,
+            "coins": 13000
+          },
+          {
+            "plans": 1,
+            "kind": "healer",
+            "aggregatePlans": 12,
+            "coins": 12800
+          },
+          {
+            "plans": 2,
+            "kind": "healer",
+            "aggregatePlans": 13,
+            "coins": 12600
+          }
+        ],
+        "nativeVirtualInput": true,
+        "after": {
+          "mounted": 1,
+          "heldPlans": 3,
+          "buildings": 14,
+          "physicalBuildings": 14,
+          "capacityUsed": 8,
+          "troopCapacity": 10,
+          "coins": 12600
+        },
+        "localRelocation": false,
+        "before": {
+          "plans": 0,
+          "capacityUsed": 2,
+          "buildings": 4,
+          "coins": 15000
+        },
+        "fundingInjected": false,
+        "heldPlans": {
+          "totalPrice": 2400,
+          "count": 13,
+          "coins": 12600
+        },
+        "authoritativeMutation": false,
+        "placements": [
+          {
+            "rotation": 0,
+            "x": -34,
+            "count": 5,
+            "z": -28,
+            "id": "b5",
+            "kind": "training",
+            "capacityUsed": 4
+          },
+          {
+            "rotation": 0,
+            "x": -24,
+            "count": 6,
+            "z": -28,
+            "id": "b6",
+            "kind": "training",
+            "capacityUsed": 6
+          },
+          {
+            "rotation": 0,
+            "x": -14,
+            "count": 7,
+            "z": -28,
+            "id": "b7",
+            "kind": "ranged",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 6,
+            "count": 8,
+            "z": -28,
+            "id": "b8",
+            "kind": "farm",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 14,
+            "count": 9,
+            "z": -28,
+            "id": "b9",
+            "kind": "farm",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 90,
+            "x": -6,
+            "count": 10,
+            "z": -28,
+            "id": "b10",
+            "kind": "timber",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 22,
+            "count": 11,
+            "z": -28,
+            "id": "b11",
+            "kind": "material",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 30,
+            "count": 12,
+            "z": -28,
+            "id": "b12",
+            "kind": "workshop",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 22,
+            "count": 13,
+            "z": -22,
+            "id": "b13",
+            "kind": "house",
+            "capacityUsed": 8
+          },
+          {
+            "rotation": 0,
+            "x": 28,
+            "count": 14,
+            "z": -22,
+            "id": "b14",
+            "kind": "house",
+            "capacityUsed": 8
+          }
+        ],
+        "attempts": [
+          {
+            "ok": true,
+            "revision": 22,
+            "label": "travel buy",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:6"
+          },
+          {
+            "ok": true,
+            "revision": 23,
+            "label": "buy house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:7"
+          },
+          {
+            "ok": true,
+            "revision": 24,
+            "label": "buy house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:8"
+          },
+          {
+            "ok": true,
+            "revision": 25,
+            "label": "buy farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:9"
+          },
+          {
+            "ok": true,
+            "revision": 26,
+            "label": "buy farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:10"
+          },
+          {
+            "ok": true,
+            "revision": 27,
+            "label": "buy timber",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:11"
+          },
+          {
+            "ok": true,
+            "revision": 28,
+            "label": "buy material",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:12"
+          },
+          {
+            "ok": true,
+            "revision": 29,
+            "label": "buy workshop",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:13"
+          },
+          {
+            "ok": true,
+            "revision": 30,
+            "label": "buy training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:14"
+          },
+          {
+            "ok": true,
+            "revision": 31,
+            "label": "buy training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:15"
+          },
+          {
+            "ok": true,
+            "revision": 32,
+            "label": "buy ranged",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:16"
+          },
+          {
+            "ok": true,
+            "revision": 33,
+            "label": "buy ranged",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:17"
+          },
+          {
+            "ok": true,
+            "revision": 34,
+            "label": "buy healer",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:18"
+          },
+          {
+            "ok": true,
+            "revision": 35,
+            "label": "buy healer",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:19"
+          },
+          {
+            "ok": true,
+            "revision": 36,
+            "label": "travel civilization",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:20"
+          },
+          {
+            "ok": true,
+            "revision": 37,
+            "label": "place training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:21"
+          },
+          {
+            "ok": true,
+            "revision": 38,
+            "label": "place training",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:22"
+          },
+          {
+            "ok": true,
+            "revision": 39,
+            "label": "place ranged",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:23"
+          },
+          {
+            "ok": true,
+            "revision": 40,
+            "label": "place farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:24"
+          },
+          {
+            "ok": true,
+            "revision": 43,
+            "label": "place farm",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:25"
+          },
+          {
+            "ok": true,
+            "revision": 47,
+            "label": "place timber",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:26"
+          },
+          {
+            "ok": true,
+            "revision": 50,
+            "label": "place material",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:27"
+          },
+          {
+            "ok": true,
+            "revision": 53,
+            "label": "place workshop",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:28"
+          },
+          {
+            "ok": true,
+            "revision": 57,
+            "label": "place house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:29"
+          },
+          {
+            "ok": true,
+            "revision": 60,
+            "label": "place house",
+            "attempt": 1,
+            "requestId": "f7ee13c9-6e4:30"
+          }
+        ]
+      }
+    },
+    "MiniatureRagdollClientResult": {
+      "ok": true,
+      "result": {
+        "fadeAndTTL": true,
+        "partBudget": {
+          "maximumParts": 1125,
+          "evictions": 9,
+          "maximumModels": 5
+        },
+        "isolatedTemplates": true,
+        "modelBudget": {
+          "maximumParts": 588,
+          "evictions": 2,
+          "maximumModels": 12
+        },
+        "authorityMutation": false,
+        "replacementLifeIndependent": true,
+        "folderReplacementCleanup": true,
+        "roles": [
+          {
+            "linearSpeed": 0,
+            "torsoY": 0.5638956427574158,
+            "rotation": 1.6883000135421753,
+            "role": "melee",
+            "movement": 0.8169189095497131,
+            "angularSpeed": 0,
+            "limbDisplacement": 0.11279100924730301,
+            "sockets": 5,
+            "limbRotation": 0.6925563812255859,
+            "colliders": 6
+          },
+          {
+            "linearSpeed": 0,
+            "torsoY": 1.0738754272460938,
+            "rotation": 0.020543022081255913,
+            "role": "ranged",
+            "movement": 0.19293132424354553,
+            "angularSpeed": 0,
+            "limbDisplacement": 0.14082962274551392,
+            "sockets": 5,
+            "limbRotation": 0.966393232345581,
+            "colliders": 6
+          },
+          {
+            "linearSpeed": 0,
+            "torsoY": 0.4904070496559143,
+            "rotation": 1.5808886289596558,
+            "role": "medic",
+            "movement": 1.037903070449829,
+            "angularSpeed": 0,
+            "limbDisplacement": 0.14088352024555206,
+            "sockets": 5,
+            "limbRotation": 0.8277338147163391,
+            "colliders": 6
+          },
+          {
+            "linearSpeed": 0.008471588604152203,
+            "torsoY": 1.3047573566436768,
+            "rotation": 0.988048255443573,
+            "role": "mounted",
+            "movement": 1.253952980041504,
+            "angularSpeed": 0.018396932631731033,
+            "limbDisplacement": 0.043424926698207855,
+            "sockets": 24,
+            "limbRotation": 0.27557262778282166,
+            "colliders": 18
+          },
+          {
+            "animalLegs": [
+              {
+                "rotation": 0.1460154950618744,
+                "movement": 0.024642575532197952
+              },
+              {
+                "rotation": 0.3604077398777008,
+                "movement": 0.08508099615573883
+              },
+              {
+                "rotation": 0.14146079123020172,
+                "movement": 0.02309892512857914
+              },
+              {
+                "rotation": 0.40475326776504517,
+                "movement": 0.08895943313837051
+              }
+            ],
+            "linearSpeed": 0,
+            "torsoY": 1.1166746616363525,
+            "rotation": 0.054735735058784485,
+            "role": "crocodile",
+            "movement": 0.25371772050857544,
+            "angularSpeed": 0,
+            "limbDisplacement": 0.15307272970676422,
+            "sockets": 11,
+            "limbRotation": 0.9959109425544739,
+            "colliders": 13
+          }
+        ],
+        "reclaimNoCorpse": true,
+        "budgetAndCleanup": true,
+        "supportBudget": {
+          "maximumSupports": 8
+        }
+      }
+    }
+  },
+  "limits": [
+    "One Windows Studio client; published multiplayer, phones/controllers and adverse-network conditions remain unverified.",
+    "NativeRagdollClient V4 uses current file with pre-death pose baselines; the crocodile criterion measures all four physical legs because its low body already rests on ground."
+  ]
+}

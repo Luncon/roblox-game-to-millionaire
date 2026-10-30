@@ -19,12 +19,18 @@ for the Windows/WSL workflow.
 - Use the pinned Node version in `.nvmrc` and install tools with `npm ci`.
 - Run OpenSpec through `npm run openspec -- <arguments>` so the local pinned
   version is used. Run `npm run check` to validate specifications.
+- Install pinned Selene, StyLua and Lune with `npm run setup:tools`; run
+  `npm run check:dev` for changed-file lint/format checks and automated tests.
+  Full scans use `npm run lint:all` and `npm run format:check:all`. See
+  `docs/SETUP.md` for scope, existing diagnostics and Studio verification boundaries.
 - OpenSpec's Codex workflows are in `.agents/skills/openspec-*/SKILL.md`.
   Follow the appropriate workflow for proposed features and implementation.
 - `openspec/specs/` describes implemented behavior. Proposed game features
   belong in `openspec/changes/`; do not mark planned gameplay as implemented.
 - Keep ideas, historical references, and playtest notes in `docs/`. Obsidian
   edits these same Markdown files; do not maintain duplicate specifications.
+  Use `START_HERE.md` as the vault home; add project notes under `docs/notes/`
+  and link new notes from `docs/notes/INDEX.md`.
 - `default.project.json` maps `src/server`, `src/client`, and `src/shared`
   into Studio. Edit managed scripts in the repository and sync them with Rojo.
 - Keep server authority over currency, purchases, damage, civilization claims,

@@ -1,0 +1,679 @@
+{
+  "date": "2026-10-29",
+  "studio": "miniature-mounted-army-verified-test.rbxlx",
+  "setup": "20000 Coins only; zero goods/research/army injection; actual native UI and W/E walking",
+  "client": {
+    "render": [
+      {
+        "intermediate": 1176,
+        "id": "army:string:68716649:sparta:1:army:68716649:sparta:1:b9:1:33",
+        "duration": 69.50042568612844,
+        "frames": 3135,
+        "fps": 45.10763738567595,
+        "attacks": 11,
+        "life": 33,
+        "phases": {
+          "contact": true,
+          "idle": true,
+          "recovery": true,
+          "windup": true,
+          "moving": true
+        },
+        "hidden": true,
+        "minHealth": 197.39999999999998,
+        "sourceRemoved": false,
+        "sourceUpdates": 629,
+        "distance": 240.76907737091824
+      },
+      {
+        "intermediate": 1178,
+        "id": "army:string:68716649:sparta:1:army:68716649:sparta:1:b8:1:32",
+        "duration": 75.40581378620118,
+        "frames": 3391,
+        "fps": 44.97000734737158,
+        "attacks": 16,
+        "life": 32,
+        "phases": {
+          "contact": true,
+          "idle": true,
+          "recovery": true,
+          "windup": true,
+          "moving": true
+        },
+        "hidden": true,
+        "minHealth": 203.7,
+        "sourceRemoved": false,
+        "sourceUpdates": 682,
+        "distance": 239.41081157670124
+      }
+    ],
+    "flow": {
+      "ok": true,
+      "result": {
+        "capture": {
+          "outpostId": "outpost_1",
+          "flag": "sparta",
+          "nativeE": true,
+          "elapsedSeconds": 53.2032779000001
+        },
+        "nativeVirtualInput": true,
+        "extended": true,
+        "localRelocation": false,
+        "before": {
+          "capacity": 10,
+          "buildings": 3,
+          "capacityUsed": 0,
+          "coins": 20000
+        },
+        "placements": [
+          {
+            "rotation": 90,
+            "x": 6,
+            "z": 8,
+            "id": "b4",
+            "kind": "training"
+          },
+          {
+            "rotation": 90,
+            "x": 16,
+            "z": 8,
+            "id": "b5",
+            "kind": "training"
+          },
+          {
+            "rotation": 90,
+            "x": 26,
+            "z": 8,
+            "id": "b6",
+            "kind": "ranged"
+          },
+          {
+            "rotation": 0,
+            "x": 16,
+            "z": -8,
+            "id": "b7",
+            "kind": "healer"
+          },
+          {
+            "rotation": 0,
+            "x": 28,
+            "z": -10,
+            "id": "b8",
+            "kind": "mount"
+          },
+          {
+            "rotation": 0,
+            "x": 28,
+            "z": -24,
+            "id": "b9",
+            "kind": "mount"
+          }
+        ],
+        "purchase": {
+          "spent": 10950,
+          "mountPlans": 2,
+          "capacityUsed": 0,
+          "coins": 9050
+        },
+        "backfill": {
+          "mounted": 2,
+          "preservedLivingActors": 6,
+          "melee": 2,
+          "physicalTroops": 7,
+          "capacityUsed": 9,
+          "coins": 9050,
+          "hud": "9050 coins\nGoods 0/200 · Mounted 2\nPeople 4 · Army 9/10",
+          "medic": 1,
+          "commanderWalkDistance": 10.209123611450195,
+          "backgroundCasualties": 0,
+          "trainingPlans": 1,
+          "ranged": 2
+        },
+        "captureWalk": 118.95528411865234,
+        "authoritativeMutation": false,
+        "queued": {
+          "mounted": 1,
+          "freeSlots": 1,
+          "capacityUsed": 9,
+          "buildingId": "b9"
+        },
+        "attempts": [
+          {
+            "ok": true,
+            "revision": 3,
+            "label": "choose Sparta",
+            "requestId": "47239f7e-f7a:1"
+          },
+          {
+            "ok": true,
+            "revision": 4,
+            "label": "travel buy",
+            "requestId": "47239f7e-f7a:2"
+          },
+          {
+            "ok": true,
+            "revision": 6,
+            "label": "buy training",
+            "requestId": "47239f7e-f7a:3"
+          },
+          {
+            "ok": true,
+            "revision": 8,
+            "label": "buy training",
+            "requestId": "47239f7e-f7a:4"
+          },
+          {
+            "ok": true,
+            "revision": 9,
+            "label": "buy ranged",
+            "requestId": "47239f7e-f7a:5"
+          },
+          {
+            "ok": true,
+            "revision": 11,
+            "label": "buy healer",
+            "requestId": "47239f7e-f7a:6"
+          },
+          {
+            "ok": true,
+            "revision": 12,
+            "label": "buy mount",
+            "requestId": "47239f7e-f7a:7"
+          },
+          {
+            "ok": true,
+            "revision": 13,
+            "label": "buy mount",
+            "requestId": "47239f7e-f7a:8"
+          },
+          {
+            "ok": true,
+            "revision": 14,
+            "label": "travel civilization",
+            "requestId": "47239f7e-f7a:9"
+          },
+          {
+            "ok": true,
+            "revision": 17,
+            "label": "place training",
+            "requestId": "47239f7e-f7a:10"
+          },
+          {
+            "ok": true,
+            "revision": 20,
+            "label": "place training",
+            "requestId": "47239f7e-f7a:11"
+          },
+          {
+            "ok": true,
+            "revision": 24,
+            "label": "place ranged",
+            "requestId": "47239f7e-f7a:12"
+          },
+          {
+            "ok": true,
+            "revision": 27,
+            "label": "place healer",
+            "requestId": "47239f7e-f7a:13"
+          },
+          {
+            "ok": true,
+            "revision": 28,
+            "label": "place mount",
+            "requestId": "47239f7e-f7a:14"
+          },
+          {
+            "ok": true,
+            "revision": 29,
+            "label": "place mount",
+            "requestId": "47239f7e-f7a:15"
+          },
+          {
+            "ok": true,
+            "revision": 30,
+            "label": "hammer reclaim melee barracks",
+            "requestId": "47239f7e-f7a:16"
+          },
+          {
+            "ok": true,
+            "revision": 31,
+            "label": "E command mounted mixed army",
+            "requestId": "47239f7e-f7a:17"
+          }
+        ]
+      }
+    }
+  },
+  "server": {
+    "MiniatureRomeSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.00000382214057026431,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 391,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "VikingSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 448
+    },
+    "EgyptSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 286
+    },
+    "MiniatureGameSceneResult": {
+      "ok": true,
+      "result": {
+        "housing": 4,
+        "assigned": 2,
+        "idle": 2,
+        "workers": 4,
+        "troops": {
+          "ranged": 2,
+          "melee": 4,
+          "medic": 1,
+          "cappedBackfill": true,
+          "perBuildingCleanup": true,
+          "retainedUnrelatedActors": true,
+          "troopCap": 10
+        },
+        "ranges": 13,
+        "observedSeconds": 14,
+        "previews": 11
+      }
+    },
+    "MiniatureOriginalArmySceneResult": {
+      "ok": true,
+      "result": {
+        "neutralRangedReach": 10,
+        "scale": 0.25,
+        "civilizations": 13,
+        "customMelee": 5,
+        "sourceTemplatesImmutable": true,
+        "ownedRangedReach": 10,
+        "raycastSupportAndHumanoidExclusion": true,
+        "medicHealRange": 7,
+        "neutralSpeed": 5.7,
+        "groundedPoses": 518,
+        "neutralRoles": 2,
+        "ownedSpeed": 6,
+        "clientSolverPoses": 518,
+        "roles": 39,
+        "liveArmyMutation": false,
+        "styles": {
+          "chop": 2,
+          "firearm": 4,
+          "throw": 17,
+          "slash": 8,
+          "bow": 6,
+          "thrust": 4
+        },
+        "neutralStatRatio": 0.95
+      }
+    },
+    "OttomanSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 357
+    },
+    "OttomanScenePassed": true,
+    "MingSceneResult": "10 buildings / 3 inert roles",
+    "MiniatureMauryaSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.0000028709398520732066,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 351,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "FinalMountedServerVerification": {
+      "NativeMountStructures": {
+        "ok": true,
+        "result": {
+          "models": [
+            {
+              "civilizationId": "sparta",
+              "parts": 37,
+              "width": 12,
+              "depth": 10,
+              "name": "Lion Guard Den",
+              "animal": "lion"
+            },
+            {
+              "civilizationId": "britain",
+              "parts": 29,
+              "width": 12,
+              "depth": 10,
+              "name": "Royal Cavalry Stables",
+              "animal": "horse"
+            },
+            {
+              "civilizationId": "seneca",
+              "parts": 50,
+              "width": 12,
+              "depth": 10,
+              "name": "Antler Lodge",
+              "animal": "elk"
+            },
+            {
+              "civilizationId": "mongols",
+              "parts": 59,
+              "width": 12,
+              "depth": 10,
+              "name": "Steppe Rider Corral",
+              "animal": "horse"
+            },
+            {
+              "civilizationId": "vikings",
+              "parts": 21,
+              "width": 12,
+              "depth": 10,
+              "name": "Berserker Bear Hall",
+              "animal": "bear"
+            },
+            {
+              "civilizationId": "persia",
+              "parts": 42,
+              "width": 12,
+              "depth": 10,
+              "name": "Royal Leopard Garden",
+              "animal": "leopard"
+            },
+            {
+              "civilizationId": "japan",
+              "parts": 27,
+              "width": 12,
+              "depth": 10,
+              "name": "Tiger Banner Dojo",
+              "animal": "tiger"
+            },
+            {
+              "civilizationId": "maurya",
+              "parts": 19,
+              "width": 12,
+              "depth": 10,
+              "name": "Mahout Elephant Yard",
+              "animal": "elephant"
+            },
+            {
+              "civilizationId": "spain",
+              "parts": 37,
+              "width": 12,
+              "depth": 10,
+              "name": "Toro War Pens",
+              "animal": "bull"
+            },
+            {
+              "civilizationId": "egypt",
+              "parts": 18,
+              "width": 12,
+              "depth": 10,
+              "name": "Nile War Pool",
+              "animal": "crocodile"
+            },
+            {
+              "civilizationId": "rome",
+              "parts": 44,
+              "width": 12,
+              "depth": 10,
+              "name": "Capitoline Wolf Den",
+              "animal": "wolf"
+            },
+            {
+              "civilizationId": "ottomans",
+              "parts": 37,
+              "width": 12,
+              "depth": 10,
+              "name": "Sultan's Camel Court",
+              "animal": "camel"
+            },
+            {
+              "civilizationId": "ming",
+              "parts": 17,
+              "width": 12,
+              "depth": 10,
+              "name": "Ironhide Rhino Pavilion",
+              "animal": "rhino"
+            }
+          ],
+          "liveArmyMutation": false,
+          "sourceTemplatesImmutable": true,
+          "civilizations": 13
+        }
+      },
+      "NativeMountedScene": {
+        "ok": true,
+        "result": {
+          "clientPoses": 234,
+          "originalRiders": 13,
+          "anatomyJoints": 133,
+          "parts": 918,
+          "groundPoses": 156,
+          "civilizations": 13
+        }
+      },
+      "NativeOriginalArmyScene": {
+        "ok": true,
+        "result": {
+          "neutralRangedReach": 10,
+          "scale": 0.25,
+          "civilizations": 13,
+          "customMelee": 5,
+          "sourceTemplatesImmutable": true,
+          "ownedRangedReach": 10,
+          "raycastSupportAndHumanoidExclusion": true,
+          "medicHealRange": 7,
+          "neutralSpeed": 5.7,
+          "groundedPoses": 518,
+          "neutralRoles": 2,
+          "ownedSpeed": 6,
+          "clientSolverPoses": 518,
+          "roles": 39,
+          "liveArmyMutation": false,
+          "styles": {
+            "chop": 2,
+            "firearm": 4,
+            "throw": 17,
+            "slash": 8,
+            "bow": 6,
+            "thrust": 4
+          },
+          "neutralStatRatio": 0.95
+        }
+      }
+    },
+    "currentFingerprint": "262336:2729502414",
+    "PersiaSceneResult": "10 buildings / 3 inert roles",
+    "MiniatureMountStructuresResult": {
+      "ok": true,
+      "result": {
+        "models": [
+          {
+            "civilizationId": "sparta",
+            "parts": 37,
+            "width": 12,
+            "depth": 10,
+            "name": "Lion Guard Den",
+            "animal": "lion"
+          },
+          {
+            "civilizationId": "britain",
+            "parts": 29,
+            "width": 12,
+            "depth": 10,
+            "name": "Royal Cavalry Stables",
+            "animal": "horse"
+          },
+          {
+            "civilizationId": "seneca",
+            "parts": 50,
+            "width": 12,
+            "depth": 10,
+            "name": "Antler Lodge",
+            "animal": "elk"
+          },
+          {
+            "civilizationId": "mongols",
+            "parts": 59,
+            "width": 12,
+            "depth": 10,
+            "name": "Steppe Rider Corral",
+            "animal": "horse"
+          },
+          {
+            "civilizationId": "vikings",
+            "parts": 21,
+            "width": 12,
+            "depth": 10,
+            "name": "Berserker Bear Hall",
+            "animal": "bear"
+          },
+          {
+            "civilizationId": "persia",
+            "parts": 42,
+            "width": 12,
+            "depth": 10,
+            "name": "Royal Leopard Garden",
+            "animal": "leopard"
+          },
+          {
+            "civilizationId": "japan",
+            "parts": 27,
+            "width": 12,
+            "depth": 10,
+            "name": "Tiger Banner Dojo",
+            "animal": "tiger"
+          },
+          {
+            "civilizationId": "maurya",
+            "parts": 19,
+            "width": 12,
+            "depth": 10,
+            "name": "Mahout Elephant Yard",
+            "animal": "elephant"
+          },
+          {
+            "civilizationId": "spain",
+            "parts": 37,
+            "width": 12,
+            "depth": 10,
+            "name": "Toro War Pens",
+            "animal": "bull"
+          },
+          {
+            "civilizationId": "egypt",
+            "parts": 18,
+            "width": 12,
+            "depth": 10,
+            "name": "Nile War Pool",
+            "animal": "crocodile"
+          },
+          {
+            "civilizationId": "rome",
+            "parts": 44,
+            "width": 12,
+            "depth": 10,
+            "name": "Capitoline Wolf Den",
+            "animal": "wolf"
+          },
+          {
+            "civilizationId": "ottomans",
+            "parts": 37,
+            "width": 12,
+            "depth": 10,
+            "name": "Sultan's Camel Court",
+            "animal": "camel"
+          },
+          {
+            "civilizationId": "ming",
+            "parts": 17,
+            "width": 12,
+            "depth": 10,
+            "name": "Ironhide Rhino Pavilion",
+            "animal": "rhino"
+          }
+        ],
+        "liveArmyMutation": false,
+        "sourceTemplatesImmutable": true,
+        "civilizations": 13
+      }
+    },
+    "SpainScenePassed": true,
+    "MiniatureIsolationResult": "passed",
+    "SenecaScenePassed": true,
+    "PersiaScenePassed": true,
+    "MongolSceneResult": {
+      "actors": 3,
+      "cardinalFootprints": 44,
+      "buildings": 11,
+      "parts": 598
+    },
+    "MiniatureMountedSceneResult": {
+      "ok": true,
+      "result": {
+        "clientPoses": 234,
+        "originalRiders": 13,
+        "anatomyJoints": 133,
+        "parts": 918,
+        "groundPoses": 156,
+        "civilizations": 13
+      }
+    },
+    "OriginalSandboxTemplates": "262336:2729502414",
+    "EgyptScenePassed": true,
+    "SpainSceneResult": "10 buildings / 3 inert roles",
+    "MongolScenePassed": true,
+    "MiniatureJapanSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.0000027033186142944032,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 304,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "MingScenePassed": true,
+    "MiniatureBritainSceneResult": {
+      "ok": true,
+      "result": {
+        "actorRoles": 3,
+        "sourceImmutable": true,
+        "maximumLocalDrift": 0.000003396941792743746,
+        "cardinalRotations": 4,
+        "buildings": 11,
+        "buildingParts": 333,
+        "visualReview": "separate Studio screenshots and walk-through required",
+        "geometry": true,
+        "integratedGameplay": false
+      }
+    },
+    "VikingScenePassed": true,
+    "SenecaSceneResult": "10 buildings / 3 inert roles"
+  },
+  "limits": [
+    "One Windows Studio client with an existing user Play also open; no published multiplayer/mobile/adverse-network claims.",
+    "Passive native LocalScript frame sample includes background/focus switches; it is not a device performance guarantee."
+  ]
+}

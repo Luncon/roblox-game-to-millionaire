@@ -1,0 +1,7 @@
+{
+  "bootstrapCount": 1,
+  "storage": "InjectedFakeProfileStore",
+  "sourceTemplatesUnchanged": true,
+  "isolation": "passed",
+  "oldRemotesAbsent": true
+}

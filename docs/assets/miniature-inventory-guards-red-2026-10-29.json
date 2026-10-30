@@ -1,0 +1,123 @@
+{
+  "ok": false,
+  "result": "ReplicatedStorage.NativeInventoryGuardsWait:399: New-life W movement was blocked",
+  "evidence": {
+    "switch": {
+      "before": {
+        "goods": {
+          "timber": 0,
+          "material": 0,
+          "crafted": 0,
+          "food": 48
+        },
+        "civilianCount": 8,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "plans": {
+          "house": 0,
+          "timber": 0,
+          "workshop": 0,
+          "farm": 0,
+          "training": 0,
+          "material": 0,
+          "healer": 0,
+          "storehouse": 0
+        },
+        "buildingCount": 4,
+        "claimEpoch": 4,
+        "coins": 240
+      },
+      "preserved": true,
+      "after": {
+        "goods": {
+          "material": 0,
+          "timber": 0,
+          "crafted": 0,
+          "food": 48
+        },
+        "civilianCount": 8,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "plans": {
+          "house": 0,
+          "timber": 0,
+          "workshop": 0,
+          "farm": 0,
+          "storehouse": 0,
+          "material": 0,
+          "healer": 0,
+          "training": 0
+        },
+        "buildingCount": 4,
+        "claimEpoch": 6,
+        "coins": 240
+      }
+    },
+    "localStateMutation": false,
+    "deathPurchase": {
+      "coinsAfter": 160,
+      "coinsBefore": 240,
+      "plansAfter": 1
+    },
+    "death": {
+      "before": {
+        "goods": {
+          "material": 0,
+          "timber": 0,
+          "crafted": 0,
+          "food": 48
+        },
+        "civilianCount": 8,
+        "civilizationId": "sparta",
+        "plotId": 1,
+        "plans": {
+          "house": 1,
+          "timber": 0,
+          "workshop": 0,
+          "farm": 0,
+          "storehouse": 0,
+          "material": 0,
+          "training": 0,
+          "healer": 0
+        },
+        "buildingCount": 4,
+        "claimEpoch": 6,
+        "coins": 160
+      },
+      "refreshesBefore": 1
+    },
+    "layouts": [
+      {
+        "topButtons": 3,
+        "height": 360,
+        "planControls": 9,
+        "hotbarSlots": 9,
+        "width": 320
+      },
+      {
+        "topButtons": 3,
+        "height": 568,
+        "planControls": 9,
+        "hotbarSlots": 9,
+        "width": 320
+      },
+      {
+        "topButtons": 3,
+        "height": 360,
+        "planControls": 9,
+        "hotbarSlots": 9,
+        "width": 640
+      },
+      {
+        "topButtons": 3,
+        "height": 768,
+        "planControls": 9,
+        "hotbarSlots": 9,
+        "width": 1024
+      }
+    ],
+    "lastStep": "actual new-life W movement",
+    "nativeVirtualInput": true,
+    "localRelocation": false
+  }
+}

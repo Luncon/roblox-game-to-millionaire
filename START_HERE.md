@@ -1,40 +1,58 @@
 # Start here
 
-This folder is both the development repository and an Obsidian vault.
+This repository is our Obsidian vault. Use this page to find the current work,
+record ideas and decisions, and return to the detailed project documentation.
 
-- [Set up Studio, OpenSpec, Obsidian, and Rojo](docs/SETUP.md)
-- [Read the agreed game direction](docs/GAME_VISION.md)
-- [Explore the expanded world and fifty-level settlements](docs/WORLD.md)
-- [Playtest the civilization selection prototype](docs/PLAYTEST.md)
-- [Use the tycoon buttons and upgrade equipment](docs/ECONOMY.md)
-- [Unlock the barracks and upgrade your warrior](docs/ARMY.md)
-- [Continue saved civilizations or switch to another](docs/PROFILES.md)
-- [Review development-tool dependency findings](docs/DEPENDENCY_REVIEW.md)
-- [Read the implemented tooling specification](openspec/specs/development-workflow/spec.md)
+## Current work: miniature redesign
 
-Write new ideas and playtest observations in `docs/notes/`. Attach reference
-images in `docs/assets/`. Keep approved implementation requirements in OpenSpec.
+Normal-sized, unarmed commanders oversee miniature civilization scenery and
+actors. The separate playable sandbox now includes all thirteen prototype art
+kits, building placement, worker production, trade and the first army combat/
+outpost-capture loop. Research is paused and progress is temporary fake data.
+Troops now reuse original outfits, models, joint animations and baseline tactics,
+with grounded feet, slower movement and shorter ranged/healing reach. The original Spartan
+scale preview remains a separate launch option.
 
-Start Rojo, connect its Studio plugin, and press Play. Wait for your profile to
-load and choose a civilization. Use the physical buttons on your plot to earn
-coins and buy settlement, weapon, and armor upgrades through level 50. Settlement
-stage 2 deploys your first melee warrior. Upgrade the barracks three times to add
-a ranged troop; activate your equipped weapon to fight and earn 10 coins for a
-final hit. Coins and upgrades save separately for every civilization.
-Use **Change civ** in the HUD to choose another available civilization and keep
-your plot, or return to an earlier civilization's progress. A failed profile load
-blocks selection instead of resetting your progress; the selector offers Retry.
-See the playtest guide for expected behavior and tests.
+The latest sandbox adds smooth troop interpolation, near-peer neutral defenders,
+developed capturable frontier camps and double commander walking speed.
 
-The 1,600 × 1,600-stud world spaces eight plots around a shared battlefield, with
-grassland, forest, desert, snowy highlands and wetlands. Each settlement starts
-60 studs wide and grows gradually to a 256-stud themed settlement. Weapon damage
-increases from 10 to 18 and standard maximum health from 100 to 140 across 50
-levels; barracks remains four levels with one melee and one ranged slot at most.
+- [Game direction](docs/GAME_VISION.md)
+- [Current mounted-army implementation and imported-model audit](docs/notes/Mounted%20Army%20Implementation.md)
+- [Mount refinements, ragdoll deaths and uncapped structures](docs/notes/Mount%20Refinements%20and%20Ragdoll%20Deaths.md)
+- [Current smooth-army, neutral-balance and outpost-scenery work](docs/notes/Smooth%20Armies%20and%20Frontier%20Outposts.md)
+- [Playable sandbox: opening, controls and verification](docs/MINIATURE_GAMEPLAY.md)
+- [Latest original troop restoration, grounded movement and range tuning](docs/notes/Original%20Miniature%20Army.md)
+- [Current miniature combat, capture rules and army targeting](docs/notes/Miniature%20Combat%20and%20Outposts.md)
+- [Current compact shop, automatic troop buildings and larger map](docs/notes/Simple%20Shop%20and%20Automatic%20Troops.md)
+- [Inventory, automatic civilians and shared shops](docs/notes/Miniature%20Inventory%20and%20Shared%20Shops.md)
+- [Thirteen civilization evidence sheets](docs/notes/Miniature%20Civilization%20Evidence%20Sheets.md)
+- [Miniature preview: opening, controls and verification](docs/MINIATURE_PREVIEW.md)
+- [Preserved production build and backup](docs/BACKUPS.md)
+- [Project notes and decisions](docs/notes/INDEX.md)
 
-Keep one Studio playtest open at a time. Prefer solo checks and close owned test
-windows before starting another run; add clients only when the behavior needs them.
+## Using the vault
 
-Weapon, armor, and barracks tiers are capped by your settlement level. Upgrade
-the settlement to reveal higher-tier floor buttons. Civilization and owner names
-are incorporated into each main building’s themed facade.
+Open this page in Obsidian. Follow links to read or edit the same files used by
+the repository. Create new notes in `docs/notes/`, give them descriptive names
+such as `2026-10-28-miniature-playtest.md`, and link them from the
+[notes index](docs/notes/INDEX.md). Include what you observed, what was decided,
+and what remains open. Put reference images in `docs/assets/`.
+
+Approved implementation requirements belong in `openspec/changes/`;
+`openspec/specs/` describes implemented behavior. Link to those files from notes
+instead of maintaining a second specification.
+
+## Development and existing production game
+
+- [Windows/WSL, Studio, Obsidian, OpenSpec and Rojo setup](docs/SETUP.md)
+- [World and settlement geometry](docs/WORLD.md)
+- [Economy and upgrades](docs/ECONOMY.md)
+- [Army, recruitment and formations](docs/ARMY.md)
+- [Weapon skills](docs/WEAPON_SKILLS.md)
+- [Saved profiles](docs/PROFILES.md)
+- [Interface panels](docs/UI.md)
+- [Playtest evidence and remaining runtime checks](docs/PLAYTEST.md)
+- [Development-tool dependency findings](docs/DEPENDENCY_REVIEW.md)
+
+Keep at most two Studio playtests open: the user's session and one isolated
+verification run. Prefer solo checks and close owned test windows afterward.

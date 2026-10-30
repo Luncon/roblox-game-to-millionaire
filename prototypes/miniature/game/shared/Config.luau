@@ -1,0 +1,31 @@
+--!strict
+local Config = {
+	scale = 0.25,
+	plotCount = 8,
+	worldSize = 1200,
+	plotRadius = 400,
+	expansionWidth = 160,
+	expansionDepth = 128,
+	plotWidth = 80,
+	plotDepth = 64,
+	grid = 2,
+	coinCap = 1000000000,
+	workerCap = 8,
+	troopCap = 10,
+	commanderWalkSpeed = 32,
+	playerTroopSpeed = 6,
+	neutralTroopSpeed = 5.7,
+	rangedReach = 10,
+	neutralRangedReach = 10,
+	medicHealRange = 7,
+	-- Exact numeric representation guard; not a building or held-plan count cap.
+	maxSafeInteger = 9007199254740991,
+	goodsCapacity = 200,
+	outputCapacity = 60,
+	productionSpeed = 10,
+	researchEnabled = false,
+	restockSeconds = 180,
+	interactionRange = 12,
+	placementRange = 80,
+}
+return table.freeze(Config)

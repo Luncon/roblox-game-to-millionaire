@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-29",
+  "scope": "Before movement recovery fix; native W assertion failed at zero distance; user also confirmed physical W did not move",
+  "result": [
+    "nil"
+  ]
+}
